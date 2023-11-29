@@ -33,6 +33,7 @@ function SignUp() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder='Password'
+            autoComplete="password"
             className='passwordInput'/>
           <span
             className={`toggle-eye-icon ${showPassword ? 'show' : ''}`}
