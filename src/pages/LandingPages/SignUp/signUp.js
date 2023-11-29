@@ -51,6 +51,7 @@ function SignUp() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder='Confirm Password'
+            autoComplete="password"
             className='passwordInput'/>
           <span
             className={`toggle-eye-icon ${showPassword ? 'show' : ''}`}
