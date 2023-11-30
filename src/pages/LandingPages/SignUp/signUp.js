@@ -62,7 +62,7 @@ function SignUp() {
         </div>
       </form>
       <div className='btnDiv'>
-        <button className='signupButton'>
+        <button className='signupButton' >
           Sign Up
         </button>
       </div>

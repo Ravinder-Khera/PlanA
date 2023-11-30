@@ -8,6 +8,7 @@
     width: 100vw;
     min-height: 100vh;
     display: flex;
+    font-family: 'Archivo', sans-serif;
     align-items: center;
     .LeftSide{
         width: 30%;
@@ -53,6 +54,38 @@
                 }
             }
         }
+        .dashboardMenuList{
+            width: 95%;
+            li{ 
+                margin: 10px auto;
+                padding: 13px 13px;
+                border: 1px solid transparent;
+                transition: all 1s ease;
+                cursor: pointer;
+                a {
+                    display: flex;
+                    align-items: center;
+                    text-decoration: none; 
+                    p{
+                        color: #FFF;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 800;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        margin: 0;
+                    }
+                } 
+                &.active{
+                    border-radius: 8px;
+                    background: #E2E31F;
+                    border: 1px solid #E2E31F;
+                    p{
+                        color: #252525;
+                    }
+                }
+            }
+        }
         .forgotPasswordMenu{
             position: absolute;
             bottom: 0%;
@@ -80,7 +113,7 @@
         }
     }
     .RightSide {
-        width: -webkit-fill-available;
+        width: 70%;
         color: #fff;
     }
 }
@@ -188,5 +221,99 @@
         top: 50%;
         transform: translateY(-50%);
         right: 10px ;
+    }
+}
+
+.table_outer_div{
+    th, td{
+        vertical-align: middle;
+    }
+    .dateCell{
+        min-width: 120px;
+    }
+    thead{
+        border-radius: 2px;
+        background: #353535;
+        padding: 12px 20px;
+        .lastCell{
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            .IconBox{
+                width: 40px;
+                height: 40px;
+                background: #E2E31F;
+                border-radius: 2px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0 10px;
+                img{
+                    object-fit: contain;
+                }
+            }
+        }
+    }
+}
+
+.settingsPageSection{
+    width: 42%;
+    max-width: 600px;
+    box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
+    min-height: 90vh;
+    padding: 32px;
+    .settingsHeading {
+        color: #FFF;
+        font-size: 36px;
+        font-style: normal;
+        font-weight: 900;
+        line-height: normal;
+        letter-spacing: -1.44px;
+        padding: 40px 0;
+    }
+    .settingsList{
+        list-style: none;
+        li{
+            border-radius: 2px;
+            border: 1px solid #E2E31F;
+            padding: 28px 30px;
+            margin: 10px auto;
+            transition: all 0.5s ease;
+            &.active{
+                border: 1px solid transparent;
+                background: rgba(226, 227, 31, 0.20);
+            }
+            a{
+                display: flex;
+                color: #fff;
+                text-decoration: none;
+                .iconBox{
+                    width: 40px;
+                    height: 40px;
+                    margin-right: 10px;
+                    background: #E2E31F;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                h6{
+                    color: #FFF;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                }
+                p{
+                    color: #FFF;
+                    font-family: Archivo;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 300;
+                    line-height: normal;
+                    letter-spacing: -0.48px;
+                }
+            }
+        }
     }
 }

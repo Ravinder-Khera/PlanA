@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
 import { ClosedEye, Key, OpenedEye, User } from '../../../assets/svg';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+    const navigate = useNavigate();
     const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
+  };
+  const handleLogin = () => {
+    localStorage.setItem('loggedIn', 'true');
+    navigate('/dashboard');
   };
   return (<>
     <div className='SignUpSection'>
@@ -37,7 +43,7 @@ function Login() {
         </div>
       </form>
       <div className='btnDiv'>
-        <button className='signupButton'>
+        <button className='signupButton' onClick={handleLogin}>
             Login
         </button>
       </div>
