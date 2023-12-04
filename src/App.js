@@ -8,6 +8,7 @@ import { ForgotPassword } from './pages/LandingPages/Password/forgotPassword';
 import PasswordReset from './pages/LandingPages/Password/passwordReset';
 import Dashboard from './pages/Dashboard/dashboard';
 import { useState } from 'react';
+import NavMenu from './Components/navMenu';
 
 
 
@@ -53,7 +54,7 @@ function DashboardMenuList() {
         <ul className='pt-3 mx-auto px-1 dashboardMenuList'>
           <li className='active'>
             <a href='/dashboard'>
-              <DashboardIcon color='white' /><p>Dashboard</p>
+              <DashboardIcon color='black' /><p>Dashboard</p>
             </a>
           </li>
           <li >
@@ -84,6 +85,7 @@ function DashboardMenuList() {
 function RightSide() {
   return (
     <div className='RightSide'>
+      <NavMenu />
       <Routes>
         <Route path="/" element={<Login /> } />
         <Route path="/dashboard" element={<Dashboard />} />
