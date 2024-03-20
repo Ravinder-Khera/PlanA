@@ -5,7 +5,7 @@ export const SignIn = async (data) => {
         body: JSON.stringify(data),
     };
     try {
-        let response = await fetch(`https://zno5moaa3b.execute-api.us-west-2.amazonaws.com/dev/api/users/signup`, requestOptions);
+        let response = await fetch(`${process.env.REACT_APP_USER_API_ENDPOINT}/signup`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response);
@@ -28,7 +28,7 @@ export const LogIn = async (data) => {
         body: JSON.stringify(data),
     };
     try {
-        let response = await fetch(`https://zno5moaa3b.execute-api.us-west-2.amazonaws.com/dev/api/users/login`, requestOptions);
+        let response = await fetch(`${process.env.REACT_APP_USER_API_ENDPOINT}/login`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response,data);
