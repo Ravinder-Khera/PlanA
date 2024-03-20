@@ -73,38 +73,41 @@ function ProfilePic() {
     };
 
     return(<>
-    <div className='ProfileDetailsSection'>
-        <div className='contentDiv'>
-            <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onClick={handleUploadClick}
-                className='imgUploadArea'
-            >
-                <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handleFileInputChange}
-                />
-                {image && (
-                <div className='uploadedImg'>
-                    <img
-                    src={image}
-                    alt="Dropped"
-                    style={{ maxWidth: '100%'}}
+        <div className='ProfileDetailsSection'>
+            <div className='contentDiv'>
+                <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onClick={handleUploadClick}
+                    className='imgUploadArea'
+                >
+                    <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFileInputChange}
                     />
-                    <button onClick={handleClearImage}>X</button>
+                    {image && (
+                        <div className='uploadedImg'>
+                            <img
+                            src={image}
+                            alt="Dropped"
+                            style={{ maxWidth: '100%'}}
+                            />
+                            <button onClick={handleClearImage}>X</button>
+                        </div>
+                    )}
                 </div>
-                )}
-            </div>
-            <div className='imgUploadTextArea' >
-                <img src={upload} className='img-fluid' alt='+' onClick={handleUploadClick}/>
-                <p><span onClick={handleUploadClick}>Click to upload</span> or drag and drop SVG, PNG, JPG or GIF (max. 800x400px)</p>
+                <div className='imgUploadTextArea' >
+                    <img src={upload} className='img-fluid' alt='+' onClick={handleUploadClick}/>
+                    <p>
+                        <span onClick={handleUploadClick}>Click to upload</span>
+                        or drag and drop SVG, PNG, JPG or GIF (max. 800x400px)
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
     </>)
 }
 
@@ -135,8 +138,8 @@ function SettingsPage() {
           </li>
         </ul>
     </div>
-    {/* <ProfileDetails /> */}
-    <ProfilePic />
+    <ProfileDetails />
+    {/* <ProfilePic /> */}
   </div>
   </>)
 }

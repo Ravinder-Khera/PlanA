@@ -84,10 +84,10 @@ export function LogoutIcon() {
 export function DashboardIcon({color}) {
   return(<>
   <svg xmlns="http://www.w3.org/2000/svg" width="37" height="36" viewBox="0 0 37 36" fill="none">
-    <rect x="9.84229" y="9.75" width="6" height="6" rx="0.75" stroke={color !== undefined ? color : 'white'} stroke-width="1.5"/>
-    <rect x="20.3423" y="9.75" width="6" height="6" rx="0.75" stroke={color !== undefined ? color : 'white'} stroke-width="1.5"/>
-    <rect x="9.84229" y="20.25" width="6" height="6" rx="0.75" stroke={color !== undefined ? color : 'white'} stroke-width="1.5"/>
-    <rect x="20.3423" y="20.25" width="6" height="6" rx="0.75" stroke={color !== undefined ? color : 'white'} stroke-width="1.5"/>
+    <rect x="9.84229" y="9.75" width="6" height="6" rx="0.75" stroke={color !== undefined ? color : 'white'} strokeWidth="1.5"/>
+    <rect x="20.3423" y="9.75" width="6" height="6" rx="0.75" stroke={color !== undefined ? color : 'white'} strokeWidth="1.5"/>
+    <rect x="9.84229" y="20.25" width="6" height="6" rx="0.75" stroke={color !== undefined ? color : 'white'} strokeWidth="1.5"/>
+    <rect x="20.3423" y="20.25" width="6" height="6" rx="0.75" stroke={color !== undefined ? color : 'white'} strokeWidth="1.5"/>
   </svg>
   </>)
 }

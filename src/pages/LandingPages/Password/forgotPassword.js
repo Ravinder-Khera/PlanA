@@ -11,6 +11,7 @@ export function ForgotPassword() {
           <h2>Check Your Email!</h2>
           <p>A reset link has been sent to your email.</p>
           <p className='resendLinkP'>Didn’t Get A Link? <a className='resendLinkA' href='/forgotPassword'> Resend Here</a></p>
+          <p className='resendLinkP mt-0'> <a className='resendLinkA' href='/forgotPassword'> Back</a></p>
         </div>
     </div>
     :

@@ -1,18 +1,59 @@
 import React, { useState } from 'react'
 import { ClosedEye, Key, OpenedEye, User } from '../../../assets/svg';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { LogIn } from '../../../services/auth';
 
 function Login() {
-    const navigate = useNavigate();
-    const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
-  const handleLogin = () => {
-    localStorage.setItem('loggedIn', 'true');
-    navigate('/dashboard');
+ 
+
+  const handleLogin = async () => {
+    console.log(password);
+    try {
+      let response = await LogIn({
+        username: userName,
+        password: password,
+      });
+  
+      if (response.res) {
+        console.log('Logged-in successful',response);
+        localStorage.setItem('authToken', response.res.token);
+        localStorage.setItem('loggedIn', 'true');
+        toast.success('Logged-in successful', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        navigate('/dashboard');
+        } else {
+          console.error('Logged-in failed:', response.error);
+          toast.error('Logged-in failed', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+      }
+      } catch (error) {
+        console.error('There was an error:', error);
+    }
   };
   return (<>
     <div className='SignUpSection'>
@@ -22,7 +63,7 @@ function Login() {
         <form>
           <div className='customInput'>
               <div className='IconBox'><User /></div>
-              <input name='fullName' placeholder='Full Name'/>
+              <input name='fullName' placeholder='Full Name' value={userName} onChange={(e) => {setUserName(e.target.value); }}/>
           </div>
           <div className='customInput'>
               <div className='IconBox'><Key /></div>

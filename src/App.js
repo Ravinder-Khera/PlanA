@@ -7,19 +7,21 @@ import SignUp from './pages/LandingPages/SignUp/signUp';
 import { ForgotPassword } from './pages/LandingPages/Password/forgotPassword';
 import PasswordReset from './pages/LandingPages/Password/passwordReset';
 import Dashboard from './pages/Dashboard/dashboard';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NavMenu from './Components/navMenu';
-
-
+import SettingsPage from './pages/Settings';
+ import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 function DashboardMenuList() {
   const location = useLocation();
   const isLoginPage = location.pathname.includes('/login');
-  const isSignupPage = location.pathname.includes('/dashboard');
+  const isSignupPage = location.pathname.includes('/signup');
   const isDashboardPage = location.pathname.includes('/dashboard');
 
   const [isLoggedOut, setIsLoggedOut] = useState(false)
   const handleLogout = () => {
+    localStorage.removeItem('authToken');
     setIsLoggedOut(true)
   };
   return (<>
@@ -83,12 +85,30 @@ function DashboardMenuList() {
 }
 
 function RightSide() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuthToken = () => {
+      const authToken = localStorage.getItem('authToken');
+      setIsLoggedIn(!!authToken); 
+    };
+
+    checkAuthToken();
+    const interval = setInterval(checkAuthToken, 1000); 
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className='RightSide'>
-      <NavMenu />
+      {isLoggedIn && <>
+        <NavMenu />
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Routes>
+      </>}
       <Routes>
         <Route path="/" element={<Login /> } />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp/>} />
         <Route path="/forgotPassword" element={<ForgotPassword/>} />
@@ -100,14 +120,15 @@ function RightSide() {
 
 function App() {
   return (
-    <Router>
-      <div className="App">
+    <div className="App">
+      <ToastContainer />
+      <Router>
         <div className='LeftSide'>
           <DashboardMenuList />
         </div>
         <RightSide />
-      </div>
-    </Router>
+      </Router>
+    </div>
   );
 }
 

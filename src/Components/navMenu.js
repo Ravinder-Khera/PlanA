@@ -11,8 +11,8 @@ function NavMenu() {
                     <input name='search' placeholder='Search'/>
                 </div>
                 <div className='selectBox'>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Select</option>
+                    <select className="form-select" aria-label="Default select example">
+                        <option value={''}>Select</option>
                         <option value="1">One</option>
                         <option value="2">Two</option>
                         <option value="3">Three</option>
