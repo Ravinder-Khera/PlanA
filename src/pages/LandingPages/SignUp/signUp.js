@@ -10,47 +10,122 @@ function SignUp() {
   const [email, setEmail] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   
   const navigate = useNavigate();
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
+  const handleNameChange = (e) => {
+    const inputValue = e.target.value;
+    setFullName(inputValue);
+    if (!inputValue) {
+      setNameError('Name can not be empty');
+    } else {
+      setNameError('');
+    }
+  };
+  const validateEmail = (inputEmail) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(inputEmail);
+  };
+  const validatePassword = (inputPassword) => {
+    const capitalRegex = /[A-Z]/;
+    const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    const numberRegex = /[0-9]/;
+
+    return (
+      inputPassword.length >= 8 &&
+      capitalRegex.test(inputPassword) &&
+      specialCharRegex.test(inputPassword) &&
+      numberRegex.test(inputPassword)
+    );
+  };
+  
+  const handleEmailChange = (e) => {
+    const inputValue = e.target.value;
+    setEmail(inputValue);
+    if (!inputValue) {
+      setEmailError('');
+    } else if (validateEmail(inputValue)){
+      setEmailError('');
+    }
+  };
+  const handlePasswordChange = (e) => {
+    const inputValue = e.target.value;
+    setPassword(inputValue);
+
+    if (!inputValue) {
+      setPasswordError('');
+    } else if (validatePassword(inputValue)){
+      setPasswordError('');
+    }
+  };
+  const handleConfirmPasswordChange = (e) => {
+    const inputValue = e.target.value;
+    setConfirmPassword(inputValue);
+
+    if (inputValue !== password) {
+      setConfirmPasswordError('Password does not match');
+    } else if (!inputValue){
+      setConfirmPasswordError('Password can not be empty');
+    } else {
+      setConfirmPasswordError('')
+    }
+  };
 
   const handleSignUp = async () => {
+    if (fullName !== '') {
+      return
+    } else if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return
+    }else if (!validatePassword(password)) {
+      setPasswordError('Please enter a valid password');
+      return
+    } else if (confirmPassword !== '' || password !== confirmPassword) {
+      return
+    } 
     try {
       let response = await SignIn({
-        fullname: fullName,
+        name: fullName,
         email: email,
         password: password,
+        role: 'assignee'
       });
-  
+      console.log('Sign-in --',response);
       if (response.res) {
-        console.log('Sign-in successful',response.res.message);
-        localStorage.setItem('userName', response.res.username);
-        localStorage.setItem('SignUpToken', response.res.token);
+        console.log('Sign-in successful',response);
+        localStorage.setItem('authToken', response.res.access_token);
+        localStorage.setItem('loggedIn', 'true');
         toast.success('Sign-in successful', {
-          position: "top-right",
+          position: "top-center",
           autoClose: 5000,
-          hideProgressBar: false,
+          hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "dark",
+          theme: "colored",
         });
-        navigate('/login');
+        navigate('/dashboard');
         } else {
-          console.error('Sign-in failed:', response.error.error);
+          console.error('Sign-in failed:', response.error);
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('loggedIn');
           toast.error('Sign-in failed', {
-            position: "top-right",
+            position: "top-center",
             autoClose: 5000,
-            hideProgressBar: false,
+            hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "dark",
+            theme: "colored",
           });
       }
       } catch (error) {
@@ -66,22 +141,22 @@ function SignUp() {
         <h2>Welcome To <span className='colorHeading'>Plan</span> <span className='textStroke'>A</span></h2>
         <p>Please sign up to continue</p>
         <form>
-          <div className='customInput'>
+          <div className={`customInput ${nameError !== '' && 'errorClass'}`}>
             <div className='IconBox'><User /></div>
-            <input name='fullName' placeholder='Full Name' value={fullName} onChange={(e) => {setFullName(e.target.value); }}/>
+            <input name='fullName' placeholder='Full Name' value={fullName} onChange={handleNameChange}/>
           </div>
-          <div className='customInput'>
+          <div className={`customInput ${emailError !== '' && 'errorClass'}`}>
             <div className='IconBox'><Email /></div>
-            <input name='email' placeholder='Email' value={email} onChange={(e) => {setEmail(e.target.value); }}/>
+            <input name='email' placeholder='Email' value={email} onChange={handleEmailChange}/>
           </div>
-          <div className='customInput'>
+          <div className={`customInput ${passwordError !== '' && 'errorClass'}`}>
             <div className='IconBox'><OpenedLock /></div>
             <input 
               type={showPassword ? 'text' : 'password'}
               id="password"
               name="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               placeholder='Password'
               autoComplete="password"
               className='passwordInput'/>
@@ -92,14 +167,14 @@ function SignUp() {
               {showPassword ? <OpenedEye /> : <ClosedEye /> }
             </span>
           </div>
-          <div className='customInput'>
+          <div className={`customInput ${confirmPasswordError !== '' && 'errorClass'}`}>
             <div className='IconBox'><ClosedLock /></div>
             <input 
               type={showPassword ? 'text' : 'password'}
               id="confirmPassword"
               name="confirmPassword"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={handleConfirmPasswordChange}
               placeholder='Confirm Password'
               autoComplete="password"
               className='passwordInput'/>

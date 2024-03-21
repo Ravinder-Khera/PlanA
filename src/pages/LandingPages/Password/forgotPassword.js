@@ -1,8 +1,69 @@
 import React, { useState } from 'react'
 import { Email } from '../../../assets/svg'
+import { forgotPassword } from '../../../services/auth';
+import { toast } from 'react-toastify';
 
 export function ForgotPassword() {
   const [passwordReset , setPasswordReset] = useState(false)
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  const validateEmail = (inputEmail) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(inputEmail);
+  };
+
+  const handleEmailChange = (e) => {
+    const inputValue = e.target.value;
+    setEmail(inputValue);
+    if (!inputValue) {
+      setEmailError('');
+    } else if (validateEmail(inputValue)){
+      setEmailError('');
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return
+    }
+    try {
+      let response = await forgotPassword({
+        email: email
+      });
+      
+      if (response.res) {     
+        setPasswordReset(true)
+        console.log('mail sent successfully',response.res.status,response.res);
+        toast.success('mail sent successfully', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        } else {
+          console.error('mail failed:', response.error);
+          toast.error('Reset failed', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+      }
+      } catch (error) {
+        console.error('There was an error:', error);
+    }
+  };
+
   return (<>
     
     {passwordReset ? 
@@ -10,8 +71,8 @@ export function ForgotPassword() {
         <div>
           <h2>Check Your Email!</h2>
           <p>A reset link has been sent to your email.</p>
-          <p className='resendLinkP'>Didn’t Get A Link? <a className='resendLinkA' href='/forgotPassword'> Resend Here</a></p>
-          <p className='resendLinkP mt-0'> <a className='resendLinkA' href='/forgotPassword'> Back</a></p>
+          <p className='resendLinkP'>Didn’t Get A Link? <span className='resendLinkA' onClick={handlePasswordReset}> Resend Here</span></p>
+          <p className='resendLinkP mt-0'> <a className='resendLinkA' href='/forgot-password'> Back</a></p>
         </div>
     </div>
     :
@@ -19,12 +80,12 @@ export function ForgotPassword() {
       <div>
         <h2>Forgot Your Password?</h2>
         <p>Reset your password here.</p>
-        <div className='customInput'>
+        <div className={`customInput ${emailError !== '' && 'errorClass'}`}>
           <div className='IconBox'><Email /></div>
-          <input name='email' placeholder='Email'/>
+          <input name='email' placeholder='Email' value={email} onChange={handleEmailChange}/>
         </div>
         <div className='btnDiv'>
-          <button className='signupButton' onClick={()=>setPasswordReset(true)}>
+          <button className='signupButton' onClick={handlePasswordReset}>
               Reset Password
           </button>
         </div>

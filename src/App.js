@@ -1,7 +1,7 @@
 import './App.scss';
 import logo from './assets/common/LOGO.png'
 import { DashboardIcon, ForgotPswd, InvoiceIcon, JobsIcon, Key, Lock, LogoutIcon, SettingsIcon } from './assets/svg';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Login from './pages/LandingPages/LoginPage/login';
 import SignUp from './pages/LandingPages/SignUp/signUp';
 import { ForgotPassword } from './pages/LandingPages/Password/forgotPassword';
@@ -45,7 +45,7 @@ function DashboardMenuList() {
         </ul>
       </div>
       <div className={`forgotPasswordMenu ${isLoggedOut || !isDashboardPage ? '' :'d-none'}`}>
-        <a href='/forgotPassword'>
+        <a href='/forgot-password'>
           <ForgotPswd />  Forgot Password?
         </a>
       </div>
@@ -100,20 +100,24 @@ function RightSide() {
 
   return (
     <div className='RightSide'>
-      {isLoggedIn && <>
+      {isLoggedIn ? <>
         <NavMenu />
         <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </>}
+      </> :
       <Routes>
-        <Route path="/" element={<Login /> } />
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp/>} />
-        <Route path="/forgotPassword" element={<ForgotPassword/>} />
-        <Route path="/resetPassword" element={<PasswordReset/>} />
+        <Route path="/forgot-password" element={<ForgotPassword/>} />
+        <Route path="/reset-password" element={<PasswordReset />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      }
     </div>
   );
 }

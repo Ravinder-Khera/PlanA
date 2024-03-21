@@ -1,14 +1,109 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ClosedEye, Key, OpenedEye } from '../../../assets/svg'
+import { useLocation, useNavigate } from 'react-router-dom';
+import { CheckToken, resetPassword } from '../../../services/auth';
+import { toast } from 'react-toastify';
 
 function PasswordReset() {
+    const navigate = useNavigate();
     const [passwordReset , setPasswordReset] = useState(false)
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [passwordError, setPasswordError] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+
+    const token = searchParams.get('token');
+    const email = searchParams.get('email');
+
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);
-      };
+    };
+
+    const validatePassword = (inputPassword) => {
+      const capitalRegex = /[A-Z]/;
+      const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+      const numberRegex = /[0-9]/;
+  
+      return (
+        inputPassword.length >= 8 &&
+        capitalRegex.test(inputPassword) &&
+        specialCharRegex.test(inputPassword) &&
+        numberRegex.test(inputPassword)
+      );
+    };
+
+    const handlePasswordChange = (e) => {
+      const inputValue = e.target.value;
+      setPassword(inputValue);
+  
+      if (!inputValue) {
+        setPasswordError('');
+      } else if (validatePassword(inputValue)){
+        setPasswordError('');
+      }
+    };
+    const handleConfirmPasswordChange = (e) => {
+      const inputValue = e.target.value;
+      setConfirmPassword(inputValue);
+  
+      if (inputValue !== password) {
+        setConfirmPasswordError('Password does not match');
+      } else if (!inputValue){
+        setConfirmPasswordError('Password can not be empty');
+      } else {
+        setConfirmPasswordError('')
+      }
+    };
+
+    const handlePasswordReset = async () => {
+      if (!validatePassword(password)) {
+        setPasswordError('Please enter a valid password');
+        return
+      } else if (confirmPassword !== '' || password !== confirmPassword) {
+        return
+      } 
+      try {
+        let response = await resetPassword({
+          token : token,
+          email : email,
+          password : password,
+          password_confirmation : confirmPassword
+        });
+    
+        if (response.res) {
+          console.log('Password reset successful',response.res);
+          toast.success(`Password reset successful-${response.res.status} `, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          setPasswordReset(true)
+          } else {
+            console.error('Password reset failed:', response.error);
+            toast.error(`Password reset failed `, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+        }
+        } catch (error) {
+          console.error('There was an error:', error);
+      }
+    };
+
     return (<>
       
       {passwordReset ? 
@@ -25,14 +120,14 @@ function PasswordReset() {
           <h2>Password Reset</h2>
           <p>Set a new password to continue your login process.</p>
           <form>
-              <div className='customInput'>
+              <div className={`customInput ${passwordError !== '' && 'errorClass'}`}>
                   <div className='IconBox'><Key /></div>
                   <input 
                       type={showPassword ? 'text' : 'password'}
                       id="password"
                       name="password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={handlePasswordChange}
                       placeholder='Password'
                       autoComplete="new-password"
                       className='passwordInput'
@@ -41,14 +136,14 @@ function PasswordReset() {
                       {showPassword ? <OpenedEye /> : <ClosedEye /> }
                   </span>
               </div>
-              <div className='customInput'>
+              <div className={`customInput ${confirmPasswordError !== '' && 'errorClass'}`}>
                   <div className='IconBox'><Key /></div>
                   <input 
                       type={showPassword ? 'text' : 'password'}
                       id="confirmPassword"
                       name="confirmPassword"
                       value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      onChange={handleConfirmPasswordChange}
                       placeholder='Confirm Password'
                       className='passwordInput'
                       autoComplete="new-password"
@@ -57,7 +152,7 @@ function PasswordReset() {
               </div>
           </form>
           <div className='btnDiv'>
-            <button className='signupButton' onClick={()=>setPasswordReset(true)}>
+            <button className='signupButton' onClick={handlePasswordReset}>
                 Reset Password
             </button>
           </div>
