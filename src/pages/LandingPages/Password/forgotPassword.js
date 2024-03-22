@@ -2,11 +2,13 @@ import React, { useState } from 'react'
 import { Email } from '../../../assets/svg'
 import { forgotPassword } from '../../../services/auth';
 import { toast } from 'react-toastify';
+import { Bars } from 'react-loader-spinner'
 
 export function ForgotPassword() {
   const [passwordReset , setPasswordReset] = useState(false)
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (inputEmail) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,6 +31,7 @@ export function ForgotPassword() {
       return
     }
     try {
+      setLoading(true);
       let response = await forgotPassword({
         email: email
       });
@@ -47,6 +50,7 @@ export function ForgotPassword() {
           theme: "colored",
         });
         } else {
+          setPasswordReset(false)
           console.error('mail failed:', response.error);
           toast.error('Reset failed', {
             position: "top-center",
@@ -61,11 +65,23 @@ export function ForgotPassword() {
       }
       } catch (error) {
         console.error('There was an error:', error);
+      }finally {
+      setLoading(false); 
     }
   };
 
   return (<>
-    
+    {loading &&  <div className='loaderDiv'>
+    <Bars
+      height="80"
+      width="80"
+      color="#4fa94d"
+      ariaLabel="bars-loading"
+      wrapperStyle={{}}
+      wrapperClass=""
+      visible={true}
+    />
+  </div>}
     {passwordReset ? 
       <div className='SignUpSection'>
         <div>

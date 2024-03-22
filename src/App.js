@@ -1,7 +1,7 @@
 import './App.scss';
 import logo from './assets/common/LOGO.png'
 import { DashboardIcon, ForgotPswd, InvoiceIcon, JobsIcon, Key, Lock, LogoutIcon, SettingsIcon } from './assets/svg';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom';
 import Login from './pages/LandingPages/LoginPage/login';
 import SignUp from './pages/LandingPages/SignUp/signUp';
 import { ForgotPassword } from './pages/LandingPages/Password/forgotPassword';
@@ -12,71 +12,83 @@ import NavMenu from './Components/navMenu';
 import SettingsPage from './pages/Settings';
  import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import Invoice from './pages/Invoicing/invoice';
 
 function DashboardMenuList() {
   const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuthToken = () => {
+      const authToken = localStorage.getItem('authToken');
+      setIsLoggedIn(!!authToken); 
+    };
+
+    checkAuthToken();
+    const interval = setInterval(checkAuthToken, 1000); 
+    return () => clearInterval(interval);
+  }, []);
+
   const isLoginPage = location.pathname.includes('/login');
   const isSignupPage = location.pathname.includes('/signup');
-  const isDashboardPage = location.pathname.includes('/dashboard');
 
-  const [isLoggedOut, setIsLoggedOut] = useState(false)
   const handleLogout = () => {
     localStorage.removeItem('authToken');
-    setIsLoggedOut(true)
+    setIsLoggedIn(false)
   };
   return (<>
-      <div className={`loginScreenItems container ${isLoggedOut || !isDashboardPage ? 'd-flex' : 'd-none'} align-items-center flex-column`}>
+      <div className={`loginScreenItems container ${!isLoggedIn ? 'd-flex' : 'd-none'} align-items-center flex-column`}>
         <a href='/' className='mx-auto my-4'>
           <img src={logo} className='img-fluid' alt='Plan a'/>
         </a>
         <ul className='pt-3 mx-auto px-1 menuList'>
           <li className={isLoginPage ? 'active' : ''}>
-            <a href='/login'>
+            <Link to='/login'>
               <div className='iconBox'><Key /></div>
               <p>Login</p>
-            </a>
+            </Link>
           </li>
           <li className={isSignupPage ? 'active' : ''}>
-            <a href='/signup'>
+            <Link to='/signup'>
               <div className='iconBox'><Lock /> </div>
               <p>Sign Up</p>
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
-      <div className={`forgotPasswordMenu ${isLoggedOut || !isDashboardPage ? '' :'d-none'}`}>
-        <a href='/forgot-password'>
+      <div className={`forgotPasswordMenu ${!isLoggedIn  ? '' :'d-none'}`}>
+        <Link to='/forgot-password'>
           <ForgotPswd />  Forgot Password?
-        </a>
+        </Link>
       </div>
-      <div className={`loginScreenItems container ${isLoggedOut || !isDashboardPage ? 'd-none': 'd-flex'} align-items-center flex-column`}>
+      <div className={`loginScreenItems container ${!isLoggedIn ? 'd-none': 'd-flex'} align-items-center flex-column`}>
         <a href='/' className='mx-auto my-4'>
           <img src={logo} className='img-fluid' alt='Plan a'/>
         </a>
         <ul className='pt-3 mx-auto px-1 dashboardMenuList'>
-          <li className='active'>
-            <a href='/dashboard'>
-              <DashboardIcon color='black' /><p>Dashboard</p>
-            </a>
+          <li className={location.pathname.includes('/dashboard') && 'active'}>
+            <Link to='/dashboard'>
+              <DashboardIcon /><p>Dashboard</p>
+            </Link>
           </li>
-          <li >
-            <a href='/dashboard'>
-              <JobsIcon color={'white'} /><p>Jobs</p>
-            </a>
+          <li className={location.pathname.includes('/Jobs') && 'active'}>
+            <Link to='/Jobs'>
+              <JobsIcon /><p>Jobs</p>
+            </Link>
           </li>
-          <li >
-            <a href='/dashboard'>
-              <InvoiceIcon color={'white'} /> <p>Invoicing</p>
-            </a>
+          <li className={location.pathname.includes('/invoice') && 'active'}>
+            <Link to='/invoice'>
+              <InvoiceIcon /> <p>Invoicing</p>
+            </Link>
           </li>
-          <li >
-            <a href='/dashboard'>
-              <SettingsIcon color={'white'} /> <p>Settings</p>
-            </a>
+          <li className={location.pathname.includes('/settings') && 'active'}>
+            <Link to='/settings'>
+              <SettingsIcon /> <p>Settings</p>
+            </Link>
           </li>
         </ul>
       </div>
-      <div className={`forgotPasswordMenu ${isLoggedOut || !isDashboardPage ? 'd-none': ''}`}>
+      <div className={`forgotPasswordMenu ${!isLoggedIn ? 'd-none': ''}`}>
         <a href='/login' onClick={handleLogout}>
           <LogoutIcon /> Log Out
         </a>
@@ -103,9 +115,10 @@ function RightSide() {
       {isLoggedIn ? <>
         <NavMenu />
         <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/invoice" element={<Invoice/>} />
+          <Route path="/settings" element={<SettingsPage/>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </> :

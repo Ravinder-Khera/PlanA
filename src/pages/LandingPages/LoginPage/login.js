@@ -3,6 +3,7 @@ import { ClosedEye, Key, OpenedEye, User } from '../../../assets/svg';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { LogIn } from '../../../services/auth';
+import { Bars } from 'react-loader-spinner'
 
 function Login() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
   
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -61,6 +63,7 @@ function Login() {
       return
     } 
     try {
+      setLoading(true);
       let response = await LogIn({
         email: email,
         password: password,
@@ -96,11 +99,25 @@ function Login() {
             theme: "colored",
           });
       }
-      } catch (error) {
-        console.error('There was an error:', error);
+    } catch (error) {
+      console.error('There was an error:', error);
+    } finally {
+      setLoading(false); 
     }
   };
   return (<>
+  {loading &&  <div className='loaderDiv'>
+    <Bars
+      height="80"
+      width="80"
+      color="#4fa94d"
+      ariaLabel="bars-loading"
+      wrapperStyle={{}}
+      wrapperClass=""
+      visible={true}
+    />
+  </div>}
+  
     <div className='SignUpSection'>
       <div>
         <h2>Welcome Back</h2>

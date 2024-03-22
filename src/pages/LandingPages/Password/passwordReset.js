@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { ClosedEye, Key, OpenedEye } from '../../../assets/svg'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CheckToken, resetPassword } from '../../../services/auth';
+import { resetPassword } from '../../../services/auth';
 import { toast } from 'react-toastify';
+import { Bars } from 'react-loader-spinner'
 
 function PasswordReset() {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ function PasswordReset() {
     const [confirmPasswordError, setConfirmPasswordError] = useState('');
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
+    const [loading, setLoading] = useState(false);
 
     const token = searchParams.get('token');
     const email = searchParams.get('email');
@@ -66,7 +68,8 @@ function PasswordReset() {
         return
       } 
       try {
-        let response = await resetPassword({
+      setLoading(true);
+      let response = await resetPassword({
           token : token,
           email : email,
           password : password,
@@ -87,6 +90,7 @@ function PasswordReset() {
           });
           setPasswordReset(true)
           } else {
+            setPasswordReset(false)
             console.error('Password reset failed:', response.error);
             toast.error(`Password reset failed `, {
               position: "top-center",
@@ -101,11 +105,23 @@ function PasswordReset() {
         }
         } catch (error) {
           console.error('There was an error:', error);
+        }finally {
+        setLoading(false); 
       }
     };
 
     return (<>
-      
+      {loading &&  <div className='loaderDiv'>
+        <Bars
+          height="80"
+          width="80"
+          color="#4fa94d"
+          ariaLabel="bars-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+        />
+      </div>}
       {passwordReset ? 
         <div className='SignUpSection'>
           <div>

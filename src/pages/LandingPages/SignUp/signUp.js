@@ -3,6 +3,7 @@ import { ClosedEye, ClosedLock, Email, OpenedEye, OpenedLock, User } from '../..
 import { SignIn } from '../../../services/auth';
 import { useNavigate  } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Bars } from 'react-loader-spinner'
 
 function SignUp() {
   const [password, setPassword] = useState('');
@@ -14,6 +15,7 @@ function SignUp() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
 
@@ -91,6 +93,7 @@ function SignUp() {
       return
     } 
     try {
+      setLoading(true);
       let response = await SignIn({
         name: fullName,
         email: email,
@@ -130,12 +133,24 @@ function SignUp() {
       }
       } catch (error) {
         console.error('There was an error:', error);
+      }finally {
+      setLoading(false); 
     }
   };
 
   return (
   <>
-  {/* <ToastContainer /> */}
+  {loading &&  <div className='loaderDiv'>
+    <Bars
+      height="80"
+      width="80"
+      color="#4fa94d"
+      ariaLabel="bars-loading"
+      wrapperStyle={{}}
+      wrapperClass=""
+      visible={true}
+    />
+  </div>}
     <div className='SignUpSection'>
       <div>
         <h2>Welcome To <span className='colorHeading'>Plan</span> <span className='textStroke'>A</span></h2>

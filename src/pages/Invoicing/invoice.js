@@ -19,7 +19,7 @@ function Invoice() {
   };
 
   const tableStyleStart = {
-    border: '1px solid rgb(226, 227, 31, 0.15)',
+    borderBottom: '1px solid rgb(226, 227, 31, 0.15)',
     borderTop: 'none',
     borderLeft: 'none'
   }
@@ -28,17 +28,22 @@ function Invoice() {
     borderTop: 'none'
   }
   const tableStyleEnd = {
-    border: '1px solid rgb(226, 227, 31, 0.15)',
+    borderBottom: '1px solid rgb(226, 227, 31, 0.15)',
     borderTop: 'none',
     borderRight: 'none'
   }
 
   return (<>
-  <div className='container-fluid mt-5'>
+  <div className='DashboardTopMenu'>
+    <div className='DashboardHeading'>
+      <h2>Invoicing</h2>
+    </div>
+  </div>
+  <div className='container-fluid'>
 
     <div className="table-responsive table_outer_div  ">
       <table className="table table-borderless text-light">
-        <thead>
+        {/* <thead>
           <tr className='tableBgLines'>
             <th
               scope="col"
@@ -64,7 +69,7 @@ function Invoice() {
               </div>
             </th>
           </tr>
-        </thead>
+        </thead> */}
         <tbody>
           <tr>
             <th scope="row" style={tableStyleStart}>
@@ -100,19 +105,8 @@ function Invoice() {
                 ONV001
               </span>
             </th>
-            <td className="text-center" style={tableStyle}>
-              <button className="paidBtn" onClick={handleOpenPopup}> Paid</button>
-            </td>
-            <td className="dateCell" style={tableStyle}>Jan 1, 2023</td>
-            <td className="text-start commentCell" style={tableStyle}  >
-              <p style={{ fontSize: "14px" }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Maecenas ornare in nibh vitae porttitor. Donec mattis velit
-              vel nisi vehicula posuere.
-              </p>
-            </td>
-            <td className="text-end" style={tableStyleEnd}>
-              <div className="d-flex align-items-center">
+            <td className="text-end"  style={tableStyleEnd}>
+              <div className="d-flex align-items-center justify-content-end" style={{cursor:'pointer'}} onClick={handleOpenPopup}>
                 <div
                   style={{
                     fontSize: "16px",
@@ -120,10 +114,7 @@ function Invoice() {
                     lineHeight: "1.1",
                   }}
                 >
-                  First Name Last Name{" "}
-                  <span style={{ fontSize: "12px", fontWeight: "300" }}>
-                    Email@Example.com.au
-                  </span>{" "}
+                  View
                 </div>
                 <div className="IconBox" style={{ minWidth: "40px" }}>
                   <User />
@@ -165,19 +156,8 @@ function Invoice() {
                 ONV001
               </span>
             </th>
-            <td className="text-center" style={tableStyle}>
-              <button className="paidBtn" onClick={handleOpenPopup}> Paid</button>
-            </td>
-            <td className="dateCell" style={tableStyle}>Jan 1, 2023</td>
-            <td className="text-start" style={tableStyle}  >
-              <p style={{ fontSize: "14px" }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Maecenas ornare in nibh vitae porttitor. Donec mattis velit
-              vel nisi vehicula posuere.
-              </p>
-            </td>
             <td className="text-end" style={tableStyleEnd}>
-              <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center justify-content-end" style={{cursor:'pointer'}} onClick={handleOpenPopup}>
                 <div
                   style={{
                     fontSize: "16px",
@@ -185,10 +165,7 @@ function Invoice() {
                     lineHeight: "1.1",
                   }}
                 >
-                  First Name Last Name{" "}
-                  <span style={{ fontSize: "12px", fontWeight: "300" }}>
-                    Email@Example.com.au
-                  </span>{" "}
+                  View
                 </div>
                 <div className="IconBox" style={{ minWidth: "40px" }}>
                   <User />
