@@ -29,26 +29,25 @@ function DashboardMenuList() {
     return () => clearInterval(interval);
   }, []);
 
-  const isLoginPage = location.pathname.includes('/login');
-  const isSignupPage = location.pathname.includes('/signup');
-
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     setIsLoggedIn(false)
   };
-  return (<>
-      <div className={`loginScreenItems container ${!isLoggedIn ? 'd-flex' : 'd-none'} align-items-center flex-column`}>
+
+  return (
+    <>
+      <div className={`loginScreenItems container ${isLoggedIn ? 'd-none' : 'd-flex'} align-items-center flex-column`}>
         <a href='/' className='mx-auto my-4'>
           <img src={logo} className='img-fluid' alt='Plan a'/>
         </a>
         <ul className='pt-3 mx-auto px-1 menuList'>
-          <li className={isLoginPage ? 'active' : ''}>
+          <li className={location.pathname.includes('/login') ? 'active' : ''}>
             <Link to='/login'>
               <div className='iconBox'><Key /></div>
               <p>Login</p>
             </Link>
           </li>
-          <li className={isSignupPage ? 'active' : ''}>
+          <li className={location.pathname.includes('/signup') ? 'active' : ''}>
             <Link to='/signup'>
               <div className='iconBox'><Lock /> </div>
               <p>Sign Up</p>
@@ -56,45 +55,47 @@ function DashboardMenuList() {
           </li>
         </ul>
       </div>
-      <div className={`forgotPasswordMenu ${!isLoggedIn  ? '' :'d-none'}`}>
+      <div className={`forgotPasswordMenu ${isLoggedIn ? 'd-none' : ''}`}>
         <Link to='/forgot-password'>
           <ForgotPswd />  Forgot Password?
         </Link>
       </div>
-      <div className={`loginScreenItems container ${!isLoggedIn ? 'd-none': 'd-flex'} align-items-center flex-column`}>
+      <div className={`loginScreenItems container ${isLoggedIn ? 'd-flex' : 'd-none'} align-items-center flex-column`}>
         <a href='/' className='mx-auto my-4'>
           <img src={logo} className='img-fluid' alt='Plan a'/>
         </a>
         <ul className='pt-3 mx-auto px-1 dashboardMenuList'>
-          <li className={location.pathname.includes('/dashboard') && 'active'}>
+          <li className={location.pathname.includes('/dashboard') ? 'active' : ''}>
             <Link to='/dashboard'>
               <DashboardIcon /><p>Dashboard</p>
             </Link>
           </li>
-          <li className={location.pathname.includes('/Jobs') && 'active'}>
+          <li className={location.pathname.includes('/Jobs') ? 'active' : ''}>
             <Link to='/Jobs'>
               <JobsIcon /><p>Jobs</p>
             </Link>
           </li>
-          <li className={location.pathname.includes('/invoice') && 'active'}>
+          <li className={location.pathname.includes('/invoice') ? 'active' : ''}>
             <Link to='/invoice'>
               <InvoiceIcon /> <p>Invoicing</p>
             </Link>
           </li>
-          <li className={location.pathname.includes('/settings') && 'active'}>
+          <li className={location.pathname.includes('/settings') ? 'active' : ''}>
             <Link to='/settings'>
               <SettingsIcon /> <p>Settings</p>
             </Link>
           </li>
         </ul>
       </div>
-      <div className={`forgotPasswordMenu ${!isLoggedIn ? 'd-none': ''}`}>
+      <div className={`forgotPasswordMenu ${isLoggedIn ? '' : 'd-none'}`}>
         <a href='/login' onClick={handleLogout}>
           <LogoutIcon /> Log Out
         </a>
       </div>
-  </>);
+    </>
+  );
 }
+
 
 function RightSide() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
