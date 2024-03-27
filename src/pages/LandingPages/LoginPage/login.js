@@ -90,10 +90,9 @@ function Login() {
           localStorage.removeItem('loggedIn');
           toast.error(`${response.error.message}`, {
             position: "top-center",
-            autoClose: false,
-            className: "black-background",
+            autoClose: 5000,
             hideProgressBar: true,
-            closeOnClick: false,
+            closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
