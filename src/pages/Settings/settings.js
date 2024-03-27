@@ -5,7 +5,7 @@ import { getProfile, updateProfile, updateProfilePicture } from "../../services/
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 
-function ProfileDetails({userName,fetchProfileData}) {
+function ProfileDetails({userFirstName,userLastName,fetchProfileData}) {
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -48,7 +48,7 @@ function ProfileDetails({userName,fetchProfileData}) {
         window.location.reload();
         } else {
           console.error('profile update failed:', response.error);
-          toast.error(`profile update failed - ${response.error.message}`, {
+          toast.error(`${response.error.message}`, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: true,
@@ -65,6 +65,11 @@ function ProfileDetails({userName,fetchProfileData}) {
       setLoading(false); 
     }
   };
+
+  useEffect(()=>{
+    setFirstName(userFirstName)
+    setLastName(userLastName)
+  },[userFirstName,userLastName])
   return (
     <>
     {loading &&  <div className='loaderDiv'>
@@ -80,7 +85,7 @@ function ProfileDetails({userName,fetchProfileData}) {
     </div>}
       <div className="ProfileDetailsSection">
         <div className="contentDiv">
-          <h3 className="settingsHeading">Hi {userName}!</h3>
+          <h3 className="settingsHeading">Hi {userFirstName}!</h3>
           <p>Please enter your details below:</p>
           <form>
             <div className={`customInput ${nameError !== '' && 'errorClass'}`}>
@@ -106,6 +111,7 @@ function ProfileDetails({userName,fetchProfileData}) {
 function ProfilePic() {
   const [image, setImage] = useState(null);
   const fileInputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -120,13 +126,55 @@ function ProfilePic() {
     e.preventDefault();
   };
 
-  const handleImageUpload = (file) => {
+  const handleImageUpload = async (file) => {
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       setImage(reader.result);
       const formData = new FormData();
-      formData.append('profile_pic', file );
-      updateProfilePicture(formData);
+      formData.append('profile_pic', file);
+      try {
+        setLoading(true);
+        let response = await updateProfilePicture(formData);
+        if (response.res) {
+          console.log(response);
+          toast.success(`${response.res.message}`, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          window.location.reload();
+        } else {
+          toast.error(`${response.error.message}`, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+        }
+      } catch (error) {
+        console.error('There was an error:', error);
+        toast.error('An error occurred while uploading the image', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      } finally {
+        setLoading(false);
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -150,6 +198,17 @@ function ProfilePic() {
 
   return (
     <>
+    {loading &&  <div className='loaderDiv'>
+      <Bars
+        height="80"
+        width="80"
+        color="#E2E31F"
+        ariaLabel="bars-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+        visible={true}
+      />
+    </div>}
       <div className="ProfileDetailsSection">
         <div className="contentDiv">
           <div
@@ -196,6 +255,7 @@ function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState('');
   const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -227,6 +287,8 @@ function SettingsPage() {
         setUser(response.res.user.name);
         localStorage.setItem('user', response.res.user.name);
         setFirstName(response.res.user.name.split(' ')[0])
+        const lastName = response.res.user.name.split(' ').slice(1).join(' ');
+        setLastName(lastName);
         window.location.href = '/settings';
       } else {
         console.error('profile error:', response.error);
@@ -268,7 +330,7 @@ function SettingsPage() {
             </li>
           </ul>
         </div>
-        {settingsPage === 'ProfileDetails' && <ProfileDetails userName={firstName} fetchProfileData={fetchProfileData} />}
+        {settingsPage === 'ProfileDetails' && <ProfileDetails userFirstName={firstName} userLastName={lastName} fetchProfileData={fetchProfileData} />}
         {settingsPage === 'ProfilePic' && <ProfilePic/>}
       </div>
     </>

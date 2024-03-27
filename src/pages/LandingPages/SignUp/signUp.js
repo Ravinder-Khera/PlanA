@@ -121,7 +121,8 @@ function SignUp() {
           console.error('Sign-in failed:', response.error);
           localStorage.removeItem('authToken');
           localStorage.removeItem('loggedIn');
-          toast.error('Sign-in failed', {
+
+          toast.error(`${Object.values(response.error.errors)[0][0]}`, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: true,

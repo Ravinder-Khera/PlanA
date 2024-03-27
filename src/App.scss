@@ -339,6 +339,11 @@
     transition: all 1s ease;
     &.errorClass{
         animation: error 0.5s linear alternate;
+        border-bottom: 6px solid #ff000075;
+        border-top: 6px solid #ff000075;
+        border-left: 8px solid #ff000075;
+        border-right: 9px solid #ff000075;
+        box-shadow: 0px 8px 8px 0px rgba(255, 0, 0, 0.30);
         input{
             color: red;
         }

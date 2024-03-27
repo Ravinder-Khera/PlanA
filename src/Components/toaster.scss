@@ -1,0 +1,24 @@
+.Toastify{
+  .Toastify__toast-container{
+    .Toastify__toast{
+      &.Toastify__toast--error{
+        border-radius: 2px;
+        background: rgba(227, 31, 31, 0.60);
+        backdrop-filter: blur(2px);
+      }
+      &.Toastify__toast--success{
+        border-radius: 2px;
+        background: rgba(14, 186, 7, 0.60);
+        backdrop-filter: blur(2px);
+      }
+      .Toastify__toast-body{
+        color: #FFF;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: -0.64px;
+      }
+    }
+  }
+}

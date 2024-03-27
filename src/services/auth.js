@@ -94,7 +94,9 @@ export const getProfile = async (data) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${authToken}`
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+
         },
     };
     try {

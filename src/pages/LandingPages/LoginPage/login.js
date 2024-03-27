@@ -88,11 +88,12 @@ function Login() {
           console.error('Logged-in failed:', response.error);
           localStorage.removeItem('authToken');
           localStorage.removeItem('loggedIn');
-          toast.error(`Logged-in failed - ${response.error.message}`, {
+          toast.error(`${response.error.message}`, {
             position: "top-center",
-            autoClose: 5000,
+            autoClose: false,
+            className: "black-background",
             hideProgressBar: true,
-            closeOnClick: true,
+            closeOnClick: false,
             pauseOnHover: true,
             draggable: true,
             progress: undefined,

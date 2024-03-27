@@ -52,7 +52,7 @@ export function ForgotPassword() {
         } else {
           setPasswordReset(false)
           console.error('mail failed:', response.error);
-          toast.error('Reset failed', {
+          toast.error(`${Object.values(response.error.errors)[0][0]}`,{
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: true,

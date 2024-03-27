@@ -1,4 +1,5 @@
 import './App.scss';
+import './Components/toaster.scss';
 import logo from './assets/common/LOGO.png'
 import { DashboardIcon, ForgotPswd, InvoiceIcon, JobsIcon, Key, Lock, LogoutIcon, SettingsIcon } from './assets/svg';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom';
