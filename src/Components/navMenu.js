@@ -36,7 +36,7 @@ function NavMenu() {
       <Bars
         height="80"
         width="80"
-        color="#4fa94d"
+        color="#E2E31F"
         ariaLabel="bars-loading"
         wrapperStyle={{}}
         wrapperClass=""
