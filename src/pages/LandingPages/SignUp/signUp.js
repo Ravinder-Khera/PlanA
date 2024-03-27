@@ -82,6 +82,7 @@ function SignUp() {
 
   const handleSignUp = async () => {
     if (fullName === '') {
+      setNameError('Name can not be empty');
       return
     } else if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address');
