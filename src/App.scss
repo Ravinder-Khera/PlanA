@@ -21,7 +21,7 @@
                 border-radius: 2px;
                 border: 1px solid #E2E31F;
                 margin: 10px auto;
-                padding: 18px 21px;
+                padding: 15px 21px;
                 transition: all 0.5s ease;
                 cursor: pointer;
                 a {
@@ -323,9 +323,14 @@
     margin: 10px auto;
     width: max-content;
     max-width: 400px;
+    width: 100%;
+    min-height: 66px;
     background-color: #FFF;
     padding: 7px;
-    border: 8px solid #353535;
+    border-bottom: 6px solid #353535;
+    border-top: 6px solid #353535;
+    border-left: 8px solid #353535;
+    border-right: 9px solid #353535;
     box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.30);
     position: relative;
     transition: all 1s ease;
@@ -344,8 +349,14 @@
     .IconBox{
         border-radius: 4px;
         background: #E2E31F;
-        padding: 11px;
+        // padding: 11px;
         max-width: 40px;
+        width: 100%;
+        min-height: 40px;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     input {
         background: transparent;
