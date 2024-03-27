@@ -81,7 +81,7 @@ function SignUp() {
   };
 
   const handleSignUp = async () => {
-    if (fullName !== '') {
+    if (fullName === '') {
       return
     } else if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address');
@@ -89,7 +89,7 @@ function SignUp() {
     }else if (!validatePassword(password)) {
       setPasswordError('Please enter a valid password');
       return
-    } else if (confirmPassword !== '' || password !== confirmPassword) {
+    } else if (password !== confirmPassword) {
       return
     } 
     try {

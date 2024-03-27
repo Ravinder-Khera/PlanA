@@ -69,15 +69,13 @@ function Invoice() {
     }
   };
 
-  const tableStyleStart = {
+  const tableBorderBottom = {
     borderBottom: '1px solid rgb(226, 227, 31, 0.15)',
-    borderTop: 'none',
-    borderLeft: 'none'
   }
-  const tableStyleEnd = {
-    borderBottom: '1px solid rgb(226, 227, 31, 0.15)',
-    borderTop: 'none',
-    borderRight: 'none'
+  const tableActive = {
+    boxShadow: "8px 0px 8px 0px rgba(0, 0, 0, 0.3)",
+    background: "#353535",
+    borderBottom: '1px solid transparent'
   }
 
   return (<>
@@ -96,15 +94,12 @@ function Invoice() {
     <div className='DashboardHeading'>
       <h2>Invoicing</h2>
     </div>
-  </div>
-  <div className='container-fluid'>
-
     <div className="table-responsive table_outer_div  ">
       <table className="table table-borderless text-light">
         <tbody>
         {data && data.map((item) => (
-          <tr key={item.id}>
-            <th scope="row" style={tableStyleStart}>
+          <tr key={item.id} style={isChecked[`select_${item.id}`]  ? tableActive : tableBorderBottom }>
+            <th scope="row" >
               <label htmlFor={`select_${item.id}`}>
                 <input
                   type="checkbox"
@@ -137,7 +132,7 @@ function Invoice() {
                 ONV0{item.id}
               </span>
             </th>
-            <td className="text-end" style={tableStyleEnd}>
+            <td className="text-end" >
               <div className="d-flex align-items-center justify-content-end" >
                 <div
                   style={{
@@ -160,8 +155,6 @@ function Invoice() {
 
         </tbody>
       </table>
-    </div>
-    <div className='invoicePopupContent'>
     </div>
   </div>
   </>)

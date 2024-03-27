@@ -64,7 +64,7 @@ function PasswordReset() {
       if (!validatePassword(password)) {
         setPasswordError('Please enter a valid password');
         return
-      } else if (confirmPassword !== '' || password !== confirmPassword) {
+      } else if (password !== confirmPassword) {
         return
       } 
       try {

@@ -427,6 +427,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
     }
     .svg-box-2{
       border: 2px solid #e2e31f;
@@ -436,6 +437,7 @@
       align-items: center;
       justify-content: center;
       background-color: #e2e31f;
+      cursor: pointer;
     }
     .uploadBtn {
       width: 83px;
@@ -738,7 +740,12 @@
         h2{
             color: #fff;
             font-family: 'Archivo', sans-serif;
+            font-size: 36px;
+            font-style: normal;
             font-weight: 900;
+            line-height: normal;
+            letter-spacing: -1.44px;
+            text-transform: capitalize;
         }
     }
     .dashboardBoxes{
