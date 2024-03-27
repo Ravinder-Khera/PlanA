@@ -7,6 +7,7 @@ function Invoice() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const authToken = localStorage.getItem('authToken');
 
   const toggleCheckbox = (id) => {
     setIsChecked((prevCheckboxes) => ({
@@ -20,7 +21,7 @@ function Invoice() {
       try {
         const requestOptions = {
           method: "GET",
-          headers: { "Content-Type": "application/json", "Authorization":"Bearer 7|PFgIzifedHLhBdmx4PchJvMNJwcB3fMGeWEZXmAt5a99632b" },
+          headers: { "Content-Type": "application/json","Accept":"application/json", "Authorization":`Bearer ${authToken}` },
         };
         const response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/invoices`,requestOptions);
         if (!response.ok) {
@@ -37,7 +38,7 @@ function Invoice() {
     };
 
     fetchData();
-  }, []);
+  }, [authToken]);
 
   const downloadPdf = async (invoiceId) => {
     try {
@@ -46,7 +47,7 @@ function Invoice() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer 4|YjIemMwiZ9fOr63wYPIxJ8YeZ84WoYE9OhgshOeAdbdb6e2d"
+          "Authorization": `Bearer ${authToken}`
         },
       };
       const response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/invoice-pdf/${invoiceId}`, requestOptions);

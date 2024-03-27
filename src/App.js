@@ -9,7 +9,7 @@ import PasswordReset from './pages/LandingPages/Password/passwordReset';
 import Dashboard from './pages/Dashboard/dashboard';
 import { useEffect, useState } from 'react';
 import NavMenu from './Components/navMenu';
-import SettingsPage from './pages/Settings';
+import SettingsPage from './pages/Settings/settings';
  import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Invoice from './pages/Invoicing/invoice';
@@ -116,11 +116,11 @@ function RightSide() {
       {isLoggedIn ? <>
         <NavMenu />
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/invoice" element={<Invoice/>} />
-          <Route path="/settings" element={<SettingsPage/>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/invoice" element={<Invoice />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </> :
       <Routes>

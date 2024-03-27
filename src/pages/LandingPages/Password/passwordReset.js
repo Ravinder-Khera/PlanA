@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { resetPassword } from '../../../services/auth';
 import { toast } from 'react-toastify';
 import { Bars } from 'react-loader-spinner'
+import PasswordStrengthMeter from '../../../Components/PasswordStrengthMeter';
 
 function PasswordReset() {
     const navigate = useNavigate();
@@ -167,6 +168,7 @@ function PasswordReset() {
                   <span className={`toggle-eye-icon ${showPassword ? 'show' : ''}`} onClick={handleTogglePassword} > {showPassword ? <OpenedEye /> : <ClosedEye /> }</span>
               </div>
           </form>
+          <PasswordStrengthMeter password={password}/>
           <div className='btnDiv'>
             <button className='signupButton' onClick={handlePasswordReset}>
                 Reset Password
