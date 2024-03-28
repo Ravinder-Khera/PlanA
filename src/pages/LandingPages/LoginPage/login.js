@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { ClosedEye, Key, OpenedEye, User } from '../../../assets/svg';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { LogIn } from '../../../services/auth';
+import { LogIn, getProfile } from '../../../services/auth';
 import { Bars } from 'react-loader-spinner'
+import { connect } from 'react-redux';
+import { loginSuccess } from '../../../services/actions';
 
 function Login() {
   const navigate = useNavigate();
@@ -53,6 +55,7 @@ function Login() {
       setPasswordError('');
     }
   };
+
   
   const handleLogin = async () => {
     if (!validateEmail(email)) {
@@ -83,6 +86,8 @@ function Login() {
           progress: undefined,
           theme: "colored",
         });
+        loginSuccess( response.res.access_token );
+        window.location.reload();
         navigate('/dashboard');
         } else {
           console.error('Logged-in failed:', response.error);
@@ -103,7 +108,6 @@ function Login() {
       console.error('There was an error:', error);
     } finally {
       setLoading(false);
-      window.location.reload(); 
     }
   };
   return (<>
@@ -157,4 +161,4 @@ function Login() {
   </>)
 }
 
-export default Login
+export default connect(null, { loginSuccess })(Login);

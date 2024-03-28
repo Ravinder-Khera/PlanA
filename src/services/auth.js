@@ -95,7 +95,7 @@ export const getProfile = async (data) => {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "Authorization": `Bearer ${authToken}`,
+          "Authorization": `Bearer ${data}`,
         },
     };
     try {
@@ -177,6 +177,31 @@ export const deleteInvoices = async (data) => {
         const data = isJson && (await response.json());
         console.log(response,data);
         if(response.status === 202){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const getTasks = async (data) => {
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${data}`,
+        },
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks?page=4`, requestOptions);;
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 200){
             return { res: data, error: null } ;
         }else{
             return { res: null, error: data } ;

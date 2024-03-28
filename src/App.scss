@@ -14,7 +14,7 @@
         width: 30%;
         max-width: 325px;
         box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
-        height: 100vh;
+        min-height: 100vh;
         position: relative;
         .menuList{
             width: 95%;
@@ -102,6 +102,59 @@
                     }
                 }
             }
+            .dropDownMenu{
+                max-width: calc(100% - 26px);
+                margin-top: -10px;
+                margin-left: auto;
+                border-left: 1px solid #E2E31F;
+                position: relative;
+                &::before{
+                    position: absolute;
+                    content: "";
+                    left: 0;
+                    top: 0;
+                    width: 10px;
+                    height: 10px;
+                    transform: translateX(-50%) translateY(-50%);
+                    background: #E2E31F;
+                    border-radius: 50%;
+                }
+                li{
+                    margin: 0;
+                    padding: 13px 13px;
+                    background: transparent;
+                    border: none;
+                    transition: all 0.5s ease;
+                    cursor: pointer;
+                    a {
+                        display: flex;
+                        align-items: center;
+                        text-decoration: none; 
+                        svg{
+                            rect{
+                                stroke: #fff;
+                            }
+                            path{
+                                fill: #fff;
+                            }
+                        }
+                    } 
+                    &.active{
+                        background: linear-gradient(90deg, #353535 0%, rgba(53, 53, 53, 0.00) 100%);
+                        svg{
+                            rect{
+                                stroke: #E2E31F;
+                            }
+                            path{
+                                fill: #E2E31F;
+                            }
+                        }
+                        p{
+                            color: #E2E31F;
+                        }
+                    }
+                }
+            }
         }
         .forgotPasswordMenu{
             position: absolute;
@@ -136,6 +189,8 @@
         @media screen and (min-width:1080px) {
             width: calc(100% - 325px);
             max-width: calc(100% - 325px);
+            overflow-y: scroll; 
+            height: 100vh;
         }
         color: #fff;
     }
@@ -153,11 +208,11 @@
             padding: 4px 5px;
             background: #353535;
             display: flex;
+            gap: 8px;
             align-items: center;
             input{
                 background: transparent;
                 border: none;
-                padding-left: 5px;
                 outline: none;
                 color: #E2E31F;
                 font-size: 16px;
@@ -835,5 +890,136 @@
         font-weight: 600;
         line-height: normal;
         letter-spacing: -0.56px;        
+    }
+}
+
+.taskContainer{
+    ul{
+        margin-bottom: 0;
+        padding-left: 0;
+        list-style: none;
+        li{
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 15px 11px 24px;
+            margin: 11px auto;
+            &.heading{
+                background: #353535;
+                color: #FFF;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: normal;
+                letter-spacing: -0.64px;
+            }
+            .listContent{
+                width: 100%;
+                &.listTitle{
+                    display: flex;
+                    align-items: center;
+                    .svg-box-not-selected {
+                        border-radius: 1px;
+                        border: 1px solid #FFF;
+                        width: 15px;
+                        height: 15px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                      }
+                      .svg-box-selected {
+                        border: 1px solid #fff;
+                        width: 15px;
+                        height: 15px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: #fff;
+                        cursor: pointer;
+                      }
+                    p{
+                        color: #FFF;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;  
+                        margin-bottom: 0;
+                        span{
+                            font-weight: 300;
+                        }                      
+                    }
+                }
+            }
+            .centerContent{
+                display: flex;
+                align-items: center;
+                gap: 65px;
+                width: 50%;
+                justify-content: space-between;
+                .centerText{
+                    width: 100%;
+                    text-align: center;
+                    min-width: max-content;
+                }
+            }
+            .stageBtn{
+                border-radius: 4px;
+                color: #FFF;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                letter-spacing: -0.48px;
+                min-height: 28px;
+                align-content: center;
+                min-width: max-content;
+                padding: 7.5px 12px;
+            }
+            &.stage_Application{
+                background: #326631;
+                .btn_Application{
+                    border: 1px solid #3B9239;
+                    background: rgba(59, 146, 57, 0.60);
+                }
+            }
+            &.stage_Referral{
+                background: #235E71;
+                .btn_Referral{
+                    border: 1px solid #1FB4E3;
+                    background: rgba(31, 180, 227, 0.40);
+                }
+            }
+            &.stage_Information{
+                background: #573A73;
+                .btn_Information{
+                    border: 1px solid #8A50C5;
+                    background: rgba(138, 80, 197, 0.49);
+                }
+            }
+            &.stage_Public{
+                background: #9D4311;
+                .btn_Public{
+                    border: 1px solid #FF5C00;
+                    background: rgba(255, 92, 0, 0.55);
+                }
+            }
+            &.stage_Decision{
+                background: #7C3062;
+                .btn_Decision{
+                    border: 1px solid #FF40BE;
+                    background: rgba(255, 64, 190, 0.40);
+                }
+            }
+            &.stage_Unknown{
+                background: #353535;
+                .btn_Unknown{
+                    border: 1px solid #FFF;
+                    background: rgba(255, 255, 255, 0.25);
+                }
+            }
+        }
     }
 }

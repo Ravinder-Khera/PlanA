@@ -240,7 +240,7 @@ function ProfilePic() {
             />
             <p>
               <span onClick={handleUploadClick}>Click to upload</span>
-              or drag and drop SVG, PNG, JPG or GIF (max. 800x400px)
+              or drag and dropSVG, PNG, JPG or GIF (max. 800x400px)
             </p>
           </div>
         </div>
@@ -248,7 +248,6 @@ function ProfilePic() {
     </>
   );
 }
-
 
 function SettingsPage() {
   const [settingsPage, setSettingsPage]= useState('ProfileDetails');
@@ -261,7 +260,8 @@ function SettingsPage() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        let response = await getProfile();
+        const authToken = localStorage.getItem('authToken');
+        let response = await getProfile(authToken);
         if (response.res) {
           setUser(response.res.user.name);
           localStorage.setItem('user', response.res.user.name);

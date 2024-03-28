@@ -1,7 +1,7 @@
 import './App.scss';
 import './Components/toaster.scss';
 import logo from './assets/common/LOGO.png'
-import { DashboardIcon, ForgotPswd, InvoiceIcon, JobsIcon, Key, Lock, LogoutIcon, SettingsIcon } from './assets/svg';
+import { DashboardIcon, ForgotPswd, InvoiceIcon, JobsIcon, Key, Lock, LogoutIcon, SettingsIcon, TaskIcon, TimelineIcon } from './assets/svg';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom';
 import Login from './pages/LandingPages/LoginPage/login';
 import SignUp from './pages/LandingPages/SignUp/signUp';
@@ -14,6 +14,8 @@ import SettingsPage from './pages/Settings/settings';
  import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Invoice from './pages/Invoicing/invoice';
+import TaskPage from './pages/Dashboard/tasks';
+import TimelinePage from './pages/Dashboard/timeline';
 
 function DashboardMenuList() {
   const location = useLocation();
@@ -71,6 +73,20 @@ function DashboardMenuList() {
               <DashboardIcon /><p>Dashboard</p>
             </Link>
           </li>
+          {location.pathname.includes('/dashboard') && (
+              <div className='dropDownMenu'>
+                <li className={location.pathname.includes('/timeline') ? 'active' : ''}>
+                  <Link to='/dashboard/timeline'>
+                    <TimelineIcon /><p>Timeline</p>
+                  </Link>
+                </li>
+                <li className={location.pathname.includes('/tasks') ? 'active' : ''}>
+                  <Link to='/dashboard/tasks'>
+                    <TaskIcon /><p>Tasks</p>
+                  </Link>
+                </li>
+              </div>
+            )}
           <li className={location.pathname.includes('/Jobs') ? 'active' : ''}>
             <Link to='/Jobs'>
               <JobsIcon /><p>Jobs</p>
@@ -119,6 +135,8 @@ function RightSide() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/timeline" element={<TimelinePage />} />
+          <Route path="/dashboard/tasks" element={<TaskPage />} />
           <Route path="/invoice" element={<Invoice />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

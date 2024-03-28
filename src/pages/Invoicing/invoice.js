@@ -79,7 +79,7 @@ function Invoice() {
     background: "#353535",
     borderBottom: '1px solid transparent'
   }
-  
+
   const selectedCount = Object.values(isChecked).filter(value => value).length;
 
   const selectedIds = Object.keys(isChecked)
@@ -195,7 +195,7 @@ function Invoice() {
               </label>
               <span className="checkMark"></span>{" "}
               <span style={{ fontSize: "16px", fontWeight: "600", cursor: 'pointer' }} onClick={() => toggleCheckbox(`select_${item.id}`)}>
-                ONV0{item.id}
+              {`INV-${String(item.id).padStart(4, '0')}`}
               </span>
             </th>
             <td className="text-end" >

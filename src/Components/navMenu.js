@@ -68,7 +68,7 @@ function NavMenu() {
                   </span>
                 </div>
                 <div className="UserImg" style={{ minWidth: "40px" }}>
-                  {userImg ? <img src={process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+userImg} /> :
+                  {userImg ? <img alt={userImg} src={process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+userImg} /> :
                     <User />
                    }
                 </div>
