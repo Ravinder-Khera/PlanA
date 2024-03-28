@@ -102,7 +102,8 @@ function Login() {
     } catch (error) {
       console.error('There was an error:', error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
+      window.location.reload(); 
     }
   };
   return (<>
