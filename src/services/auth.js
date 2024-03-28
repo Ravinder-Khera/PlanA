@@ -96,7 +96,6 @@ export const getProfile = async (data) => {
           "Content-Type": "application/json",
           "Accept": "application/json",
           "Authorization": `Bearer ${authToken}`,
-
         },
     };
     try {
@@ -159,5 +158,31 @@ export const updateProfilePicture = async (formData) => {
     } catch (error) {
         console.error("There was an error!", error);
         return { res: null, error: error };
+    }
+};
+
+export const deleteInvoices = async (data) => {
+    const requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${authToken}`, 
+        },
+        body: JSON.stringify(data),
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/invoices/bulk-delete`, requestOptions);
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 202){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
     }
 };

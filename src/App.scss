@@ -813,3 +813,27 @@
         }
     }
 }
+
+.invoiceDeleteDiv{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    max-width: max-content;
+    margin-bottom: 11px;
+    .iconBox{
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        background: #E2E31F;
+    }
+    p{
+        margin: 0;
+        color: #E2E31F;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: -0.56px;        
+    }
+}

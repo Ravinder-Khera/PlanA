@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Print } from '../../assets/svg'
+import { DeleteIcon, Print } from '../../assets/svg'
 import { Bars } from 'react-loader-spinner';
+import { deleteInvoices } from '../../services/auth';
+import { toast } from 'react-toastify';
 
 function Invoice() {
   const [isChecked, setIsChecked] = useState({});
@@ -16,29 +18,28 @@ function Invoice() {
     }));
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const requestOptions = {
-          method: "GET",
-          headers: { "Content-Type": "application/json","Accept":"application/json", "Authorization":`Bearer ${authToken}` },
-        };
-        const response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/invoices`,requestOptions);
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const jsonData = await response.json();
-        setData(jsonData.data);
-        console.log(jsonData.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      const requestOptions = {
+        method: "GET",
+        headers: { "Content-Type": "application/json","Accept":"application/json", "Authorization":`Bearer ${authToken}` },
+      };
+      const response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/invoices`,requestOptions);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
       }
-    };
-
+      const jsonData = await response.json();
+      setData(jsonData.data);
+      console.log(jsonData.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchData();
-  }, [authToken]);
+  }, []);
 
   const downloadPdf = async (invoiceId) => {
     try {
@@ -78,6 +79,60 @@ function Invoice() {
     background: "#353535",
     borderBottom: '1px solid transparent'
   }
+  
+  const selectedCount = Object.values(isChecked).filter(value => value).length;
+
+  const selectedIds = Object.keys(isChecked)
+      .filter(key => isChecked[key])
+      .map(key => parseInt(key.replace("select_", "")));
+
+  const handleDeleteInvoices = async()=>{
+    try {
+      setLoading(true);
+      let response = await deleteInvoices({
+        ids: selectedIds
+      });
+      if (response.res) {
+        console.log('invoice delete successful',response);
+        
+        toast.success(`${response.res.deletedCount} ${response.res.message}`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        } else {
+          console.error('invoice delete failed:', response.error);
+          toast.error(`${response.error.message}`, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+      }
+    } catch (error) {
+      console.error('There was an error:', error);
+    } finally {
+      setLoading(false); 
+      fetchData();
+        const updatedIsChecked = { ...isChecked };
+        selectedIds.forEach(id => {
+          const key = `select_${id}`;
+          if (updatedIsChecked.hasOwnProperty(key)) {
+            updatedIsChecked[key] = false;
+          }
+        });
+        setIsChecked(updatedIsChecked);
+    }
+  }
 
   return (<>
   {loading &&  <div className='loaderDiv'>
@@ -96,6 +151,16 @@ function Invoice() {
       <h2>Invoicing</h2>
     </div>
     <div className="table-responsive table_outer_div  ">
+    {Object.keys(isChecked).length > 0 && 
+      Object.values(isChecked).some(value => value === true) && (
+        <div className='invoiceDeleteDiv' onClick={handleDeleteInvoices}>
+          <div className='iconBox'>
+            <DeleteIcon />
+          </div>
+          <p>Delete {selectedCount} Item(s)</p>
+        </div>
+      )
+    }
       <table className="table table-borderless text-light">
         <tbody>
         {data && data.map((item) => (
