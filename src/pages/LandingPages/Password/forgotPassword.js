@@ -28,6 +28,9 @@ export function ForgotPassword() {
   const handlePasswordReset = async () => {
     if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address');
+      setTimeout(function() {
+        setEmailError('');
+      }, 500);
       return
     }
     try {

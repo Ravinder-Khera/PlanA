@@ -60,9 +60,15 @@ function Login() {
   const handleLogin = async () => {
     if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address');
+      setTimeout(function() {
+        setEmailError('');
+      }, 500);
       return
     }else if (!validatePassword(password)) {
       setPasswordError('Please enter a valid password');
+      setTimeout(function() {
+        setPasswordError('');
+      }, 500);
       return
     } 
     try {

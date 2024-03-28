@@ -64,8 +64,14 @@ function PasswordReset() {
     const handlePasswordReset = async () => {
       if (!validatePassword(password)) {
         setPasswordError('Please enter a valid password');
+        setTimeout(function() {
+          setPasswordError('');
+        }, 500);
         return
       } else if (password !== confirmPassword) {
+        setTimeout(function() {
+          setConfirmPasswordError('');
+        }, 500);
         return
       } 
       try {

@@ -83,12 +83,21 @@ function SignUp() {
   const handleSignUp = async () => {
     if (fullName === '') {
       setNameError('Name can not be empty');
+      setTimeout(function() {
+        setNameError('');
+      }, 500);
       return
     } else if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address');
+      setTimeout(function() {
+        setEmailError('');
+      }, 500);
       return
     }else if (!validatePassword(password)) {
       setPasswordError('Please enter a valid password');
+      setTimeout(function() {
+        setPasswordError('');
+      }, 500);
       return
     } else if (password !== confirmPassword) {
       return
