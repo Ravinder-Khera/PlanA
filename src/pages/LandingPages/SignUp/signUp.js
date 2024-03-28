@@ -170,8 +170,8 @@ function SignUp() {
             <div className='IconBox'><OpenedLock /></div>
             <input 
               type={showPassword ? 'text' : 'password'}
-              id="password"
-              name="password"
+              id="signUpPassword"
+              name="signUpPassword"
               value={password}
               onChange={handlePasswordChange}
               placeholder='Password'
@@ -188,8 +188,8 @@ function SignUp() {
             <div className='IconBox'><ClosedLock /></div>
             <input 
               type={showPassword ? 'text' : 'password'}
-              id="confirmPassword"
-              name="confirmPassword"
+              id="confirmSignUpPassword"
+              name="confirmSignUpPassword"
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
               placeholder='Confirm Password'

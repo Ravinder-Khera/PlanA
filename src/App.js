@@ -117,7 +117,7 @@ function RightSide() {
       {isLoggedIn ? <>
         <NavMenu />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/invoice" element={<Invoice />} />
           <Route path="/settings" element={<SettingsPage />} />

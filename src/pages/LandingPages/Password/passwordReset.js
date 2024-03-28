@@ -141,8 +141,8 @@ function PasswordReset() {
                   <div className='IconBox'><Key /></div>
                   <input 
                       type={showPassword ? 'text' : 'password'}
-                      id="password"
-                      name="password"
+                      id="resetPassword"
+                      name="resetPassword"
                       value={password}
                       onChange={handlePasswordChange}
                       placeholder='Password'
@@ -157,8 +157,8 @@ function PasswordReset() {
                   <div className='IconBox'><Key /></div>
                   <input 
                       type={showPassword ? 'text' : 'password'}
-                      id="confirmPassword"
-                      name="confirmPassword"
+                      id="confirmResetPassword"
+                      name="confirmResetPassword"
                       value={confirmPassword}
                       onChange={handleConfirmPasswordChange}
                       placeholder='Confirm Password'

@@ -131,8 +131,8 @@ function Login() {
               <div className='IconBox'><Key /></div>
               <input 
                 type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
+                id="loginPassword"
+                name="loginPassword"
                 value={password}
                 onChange={handlePasswordChange}
                 placeholder='Password'

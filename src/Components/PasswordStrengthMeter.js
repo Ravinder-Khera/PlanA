@@ -33,7 +33,7 @@ function PasswordStrengthMeter({password}) {
         >
            {password && (
             <>
-              <strong>Password strength:</strong> {createPasswordLabel(testedResult)}
+              <strong>Password Strength:</strong> {createPasswordLabel(testedResult)}
             </>
           )}
         </label>
