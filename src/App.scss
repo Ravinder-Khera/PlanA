@@ -4,6 +4,9 @@
 .root{
     font-family: 'Archivo', sans-serif;
 }
+body{
+    overflow-y: hidden;
+}
 .App{
     background: #252525;
     width: 100%;
@@ -189,7 +192,7 @@
         @media screen and (min-width:1080px) {
             width: calc(100% - 325px);
             max-width: calc(100% - 325px);
-            overflow-y: scroll; 
+            overflow-y: auto; 
             height: 100vh;
         }
         color: #fff;
@@ -944,6 +947,32 @@
                     }
                     &:nth-child(2){
                         width: auto;
+                    }
+                }
+                .stageBtn{
+                    &.btn_Application{
+                        border: 1px solid #3B9239;
+                        background: rgba(59, 146, 57, 0.60);
+                    }
+                    &.btn_Referral{
+                        border: 1px solid #1FB4E3;
+                        background: rgba(31, 180, 227, 0.40);
+                    }
+                    &.btn_Information{
+                        border: 1px solid #8A50C5;
+                        background: rgba(138, 80, 197, 0.49);
+                    }
+                    &.btn_Public{
+                        border: 1px solid #FF5C00;
+                        background: rgba(255, 92, 0, 0.55);
+                    }
+                    &.btn_Decision{
+                        border: 1px solid #FF40BE;
+                        background: rgba(255, 64, 190, 0.40);
+                    }
+                    &.btn_Unknown{
+                        border: 1px solid #FFF;
+                        background: rgba(255, 255, 255, 0.25);
                     }
                 }
             }
