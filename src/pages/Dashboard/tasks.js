@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Bars } from 'react-loader-spinner';
-import { User } from '../../assets/svg';
+import { AddIcon, TaskIcon, User } from '../../assets/svg';
 import { getTasks } from '../../services/auth';
 
 
 function TaskPage() {
     const [loading, setLoading] = useState(true);
+    const [addTask, setAddTask] = useState(false);
     const [tasks, setTasks] = useState([]);
     const [isChecked, setIsChecked] = useState({});
 
@@ -26,6 +27,7 @@ function TaskPage() {
                     console.log('tasks-',response.res.data);
                 } else {
                     console.error('Failed to fetch tasks:', response.error);
+                    setLoading(false); 
                 }
             } catch (error) {
                 console.error('Error fetching tasks:', error);
@@ -38,7 +40,7 @@ function TaskPage() {
     }, []);
 
     return (<>
-      {loading &&  <div className='loaderDiv'>
+    {loading &&  <div className='loaderDiv'>
       <Bars
         height="80"
         width="80"
@@ -50,8 +52,11 @@ function TaskPage() {
       />
     </div>}
     <div className='DashboardTopMenu'>
-      <div className='DashboardHeading'>
+      <div className='DashboardHeading d-flex justify-content-between align-items-center'>
         <h2>Tasks</h2>
+        <div className='addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none' onClick={()=>setAddTask(!addTask)}>
+            New Task <div className="UserImg" style={{ minWidth: "40px" }}><AddIcon /></div>
+        </div>
       </div>
       <div className='taskContainer'>
         <ul>
@@ -65,6 +70,24 @@ function TaskPage() {
                     Assignee <div className="UserImg" style={{ minWidth: "40px" }}><User /></div>
                 </div>
             </li>
+            {addTask && (
+                <li className='heading addNewTaskDiv'>
+                    <div className='listContent'>
+                        <div className='addNewTaskBtn d-flex align-items-center gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none'>
+                            <div className="UserImg m-0" style={{ minWidth: "40px" }}><AddIcon /></div>
+                            <div className='addTaskJobBtn'>+ Job No.</div>
+                            <input className='addTaskTitleBtn' placeholder='Task Title'/>
+                        </div>
+                    </div>
+                    <div className='listContent centerContent'>
+                        <div className='centerText addTaskJobBtn'>+ Add Stage</div>
+                        <div className='centerText addTaskDueDateBtn'><TaskIcon/> Due Date</div>
+                    </div>
+                    <div className='listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none'>
+                        <div className="UserImg withAddBtn" style={{ minWidth: "40px" }}><User /></div>
+                    </div>
+                </li>
+            )}
             {tasks && tasks.filter(task => task.job_id === 9).map((task) => (
                 <li key={task.id} className={`stage_`+task.stage.title}>
                     <div className={`listContent listTitle `}>

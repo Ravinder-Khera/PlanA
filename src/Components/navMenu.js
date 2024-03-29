@@ -11,7 +11,8 @@ function NavMenu() {
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      let response = await getProfile();
+      const authToken = localStorage.getItem('authToken');
+      let response = await getProfile(authToken);
       if (response.res) {
         setUser(response.res.user.name);
         setUserImg(response.res.user.profile_pic);
