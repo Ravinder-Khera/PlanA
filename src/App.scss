@@ -309,7 +309,7 @@
                 transform: translateX(20%) translateY(20%);
                 z-index: 1;
                 display: flex;
-                font-size: 16px;
+                font-size: 12px;
                 line-height: 100%;
                 justify-content: center;
                 align-items: center;
@@ -935,6 +935,18 @@
                 line-height: normal;
                 letter-spacing: -0.64px;
             }
+            &.completeStage{
+                .listContent{
+                    min-width: max-content;
+                    width: 50%;
+                    &:first-child{
+                        width: 30%;
+                    }
+                    &:nth-child(2){
+                        width: auto;
+                    }
+                }
+            }
             .listContent{
                 width: 100%;
                 &.listTitle{
@@ -1084,7 +1096,7 @@
         border: none;
         width: 100%;
         padding: 11px 14px;
-        margin: 0 17px;
+        margin: 0 17px 0 9px;
         &::placeholder{
             color: #FFF;
             font-size: 16px;
@@ -1103,6 +1115,87 @@
             path{
                 fill: #fff;
             }
+        }
+    }
+}
+
+.datePickerText{
+    svg{
+        path{
+            fill: #E2E31F;
+        }
+    }
+}
+.datePickerDiv{
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 9;
+    .rdrDateRangePickerWrapper{
+        .rdrDefinedRangesWrapper{
+            display: none;
+        }
+        .rdrCalendarWrapper{
+            border-radius: 8px;
+            background: #353535;
+            .rdrDateDisplayWrapper{
+                background-color: transparent;
+                .rdrDateDisplayItem{
+                    background-color: #353535;
+                    input{
+                        color: #E2E31F;
+                    }
+                }
+            }
+            .rdrMonthAndYearWrapper{
+                .rdrNextPrevButton{
+                    background: #E2E31F;
+                }
+            }
+            .rdrMonthAndYearPickers{
+                select{
+                    color: #E2E31F;
+                }
+            } 
+            .rdrMonthsVertical{
+                .rdrWeekDay{
+                    color: #fff;
+                }
+                .rdrDayNumber{
+                    span{
+                        color: #fff;
+                    }
+                }
+            }
+        }
+    }
+}
+.taskTabsDiv{
+    display: flex;
+    margin-top: 27px;
+    margin-bottom: 10px;
+    .taskTab{
+        background: #353535;
+        min-width: 144px;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+        color: #FFF;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: -0.48px;    
+        padding: 6px;
+        position: relative;
+        z-index: 0;
+        cursor: pointer;
+        &:nth-child(2){
+            transform: translateX(-32px);
+        }
+        &.active{
+            z-index: 1;
+            border: 1px solid #E2E31F;
+            background: #969721;
         }
     }
 }
