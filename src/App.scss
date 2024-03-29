@@ -1190,6 +1190,16 @@ body{
                 .rdrWeekDay{
                     color: #fff;
                 }
+                .rdrDayToday{
+                    color: #E2E31F !important;
+                    .rdrDayNumber{
+                        span{
+                            &::after{
+                                background: #E2E31F;
+                            }
+                        }
+                    } 
+                }
                 .rdrDayNumber{
                     span{
                         color: #fff;
