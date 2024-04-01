@@ -61,8 +61,6 @@ function TaskPage() {
           document.removeEventListener("mousedown", handler);
         };
       }, []);
-      
-    console.log(searchJobList,jobList);
 
     const [selectionRange, setSelectionRange] = useState({
         startDate: new Date(),
@@ -173,8 +171,9 @@ function TaskPage() {
             let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/${job_id}/stages`, requestOptions);;
             const isJson = response.headers.get("content-type")?.includes("application/json");
             const data = isJson && (await response.json());
-            setSearchJobStages(data)
-            setSelectedSearchJob(job_id)
+            setSearchJobStages(data);
+            setSelectedSearchJob(job_id);
+            setAddTaskJobDropdown(false)
             if(response.status === 200){
                 setLoading(false); 
                 return { res: data, error: null } ;
@@ -272,6 +271,15 @@ function TaskPage() {
               progress: undefined,
               theme: "colored",
             });
+            setSelectedDueDate(null);
+            setJobList([]);
+            setSelectedUsers([]);
+            setSearchJobList('');
+            setSelectedSearchJob('');
+            setSearchJobStages([]);
+            setSelectedSearchJobStage('');
+            setSelectedSearchJobStageId('');
+            setCreateTaskTitle('');
             } else {
               console.error('Task creation failed:', response.error);
     
@@ -294,14 +302,11 @@ function TaskPage() {
       };
 
       const handleUserClick = (userId) => {
-        // Check if the user is already selected
         const isSelected = selectedUsers.includes(userId);
 
         if (isSelected) {
-            // If user is already selected, remove it from the array
             setSelectedUsers(prevUsers => prevUsers.filter(id => id !== userId));
         } else {
-            // If user is not selected, add it to the array
             setSelectedUsers(prevUsers => [...prevUsers, userId]);
         }
     };
