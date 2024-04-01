@@ -1,19 +1,68 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Bars } from 'react-loader-spinner';
-import { AddIcon, RedoIcon, TaskIcon, User } from '../../assets/svg';
-import { getTasks } from '../../services/auth';
+import { AddIcon, RedoIcon, Search, TaskIcon, User } from '../../assets/svg';
+import { createTask, getJobIds, getTasks, getUserByRole } from '../../services/auth';
 
-import { DateRangePicker } from 'react-date-range';
+import { DateRangePicker, Calendar } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
+import { toast } from 'react-toastify';
 
 function TaskPage() {
     const [loading, setLoading] = useState(true);
     const [addTask, setAddTask] = useState(false);
     const [taskTab, setTaskTab] = useState('todo');
+    const [addTaskJobDropdown, setAddTaskJobDropdown] = useState(false);
+    const [addTaskJobStageDropdown, setAddTaskJobStageDropdown] = useState(false);
+    const [addTaskJobUserDropdown, setAddTaskJobUserDropdown] = useState(false);
     const [selectDate, setSelectDate] = useState(false);
+    const [selectDueDate, setSelectDueDate] = useState(false);
+    const [selectedDueDate, setSelectedDueDate] = useState(null);
     const [tasks, setTasks] = useState([]);
+    const [jobList, setJobList] = useState([]);
+    const [usersList, setUsersList] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [searchJobList, setSearchJobList] = useState('');
+    const [selectedSearchJob, setSelectedSearchJob] = useState('');
+    const [searchJobStages, setSearchJobStages] = useState([]);
+    const [selectedSearchJobStage, setSelectedSearchJobStage] = useState('');
+    const [selectedSearchJobStageId, setSelectedSearchJobStageId] = useState('');
+    const [createTaskTitle, setCreateTaskTitle] = useState('');
     const [isChecked, setIsChecked] = useState({});
+
+    const addTaskJobDropdownRef = useRef(null);
+    const addTaskJobStageDropdownRef = useRef(null);
+    const selectDateRef = useRef(null);
+    const selectDueDateRef = useRef(null);
+    const selectUserRef = useRef(null);
+    
+    useEffect(() => {
+        let handler = (e) => {
+          if (addTaskJobDropdownRef.current && !addTaskJobDropdownRef.current.contains(e.target)) {
+            setAddTaskJobDropdown(false);
+          }
+          if (addTaskJobStageDropdownRef.current && !addTaskJobStageDropdownRef.current.contains(e.target)) {
+            setAddTaskJobStageDropdown(false);
+          }
+          if (selectDateRef.current && !selectDateRef.current.contains(e.target)) {
+            setSelectDate(false);
+          }
+          if (selectDueDateRef.current && !selectDueDateRef.current.contains(e.target)) {
+            setSelectDueDate(false);
+          }
+          if (selectUserRef.current && !selectUserRef.current.contains(e.target)) {
+            setAddTaskJobUserDropdown(false);
+          }
+        };
+      
+        document.addEventListener("mousedown", handler);
+      
+        return () => {
+          document.removeEventListener("mousedown", handler);
+        };
+      }, []);
+      
+    console.log(searchJobList,jobList);
 
     const [selectionRange, setSelectionRange] = useState({
         startDate: new Date(),
@@ -25,6 +74,11 @@ function TaskPage() {
         setSelectionRange(ranges.selection);
         handleSubmit()
     };
+
+    const handleSelectDueDate = (date) => {
+        setSelectDueDate(false)
+        setSelectedDueDate(date); 
+      };
 
     const handleSubmit = () => {
         // Here you can construct the API URL with the selected date range and make the API call
@@ -40,7 +94,7 @@ function TaskPage() {
           ...prevCheckboxes,
           [id]: !prevCheckboxes[id] 
         }));
-      };
+    };
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -61,11 +115,211 @@ function TaskPage() {
             }
         };
 
+        const fetchJobIds = async () => {
+            try {
+                const authToken = localStorage.getItem('authToken');
+                const response = await getJobIds(authToken); 
+                if (response.res) {
+                    setJobList(response.res); 
+                    console.log('jobs-',response.res);
+                } else {
+                    console.error('Failed to fetch tasks:', response.error);
+                    setLoading(false); 
+                }
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        const fetchJobUsers = async (job_id) => {
+            try {
+                setLoading(true); 
+                const authToken = localStorage.getItem('authToken');
+                let response = await getUserByRole(authToken);
+                console.log(response.res);
+                if (response.res) {
+                    setUsersList(response.res); 
+                    console.log('users-',response.res);
+                } else {
+                    console.error('Failed to fetch tasks:', response.error);
+                    setLoading(false); 
+                }
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        fetchJobUsers();
         fetchTasks();
+        fetchJobIds();
     }, []);
 
+    const fetchJobStages = async (job_id) => {
+        try {
+            setLoading(true); 
+            const authToken = localStorage.getItem('authToken');
+            const requestOptions = {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+                  "Authorization": `Bearer ${authToken}`,
+                },
+            };
+            let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/${job_id}/stages`, requestOptions);;
+            const isJson = response.headers.get("content-type")?.includes("application/json");
+            const data = isJson && (await response.json());
+            setSearchJobStages(data)
+            setSelectedSearchJob(job_id)
+            if(response.status === 200){
+                setLoading(false); 
+                return { res: data, error: null } ;
+            }else{
+                return { res: null, error: data } ;
+            }
+        } catch (error) {
+            console.error('Error fetching jo stages:', error);
+        } finally {
+            setLoading(false); 
+        }
+    };
+
+    const handleCreateTask = async () => {
+        if (createTaskTitle === '') {
+            toast.error(`Task title can not be empty`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+          return
+        } else if (!selectedDueDate ) {
+            toast.error(`Select Task Due Date`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+          return
+        } else if (selectedSearchJob === '') {
+            toast.error(`Select Job Id`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+          return
+        } else if (selectedSearchJobStage === '') {
+            toast.error(`Select Stage `, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+          return
+        } else if (selectedUsers.length <= 0) {
+            toast.error(`Add Assignee to Task`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+          return
+        } 
+        try {
+          setLoading(true);
+          let response = await createTask({
+            job_id: selectedSearchJob,
+            stage_id: selectedSearchJobStageId,
+            title: createTaskTitle,
+            due_date: formattedDueDate,
+            assignee_ids: selectedUsers
+          });
+          console.log('create Task --',response);
+          if (response.res) {
+            console.log('Sign-in successful',response);
+            toast.success('Task created successful', {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+            } else {
+              console.error('Task creation failed:', response.error);
+    
+              toast.error(`${Object.values(response.error.errors)[0][0]}`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+          }
+          } catch (error) {
+            console.error('There was an error:', error);
+          }finally {
+          setLoading(false); 
+        }
+      };
+
+      const handleUserClick = (userId) => {
+        // Check if the user is already selected
+        const isSelected = selectedUsers.includes(userId);
+
+        if (isSelected) {
+            // If user is already selected, remove it from the array
+            setSelectedUsers(prevUsers => prevUsers.filter(id => id !== userId));
+        } else {
+            // If user is not selected, add it to the array
+            setSelectedUsers(prevUsers => [...prevUsers, userId]);
+        }
+    };
+    
     const formattedStartDate = selectionRange.startDate.toLocaleDateString('en-US', {  day: 'numeric',month: 'short', year: 'numeric' });
     const formattedEndDate = selectionRange.endDate.toLocaleDateString('en-US', {  day: 'numeric',month: 'short', year: 'numeric' });
+    
+    let formattedDueDate = '';
+    if (selectedDueDate) {
+        const year = selectedDueDate.getFullYear();
+        const month = String(selectedDueDate.getMonth() + 1).padStart(2, '0');
+        const day = String(selectedDueDate.getDate()).padStart(2, '0');
+        formattedDueDate = `${year}-${month}-${day}`;
+    } else {
+        formattedDueDate = '';
+    }
+
+    console.log('usersList--',selectedUsers);
 
     return (<>
     {loading &&  <div className='loaderDiv'>
@@ -92,7 +346,7 @@ function TaskPage() {
                 {formattedStartDate}-{formattedEndDate}
             </div>
             {selectDate && (
-                <div className='datePickerDiv'>
+                <div className='datePickerDiv' ref={selectDateRef}>
                     <DateRangePicker
                         moveRangeOnFirstSelection={false}
                         editableDateInputs={true}
@@ -128,17 +382,158 @@ function TaskPage() {
                         <li className='heading addNewTaskDiv'>
                             <div className='listContent'>
                                 <div className='addNewTaskBtn d-flex align-items-center gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none'>
-                                    <div className="UserImg m-0" style={{ minWidth: "40px" }}><AddIcon /></div>
-                                    <div className='addTaskJobBtn'>+ Job No.</div>
-                                    <input className='addTaskTitleBtn' placeholder='Task Title'/>
+                                    <div className="UserImg m-0" style={{ minWidth: "40px" }} onClick={handleCreateTask}><AddIcon /></div>
+                                    <div className='addTaskJobDiv'>
+                                        <div className='addTaskJobBtn' 
+                                            onClick={()=> {
+                                                setAddTaskJobDropdown(true);
+                                                setAddTaskJobStageDropdown(false)}}
+                                        >+ Job No.{selectedSearchJob && ` (${selectedSearchJob})`}</div>
+                                        {addTaskJobDropdown && 
+                                            <div className='addTaskJobDropdown' ref={addTaskJobDropdownRef}>
+                                                <div className='addTaskJobSearchDiv'>
+                                                    <div className='searchBox'>
+                                                        <div className='IconBox'><Search /></div>
+                                                        <input name='search' placeholder='Search “Job No.” or  “Name”' value={searchJobList} onChange={(e)=>setSearchJobList(e.target.value)}/>
+                                                    </div>
+                                                    <div className='divider' />
+                                                    <button className='colorOutlineBtn' 
+                                                        onClick={()=>{
+                                                            if(searchJobList ===  ''){
+                                                                toast.error('Select a Job Id to search', {
+                                                                    position: "top-center",
+                                                                    autoClose: 5000,
+                                                                    hideProgressBar: true,
+                                                                    closeOnClick: true,
+                                                                    pauseOnHover: true,
+                                                                    draggable: true,
+                                                                    progress: undefined,
+                                                                    theme: "colored",
+                                                                });
+                                                            }else{
+                                                                fetchJobStages(searchJobList)
+                                                            }
+                                                        }}>Apply</button>
+                                                </div>
+                                                <div className='addTaskJobListScroll'>
+                                                    <div className='addTaskJobListItems'>
+                                                        {jobList && jobList
+                                                            .filter(job => searchJobList ? job.id.toString() === searchJobList.toString() : true) 
+                                                            .map((job) => (
+                                                                <div key={job.id} 
+                                                                    className={`addTaskJobListItem ${searchJobList === job.id && 'active'}`} 
+                                                                    onClick={() => setSearchJobList(job.id)} >
+                                                                    {job.id}
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                    </div>
+                                    <input className='addTaskTitleBtn' value={createTaskTitle} onChange={(e)=>setCreateTaskTitle(e.target.value)} placeholder='Task Title'/>
                                 </div>
                             </div>
                             <div className='listContent centerContent'>
-                                <div className='centerText addTaskJobBtn'>+ Add Stage</div>
-                                <div className='centerText addTaskDueDateBtn'><TaskIcon/> Due Date</div>
+                                <div className='centerText addTaskJobDiv '>
+                                   <div className='addTaskJobBtn ' 
+                                    onClick={()=> {
+                                        setAddTaskJobDropdown(false);
+                                        setAddTaskJobStageDropdown(!addTaskJobStageDropdown)
+                                        if(searchJobStages.length <= 0){
+                                            toast.error('Select a Job Id first', {
+                                                position: "top-center",
+                                                autoClose: 5000,
+                                                hideProgressBar: true,
+                                                closeOnClick: true,
+                                                pauseOnHover: true,
+                                                draggable: true,
+                                                progress: undefined,
+                                                theme: "colored",
+                                            });
+                                        }
+                                    }}
+                                        
+                                    >{selectedSearchJobStage ? selectedSearchJobStage : '+ Add Stage' }</div>
+                                    {addTaskJobStageDropdown && searchJobStages.length > 0 && 
+                                        <div className='addTaskJobDropdown' ref={addTaskJobStageDropdownRef}>
+                                            <div className='addTaskJobListScroll'>
+                                                <div className='addTaskJobListItems'>
+                                                    {searchJobStages && searchJobStages.map((stage) => (
+                                                        <div key={stage.id} 
+                                                            className={`addTaskJobStageItem ${stage.title}`}
+                                                            onClick={()=>{
+                                                                setSelectedSearchJobStage(stage.title);
+                                                                setSelectedSearchJobStageId(stage.id);
+                                                                setAddTaskJobStageDropdown(false);
+                                                            }} >
+                                                            {stage.title}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div className='centerText addTaskJobDiv'>
+                                    <div className='addTaskDueDateBtn' onClick={()=>setSelectDueDate(!selectDueDate)}>
+                                        <TaskIcon/> {selectedDueDate ? formattedDueDate : 'Due Date' }</div>
+                                        {selectDueDate && (
+                                            <div className='datePickerDiv' ref={selectDueDateRef}>
+                                                <Calendar
+                                                    date={selectedDueDate}
+                                                    onChange={handleSelectDueDate} 
+                                                    value={selectedDueDate} 
+                                                    calendarType="ISO 8601" 
+                                                    minDate={new Date()} 
+                                                    rangeColors={["#E2E31F"]} 
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                             </div>
                             <div className='listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none'>
-                                <div className="UserImg withAddBtn" style={{ minWidth: "40px" }}><User /></div>
+                                <div className='addTaskJobDiv d-flex align-items-center justify-content-end'>
+                                    {selectedUsers.length > 0 ? (<>
+                                        {selectedUsers.map((user,index) => (
+                                            <>
+                                            <div key={index} className={`UserImg addedUserImages ${index}`} 
+                                                style={{ minWidth: "40px" ,zIndex: index, transform:`translateX(calc(50% - ${index}0%)` }}>
+                                                <User />
+                                            </div>
+                                            </>
+                                        )) }
+                                        <div className="UserImg withAddBtn m-0" 
+                                            onClick={()=>setAddTaskJobUserDropdown(!addTaskJobUserDropdown)}
+                                            style={{ minWidth: "40px",zIndex: '999' }}>
+                                            <User />
+                                        </div>
+                                    </>
+                                    ): 
+                                        <div className="UserImg withAddBtn" 
+                                            onClick={()=>setAddTaskJobUserDropdown(!addTaskJobUserDropdown)}
+                                            style={{ minWidth: "40px" }}>
+                                            <User />
+                                        </div>
+                                    }
+                                    {addTaskJobUserDropdown && 
+                                        <div className='addTaskJobDropdown right' ref={selectUserRef}>
+                                            <div className='addTaskJobListScroll'>
+                                                <div className='addTaskJobListItems'>
+                                                    {usersList && usersList.map((user) => (
+                                                        <div key={user.id} 
+                                                            className={`addTaskJobListItem`}
+                                                            onClick={() => handleUserClick(user.id)} >
+                                                            {user.name}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </li>
                     )}

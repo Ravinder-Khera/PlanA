@@ -139,7 +139,7 @@ function RightSide() {
           <Route path="/dashboard/tasks" element={<TaskPage />} />
           <Route path="/invoice" element={<Invoice />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </> :
       <Routes>
