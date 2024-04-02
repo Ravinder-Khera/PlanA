@@ -19,6 +19,8 @@ function TaskPage() {
     const [selectDueDate, setSelectDueDate] = useState(false);
     const [selectedDueDate, setSelectedDueDate] = useState(null);
     const [tasks, setTasks] = useState([]);
+    const [tasksToDo, setTasksToDo] = useState([]);
+    const [tasksCompleted, setTasksCompleted] = useState([]);
     const [jobList, setJobList] = useState([]);
     const [usersList, setUsersList] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
@@ -63,7 +65,7 @@ function TaskPage() {
       }, []);
 
     const [selectionRange, setSelectionRange] = useState({
-        startDate: new Date(),
+        startDate: new Date(new Date().getFullYear()- 1, new Date().getMonth() , new Date().getDate()),
         endDate: new Date(),
         key: 'selection',
     });
@@ -76,7 +78,7 @@ function TaskPage() {
     const handleSelectDueDate = (date) => {
         setSelectDueDate(false)
         setSelectedDueDate(date); 
-      };
+    };
 
     const handleSubmit = () => {
         // Here you can construct the API URL with the selected date range and make the API call
@@ -93,68 +95,6 @@ function TaskPage() {
           [id]: !prevCheckboxes[id] 
         }));
     };
-
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const authToken = localStorage.getItem('authToken');
-                const response = await getTasks(authToken); 
-                if (response.res) {
-                    setTasks(response.res.data); 
-                    console.log('tasks-',response.res.data);
-                } else {
-                    console.error('Failed to fetch tasks:', response.error);
-                    setLoading(false); 
-                }
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
-            } finally {
-                setLoading(false); 
-            }
-        };
-
-        const fetchJobIds = async () => {
-            try {
-                const authToken = localStorage.getItem('authToken');
-                const response = await getJobIds(authToken); 
-                if (response.res) {
-                    setJobList(response.res); 
-                    console.log('jobs-',response.res);
-                } else {
-                    console.error('Failed to fetch tasks:', response.error);
-                    setLoading(false); 
-                }
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
-            } finally {
-                setLoading(false); 
-            }
-        };
-
-        const fetchJobUsers = async (job_id) => {
-            try {
-                setLoading(true); 
-                const authToken = localStorage.getItem('authToken');
-                let response = await getUserByRole(authToken);
-                console.log(response.res);
-                if (response.res) {
-                    setUsersList(response.res); 
-                    console.log('users-',response.res);
-                } else {
-                    console.error('Failed to fetch tasks:', response.error);
-                    setLoading(false); 
-                }
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
-            } finally {
-                setLoading(false); 
-            }
-        };
-
-        fetchJobUsers();
-        fetchTasks();
-        fetchJobIds();
-    }, []);
 
     const fetchJobStages = async (job_id) => {
         try {
@@ -260,7 +200,7 @@ function TaskPage() {
           });
           console.log('create Task --',response);
           if (response.res) {
-            console.log('Sign-in successful',response);
+            console.log('create Task successful',response);
             toast.success('Task created successful', {
               position: "top-center",
               autoClose: 5000,
@@ -324,7 +264,129 @@ function TaskPage() {
         formattedDueDate = '';
     }
 
-    console.log('usersList--',selectedUsers);
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const authToken = localStorage.getItem('authToken');
+                const response = await getTasks(authToken); 
+                if (response.res) {
+                    setTasks(response.res.data); 
+                    console.log('tasks-',response.res.data);
+                } else {
+                    console.error('Failed to fetch tasks:', response.error);
+                    setLoading(false); 
+                }
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        const fetchTasksToDo = async () => {
+            try {
+                setLoading(true); 
+                const authToken = localStorage.getItem('authToken');
+                const requestOptions = {
+                    method: "GET",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Accept": "application/json",
+                      "Authorization": `Bearer ${authToken}`,
+                    },
+                };
+                let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks/by-status-and-date?status=to-do&start_date=${selectionRange.startDate.toISOString().slice(0, 10)}&end_date=${selectionRange.endDate.toISOString().slice(0, 10)}&perPage=10`, requestOptions);
+                const isJson = response.headers.get("content-type")?.includes("application/json");
+                const data = isJson && (await response.json());
+                setTasksToDo(data.data);
+                if(response.status === 200){
+                    setLoading(false); 
+                    return { res: data, error: null } ;
+                }else{
+                    return { res: null, error: data } ;
+                }
+            } catch (error) {
+                console.error('Error fetching Tasks:', error);
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        const fetchTasksCompleted = async () => {
+            try {
+                setLoading(true); 
+                const authToken = localStorage.getItem('authToken');
+                const requestOptions = {
+                    method: "GET",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Accept": "application/json",
+                      "Authorization": `Bearer ${authToken}`,
+                    },
+                };
+                let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks/by-status-and-date?status=completed&start_date=${selectionRange.startDate.toISOString().slice(0, 10)}&end_date=${selectionRange.endDate.toISOString().slice(0, 10)}&perPage=10`, requestOptions);
+                const isJson = response.headers.get("content-type")?.includes("application/json");
+                const data = isJson && (await response.json());
+                console.log('completed tasks',data);
+                setTasksCompleted(data.data);
+                if(response.status === 200){
+                    setLoading(false); 
+                    return { res: data, error: null } ;
+                }else{
+                    return { res: null, error: data } ;
+                }
+            } catch (error) {
+                console.error('Error fetching Tasks:', error);
+            } finally {
+                setLoading(false); 
+            }
+        };
+    
+        const fetchJobIds = async () => {
+            try {
+                const authToken = localStorage.getItem('authToken');
+                const response = await getJobIds(authToken); 
+                if (response.res) {
+                    setJobList(response.res); 
+                    console.log('jobs-',response.res);
+                } else {
+                    console.error('Failed to fetch tasks:', response.error);
+                    setLoading(false); 
+                }
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        const fetchJobUsers = async (job_id) => {
+            try {
+                setLoading(true); 
+                const authToken = localStorage.getItem('authToken');
+                let response = await getUserByRole(authToken);
+                if (response.res) {
+                    setUsersList(response.res); 
+                    console.log('users-',response.res);
+                } else {
+                    console.error('Failed to fetch tasks:', response.error);
+                    setLoading(false); 
+                }
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        fetchTasksToDo();
+        fetchTasksCompleted();
+        fetchJobUsers();
+        fetchTasks();
+        fetchJobIds();
+    }, [selectionRange.endDate, selectionRange.startDate]);
+
+    console.log('task tabs',tasksToDo,tasksCompleted);
 
     return (<>
     {loading &&  <div className='loaderDiv'>
@@ -542,8 +604,7 @@ function TaskPage() {
                             </div>
                         </li>
                     )}
-                    {tasks && tasks
-                    // .filter(task => task.job_id === 9)
+                    {tasksToDo && tasksToDo
                     .map((task) => (
                         <li key={task.id} className={`stage_`+task.stage.title}>
                             <div className={`listContent listTitle `}>
@@ -581,7 +642,7 @@ function TaskPage() {
                                 <div className='centerText'>{task.due_date}</div>
                             </div>
                             <div className='listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none'>
-                                <div className="UserImg" style={{ minWidth: "40px" }}><User /></div>
+                                <div className="UserImg withAddBtn" style={{ minWidth: "40px" }}><User /></div>
                             </div>
                         </li>
                     ))}
@@ -591,7 +652,7 @@ function TaskPage() {
         {taskTab === 'completed' && (
             <div className='taskContainer'>
                 <ul>
-                    {tasks && tasks.filter(task => task.job_id === 9).map((task) => (
+                    {tasksCompleted && tasksCompleted.map((task) => (
                         <li key={task.id} className={`heading completeStage`}>
                             <div className={`listContent listTitle `}>
                                 <div className='me-2'>
@@ -604,7 +665,7 @@ function TaskPage() {
                                 <div className='centerText'>{task.due_date}</div>
                             </div>
                             <div className='listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none'>
-                                <div className="UserImg" style={{ minWidth: "40px" }}><User /></div>
+                                <div className="UserImg withAddBtn" style={{ minWidth: "40px" }}><User /></div>
                             </div>
                         </li>
                     ))}

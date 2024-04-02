@@ -311,6 +311,7 @@ body{
           max-width: 100%;
           height: 100%;
           border-radius: 5px;
+          border: 1px solid #000;
         }
         &.withAddBtn{
             position: relative;
@@ -1167,6 +1168,7 @@ body{
             position: absolute;
             left: 0;
             top: calc(100% + 22px);
+            z-index: 999;
             &.right{
                 right: 0;
                 left: auto;
