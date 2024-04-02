@@ -1124,6 +1124,26 @@ body{
         padding: 7.5px 12px;
         border: 1px solid #FFF;
         background: rgba(255, 255, 255, 0.25);
+        &.Application{
+            border: 1px solid #3B9239;
+            background: rgba(59, 146, 57, 0.60);
+        }
+        &.Referral{
+            border: 1px solid #1FB4E3;
+            background: rgba(31, 180, 227, 0.40);
+        }
+        &.Information{
+            border: 1px solid #8A50C5;
+            background: rgba(138, 80, 197, 0.49);
+        }
+        &.Public{
+            border: 1px solid #FF5C00;
+            background: rgba(255, 92, 0, 0.55);
+        }
+        &.Decision{
+            border: 1px solid #FF40BE;
+            background: rgba(255, 64, 190, 0.40);
+        }
     }
     .addTaskJobDiv{
         position: relative;

@@ -443,7 +443,7 @@ function TaskPage() {
                             </div>
                             <div className='listContent centerContent'>
                                 <div className='centerText addTaskJobDiv '>
-                                   <div className='addTaskJobBtn ' 
+                                   <div className={`addTaskJobBtn ${selectedSearchJobStage}`} 
                                     onClick={()=> {
                                         setAddTaskJobDropdown(false);
                                         setAddTaskJobStageDropdown(!addTaskJobStageDropdown)
