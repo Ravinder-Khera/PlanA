@@ -42,7 +42,12 @@ export function ForgotPassword() {
       if (response.res) {     
         setPasswordReset(true)
         console.log('mail sent successfully',response.res.status,response.res);
-        toast.success('mail sent successfully', {
+        toast.success(<>
+          <div >
+            <h3>Successfully Sent Mail.</h3>
+          </div>
+          <p>User mail has been successfully sent!</p>
+        </>, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: true,
@@ -55,7 +60,12 @@ export function ForgotPassword() {
         } else {
           setPasswordReset(false)
           console.error('mail failed:', response.error);
-          toast.error(`${Object.values(response.error.errors)[0][0]}`,{
+          toast.error(<>
+            <div >
+              <h3>{Object.values(response.error.errors)[0][0]}</h3>
+            </div>
+            <p>{Object.values(response.error.errors)[0][0]}</p>
+          </>,{
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: true,
@@ -73,6 +83,11 @@ export function ForgotPassword() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handlePasswordReset();
+    }
+  };
   return (<>
     {loading &&  <div className='loaderDiv'>
     <Bars
@@ -101,7 +116,7 @@ export function ForgotPassword() {
         <p>Reset your password here.</p>
         <div className={`customInput ${emailError !== '' && 'errorClass'}`}>
           <div className='IconBox'><Email /></div>
-          <input name='email' placeholder='Email' value={email} onChange={handleEmailChange}/>
+          <input name='email' placeholder='Email' value={email} onChange={handleEmailChange} onKeyDown={handleKeyDown}/>
         </div>
         <div className='btnDiv'>
           <button className='signupButton' onClick={handlePasswordReset}>

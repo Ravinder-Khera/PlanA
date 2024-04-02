@@ -82,7 +82,12 @@ function Login() {
         console.log('Logged-in successful',response);
         localStorage.setItem('authToken', response.res.access_token);
         localStorage.setItem('loggedIn', 'true');
-        toast.success('Logged-in successful', {
+        toast.success(<>
+          <div >
+            <h3>Successfully Logged In</h3>
+          </div>
+          <p>User has been successfully Logged In!</p>
+        </>, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: true,
@@ -99,7 +104,12 @@ function Login() {
           console.error('Logged-in failed:', response.error);
           localStorage.removeItem('authToken');
           localStorage.removeItem('loggedIn');
-          toast.error(`${response.error.message}`, {
+          toast.error(<>
+            <div >
+              <h3>{response.error.message}</h3>
+            </div>
+            <p>{response.error.message}</p>
+          </>, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: true,
@@ -114,6 +124,14 @@ function Login() {
       console.error('There was an error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
     }
   };
   return (<>
@@ -136,7 +154,7 @@ function Login() {
         <form>
           <div className={`customInput ${emailError !== '' && 'errorClass'}`}>
               <div className='IconBox'><User /></div>
-              <input name='email' placeholder='Email' value={email} onChange={handleEmailChange}/>
+              <input name='email' placeholder='Email' value={email} onChange={handleEmailChange} onKeyDown={handleKeyDown}/>
           </div>
           <div className={`customInput ${passwordError !== '' && 'errorClass'}`}>
               <div className='IconBox'><Key /></div>
@@ -148,10 +166,12 @@ function Login() {
                 onChange={handlePasswordChange}
                 placeholder='Password'
                 autoComplete="password"
-                className='passwordInput'/>
+                className='passwordInput'
+                onKeyDown={handleKeyDown}/>
                 <span
                 className={`toggle-eye-icon ${showPassword ? 'show' : ''}`}
                 onClick={handleTogglePassword}
+                
               > 
               {showPassword ? <OpenedEye /> : <ClosedEye /> }
               </span>

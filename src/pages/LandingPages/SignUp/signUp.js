@@ -115,7 +115,12 @@ function SignUp() {
         console.log('Sign-in successful',response);
         localStorage.setItem('authToken', response.res.access_token);
         localStorage.setItem('loggedIn', 'true');
-        toast.success('Sign-in successful', {
+        toast.success(<>
+          <div >
+            <h3>Successfully Signed Up</h3>
+          </div>
+          <p>User has been successfully Signed Up!</p>
+        </>, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: true,
@@ -131,7 +136,12 @@ function SignUp() {
           localStorage.removeItem('authToken');
           localStorage.removeItem('loggedIn');
 
-          toast.error(`${Object.values(response.error.errors)[0][0]}`, {
+          toast.error(<>
+            <div >
+              <h3>{Object.values(response.error.errors)[0][0]}</h3>
+            </div>
+            <p>{Object.values(response.error.errors)[0][0]}</p>
+          </>, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: true,
@@ -149,6 +159,11 @@ function SignUp() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSignUp();
+    }
+  };
   return (
   <>
   {loading &&  <div className='loaderDiv'>
@@ -169,11 +184,11 @@ function SignUp() {
         <form>
           <div className={`customInput ${nameError !== '' && 'errorClass'}`}>
             <div className='IconBox'><User /></div>
-            <input name='fullName' placeholder='Full Name' value={fullName} onChange={handleNameChange}/>
+            <input name='fullName' placeholder='Full Name' value={fullName} onChange={handleNameChange} onKeyDown={handleKeyDown}/>
           </div>
           <div className={`customInput ${emailError !== '' && 'errorClass'}`}>
             <div className='IconBox'><Email /></div>
-            <input name='email' placeholder='Email' value={email} onChange={handleEmailChange}/>
+            <input name='email' placeholder='Email' value={email} onChange={handleEmailChange} onKeyDown={handleKeyDown}/>
           </div>
           <div className={`customInput ${passwordError !== '' && 'errorClass'}`}>
             <div className='IconBox'><OpenedLock /></div>
@@ -185,7 +200,8 @@ function SignUp() {
               onChange={handlePasswordChange}
               placeholder='Password'
               autoComplete="password"
-              className='passwordInput'/>
+              className='passwordInput'
+              onKeyDown={handleKeyDown}/>
             <span
               className={`toggle-eye-icon ${showPassword ? 'show' : ''}`}
               onClick={handleTogglePassword}
@@ -203,7 +219,8 @@ function SignUp() {
               onChange={handleConfirmPasswordChange}
               placeholder='Confirm Password'
               autoComplete="password"
-              className='passwordInput'/>
+              className='passwordInput'
+              onKeyDown={handleKeyDown}/>
             <span
               className={`toggle-eye-icon ${showPassword ? 'show' : ''}`}
               onClick={handleTogglePassword}

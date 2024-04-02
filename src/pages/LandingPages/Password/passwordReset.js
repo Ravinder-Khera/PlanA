@@ -85,7 +85,12 @@ function PasswordReset() {
     
         if (response.res) {
           console.log('Password reset successful',response.res);
-          toast.success(`Password reset successful-${response.res.status} `, {
+          toast.success(<>
+            <div >
+              <h3>Password Reset successful.</h3>
+            </div>
+            <p>{response.res.status}!</p>
+          </>, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: true,
@@ -99,7 +104,12 @@ function PasswordReset() {
           } else {
             setPasswordReset(false)
             console.error('Password reset failed:', response.error);
-            toast.error(`Password reset failed `, {
+            toast.error(<>
+              <div >
+                <h3>Password reset failed.</h3>
+              </div>
+              <p>Password Reset has been Failed!</p>
+            </>, {
               position: "top-center",
               autoClose: 5000,
               hideProgressBar: true,
@@ -117,6 +127,11 @@ function PasswordReset() {
       }
     };
 
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        handlePasswordReset();
+      }
+    };
     return (<>
       {loading &&  <div className='loaderDiv'>
         <Bars
@@ -154,6 +169,7 @@ function PasswordReset() {
                       placeholder='Password'
                       autoComplete="new-password"
                       className='passwordInput'
+                      onKeyDown={handleKeyDown}
                   />
                   <span className={`toggle-eye-icon ${showPassword ? 'show' : ''}`} onClick={handleTogglePassword} > 
                       {showPassword ? <OpenedEye /> : <ClosedEye /> }
@@ -170,6 +186,7 @@ function PasswordReset() {
                       placeholder='Confirm Password'
                       className='passwordInput'
                       autoComplete="new-password"
+                      onKeyDown={handleKeyDown}
                   />
                   <span className={`toggle-eye-icon ${showPassword ? 'show' : ''}`} onClick={handleTogglePassword} > {showPassword ? <OpenedEye /> : <ClosedEye /> }</span>
               </div>

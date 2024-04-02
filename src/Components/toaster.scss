@@ -1,6 +1,18 @@
 .Toastify{
   .Toastify__toast-container{
     .Toastify__toast{
+      padding: 24px 30px;
+      min-width: 500px;
+      &::before{
+        position: absolute;
+        content: '';
+        width: 4px;
+        height: 100%;
+        border-radius: 2px;
+        background: #FFF;
+        top: 0;
+        left: 0;
+      }
       &.Toastify__toast--error{
         border-radius: 2px;
         background: rgba(227, 31, 31, 0.60);
@@ -12,12 +24,43 @@
         backdrop-filter: blur(2px);
       }
       .Toastify__toast-body{
-        color: #FFF;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: normal;
-        letter-spacing: -0.64px;
+        h3{
+          margin-bottom: 4px; 
+          color: #FFF;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: normal;
+          letter-spacing: -0.64px;
+        }
+        p{
+          margin-bottom: 0;
+          span{
+            font-weight: 800;
+          }
+          color: #FFF;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 300;
+          line-height: normal;
+          letter-spacing: -0.48px;
+        }
+        .Toastify__toast-icon{
+          width: 40px;
+        }
+      }
+      .Toastify__close-button{
+          align-self: center;
+          opacity: 1;
+          height: 18px;
+          width: 18px;
+          background-image: url( '../assets/icons/crossIcon.svg' );
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: 100%;
+          svg{
+            display: none;
+          }
       }
     }
   }
