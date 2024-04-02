@@ -24,13 +24,16 @@ function SignUp() {
   };
   const handleNameChange = (e) => {
     const inputValue = e.target.value;
-    setFullName(inputValue);
-    if (!inputValue) {
-      setNameError('Name can not be empty');
+    const isValid = /^[a-zA-Z\s]*$/.test(inputValue); // Regular expression to allow only letters and spaces
+    
+    if (!isValid) {
+      setNameError('Name can only contain letters and spaces');
     } else {
+      setFullName(inputValue);
       setNameError('');
     }
   };
+  
   const validateEmail = (inputEmail) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(inputEmail);
@@ -71,9 +74,7 @@ function SignUp() {
     const inputValue = e.target.value;
     setConfirmPassword(inputValue);
 
-    if (inputValue !== password) {
-      setConfirmPasswordError('Password does not match');
-    } else if (!inputValue){
+    if (!inputValue){
       setConfirmPasswordError('Password can not be empty');
     } else {
       setConfirmPasswordError('')
@@ -100,6 +101,10 @@ function SignUp() {
       }, 500);
       return
     } else if (password !== confirmPassword) {
+      setConfirmPasswordError('Password does not match');
+      setTimeout(function() {
+        setPasswordError('');
+      }, 500);
       return
     } 
     try {
@@ -113,13 +118,11 @@ function SignUp() {
       console.log('Sign-in --',response);
       if (response.res) {
         console.log('Sign-in successful',response);
-        localStorage.setItem('authToken', response.res.access_token);
-        localStorage.setItem('loggedIn', 'true');
         toast.success(<>
           <div >
             <h3>Successfully Signed Up</h3>
           </div>
-          <p>User has been successfully Signed Up!</p>
+          <p>Login to continue!</p>
         </>, {
           position: "top-center",
           autoClose: 5000,
@@ -130,7 +133,7 @@ function SignUp() {
           progress: undefined,
           theme: "colored",
         });
-        navigate('/dashboard');
+        navigate('/login');
         } else {
           console.error('Sign-in failed:', response.error);
           localStorage.removeItem('authToken');
@@ -164,6 +167,7 @@ function SignUp() {
       handleSignUp();
     }
   };
+  
   return (
   <>
   {loading &&  <div className='loaderDiv'>

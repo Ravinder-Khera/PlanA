@@ -20,9 +20,12 @@ function ProfileDetails({userFirstName,userLastName,fetchProfileData}) {
       setNameError('');
     }
   };
+
   const handleUpdateProfile = async () => {   
     if(firstName === ''){
       setNameError('Name can not be empty');
+      return
+    } else if(firstName === userFirstName && lastName === userLastName){
       return
     }
     try {
@@ -85,7 +88,7 @@ function ProfileDetails({userFirstName,userLastName,fetchProfileData}) {
     </div>}
       <div className="ProfileDetailsSection">
         <div className="contentDiv">
-          <h3 className="settingsHeading">Hi {userFirstName}!</h3>
+          <h3 className="settingsHeading">Hi {userFirstName}{userLastName}!</h3>
           <p>Please enter your details below:</p>
           <form>
             <div className={`customInput ${nameError !== '' && 'errorClass'}`}>
@@ -108,7 +111,7 @@ function ProfileDetails({userFirstName,userLastName,fetchProfileData}) {
   );
 }
 
-function ProfilePic() {
+function ProfilePic({userPicture,fetchProfileData}) {
   const [image, setImage] = useState(null);
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -147,6 +150,7 @@ function ProfilePic() {
             progress: undefined,
             theme: "colored",
           });
+          fetchProfileData();
           window.location.reload();
         } else {
           toast.error(`${response.error.message}`, {
@@ -196,6 +200,8 @@ function ProfilePic() {
     }
   };
 
+  const backgroundImageStyle = userPicture ? { backgroundImage: `url(${process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+userPicture})`,backgroundSize:'cover' } : {};
+
   return (
     <>
     {loading &&  <div className='loaderDiv'>
@@ -216,6 +222,7 @@ function ProfilePic() {
             onDragOver={handleDragOver}
             onClick={handleUploadClick}
             className="imgUploadArea"
+            style={backgroundImageStyle}
           >
             <input
               type="file"
@@ -255,7 +262,9 @@ function SettingsPage() {
   const [user, setUser] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [userPicture, setUserPicture] = useState('');
 
+  console.log();
   useEffect(()=>{
     const fetchData = async () => {
       try {
@@ -266,6 +275,10 @@ function SettingsPage() {
           setUser(response.res.user.name);
           localStorage.setItem('user', response.res.user.name);
           setFirstName(response.res.user.name.split(' ')[0])
+          const lastName = response.res.user.name.split(' ').slice(1).join(' ');
+          setLastName(lastName);
+          const userPic = response.res.user.profile_pic;
+          setUserPicture(userPic);
           } else {
             setLoading(false); 
             console.error('profile error:', response.error);
@@ -285,10 +298,13 @@ function SettingsPage() {
       let response = await getProfile();
       if (response.res) {
         setUser(response.res.user.name);
+        console.log(response.res.user);
         localStorage.setItem('user', response.res.user.name);
         setFirstName(response.res.user.name.split(' ')[0])
         const lastName = response.res.user.name.split(' ').slice(1).join(' ');
         setLastName(lastName);
+        const userPic = response.res.user.profile_pic;
+        setUserPicture(userPic);
         window.location.href = '/settings';
       } else {
         console.error('profile error:', response.error);
@@ -330,8 +346,8 @@ function SettingsPage() {
             </li>
           </ul>
         </div>
-        {settingsPage === 'ProfileDetails' && <ProfileDetails userFirstName={firstName} userLastName={lastName} fetchProfileData={fetchProfileData} />}
-        {settingsPage === 'ProfilePic' && <ProfilePic/>}
+        {settingsPage === 'ProfileDetails' && <ProfileDetails userFirstName={firstName} userLastName={lastName} fetchProfileData={fetchProfileData}  />}
+        {settingsPage === 'ProfilePic' && <ProfilePic userPicture={userPicture} fetchProfileData={fetchProfileData}/>}
       </div>
     </>
   );

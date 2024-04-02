@@ -40,10 +40,10 @@ function DashboardMenuList() {
   return (
     <>
       <div className={`loginScreenItems container ${isLoggedIn ? 'd-none' : 'd-flex'} align-items-center flex-column`}>
-        <a href='/' className='mx-auto my-4'>
+        <a href='/' className='mx-auto siteLogo'>
           <img src={logo} className='img-fluid' alt='Plan a'/>
         </a>
-        <ul className='pt-3 mx-auto px-1 menuList'>
+        <ul className=' mx-auto px-1 menuList'>
           <li className={location.pathname.includes('/login') ? 'active' : ''}>
             <Link to='/login'>
               <div className='iconBox'><Key /></div>
@@ -64,10 +64,10 @@ function DashboardMenuList() {
         </Link>
       </div>
       <div className={`loginScreenItems container ${isLoggedIn ? 'd-flex' : 'd-none'} align-items-center flex-column`}>
-        <a href='/' className='mx-auto my-4'>
+        <a href='/' className='mx-auto siteLogo'>
           <img src={logo} className='img-fluid' alt='Plan a'/>
         </a>
-        <ul className='pt-3 mx-auto px-1 dashboardMenuList'>
+        <ul className=' dashboardMenuList'>
           <li className={location.pathname.includes('/dashboard') ? 'active' : ''}>
             <Link to='/dashboard'>
               <DashboardIcon /><p>Dashboard</p>

@@ -49,7 +49,7 @@ function NavMenu() {
             <form>
                 <div className='searchBox'>
                     <div className='IconBox'><Search /></div>
-                    <input name='search' placeholder='Search'/>
+                    <input name='search' placeholder='Search' onChange={(e)=>e.preventDefault}/>
                 </div>
                 <div className='selectBox'>
                     <select className="form-select" aria-label="Default select example">
@@ -62,7 +62,7 @@ function NavMenu() {
             </form>
             <div>
             <div className="d-flex align-items-center justify-content-end"  style={{ minWidth: "250px" }}>
-                <div style={{ textAlign: "end" }} >
+                <div style={{ textAlign: "end" }} className='d-flex flex-column justify-content-center' >
                   <p>{[user]}</p>
                   <span style={{ fontSize: "12px", fontWeight: "300" }}>
                   Town Planner

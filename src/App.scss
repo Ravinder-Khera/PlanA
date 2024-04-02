@@ -19,8 +19,19 @@ body{
         box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
         min-height: 100vh;
         position: relative;
+        .loginScreenItems{
+            .siteLogo{
+                max-width: 119px;
+                margin-top: 35px;
+            }
+        }
         .menuList{
-            width: 95%;
+            margin-top: 44px;
+            padding-left: 18px;
+            padding-right: 15px;
+            width: 100%;
+            margin-bottom: 0;
+            list-style: none;
             li{ 
                 border-radius: 2px;
                 border: 1px solid #E2E31F;
@@ -58,11 +69,15 @@ body{
             }
         }
         .dashboardMenuList{
-            width: 95%;
+            margin-top: 42px;
+            padding-left: 16px;
+            padding-right: 15px;
+            width: 100%;
             margin-bottom: 0;
+            list-style: none;
             li{ 
                 margin: 10px auto;
-                padding: 13px 13px;
+                padding: 2px;
                 border: 1px solid transparent;
                 transition: all 0.5s ease;
                 cursor: pointer;
@@ -82,7 +97,7 @@ body{
                         color: #FFF;
                         font-size: 16px;
                         font-style: normal;
-                        font-weight: 800;
+                        font-weight: 600;
                         line-height: normal;
                         letter-spacing: -0.64px;
                         margin: 0;
@@ -106,7 +121,7 @@ body{
                 }
             }
             .dropDownMenu{
-                max-width: calc(100% - 26px);
+                max-width: calc(100% - 21px);
                 margin-top: -10px;
                 margin-left: auto;
                 border-left: 1px solid #E2E31F;
@@ -118,13 +133,13 @@ body{
                     top: 0;
                     width: 10px;
                     height: 10px;
-                    transform: translateX(-50%) translateY(-50%);
+                    transform: translateX(calc(-50% - 1px)) translateY(-69%);
                     background: #E2E31F;
                     border-radius: 50%;
                 }
                 li{
                     margin: 0;
-                    padding: 13px 13px;
+                    padding: 6px 17px;
                     background: transparent;
                     border: none;
                     transition: all 0.5s ease;
@@ -238,7 +253,7 @@ body{
             &::after {
                 position: absolute;
                 content: '';
-                width: 0.368px;
+                width: 1.368px;
                 height: 100%;
                 top: 0;
                 right: 2.25rem;
@@ -881,12 +896,14 @@ body{
             line-height: normal;
             letter-spacing: -1.44px;
             text-transform: capitalize;
+            margin-bottom: 0;
         }
     }
     .dashboardBoxes{
         display: flex;
         flex-wrap: wrap;
         gap: 28px;
+        margin-top: 27px;
         .custom_box{
             background: #353535;
             padding: 35px;
@@ -912,7 +929,6 @@ body{
     gap: 8px;
     cursor: pointer;
     max-width: max-content;
-    margin-bottom: 11px;
     .iconBox{
         width: 36px;
         height: 36px;
@@ -1383,7 +1399,7 @@ body{
                     &.rdrDayToday{
                         .rdrDayNumber {
                             span{
-                                color: #E2E31F;
+                                // color: #E2E31F;
                                 &::after{
                                     background: #E2E31F;
                                 }

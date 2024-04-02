@@ -147,20 +147,21 @@ function Invoice() {
     />
   </div>}
   <div className='DashboardTopMenu'>
-    <div className='DashboardHeading'>
+    <div className='DashboardHeading d-flex justify-content-start align-items-center gap-3 flex-wrap'>
       <h2>Invoicing</h2>
-    </div>
-    <div className="table-responsive table_outer_div  ">
-    {Object.keys(isChecked).length > 0 && 
-      Object.values(isChecked).some(value => value === true) && (
-        <div className='invoiceDeleteDiv' onClick={handleDeleteInvoices}>
-          <div className='iconBox'>
-            <DeleteIcon />
+      {Object.keys(isChecked).length > 0 && 
+        Object.values(isChecked).some(value => value === true) && (
+          <div className='invoiceDeleteDiv' onClick={handleDeleteInvoices}>
+            <div className='iconBox'>
+              <DeleteIcon />
+            </div>
+            <p>Delete {selectedCount} Item(s)</p>
           </div>
-          <p>Delete {selectedCount} Item(s)</p>
-        </div>
-      )
-    }
+        )
+      }
+    </div>
+    <div className="table-responsive table_outer_div  " style={{marginTop:'37px'}}>
+    
       <table className="table table-borderless text-light">
         <tbody>
         {data && data.map((item) => (

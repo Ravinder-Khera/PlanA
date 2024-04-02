@@ -346,7 +346,7 @@ function TaskPage() {
             </div>
         </div>
         <div className='DashboardHeading d-flex justify-content-start align-items-center position-relative'>
-            <div className='datePickerText addNewTaskBtn d-flex align-items-center gap-0 justify-content-end navMenuDiv p-0 bg-transparent shadow-none' onClick={()=>setSelectDate(!selectDate)}>
+            <div className='datePickerText addNewTaskBtn d-flex align-items-center gap-0 justify-content-end navMenuDiv p-0 bg-transparent shadow-none' style={{marginTop:'40px'}} onClick={()=>setSelectDate(!selectDate)}>
                 <TaskIcon />
                 {formattedStartDate}-{formattedEndDate}
             </div>
@@ -529,7 +529,7 @@ function TaskPage() {
                                                 <div className='addTaskJobListItems'>
                                                     {usersList && usersList.map((user) => (
                                                         <div key={user.id} 
-                                                            className={`addTaskJobListItem`}
+                                                            className={`addTaskJobListItem ${selectedUsers.includes(user.id) && 'active' }`}
                                                             onClick={() => handleUserClick(user.id)} >
                                                             {user.name}
                                                         </div>
@@ -542,7 +542,9 @@ function TaskPage() {
                             </div>
                         </li>
                     )}
-                    {tasks && tasks.filter(task => task.job_id === 9).map((task) => (
+                    {tasks && tasks
+                    // .filter(task => task.job_id === 9)
+                    .map((task) => (
                         <li key={task.id} className={`stage_`+task.stage.title}>
                             <div className={`listContent listTitle `}>
                                 <label htmlFor={`select_${task.id}`}>
