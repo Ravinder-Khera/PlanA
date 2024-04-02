@@ -505,7 +505,7 @@ function TaskPage() {
                                         {selectedUsers.map((user,index) => (
                                             <>
                                             <div key={index} className={`UserImg addedUserImages ${index}`} 
-                                                style={{ minWidth: "40px" ,zIndex: index, transform:`translateX(calc(50% - ${index}0%)` }}>
+                                                style={{ minWidth: "40px" ,zIndex: index }}>
                                                 <User />
                                             </div>
                                             </>
