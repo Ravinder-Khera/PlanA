@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Bars } from 'react-loader-spinner';
-import { AddIcon, RedoIcon, Search, TaskIcon, User } from '../../assets/svg';
+import { AddIcon, NextIcon, PrevIcon, RedoIcon, Search, TaskIcon, User } from '../../assets/svg';
 import { createTask, getJobIds, getTasks, getUserByRole } from '../../services/auth';
 
 import { DateRangePicker, Calendar } from 'react-date-range';
@@ -62,10 +62,10 @@ function TaskPage() {
         return () => {
           document.removeEventListener("mousedown", handler);
         };
-      }, []);
+    }, []);
 
     const [selectionRange, setSelectionRange] = useState({
-        startDate: new Date(new Date().getFullYear()- 1, new Date().getMonth() , new Date().getDate()),
+        startDate: new Date(new Date().getFullYear(), new Date().getMonth()- 1 , new Date().getDate()),
         endDate: new Date(),
         key: 'selection',
     });
@@ -81,13 +81,10 @@ function TaskPage() {
     };
 
     const handleSubmit = () => {
-        // Here you can construct the API URL with the selected date range and make the API call
         const apiUrl = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks/by-status-and-date?status=to-do&start_date=${selectionRange.startDate.toISOString().slice(0, 10)}&end_date=${selectionRange.endDate.toISOString().slice(0, 10)}&perPage=4`;
     
-        // Make your API call using apiUrl
         console.log('date range',apiUrl);
-      };
-    
+    };
 
     const toggleCheckbox = (id) => {
         setIsChecked((prevCheckboxes) => ({
@@ -240,9 +237,9 @@ function TaskPage() {
             }finally {
             setLoading(false); 
         }
-      };
+    };
 
-      const handleUserClick = (userId) => {
+    const handleUserClick = (userId) => {
         const isSelected = selectedUsers.includes(userId);
 
         if (isSelected) {
@@ -328,7 +325,7 @@ function TaskPage() {
                 let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks/by-status-and-date?status=completed&start_date=${selectionRange.startDate.toISOString().slice(0, 10)}&end_date=${selectionRange.endDate.toISOString().slice(0, 10)}&perPage=10`, requestOptions);
                 const isJson = response.headers.get("content-type")?.includes("application/json");
                 const data = isJson && (await response.json());
-                console.log('completed tasks',data);
+                
                 setTasksCompleted(data.data);
                 if(response.status === 200){
                     setLoading(false); 
@@ -387,7 +384,35 @@ function TaskPage() {
         fetchJobIds();
     }, [selectionRange.endDate, selectionRange.startDate]);
 
-    console.log('task ToDo ',tasksToDo,'task completed ',tasksCompleted,selectionRange.endDate.toISOString().slice(0, 10));
+    console.log('task ToDo ',tasksToDo,'task completed ',tasksCompleted,'start date ',selectionRange.startDate.toISOString().slice(0, 10),'end date ',selectionRange.endDate.toISOString().slice(0, 10));
+
+    const handleNextMonth = () => {
+        setSelectionRange(prevState => {
+            const nextMonthStartDate = new Date(prevState.startDate);
+            const nextMonthEndDate = new Date(prevState.endDate);
+            nextMonthStartDate.setMonth(nextMonthStartDate.getMonth() + 1);
+            nextMonthEndDate.setMonth(nextMonthEndDate.getMonth() + 1);
+            return {
+                ...prevState,
+                startDate: nextMonthStartDate,
+                endDate: nextMonthEndDate
+            };
+        });
+    };
+
+    const handlePrevMonth = () => {
+        setSelectionRange(prevState => {
+            const nextMonthStartDate = new Date(prevState.startDate);
+            const nextMonthEndDate = new Date(prevState.endDate);
+            nextMonthStartDate.setMonth(nextMonthStartDate.getMonth() - 1);
+            nextMonthEndDate.setMonth(nextMonthEndDate.getMonth() - 1);
+            return {
+                ...prevState,
+                startDate: nextMonthStartDate,
+                endDate: nextMonthEndDate
+            };
+        });
+    };
 
     return (<>
     {loading &&  <div className='loaderDiv'>
@@ -409,15 +434,23 @@ function TaskPage() {
             </div>
         </div>
         <div className='DashboardHeading d-flex justify-content-start align-items-center position-relative'>
-            <div className='datePickerText addNewTaskBtn d-flex align-items-center gap-0 justify-content-end navMenuDiv p-0 bg-transparent shadow-none' style={{marginTop:'40px'}} onClick={()=>setSelectDate(!selectDate)}>
-                <TaskIcon />
-                {formattedStartDate}-{formattedEndDate}
+            <div className='datePickerText addNewTaskBtn d-flex align-items-center gap-0 justify-content-end navMenuDiv p-0 bg-transparent shadow-none' style={{marginTop:'40px'}}>
+                <div className='selectPrevNextMonthIcon' onClick={handlePrevMonth}>
+                    <PrevIcon />
+                </div>
+                <div onClick={()=>setSelectDate(!selectDate)}>
+                    <TaskIcon />
+                    {formattedStartDate}-{formattedEndDate}
+                </div>
+                <div className='selectPrevNextMonthIcon' style={{marginLeft:'7px'}} onClick={handleNextMonth}>
+                    <NextIcon />
+                </div>
             </div>
             {selectDate && (
                 <div className='datePickerDiv' ref={selectDateRef}>
                     <DateRangePicker
                         moveRangeOnFirstSelection={false}
-                        editableDateInputs={true}
+                        editableDateInputs={false}
                         ranges={[selectionRange]}
                         onChange={handleSelect}
                         rangeColors={["#E2E31F"]}
