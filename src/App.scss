@@ -953,6 +953,7 @@ body{
         margin-bottom: 0;
         padding-left: 0;
         list-style: none;
+        overflow-x: hidden;
         li{
             border-radius: 2px;
             display: flex;
@@ -960,6 +961,15 @@ body{
             justify-content: space-between;
             padding: 14px 15px 11px 24px;
             margin: 11px auto;
+            transition: all 1.5s ease;
+            &.addCompleted{
+                transform: translateX(100%);
+                opacity: 0.5;
+            }
+            &.addTodo{
+                transform: translateX(-100%);
+                opacity: 0.5;
+            }
             &.heading{
                 background: #353535;
                 color: #FFF;
@@ -1044,6 +1054,9 @@ body{
                             font-weight: 300;
                         }                      
                     }
+                }
+                .revertToDo{
+                    cursor: pointer;
                 }
             }
             .centerContent{
