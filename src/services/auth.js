@@ -1,5 +1,3 @@
-const authToken = localStorage.getItem('authToken');
-
 export const SignIn = async (data) => {
     const requestOptions = {
         method: "POST",
@@ -114,7 +112,7 @@ export const getProfile = async (data) => {
     }
 };
 
-export const updateProfile = async (data) => {
+export const updateProfile = async (data,authToken) => {
     const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json","Authorization":`Bearer ${authToken}` },
@@ -161,7 +159,7 @@ export const updateProfilePicture = async (formData) => {
     }
 };
 
-export const deleteInvoices = async (data) => {
+export const deleteInvoices = async (data,authToken) => {
     const requestOptions = {
         method: "POST",
         headers: {
@@ -287,7 +285,7 @@ export const getUserByRole = async (data) => {
     }
 };
 
-export const createTask = async (data) => {
+export const createTask = async (data,authToken) => {
     const requestOptions = {
         method: "POST",
         headers: {
@@ -303,6 +301,31 @@ export const createTask = async (data) => {
         const data = isJson && (await response.json());
         console.log(response,data);
         if(response.status === 201){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const getDashboardSummary = async (data) => {
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${data}`,
+        },
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/dashboard/summary`, requestOptions);;
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 200){
             return { res: data, error: null } ;
         }else{
             return { res: null, error: data } ;

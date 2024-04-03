@@ -98,7 +98,6 @@ function Login() {
           theme: "colored",
         });
         loginSuccess( response.res.access_token );
-        window.location.reload();
         navigate('/dashboard');
         } else {
           console.error('Logged-in failed:', response.error);

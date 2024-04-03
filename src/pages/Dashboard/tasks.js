@@ -190,40 +190,19 @@ function TaskPage() {
           return
         } 
         try {
-          setLoading(true);
-          let response = await createTask({
-            job_id: selectedSearchJob,
-            stage_id: selectedSearchJobStageId,
-            title: createTaskTitle,
-            due_date: formattedDueDate,
-            assignee_ids: selectedUsers
-          });
-          console.log('create Task --',response);
-          if (response.res) {
-            console.log('create Task successful',response);
-            toast.success('Task created successful', {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-            });
-            setSelectedDueDate(null);
-            setJobList([]);
-            setSelectedUsers([]);
-            setSearchJobList('');
-            setSelectedSearchJob('');
-            setSearchJobStages([]);
-            setSelectedSearchJobStage('');
-            setSelectedSearchJobStageId('');
-            setCreateTaskTitle('');
-            } else {
-              console.error('Task creation failed:', response.error);
-    
-              toast.error(`${Object.values(response.error.errors)[0][0]}`, {
+            const authToken = localStorage.getItem('authToken');
+            setLoading(true);
+            let response = await createTask({
+                job_id: selectedSearchJob,
+                stage_id: selectedSearchJobStageId,
+                title: createTaskTitle,
+                due_date: formattedDueDate,
+                assignee_ids: selectedUsers
+            },authToken);
+            console.log('create Task --',response);
+            if (response.res) {
+                console.log('create Task successful',response);
+                toast.success('Task created successful', {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: true,
@@ -232,12 +211,34 @@ function TaskPage() {
                 draggable: true,
                 progress: undefined,
                 theme: "colored",
-              });
-          }
-          } catch (error) {
-            console.error('There was an error:', error);
-          }finally {
-          setLoading(false); 
+                });
+                setSelectedDueDate(null);
+                setJobList([]);
+                setSelectedUsers([]);
+                setSearchJobList('');
+                setSelectedSearchJob('');
+                setSearchJobStages([]);
+                setSelectedSearchJobStage('');
+                setSelectedSearchJobStageId('');
+                setCreateTaskTitle('');
+                } else {
+                console.error('Task creation failed:', response.error);
+        
+                toast.error(`${Object.values(response.error.errors)[0][0]}`, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            }
+            } catch (error) {
+                console.error('There was an error:', error);
+            }finally {
+            setLoading(false); 
         }
       };
 
@@ -386,7 +387,7 @@ function TaskPage() {
         fetchJobIds();
     }, [selectionRange.endDate, selectionRange.startDate]);
 
-    console.log('task tabs',tasksToDo,tasksCompleted);
+    console.log('task ToDo ',tasksToDo,'task completed ',tasksCompleted,selectionRange.endDate.toISOString().slice(0, 10));
 
     return (<>
     {loading &&  <div className='loaderDiv'>

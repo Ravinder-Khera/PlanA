@@ -29,10 +29,11 @@ function ProfileDetails({userFirstName,userLastName,fetchProfileData}) {
       return
     }
     try {
+      const authToken = localStorage.getItem('authToken');
       setLoading(true);
       let response = await updateProfile({
         name: firstName+' '+lastName,
-      });
+      },authToken);
   
       if (response.res) {
         console.log('update successful',response);
@@ -88,7 +89,7 @@ function ProfileDetails({userFirstName,userLastName,fetchProfileData}) {
     </div>}
       <div className="ProfileDetailsSection">
         <div className="contentDiv">
-          <h3 className="settingsHeading">Hi {userFirstName}{userLastName}!</h3>
+          <h3 className="settingsHeading">Hi {userFirstName}!</h3>
           <p>Please enter your details below:</p>
           <form>
             <div className={`customInput ${nameError !== '' && 'errorClass'}`}>
@@ -136,8 +137,9 @@ function ProfilePic({userPicture,fetchProfileData}) {
       const formData = new FormData();
       formData.append('profile_pic', file);
       try {
+        const authToken = localStorage.getItem('authToken');
         setLoading(true);
-        let response = await updateProfilePicture(formData);
+        let response = await updateProfilePicture(formData,authToken);
         if (response.res) {
           console.log(response);
           toast.success(`${response.res.message}`, {
@@ -264,60 +266,48 @@ function SettingsPage() {
   const [lastName, setLastName] = useState('');
   const [userPicture, setUserPicture] = useState('');
 
-  console.log();
-  useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const authToken = localStorage.getItem('authToken');
-        let response = await getProfile(authToken);
-        if (response.res) {
-          setUser(response.res.user.name);
-          localStorage.setItem('user', response.res.user.name);
-          setFirstName(response.res.user.name.split(' ')[0])
-          const lastName = response.res.user.name.split(' ').slice(1).join(' ');
-          setLastName(lastName);
-          const userPic = response.res.user.profile_pic;
-          setUserPicture(userPic);
-          } else {
-            setLoading(false); 
-            console.error('profile error:', response.error);
-        }
-      } catch (error) {
-        console.error('There was an error:', error);
-      } finally {
-        setLoading(false); 
-      }
-    }
-    fetchData();
-  },[])
-
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      let response = await getProfile();
+      const authToken = localStorage.getItem('authToken');
+      let response = await getProfile(authToken);
       if (response.res) {
         setUser(response.res.user.name);
-        console.log(response.res.user);
         localStorage.setItem('user', response.res.user.name);
         setFirstName(response.res.user.name.split(' ')[0])
         const lastName = response.res.user.name.split(' ').slice(1).join(' ');
         setLastName(lastName);
         const userPic = response.res.user.profile_pic;
         setUserPicture(userPic);
-        window.location.href = '/settings';
-      } else {
-        console.error('profile error:', response.error);
+        } else {
+          setLoading(false); 
+          console.error('profile error:', response.error);
       }
     } catch (error) {
       console.error('There was an error:', error);
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   }
 
+  useEffect(()=>{
+    fetchProfileData();
+  },[])
+
   return (
     <>
+
+    {loading &&  <div className='loaderDiv'>
+      <Bars
+        height="80"
+        width="80"
+        color="#E2E31F"
+        ariaLabel="bars-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+        visible={true}
+      />
+    </div>}
       <div className="d-flex squareBg">
         <div className="settingsPageSection">
           <h3 className="settingsHeading">Settings</h3>

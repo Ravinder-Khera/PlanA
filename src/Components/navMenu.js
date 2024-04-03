@@ -83,4 +83,15 @@ function NavMenu() {
   </>)
 }
 
+export async function getServerSideProps() {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const data = await getProfile(authToken);
+    return { props: { data } };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return { props: { data: null } };
+  }
+}
+
 export default NavMenu
