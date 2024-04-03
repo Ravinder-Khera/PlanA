@@ -163,6 +163,11 @@ function TaskPage() {
                 }
                 setTimeout(() => {
                     fetchTasksToDo();
+                    fetchTasksCompleted();
+                    setIsChecked(prevState => ({
+                        ...prevState,
+                        [taskId]: false 
+                    }));
                 }, 1000);
                 toast.success('Task moved to Completed', {
                 position: "top-center",
@@ -208,6 +213,7 @@ function TaskPage() {
                     listItem.classList.add('addTodo');
                 }
                 setTimeout(() => {
+                    fetchTasksToDo();
                     fetchTasksCompleted();
                 }, 1000);
                 toast.success('Task Moved to To Do', {
