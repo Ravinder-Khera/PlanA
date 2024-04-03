@@ -83,19 +83,19 @@ function Login() {
         localStorage.setItem('authToken', response.res.access_token);
         localStorage.setItem('loggedIn', 'true');
         toast.success(<>
-          <div >
-            <h3>Successfully Logged In</h3>
-          </div>
-          <p>User has been successfully Logged In!</p>
-        </>, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
+            <div >
+              <h3>Welcome Back!</h3>
+            </div>
+            <p>You're logged in. Let's get to work!</p>
+          </>, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
         });
         loginSuccess( response.res.access_token );
         navigate('/dashboard');
@@ -105,9 +105,9 @@ function Login() {
           localStorage.removeItem('loggedIn');
           toast.error(<>
             <div >
-              <h3>{response.error.message}</h3>
+              <h3>Trouble Logging In?</h3>
             </div>
-            <p>{response.error.message}</p>
+            <p>We couldn’t sign you in with the details provided. Please check your email and password and try again. If you've forgotten your password, use the 'Forgot Password' link to reset it.</p>
           </>, {
             position: "top-center",
             autoClose: 5000,

@@ -44,9 +44,9 @@ export function ForgotPassword() {
         console.log('mail sent successfully',response.res.status,response.res);
         toast.success(<>
           <div >
-            <h3>Successfully Sent Mail.</h3>
+            <h3>Check Your Inbox</h3>
           </div>
-          <p>User mail has been successfully sent!</p>
+          <p>We've sent you an email with instructions to reset your password.</p>
         </>, {
           position: "top-center",
           autoClose: 5000,

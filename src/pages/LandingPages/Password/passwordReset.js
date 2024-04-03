@@ -87,9 +87,9 @@ function PasswordReset() {
           console.log('Password reset successful',response.res);
           toast.success(<>
             <div >
-              <h3>Password Reset successful.</h3>
+              <h3>Password Reset Successfully</h3>
             </div>
-            <p>{response.res.status}!</p>
+            <p>Your password has been updated. You can now log in with your new password.</p>
           </>, {
             position: "top-center",
             autoClose: 5000,
@@ -106,9 +106,9 @@ function PasswordReset() {
             console.error('Password reset failed:', response.error);
             toast.error(<>
               <div >
-                <h3>Password reset failed.</h3>
+                <h3>Reset Unsuccessful</h3>
               </div>
-              <p>Password Reset has been Failed!</p>
+              <p>There was an issue resetting your password. Please try again or contact support.</p>
             </>, {
               position: "top-center",
               autoClose: 5000,

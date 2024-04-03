@@ -120,9 +120,9 @@ function SignUp() {
         console.log('Sign-in successful',response);
         toast.success(<>
           <div >
-            <h3>Successfully Signed Up</h3>
+            <h3>Welcome Aboard!</h3>
           </div>
-          <p>Login to continue!</p>
+          <p>Your sign-up was successful. You can now explore your new account.</p>
         </>, {
           position: "top-center",
           autoClose: 5000,
@@ -141,9 +141,9 @@ function SignUp() {
 
           toast.error(<>
             <div >
-              <h3>{Object.values(response.error.errors)[0][0]}</h3>
+              <h3>Oops! There's a Hitch.</h3>
             </div>
-            <p>{Object.values(response.error.errors)[0][0]}</p>
+            <p>We couldn't create your account due to a hiccup. Please double-check your information and try again. If the problem persists, reach out to our support team for help.</p>
           </>, {
             position: "top-center",
             autoClose: 5000,
