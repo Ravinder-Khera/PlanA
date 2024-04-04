@@ -954,6 +954,7 @@ body{
         padding-left: 0;
         list-style: none;
         overflow-x: hidden;
+        position: relative;
         li{
             border-radius: 2px;
             display: flex;
@@ -1176,13 +1177,118 @@ body{
             background: rgba(255, 64, 190, 0.40);
         }
     }
+    .addAssigneeDropdown{
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 99;
+        width: 100%;
+        height: 100%;
+        background: rgba(37, 37, 37, 0.60);
+        backdrop-filter: blur(2px);   
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        .addTaskJobListScroll{
+            border-radius: 8px;
+            background: #353535;
+            padding: 27px 18px 23px 21px;
+            margin-top: 7px;
+            max-width: max-content;
+            width: 100%;
+            .addTaskJobListItems{
+                max-height: 300px;
+                overflow-y: auto;
+                &::-webkit-scrollbar {
+                    width: 4px;
+                } 
+                &:-moz-scrollbar {
+                    width: 4px;
+                } 
+                &::-webkit-scrollbar-track {
+                    border-radius: 2px;
+                    background: rgb(255,255,255);
+                    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(113,113,113,1) 30%, rgba(113,113,113,1) 70%, rgba(255,255,255,0) 100%); 
+                } 
+                &:-moz-scrollbar-track {
+                    border-radius: 2px;
+                    background: rgb(255,255,255);
+                    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(113,113,113,1) 30%, rgba(113,113,113,1) 70%, rgba(255,255,255,0) 100%); 
+                }
+                &::-webkit-scrollbar-thumb {
+                    background: #fff; 
+                    border-radius: 4px;
+                }
+                &:-moz-scrollbar-thumb {
+                    background: #fff; 
+                    border-radius: 4px;
+                }
+                label{
+                    color: #E2E31F;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 300;
+                    line-height: normal;
+                    letter-spacing: -0.56px;   
+                    margin-bottom: 24px;  
+                    &.addedAssignees{
+                        font-size: 16px;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;                        
+                        margin-bottom: 16px;
+                    }               
+                }
+                .addedAssigneeBorder{
+                    border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                }
+                .addAssigneeDiv{
+                    display: flex;
+                    justify-content: flex-start;
+                    gap: 16px;
+                    margin-bottom: 21px;
+                    transition: all 0.5s ease;
+                    min-width: max-content;
+                    color: #fff;
+                    cursor: pointer;
+                    h4{
+                        color: #E2E31F;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px; 
+                        margin: 0;                      
+                    }
+                    p{
+                        margin: 0;
+                        color: #FFF;
+                        font-size: 12px;
+                        font-style: normal;
+                        font-weight: 300;
+                        line-height: normal;
+                        letter-spacing: -0.48px;
+                    }
+                    .checkAddBtn{
+                        margin-left: auto;
+                        padding: 0 20px;
+                        font-size: 20px;
+                        color: #E2E31F;
+                    }
+                    &.active    {
+                        color: #000;
+                    }
+                }
+            }                
+        }     
+    }
     .addTaskJobDiv{
         position: relative;
         .addTaskJobDropdown{
             position: absolute;
             left: 0;
             top: calc(100% + 22px);
-            z-index: 999;
+            z-index: 99;
             &.right{
                 right: 0;
                 left: auto;
@@ -1312,6 +1418,62 @@ body{
                             background: rgba(255, 64, 190, 0.40);
                         }
                         
+                    }
+                    label{
+                        color: #E2E31F;
+                        font-size: 14px;
+                        font-style: normal;
+                        font-weight: 300;
+                        line-height: normal;
+                        letter-spacing: -0.56px;   
+                        margin-bottom: 24px;  
+                        &.addedAssignees{
+                            font-size: 16px;
+                            font-weight: 600;
+                            line-height: normal;
+                            letter-spacing: -0.64px;                        
+                            margin-bottom: 16px;
+                        }               
+                    }
+                    .addedAssigneeBorder{
+                        border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                    }
+                    .addAssigneeDiv{
+                        display: flex;
+                        justify-content: flex-start;
+                        gap: 16px;
+                        margin-bottom: 21px;
+                        transition: all 0.5s ease;
+                        min-width: max-content;
+                        color: #fff;
+                        cursor: pointer;
+                        h4{
+                            color: #E2E31F;
+                            font-size: 16px;
+                            font-style: normal;
+                            font-weight: 600;
+                            line-height: normal;
+                            letter-spacing: -0.64px; 
+                            margin: 0;                      
+                        }
+                        p{
+                            margin: 0;
+                            color: #FFF;
+                            font-size: 12px;
+                            font-style: normal;
+                            font-weight: 300;
+                            line-height: normal;
+                            letter-spacing: -0.48px;
+                        }
+                        .checkAddBtn{
+                            margin-left: auto;
+                            padding: 0 20px;
+                            font-size: 20px;
+                            color: #E2E31F;
+                        }
+                        &.active    {
+                            color: #000;
+                        }
                     }
                 }                
             }
