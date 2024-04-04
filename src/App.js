@@ -118,7 +118,6 @@ function DashboardMenuList() {
 function RightSide() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { pathname } = useLocation();
-  console.log("pathname", pathname)
 
   useEffect(() => {
     const checkAuthToken = () => {

@@ -1,17 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AddIcon, BellIcon, Search, User } from "../../assets/svg";
+import { AddIcon, BellIcon, FilterIcon, Search, User } from "../../assets/svg";
 import "./Jobs.scss";
 import { DeleteIcon } from "../../assets/svg";
-import { getJobs } from "../../services/auth";
+import { getJobs, getJobsByFilter } from "../../services/auth";
 import { Bars } from "react-loader-spinner";
+import { toast } from "react-toastify";
 import moment from "moment";
 
 const Jobs = () => {
-  const [isChecked, setIsChecked] = useState({});
   const [jobs, setJobs] = useState();
   const [loading, setLoading] = useState(false);
   const containerRef = useRef(null);
   const [divWidth, setDivWidth] = useState(0);
+  const [selectedJobs, setSelectedJobs] = useState([]);
+  const [status, setStatus] = useState("current-jobs");
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     fetchJobs();
@@ -19,17 +22,17 @@ const Jobs = () => {
 
   useEffect(() => {
     const updateDivWidth = () => {
-        if (containerRef.current) {
-            const width = containerRef.current.offsetWidth;
-            setDivWidth(width);
-        }
+      if (containerRef.current) {
+        const width = containerRef.current.offsetWidth;
+        setDivWidth(width);
+      }
     };
 
     updateDivWidth();
-    window.addEventListener('resize', updateDivWidth);
+    window.addEventListener("resize", updateDivWidth);
 
     return () => {
-        window.removeEventListener('resize', updateDivWidth);
+      window.removeEventListener("resize", updateDivWidth);
     };
   }, []);
 
@@ -46,11 +49,88 @@ const Jobs = () => {
     }
   };
 
-  const toggleCheckbox = (id) => {
-    setIsChecked((prevCheckboxes) => ({
-      ...prevCheckboxes,
-      [id]: !prevCheckboxes[id],
-    }));
+  const findNearestStage = (data) => {
+    let nearestStage = null;
+    let nearestDueDate = Infinity;
+
+    data?.stages.forEach((stage) => {
+      stage?.tasks.forEach((task) => {
+        const dueDate = new Date(task.due_date);
+        const currentDate = new Date();
+
+        const difference = dueDate - currentDate;
+
+        if (difference > 0 && difference < nearestDueDate) {
+          nearestDueDate = difference;
+          nearestStage = stage;
+        }
+      });
+    });
+    return nearestStage ? nearestStage.title : "default";
+  };
+
+  const handleCheckBoxSelect = (e, id) => {
+    const { checked } = e.target;
+    if (checked) {
+      setSelectedJobs((prevIds) => [...prevIds, id]);
+    } else {
+      setSelectedJobs((prevIds) =>
+        prevIds.filter((selectedId) => selectedId !== id)
+      );
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    const { checked } = e.target;
+    if (checked) {
+      const ids = jobs.map(({ id }) => id);
+      setSelectedJobs(ids);
+    } else {
+      setSelectedJobs([]);
+    }
+  };
+
+  const handleDelete = () => {
+    console.log("delete ids===>", selectedJobs);
+    if (!selectedJobs.length) {
+      toast.error(
+        <>
+          <div>
+            <h3>Trouble Deleting Jobs?</h3>
+          </div>
+          <p>
+            Please choose the jobs you want to delete. Currently, no jobs have
+            been selected for deletion.
+          </p>
+        </>,
+        {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
+      return;
+    }
+  };
+
+  const handleStatusFilter = async (_status) => {
+    setLoading(true);
+    try {
+      const filterString = `status=${_status}`;
+      const res = await getJobsByFilter(filterString);
+      console.log("res of filtered job", res);
+      const { data } = res?.res;
+      setJobs(data);
+    } catch (error) {
+      console.log("error while filtering", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -93,8 +173,26 @@ const Jobs = () => {
           <div className="d-flex align-items-center">
             <div className="navSearchTab">
               <div class="jobsTaskTabsDiv">
-                <div class="jobtaskTab ">To Do</div>
-                <div class="jobtaskTab active">Completed</div>
+                <div
+                  class={`jobtaskTab ${
+                    status === "current-jobs" ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    setStatus("current-jobs");
+                    handleStatusFilter("in-progress");
+                  }}
+                >
+                  Current Jobs
+                </div>
+                <div
+                  class={`jobtaskTab ${status === "completed" ? "active" : ""}`}
+                  onClick={() => {
+                    setStatus("completed");
+                    handleStatusFilter("completed");
+                  }}
+                >
+                  Completed
+                </div>
               </div>
             </div>
             <div className="addjobs">
@@ -110,30 +208,41 @@ const Jobs = () => {
         </div>
         <div className="JobsHeading d-flex justify-content-between">
           <div className="delete-box">
-            <div className="searchUserImg">
+            <div
+              className="searchUserImg"
+              style={{ cursor: "pointer", zIndex: 2 }}
+              onClick={handleDelete}
+            >
               <DeleteIcon />
             </div>
-            <div className="delete-item">Delete 1 Item(s)</div>
+            <div className="delete-item">
+              Delete {selectedJobs.length} Item(s)
+            </div>
+          </div>
+          <div className="job-filters">
+            <FilterIcon /> <span>Filter</span>
           </div>
         </div>
         <div className="JobsContainer d-flex" ref={containerRef}>
           <div className="left-side">
             <div className="first-table">
-              
               <div className="job_table_outer_div  ">
                 <table class="table table-borderless text-light">
                   <thead>
                     <tr>
                       <th scope="col" className="text-center">
-                        <label htmlFor={`select_1`}>
+                        <label htmlFor={`select_all`}>
                           <input
                             type="checkbox"
-                            checked={isChecked[`select_1`]}
-                            onChange={() => toggleCheckbox(`select_1`)}
-                            id={`select_1`}
+                            checked={
+                              selectedJobs &&
+                              (selectedJobs?.length === jobs?.length)
+                            }
+                            id={`select_all`}
+                            onChange={handleSelectAll}
                             style={{ display: "none" }}
                           />
-                          {isChecked[`select_1`] ? (
+                          {(selectedJobs?.length === jobs?.length) ? (
                             <div className="svg-box-2 mx-2">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -166,20 +275,22 @@ const Jobs = () => {
                   </thead>
                   <tbody>
                     {jobs &&
-                      jobs?.length &&
-                      jobs?.map((job) => (
-                        <tr key={job.id}>
+                      jobs?.length > 0 &&
+                      jobs?.map((job, index) => (
+                        <tr key={index}>
                           <th scope="row" className="text-center">
                             {" "}
-                            <label htmlFor={`select_1`}>
+                            <label htmlFor={`select_${index}`}>
                               <input
                                 type="checkbox"
-                                checked={isChecked[`select_1`]}
-                                onChange={() => toggleCheckbox(`select_1`)}
-                                id={`select_1`}
+                                checked={selectedJobs.includes(job.id)}
+                                onChange={(e) =>
+                                  handleCheckBoxSelect(e, job.id)
+                                }
+                                id={`select_${index}`}
                                 style={{ display: "none" }}
                               />
-                              {isChecked[`select_1`] ? (
+                              {selectedJobs.includes(job.id) ? (
                                 <div className="svg-box-2 mx-2">
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -200,11 +311,15 @@ const Jobs = () => {
                             </label>
                           </th>
                           <td className="text-center">
-                            <span className={`${job.id % 2 ? "blue" : "violet"}`}>
-                              23-313
+                            <span
+                              className={`stageBtn btn_${findNearestStage(
+                                job
+                              )}`}
+                            >
+                              {job.id}
                             </span>
                           </td>
-                          <td>
+                          <td className="px-3">
                             <div className="job-name">
                               <h4>{job.title}</h4>
                               <h6>{job.description}</h6>
@@ -222,59 +337,57 @@ const Jobs = () => {
           </div>
 
           <div className="right-side flex-1 w-100">
-
             <div className="first-table">
-              <div className="table-responsive" style={{maxWidth: divWidth-800}}>
-
-              <div className="job_table_outer_div"  >
-                <table class="table table-borderless text-light">
-                  <thead>
-                    <tr>
-                      <th scope="col">
-                        <div className="headerDiv">Job Manager</div>
-                      </th>
-                      <th scope="col">
-                        <div className="headerDiv">Latest Update</div>
-                      </th>
-                      <th scope="col">
-                        <div className="headerDiv">Status</div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {jobs &&
-                      jobs?.length &&
-                      jobs?.map((job) => (
-                        <tr key={job.id}>
-                          <td className="text-center">
-                            <div className="userImagesCol">
-                              <div className="searchUserImg">
-                                <User />
+              <div
+                className="table-responsive"
+                style={{ maxWidth: divWidth - 800 }}
+              >
+                <div className="job_table_outer_div">
+                  <table class="table table-borderless text-light">
+                    <thead>
+                      <tr>
+                        <th scope="col">
+                          <div className="headerDiv">Job Manager</div>
+                        </th>
+                        <th scope="col">
+                          <div className="headerDiv">Latest Update</div>
+                        </th>
+                        <th scope="col">
+                          <div className="headerDiv">Status</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {jobs &&
+                        jobs?.length > 0 &&
+                        jobs?.map((job) => (
+                          <tr key={job.id}>
+                            <td className="text-center">
+                              <div className="userImagesCol">
+                                <div className="searchUserImg">
+                                  <User />
+                                </div>
                               </div>
-                            </div>
-                          </td>
+                            </td>
 
-                          <td>
-                            <div className="jobDescriptionTextDiv">
-                              Latest update and comments will be listed here <br />
-                            for the user to easily see without having to open a
-                            project.
-                            </div>
-                          </td>
-                          <td className="text-center">
-                            <span
-                              className={`${
-                                job.status === "in-progress" ? "orange" : "violet"
-                              }`}
-                            >
-                              {job.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
+                            <td className="px-3">
+                              <div className="jobDescriptionTextDiv">
+                                {job.latest_update}
+                              </div>
+                            </td>
+                            <td className="text-center">
+                              <span
+                                className={`statusBtn
+                                ${job.status}`}
+                              >
+                                {job.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
