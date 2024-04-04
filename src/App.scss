@@ -1532,3 +1532,29 @@ body{
         color: #353535;
     }
 }
+
+
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+    z-index: 99999;
+  }
+   
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #00000071;
+    z-index: 99999;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #3f3f3f77;
+    z-index: 99999;
+    
+  }
+   
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    z-index: 99999;
+  }

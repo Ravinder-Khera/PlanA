@@ -16,6 +16,7 @@ import { ToastContainer } from 'react-toastify';
 import Invoice from './pages/Invoicing/invoice';
 import TaskPage from './pages/Dashboard/tasks';
 import TimelinePage from './pages/Dashboard/timeline';
+import Jobs from "./pages/Jobs"
 
 function DashboardMenuList() {
   const location = useLocation();
@@ -116,6 +117,8 @@ function DashboardMenuList() {
 
 function RightSide() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { pathname } = useLocation();
+  console.log("pathname", pathname)
 
   useEffect(() => {
     const checkAuthToken = () => {
@@ -131,13 +134,14 @@ function RightSide() {
   return (
     <div className='RightSide'>
       {isLoggedIn ? <>
-        <NavMenu />
+        {pathname !== "/Jobs" && <NavMenu />}
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/timeline" element={<TimelinePage />} />
           <Route path="/dashboard/tasks" element={<TaskPage />} />
           <Route path="/invoice" element={<Invoice />} />
+          <Route path="/jobs" element={<Jobs />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
