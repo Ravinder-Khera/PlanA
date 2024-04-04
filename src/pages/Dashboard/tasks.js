@@ -31,6 +31,8 @@ function TaskPage() {
     const [selectedSearchJobStageId, setSelectedSearchJobStageId] = useState('');
     const [createTaskTitle, setCreateTaskTitle] = useState('');
     const [isChecked, setIsChecked] = useState({});
+    const [userDropdownStates, setUserDropdownStates] = useState([]);
+    const [selectedAssignee, setSelectedAssignee] = useState([]);
 
     const addTaskJobDropdownRef = useRef(null);
     const addTaskJobStageDropdownRef = useRef(null);
@@ -122,6 +124,8 @@ function TaskPage() {
           document.removeEventListener("mousedown", handler);
         };
     }, []);
+
+    console.log('user ListItem',selectedAssignee);
 
     const [selectionRange, setSelectionRange] = useState({
         startDate: new Date(new Date().getFullYear(), new Date().getMonth()- 1 , new Date().getDate()),
@@ -246,6 +250,82 @@ function TaskPage() {
             setLoading(false); 
         }
     };
+
+    const handleAssigneeClick = (userId) => {
+        setSelectedAssignee(prevUsers => {
+            if (prevUsers.includes(userId)) {
+                return prevUsers.filter(id => id !== userId);
+            } else {
+                return [...prevUsers, userId];
+            }
+        });
+    };
+    
+
+    const handleAddAssignee = async (taskId) => {
+        try {
+            const authToken = localStorage.getItem('authToken');
+            setLoading(true);
+            const response = await updateTask({ assignee_ids: selectedAssignee }, authToken, taskId);
+            console.log('update Task --',response);
+            if (response.res) {
+                fetchTasksToDo();
+                fetchTasksCompleted();
+                setSelectedAssignee([])
+                setUserDropdownStates([])
+                toast.success('Assignee added to Task', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            } else {
+                console.error('Task update failed:', response.error); 
+                fetchTasksToDo();
+                fetchTasksCompleted();
+                setSelectedAssignee([])
+                setUserDropdownStates([])    
+                toast.error(`${response.error.message}`, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            }
+            } catch (error) {
+                console.error('There was an error:', error);
+            }finally {
+            setLoading(false); 
+        }
+    };
+
+    const handleCloseAddAssignee = async () => {
+        setSelectedAssignee([])
+        setUserDropdownStates([])
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (userDropdownStates.includes(true) && !selectUserRef.current.contains(event.target)) {
+                const newUserDropdownStates = userDropdownStates.map(() => false);
+                setUserDropdownStates(newUserDropdownStates);
+            }
+        };
+    
+        document.addEventListener("mousedown", handleClickOutside);
+    
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [userDropdownStates]);
 
     const fetchJobStages = async (job_id) => {
         try {
@@ -402,9 +482,18 @@ function TaskPage() {
             setSelectedUsers(prevUsers => [...prevUsers, userId]);
         }
     };
+
+    const toggleUserDropdown = (index) => {
+        const newUserDropdownStates = [...userDropdownStates];
+        newUserDropdownStates[index] = !newUserDropdownStates[index];
+        const taskUsersIds = tasksToDo[index].users.map(user => user.id);
+        console.log('taskUsersIds',taskUsersIds);
+        setUserDropdownStates(newUserDropdownStates);
+        setSelectedAssignee(taskUsersIds);
+    };
     
-    const formattedStartDate = selectionRange.startDate.toLocaleDateString('en-US', {  day: 'numeric',month: 'short', year: 'numeric' });
-    const formattedEndDate = selectionRange.endDate.toLocaleDateString('en-US', {  day: 'numeric',month: 'short', year: 'numeric' });
+    const formattedStartDate = selectionRange.startDate.toLocaleDateString('en-AU', {  day: 'numeric',month: 'short', year: 'numeric' });
+    const formattedEndDate = selectionRange.endDate.toLocaleDateString('en-Au', {  day: 'numeric',month: 'short', year: 'numeric' });
     
     let formattedDueDate = '';
     if (selectedDueDate) {
@@ -461,8 +550,6 @@ function TaskPage() {
         fetchJobIds();
     }, [selectionRange.endDate, selectionRange.startDate]);
 
-    console.log('task ToDo ',tasksToDo,'task completed ',tasksCompleted,'start date ',selectionRange.startDate.toISOString().slice(0, 10),'end date ',selectionRange.endDate.toISOString().slice(0, 10));
-
     const handleNextMonth = () => {
         setSelectionRange(prevState => {
             const nextMonthStartDate = new Date(prevState.startDate);
@@ -491,6 +578,12 @@ function TaskPage() {
         });
     };
 
+    const handleFomatedDate = (date) => {
+        const originalDate = new Date(date);
+        const formattedDate = originalDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+        return formattedDate
+    };
+
     return (<>
     {loading &&  <div className='loaderDiv'>
       <Bars
@@ -503,6 +596,7 @@ function TaskPage() {
         visible={true}
       />
     </div>}
+    
     <div className='DashboardTopMenu'>
         <div className='DashboardHeading d-flex justify-content-between align-items-center'>
             <h2>Tasks</h2>
@@ -675,17 +769,21 @@ function TaskPage() {
                             <div className='listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none'>
                                 <div className='addTaskJobDiv d-flex align-items-center justify-content-end'>
                                     {selectedUsers.length > 0 ? (<>
-                                        {selectedUsers.map((user,index) => (
+                                        {usersList.filter(user => selectedUsers.includes(user.id))
+                                            .map((user,index) => (
                                             <>
                                             <div key={index} className={`UserImg addedUserImages ${index}`} 
                                                 style={{ minWidth: "40px" ,zIndex: index }}>
-                                                <User />
+                                                {user.profile_pic !== '' ?
+                                                    <img alt={user.name} src={process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+user.profile_pic}/>    
+                                                    : <User />
+                                                }
                                             </div>
                                             </>
                                         )) }
                                         <div className="UserImg withAddBtn m-0" 
                                             onClick={()=>setAddTaskJobUserDropdown(!addTaskJobUserDropdown)}
-                                            style={{ minWidth: "40px",zIndex: '999' }}>
+                                            style={{ minWidth: "40px",zIndex: '99' }}>
                                             <User />
                                         </div>
                                     </>
@@ -700,13 +798,59 @@ function TaskPage() {
                                         <div className='addTaskJobDropdown right' ref={selectUserRef}>
                                             <div className='addTaskJobListScroll'>
                                                 <div className='addTaskJobListItems'>
-                                                    {usersList && usersList.map((user) => (
-                                                        <div key={user.id} 
-                                                            className={`addTaskJobListItem ${selectedUsers.includes(user.id) && 'active' }`}
-                                                            onClick={() => handleUserClick(user.id)} >
-                                                            {user.name}
-                                                        </div>
-                                                    ))}
+                                                    <label className='addedAssignees'>Assignees</label>
+                                                    <div className='addedAssigneeBorder'>
+                                                        {usersList && usersList.filter(user => selectedUsers.includes(user.id))
+                                                            .map((user) => (<>
+                                                                <div 
+                                                                    key={user.id} 
+                                                                    className={`addAssigneeDiv  ${selectedUsers.includes(user.id) && 'active' }`}
+                                                                    onClick={() => handleUserClick(user.id)} 
+                                                                >
+                                                                    <div className={` UserImg addedUserImages `} style={{ minWidth: "40px" }}>
+                                                                        {user.profile_pic !== '' ?
+                                                                            <img alt={user.name} src={process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+user.profile_pic}/>    
+                                                                            : <User />
+                                                                        }
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4>{user.name}</h4>
+                                                                        <p>{user.email}</p>
+                                                                    </div>
+                                                                    <div className='checkAddBtn'>
+                                                                        {selectedUsers.includes(user.id) ? '-' : '+' }
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                            ))
+                                                        }
+                                                    </div>
+                                                    <label className=''>Add Assignees</label>
+                                                    {usersList
+                                                        .filter(user => !selectedUsers.includes(user.id))
+                                                        .map((user) => (<>
+                                                            <div 
+                                                                key={user.id} 
+                                                                className={`addAssigneeDiv ${selectedUsers.includes(user.id) && 'active' }`}
+                                                                onClick={() => handleUserClick(user.id)} 
+                                                            >
+                                                                <div className={` UserImg addedUserImages `} style={{ minWidth: "40px" }}>
+                                                                    {user.profile_pic !== '' ?
+                                                                        <img alt={user.name} src={process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+user.profile_pic}/>    
+                                                                        : <User />
+                                                                    }
+                                                                </div>
+                                                                <div>
+                                                                    <h4>{user.name}</h4>
+                                                                    <p>{user.email}</p>
+                                                                </div>
+                                                                <div className='checkAddBtn'>
+                                                                    {selectedUsers.includes(user.id) ? '-' : '+' }
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                        ))
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -716,8 +860,8 @@ function TaskPage() {
                         </li>
                     )}
                     {tasksToDo && tasksToDo
-                    .map((task) => (
-                        <li key={task.id} id={`stage_`+task.id} className={`stage_`+task.stage.title}>
+                    .map((task,i) => (
+                        <li key={task.id} id={`stage_`+task.id} className={`  stage_`+task.stage.title}>
                             <div className={`listContent listTitle `}>
                                 <label htmlFor={`select_${task.id}`}>
                                     <input
@@ -750,10 +894,102 @@ function TaskPage() {
                             </div>
                             <div className='listContent centerContent'>
                                 <div className={`centerText stageBtn btn_${task.stage.title}`}>{task.stage.title}</div>
-                                <div className='centerText'>{task.due_date}</div>
+                                <div className='centerText'>
+                                    {handleFomatedDate(task.due_date)}
+                                </div>
                             </div>
-                            <div className='listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none'>
-                                <div className="UserImg withAddBtn" style={{ minWidth: "40px" }}><User /></div>
+                            <div className='listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv'>
+                                <div className=' d-flex align-items-center justify-content-end'>
+                                    {task.users.length > 0 ? (<>
+                                        {task.users.map((user,index) => (
+                                            <>
+                                            <div key={index} className={` UserImg addedUserImages ${index === task.users.length - 1 ? 'withAddBtn' : ''}`} 
+                                                style={{ minWidth: "40px" ,zIndex: index }}
+                                                onClick={() => toggleUserDropdown(i)}
+                                                >
+                                                    {user.profile_pic !== '' ?
+                                                        <img alt={user.name} src={process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+user.profile_pic}/>    
+                                                    :
+                                                    <User />
+                                                    }
+                                            </div>
+                                            </>
+                                        )) }
+                                    </>
+                                    )
+                                    : 
+                                        <div className="UserImg withAddBtn" 
+                                            onClick={()=>setAddTaskJobUserDropdown(!addTaskJobUserDropdown)}
+                                            style={{ minWidth: "40px" }}>
+                                            <User />
+                                        </div>
+                                    }
+                                    {userDropdownStates[i] && task.users.length > 0 && 
+                                        <div className='addAssigneeDropdown ' >
+                                            <div className='addTaskJobListScroll' ref={selectUserRef}>
+                                                <div className='addTaskJobListItems'>
+                                                    <label className='addedAssignees'>Assignees</label>
+                                                    <div className='addedAssigneeBorder'>
+                                                        {usersList && usersList.filter(user => selectedAssignee.includes(user.id))
+                                                            .map((user) => (<>
+                                                                <div 
+                                                                    key={user.id} 
+                                                                    className={`addAssigneeDiv  ${selectedAssignee.includes(user.id) && 'active' }`}
+                                                                    onClick={() => handleAssigneeClick(user.id)} 
+                                                                >
+                                                                    <div className={` UserImg addedUserImages `} style={{ minWidth: "40px" }}>
+                                                                        {user.profile_pic !== '' ?
+                                                                            <img alt={user.name} src={process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+user.profile_pic}/>    
+                                                                            : <User />
+                                                                        }
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4>{user.name}</h4>
+                                                                        <p>{user.email}</p>
+                                                                    </div>
+                                                                    <div className='checkAddBtn'>
+                                                                        {selectedAssignee.includes(user.id) ? '-' : '+' }
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                            ))
+                                                        }
+                                                    </div>
+                                                    <label className=''>Add Assignees</label>
+                                                    {usersList
+                                                        .filter(user => !selectedAssignee.includes(user.id))
+                                                        .map((user) => (<>
+                                                            <div 
+                                                                key={user.id} 
+                                                                className={`addAssigneeDiv ${selectedAssignee.includes(user.id) && 'active' }`}
+                                                                onClick={() => handleAssigneeClick(user.id)} 
+                                                            >
+                                                                <div className={` UserImg addedUserImages `} style={{ minWidth: "40px" }}>
+                                                                    {user.profile_pic !== '' ?
+                                                                        <img alt={user.name} src={process.env.REACT_APP_USER_API_CLOUD_IMG_PATH+user.profile_pic}/>    
+                                                                        : <User />
+                                                                    }
+                                                                </div>
+                                                                <div>
+                                                                    <h4>{user.name}</h4>
+                                                                    <p>{user.email}</p>
+                                                                </div>
+                                                                <div className='checkAddBtn'>
+                                                                    {selectedAssignee.includes(user.id) ? '-' : '+' }
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                        ))
+                                                    }
+                                                </div>
+                                                <div className='d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3'>
+                                                    <button className='colorOutlineBtn' onClick={() => handleAddAssignee(task.id)}>Add Assignee</button>
+                                                    <button className='colorOutlineBtn' onClick={()=>handleCloseAddAssignee()}>Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </li>
                     ))}
