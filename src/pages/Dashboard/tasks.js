@@ -56,6 +56,7 @@ function TaskPage() {
   const selectDateRef = useRef(null);
   const selectDueDateRef = useRef(null);
   const selectUserRef = useRef(null);
+  const selectAssigneeRef = useRef(null);
 
   const fetchTasksToDo = async () => {
     try {
@@ -385,7 +386,8 @@ function TaskPage() {
     const handleClickOutside = (event) => {
       if (
         userDropdownStates.includes(true) &&
-        !selectUserRef.current.contains(event.target)
+        selectAssigneeRef.current &&
+        !selectAssigneeRef.current.contains(event.target)
       ) {
         const newUserDropdownStates = userDropdownStates.map(() => false);
         setUserDropdownStates(newUserDropdownStates);
@@ -1192,19 +1194,17 @@ function TaskPage() {
                         ) : (
                           <div
                             className="UserImg withAddBtn"
-                            onClick={() =>
-                              setAddTaskJobUserDropdown(!addTaskJobUserDropdown)
-                            }
+                           onClick={() => toggleUserDropdown(i)}
                             style={{ minWidth: "40px" }}
                           >
                             <User />
                           </div>
                         )}
-                        {userDropdownStates[i] && task.users.length > 0 && (
+                        {userDropdownStates[i] && (
                           <div className="addAssigneeDropdown ">
                             <div
                               className="addTaskJobListScroll"
-                              ref={selectUserRef}
+                              ref={selectAssigneeRef}
                             >
                               <div className="addTaskJobListItems">
                                 <label className="addedAssignees">

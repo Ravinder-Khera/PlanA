@@ -1,10 +1,116 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Complete.scss";
-import { CalenderIcon, CrossIcon, User } from "../../assets/svg";
+import { CalenderIcon, CrossIcon, TaskIcon, User } from "../../assets/svg";
 import { DateRangePicker, Calendar } from "react-date-range";
+import { getUserByRole } from "../../services/auth";
 
 const Complete = ({ data, handleClose }) => {
-  console.log("data", data);
+
+  const [loading, setLoading] = useState(false);
+  const [selectDueDate, setSelectDueDate] = useState(false);
+  const [selectedDueDate, setSelectedDueDate] = useState(null); 
+  const [selectTitle, setSelectTitle] = useState(data.title); 
+  const [addTaskJobStageDropdown, setAddTaskJobStageDropdown] = useState(false);
+  const [searchJobStages, setSearchJobStages] = useState([]);
+  const [selectedSearchJobStage, setSelectedSearchJobStage] = useState("");
+  const [selectedSearchJobStageId, setSelectedSearchJobStageId] = useState("");
+  const [addTaskJobUserDropdown, setAddTaskJobUserDropdown] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [usersList, setUsersList] = useState([]);
+
+  const selectDueDateRef = useRef(null);
+  const selectUserRef = useRef(null);
+  const addTaskJobStageDropdownRef = useRef(null);
+  
+  let formattedDueDate = "";
+  if (selectedDueDate) {
+    const year = selectedDueDate.getFullYear();
+    const month = String(selectedDueDate.getMonth() + 1).padStart(2, "0");
+    const day = String(selectedDueDate.getDate()).padStart(2, "0");
+    formattedDueDate = `${year}-${month}-${day}`;
+  } else {
+    formattedDueDate = "";
+  }
+
+  const handleSelectDueDate = (date) => {
+    setSelectDueDate(false);
+    setSelectedDueDate(date);
+  };
+
+  
+  useEffect(()=>{
+    const fetchJobStages = async (job_id) => {
+      try {
+        setLoading(true);
+        const authToken = localStorage.getItem("authToken");
+        const requestOptions = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        };
+        let response = await fetch(
+          `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/${job_id}/stages`,
+          requestOptions
+        );
+        const isJson = response.headers
+          .get("content-type")
+          ?.includes("application/json");
+        const data = isJson && (await response.json());
+        setSearchJobStages(data);
+        if (response.status === 200) {
+          setLoading(false);
+          return { res: data, error: null };
+        } else {
+          return { res: null, error: data };
+        }
+      } catch (error) {
+        console.error("Error fetching jo stages:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobStages(data.job_id);
+    setSelectedUsers(data.users)
+  },[data])
+
+
+  useEffect(() => {
+    const fetchJobUsers = async () => {
+      try {
+        setLoading(true);
+        const authToken = localStorage.getItem("authToken");
+        let response = await getUserByRole(authToken);
+        if (response.res) {
+          setUsersList(response.res);
+        } else {
+          console.error("Failed to fetch Users:", response.error);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchJobUsers();
+  }, []);
+
+  const handleUserClick = (userId) => {
+    const isSelected = selectedUsers.includes(userId);
+
+    if (isSelected) {
+      setSelectedUsers((prevUsers) => prevUsers.filter((id) => id !== userId));
+    } else {
+      setSelectedUsers((prevUsers) => [...prevUsers, userId]);
+    }
+  };
+
+  console.log(selectedUsers);
+
   return (
     <div className="popup-container">
       <div className="popup-body">
@@ -20,31 +126,65 @@ const Complete = ({ data, handleClose }) => {
           <div className="top  d-flex justify-content-between align-items-center ">
             <div className="left d-flex flex-column justify-content-center align-items-start">
               <h1>{data.job_id}</h1>
-              <h4>{data.title}</h4>
+              <input className="taskTitleInput" value={selectTitle} onChange={(e)=> setSelectTitle(e.target.value)} />
             </div>
-            <div className="right d-flex justify-content-center align-items-center">
-              <div className="date d-flex flex-column justify-content-center align-items-start 2">
-                <h1>Due Date:</h1>
-                <h4>{data.due_date}</h4>
+            <div className="right selectDueDateDiv">
+              <div className="selectDueDateBtn" onClick={() => setSelectDueDate(!selectDueDate)}>
+                <div className="date d-flex flex-column justify-content-center align-items-start">
+                  <h1>Due Date:</h1>
+                  <h4>{selectedDueDate ? formattedDueDate : data.due_date}</h4>
+                </div>
+                <TaskIcon />
               </div>
-              <div className="calender">
-                <CalenderIcon />
-              </div>
-              {/* <div className="datePickerDiv">
-                <Calendar
-                  calendarType="ISO 8601"
-                  minDate={new Date()}
-                  rangeColors={["#E2E31F"]}
-                />
-              </div> */}
+              {selectDueDate && (
+                <div className="datePickerDiv" ref={selectDueDateRef}>
+                  <Calendar
+                    date={selectedDueDate}
+                    onChange={handleSelectDueDate}
+                    value={selectedDueDate}
+                    calendarType="ISO 8601"
+                    minDate={new Date()}
+                    rangeColors={["#E2E31F"]}
+                  />
+                </div>
+              )}
             </div>
           </div>
-          <div className="bottom  d-flex justify-content-between align-items-center">
-            <div className={`centerText stageBtn  btn_${data.stage.title}`}>
-              {data.stage.title}
+          <div className="bottom addNewTaskDiv d-flex gap-2 justify-content-between align-items-center">
+            <div className="addTaskJobDiv w-100">
+              <div className={`centerText addTaskJobBtn ${data.stage.title}`} style={{minHeight:'40px',fontSize:'16px'}} 
+                onClick={() => {setAddTaskJobStageDropdown(!addTaskJobStageDropdown);}}>
+                {selectedSearchJobStage ? selectedSearchJobStage : data.stage.title}
+              </div>
+              {addTaskJobStageDropdown && (
+                <div
+                  style={{top:'100%'}}
+                  className="addTaskJobDropdown"
+                  ref={addTaskJobStageDropdownRef}
+                >
+                  <div className="addTaskJobListScroll">
+                    <div className="addTaskJobListItems">
+                      {searchJobStages &&
+                        searchJobStages.map((stage) => (
+                          <div
+                            key={stage.id}
+                            className={`addTaskJobStageItem ${stage.title}`}
+                            onClick={() => {
+                              setSelectedSearchJobStage(stage.title);
+                              setSelectedSearchJobStageId(stage.id);
+                              setAddTaskJobStageDropdown(false);
+                            }}
+                          >
+                            {stage.title}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-              <div className=" d-flex align-items-center justify-content-end">
+              <div className="addTaskJobDiv d-flex align-items-center justify-content-end">
                 {data.users.length > 0 ? (
                   <>
                     {data.users.map((user, index) => (
@@ -55,7 +195,9 @@ const Complete = ({ data, handleClose }) => {
                             index === data.users.length - 1 ? "withAddBtn" : ""
                           }`}
                           style={{ minWidth: "40px", zIndex: index }}
-                        //   onClick={() => toggleUserDropdown(i)}
+                          onClick={() =>
+                            setAddTaskJobUserDropdown(!addTaskJobUserDropdown)
+                          }
                         >
                           {user.profile_pic !== "" ? (
                             <img
@@ -75,34 +217,41 @@ const Complete = ({ data, handleClose }) => {
                 ) : (
                   <div
                     className="UserImg withAddBtn"
-                    // onClick={() =>
-                    //   setAddTaskJobUserDropdown(!addTaskJobUserDropdown)
-                    // }
+                    onClick={() =>
+                      setAddTaskJobUserDropdown(!addTaskJobUserDropdown)
+                    }
                     style={{ minWidth: "40px" }}
                   >
                     <User />
                   </div>
                 )}
-                {/* {userDropdownStates[i] && data.users.length > 0 && (
-                  <div className="addAssigneeDropdown ">
-                    <div className="addTaskJobListScroll" ref={selectUserRef}>
+                {addTaskJobUserDropdown && (
+                  <div
+                    className="addTaskJobDropdown right"
+                    ref={selectUserRef}
+                  >
+                    <div className="addTaskJobListScroll">
                       <div className="addTaskJobListItems">
-                        <label className="addedAssignees">Assignees</label>
+                        <label className="addedAssignees">
+                          Assignees
+                        </label>
                         <div className="addedAssigneeBorder">
                           {usersList &&
                             usersList
                               .filter((user) =>
-                                selectedAssignee.includes(user.id)
+                                selectedUsers.includes(user.id)
                               )
                               .map((user) => (
                                 <>
                                   <div
                                     key={user.id}
                                     className={`addAssigneeDiv  ${
-                                      selectedAssignee.includes(user.id) &&
+                                      selectedUsers.includes(user.id) &&
                                       "active"
                                     }`}
-                                    onClick={() => handleAssigneeClick(user.id)}
+                                    onClick={() =>
+                                      handleUserClick(user.id)
+                                    }
                                   >
                                     <div
                                       className={` UserImg addedUserImages `}
@@ -126,7 +275,7 @@ const Complete = ({ data, handleClose }) => {
                                       <p>{user.email}</p>
                                     </div>
                                     <div className="checkAddBtn">
-                                      {selectedAssignee.includes(user.id)
+                                      {selectedUsers.includes(user.id)
                                         ? "-"
                                         : "+"}
                                     </div>
@@ -136,15 +285,18 @@ const Complete = ({ data, handleClose }) => {
                         </div>
                         <label className="">Add Assignees</label>
                         {usersList
-                          .filter((user) => !selectedAssignee.includes(user.id))
+                          .filter(
+                            (user) => !selectedUsers.includes(user.id)
+                          )
                           .map((user) => (
                             <>
                               <div
                                 key={user.id}
                                 className={`addAssigneeDiv ${
-                                  selectedAssignee.includes(user.id) && "active"
+                                  selectedUsers.includes(user.id) &&
+                                  "active"
                                 }`}
-                                onClick={() => handleAssigneeClick(user.id)}
+                                onClick={() => handleUserClick(user.id)}
                               >
                                 <div
                                   className={` UserImg addedUserImages `}
@@ -168,7 +320,7 @@ const Complete = ({ data, handleClose }) => {
                                   <p>{user.email}</p>
                                 </div>
                                 <div className="checkAddBtn">
-                                  {selectedAssignee.includes(user.id)
+                                  {selectedUsers.includes(user.id)
                                     ? "-"
                                     : "+"}
                                 </div>
@@ -176,23 +328,9 @@ const Complete = ({ data, handleClose }) => {
                             </>
                           ))}
                       </div>
-                      <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
-                        <button
-                          className="colorOutlineBtn"
-                          onClick={() => handleAddAssignee(task.id)}
-                        >
-                          Add Assignee
-                        </button>
-                        <button
-                          className="colorOutlineBtn"
-                          onClick={() => handleCloseAddAssignee()}
-                        >
-                          Cancel
-                        </button>
-                      </div>
                     </div>
                   </div>
-                )} */}
+                )}
               </div>
             </div>
           </div>
