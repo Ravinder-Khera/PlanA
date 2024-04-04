@@ -1,154 +1,279 @@
+.jobsBg{
+    position: relative;
+    height: 100%;
+    &::before{
+        position: absolute;
+        content: '';
+        top: 0;
+        left: 0;
+        width: 800px;
+        height: 100%;
+        z-index: 0;
+        box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.JobsHeading {
+    padding: 17px 26px 17px 32px;
+    h2 {
+        color: #fff;
+        font-family: 'Archivo', sans-serif;
+        font-size: 36px;
+        font-style: normal;
+        font-weight: 900;
+        line-height: normal;
+        letter-spacing: -1.44px;
+        text-transform: capitalize;
+        margin-bottom: 0;
+    }
+    .leftGap{
+        gap: 23px;
+    }
+    .navSearchDiv {
+        form {
+            width: max-content;
+            display: flex;
+            .searchBox {
+                border-radius: 2px;
+                padding: 4px 14px;
+                background: #353535;
+                display: flex;
+                gap: 8px;
+                align-items: center;
+
+                input {
+                    background: transparent;
+                    border: none;
+                    outline: none;
+                    color: #E2E31F;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+
+                    &::placeholder {
+                        color: #E2E31F;
+                    }
+
+                    &::-moz-placeholder {
+                        color: #E2E31F;
+                        opacity: 1;
+                    }
+                }
+            }
+
+            .searchUserImg {
+                width: 40px;
+                height: 40px;
+                background: #e2e31f;
+                border-radius: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-left: 16px;
+                box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
+
+                img {
+                    object-fit: cover;
+                    max-width: 100%;
+                    height: 100%;
+                    border-radius: 5px;
+                    border: 1px solid #000;
+                }
+
+                &.withAddBtn {
+                    position: relative;
+                    cursor: pointer;
+
+                    &::after {
+                        content: '+';
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        width: 16px;
+                        height: 16px;
+                        background: #fff;
+                        color: #000;
+                        border-radius: 50%;
+                        transform: translateX(20%) translateY(20%);
+                        z-index: 1;
+                        display: flex;
+                        font-size: 12px;
+                        line-height: 100%;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                }
+
+                &.addedUserImages {
+                    position: relative;
+                    z-index: 0;
+                    margin: 0;
+                    margin-right: -10px;
+
+                    img {
+                        object-fit: cover;
+                        max-width: 100%;
+                        height: 100%;
+                        border-radius: 5px;
+                    }
+                }
+            }
+        }
+    }
+    .navSearchTab {
+        form {
+            width: max-content;
+            display: flex;
+
+            .searchBox {
+                border-radius: 2px;
+                padding: 4px 14px;
+                background: #353535;
+                display: flex;
+                gap: 8px;
+                align-items: center;
+
+                input {
+                    background: transparent;
+                    border: none;
+                    outline: none;
+                    color: #E2E31F;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+
+                    &::placeholder {
+                        color: #E2E31F;
+                    }
+
+                    &::-moz-placeholder {
+                        color: #E2E31F;
+                        opacity: 1;
+                    }
+                }
+            }
+
+            .searchUserImg {
+                width: 40px;
+                height: 40px;
+                background: #e2e31f;
+                border-radius: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-left: 10px;
+                box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
+
+
+            }
+        }
+    }
+    .jobsTaskTabsDiv {
+        display: flex;
+
+        .jobtaskTab {
+            background: #353535;
+            min-width: 144px;
+            text-align: center;
+            color: #FFF;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.48px;
+            padding: 6px;
+            position: relative;
+            z-index: 0;
+            cursor: pointer;
+            border-radius: 6px;
+
+            &:nth-child(2) {
+                transform: translateX(-16px);
+            }
+
+            &.active {
+                z-index: 1;
+                border: 1px solid #E2E31F;
+                background: #969721;
+            }
+        }
+    }
+
+    .addjobs {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .addJobIcon {
+            width: 40px;
+            height: 40px;
+            background: #e2e31f;
+            border-radius: 0px !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+            box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
+        }
+
+        .notifyIcon {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border-radius: 0px !important;
+            display: flex;
+            border: 1px solid #e2e31f;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+            box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
+        }
+
+    }
+    .delete-box {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+
+        .searchUserImg {
+            width: 40px;
+            height: 40px;
+            background: #e2e31f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
+        }
+
+        .delete-item {
+            font-size: 14px;
+            color: #E2E31F;
+            margin-left: 10px;
+        }
+    }
+}
 .JobsContainer {
     width: 100%;
     position: relative;
     .left-side {
         padding: 6px 0px 6px 16px;
         min-width: 800px;
-        box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
-        height: 100vh;
-        position: fixed;
-        z-index: 1000;
-        background: #252525;
+        // box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
+        // height: 100vh;
+        // position: fixed;
+        // z-index: 1000;
+        // background: #252525;
 
-        .JobsHeading {
-            h2 {
-                color: #fff;
-                font-family: 'Archivo', sans-serif;
-                font-size: 36px;
-                font-style: normal;
-                font-weight: 900;
-                line-height: normal;
-                letter-spacing: -1.44px;
-                text-transform: capitalize;
-                margin-bottom: 0;
-            }
-
-            .navSearchDiv {
-
-                padding: 17px;
-
-                form {
-                    width: max-content;
-                    display: flex;
-
-                    .searchBox {
-                        border-radius: 2px;
-                        padding: 4px 14px;
-                        background: #353535;
-                        display: flex;
-                        gap: 8px;
-                        align-items: center;
-
-                        input {
-                            background: transparent;
-                            border: none;
-                            outline: none;
-                            color: #E2E31F;
-                            font-size: 16px;
-                            font-style: normal;
-                            font-weight: 500;
-                            line-height: normal;
-                            letter-spacing: -0.64px;
-
-                            &::placeholder {
-                                color: #E2E31F;
-                            }
-
-                            &::-moz-placeholder {
-                                color: #E2E31F;
-                                opacity: 1;
-                            }
-                        }
-                    }
-
-                    .serachUserImg {
-                        width: 40px;
-                        height: 40px;
-                        background: #e2e31f;
-                        border-radius: 5px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        margin-left: 10px;
-                        box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
-
-                        img {
-                            object-fit: cover;
-                            max-width: 100%;
-                            height: 100%;
-                            border-radius: 5px;
-                            border: 1px solid #000;
-                        }
-
-                        &.withAddBtn {
-                            position: relative;
-                            cursor: pointer;
-
-                            &::after {
-                                content: '+';
-                                position: absolute;
-                                bottom: 0;
-                                right: 0;
-                                width: 16px;
-                                height: 16px;
-                                background: #fff;
-                                color: #000;
-                                border-radius: 50%;
-                                transform: translateX(20%) translateY(20%);
-                                z-index: 1;
-                                display: flex;
-                                font-size: 12px;
-                                line-height: 100%;
-                                justify-content: center;
-                                align-items: center;
-                            }
-                        }
-
-                        &.addedUserImages {
-                            position: relative;
-                            z-index: 0;
-                            margin: 0;
-                            margin-right: -10px;
-
-                            img {
-                                object-fit: cover;
-                                max-width: 100%;
-                                height: 100%;
-                                border-radius: 5px;
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         .first-table {
             margin-top: 20px;
 
-            .delete-box {
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-
-                .serachUserImg {
-                    width: 40px;
-                    height: 40px;
-                    background: #e2e31f;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    margin-left: 10px;
-                    box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
-                }
-
-                .delete-item {
-                    font-size: 14px;
-                    color: #E2E31F;
-                    margin-left: 10px;
-                }
-            }
-
             .job_table_outer_div {
+                min-width: max-content;
                 tr {
                     height: 67px;
                     border-bottom: 1px solid rgba(226, 227, 31, 0.15);
@@ -283,11 +408,9 @@
 
     .right-side {
         padding: 6px 16px 6px 0;
-        position: absolute;
-        left: 800px;
-        height: 100vh;
-       
-
+        // position: absolute;
+        // left: 800px;
+        // height: 100vh;
         .JobsHeading {
             h2 {
                 color: #fff;
@@ -339,7 +462,7 @@
                         }
                     }
 
-                    .serachUserImg {
+                    .searchUserImg {
                         width: 40px;
                         height: 40px;
                         background: #e2e31f;
@@ -396,7 +519,7 @@
                 justify-content: flex-start;
                 align-items: center;
 
-                .serachUserImg {
+                .searchUserImg {
                     width: 40px;
                     height: 40px;
                     background: #e2e31f;
@@ -415,6 +538,7 @@
             }
 
             .job_table_outer_div {
+                min-width: max-content;
                 tr {
                     height: 67px;
                     border-bottom: 1px solid rgba(226, 227, 31, 0.15);
@@ -439,18 +563,22 @@
                         background-color: #e2e31f;
                         cursor: pointer;
                     }
-
-                    .serachUserImg {
+                    .userImagesCol{
+                        display: flex;
+                        justify-content: center;
+                    }
+                    .searchUserImg {
                         width: 40px;
                         height: 40px;
                         background: #e2e31f;
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                        margin-left: 10px;
                         box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
                     }
-
+                    .jobDescriptionTextDiv{
+                        min-width: 500px;
+                    }
                     .job-name {
 
                         h4 {
