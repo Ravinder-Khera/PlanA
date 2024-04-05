@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AddIcon, BellIcon, FilterIcon, Search, User } from "../../assets/svg";
 import "./Jobs.scss";
 import { DeleteIcon } from "../../assets/svg";
-import { getJobs, getJobsByFilter } from "../../services/auth";
+import { deleteJobs, getJobs, getJobsByFilter } from "../../services/auth";
 import { Bars } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import moment from "moment";
@@ -15,12 +15,14 @@ const Jobs = () => {
   const [jobs, setJobs] = useState();
   const [divWidth, setDivWidth] = useState(0);
   const [selectedJobs, setSelectedJobs] = useState([]);
-  const [status, setStatus] = useState("current-jobs");
-  const [filter, setFilter] = useState("");
+  const [status, setStatus] = useState("in-progress");
+  const [filteredJobs, setFilteredJobs] = useState("");
   const [getJob, setGetJob] = useState({
     data: {},
     stage: "",
   });
+
+  const [usersLists, setUsersList] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -46,12 +48,34 @@ const Jobs = () => {
     };
   }, []);
 
+  // Function to extract users from stages
+  function extractUsersFromStages(data) {
+    if (!data) return;
+    const usersArray = [];
+    data?.forEach((project) => {
+      project.stages?.forEach((stage) => {
+        stage.tasks?.forEach((task) => {
+          usersArray.push(...task.users);
+        });
+      });
+    });
+    return usersArray;
+  }
+
   const fetchJobs = async () => {
     setLoading(true);
     try {
       const res = await getJobs();
       const data = res?.res?.data;
       setJobs(data);
+      setFilteredJobs(data)
+      // Extract users from stages
+      if (data) {
+        const users = extractUsersFromStages(data);
+        // Print the users array
+        console.log("users", users);
+        setUsersList(users);
+      }
     } catch (error) {
       console.log("error while fetching jobs", error);
     } finally {
@@ -63,9 +87,8 @@ const Jobs = () => {
     let nearestStage = null;
     let nearestDueDate = Infinity;
 
-    data?.stages.forEach((stage) => {
-      stage?.tasks.forEach((task) => {
-       
+    data?.stages?.forEach((stage) => {
+      stage?.tasks?.forEach((task) => {
         const dueDate = new Date(task.due_date);
         const currentDate = new Date();
 
@@ -74,7 +97,6 @@ const Jobs = () => {
         if (difference > 0 && difference < nearestDueDate) {
           nearestDueDate = difference;
           nearestStage = stage;
-          console.log("tasks", task)
         }
       });
     });
@@ -95,15 +117,14 @@ const Jobs = () => {
   const handleSelectAll = (e) => {
     const { checked } = e.target;
     if (checked) {
-      const ids = jobs.map(({ id }) => id);
+      const ids = filteredJobs?.map(({ id }) => id);
       setSelectedJobs(ids);
     } else {
       setSelectedJobs([]);
     }
   };
 
-  const handleDelete = () => {
-    console.log("delete ids===>", selectedJobs);
+  const handleDelete = async () => {
     if (!selectedJobs.length) {
       toast.error(
         <>
@@ -128,6 +149,43 @@ const Jobs = () => {
       );
       return;
     }
+    try {
+      setLoading(true);
+      let response = await deleteJobs({
+        ids: selectedJobs,
+      });
+      console.log("jobs delete successful", response);
+      if (response.res) {
+        toast.success(`${response.res.message}`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      } else {
+        console.error("jobs delete failed:", response.error);
+        toast.error(`${response.error.message}`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      }
+    } catch (error) {
+      console.error("There was an error:", error);
+    } finally {
+      setLoading(false);
+      fetchJobs();
+      setSelectedJobs([]);
+    }
   };
 
   const handleStatusFilter = async (_status) => {
@@ -137,7 +195,7 @@ const Jobs = () => {
       const res = await getJobsByFilter(filterString);
       console.log("res of filtered job", res);
       const { data } = res?.res;
-      setJobs(data);
+      setFilteredJobs(data);
     } catch (error) {
       console.log("error while filtering", error);
     } finally {
@@ -199,10 +257,10 @@ const Jobs = () => {
               <div class="jobsTaskTabsDiv">
                 <div
                   class={`jobtaskTab ${
-                    status === "current-jobs" ? "active" : ""
+                    status === "in-progress" ? "active" : ""
                   }`}
                   onClick={() => {
-                    setStatus("current-jobs");
+                    setStatus("in-progress");
                     handleStatusFilter("in-progress");
                   }}
                 >
@@ -299,9 +357,9 @@ const Jobs = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {jobs &&
-                      jobs?.length > 0 &&
-                      jobs?.map((job, index) => (
+                    {filteredJobs &&
+                      filteredJobs?.length > 0 &&
+                      filteredJobs?.map((job, index) => (
                         <tr key={index}>
                           <th scope="row" className="text-center">
                             {" "}
@@ -396,18 +454,206 @@ const Jobs = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {jobs &&
-                        jobs?.length > 0 &&
-                        jobs?.map((job) => (
+                      {filteredJobs &&
+                        filteredJobs?.length > 0 &&
+                        filteredJobs?.map((job) => (
                           <tr key={job.id}>
                             <td className="text-center">
-                              <div className="userImagesCol">
-                                <div className="searchUserImg">
-                                  <User />
+                              <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                <div className=" d-flex align-items-center justify-content-center">
+                                  {usersLists?.length > 0 ? (
+                                    <>
+                                      {usersLists
+                                        ?.slice(0, 1)
+                                        ?.map((user, index) => (
+                                          <>
+                                            <div
+                                              key={index}
+                                              className={`UserImg addedUserImages ${
+                                                index === usersLists?.length - 1
+                                                  ? "withAddBtn"
+                                                  : ""
+                                              }`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                              }}
+                                              // onClick={() =>
+                                              //   toggleUserDropdown(i)
+                                              // }
+                                            >
+                                              {user.profile_pic !== "" ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user.profile_pic
+                                                  }
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
+                                          </>
+                                        ))}
+                                    </>
+                                  ) : (
+                                    <div
+                                      className="UserImg withAddBtn"
+                                      // onClick={() => toggleUserDropdown(i)}
+                                      style={{ minWidth: "40px" }}
+                                    >
+                                      <User />
+                                    </div>
+                                  )}
+                                  {/* {userDropdownStates[i] && (
+                                    <div className="addAssigneeDropdown ">
+                                      <div
+                                        className="addTaskJobListScroll"
+                                        ref={selectAssigneeRef}
+                                      >
+                                        <div className="addTaskJobListItems">
+                                          <label className="addedAssignees">
+                                            Assignees
+                                          </label>
+                                          <div className="addedAssigneeBorder">
+                                            {usersList &&
+                                              usersList
+                                                .filter((user) =>
+                                                  selectedAssignee.includes(
+                                                    user.id
+                                                  )
+                                                )
+                                                .map((user) => (
+                                                  <>
+                                                    <div
+                                                      key={user.id}
+                                                      className={`addAssigneeDiv  ${
+                                                        selectedAssignee.includes(
+                                                          user.id
+                                                        ) && "active"
+                                                      }`}
+                                                      onClick={() =>
+                                                        handleAssigneeClick(
+                                                          user.id
+                                                        )
+                                                      }
+                                                    >
+                                                      <div
+                                                        className={` UserImg addedUserImages `}
+                                                        style={{
+                                                          minWidth: "40px",
+                                                        }}
+                                                      >
+                                                        {user.profile_pic !==
+                                                        "" ? (
+                                                          <img
+                                                            alt={user.name}
+                                                            src={
+                                                              process.env
+                                                                .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                              user.profile_pic
+                                                            }
+                                                          />
+                                                        ) : (
+                                                          <User />
+                                                        )}
+                                                      </div>
+                                                      <div>
+                                                        <h4>{user.name}</h4>
+                                                        <p>{user.email}</p>
+                                                      </div>
+                                                      <div className="checkAddBtn">
+                                                        {selectedAssignee.includes(
+                                                          user.id
+                                                        )
+                                                          ? "-"
+                                                          : "+"}
+                                                      </div>
+                                                    </div>
+                                                  </>
+                                                ))}
+                                          </div>
+                                          <label className="">
+                                            Add Assignees
+                                          </label>
+                                          {usersList
+                                            .filter(
+                                              (user) =>
+                                                !selectedAssignee.includes(
+                                                  user.id
+                                                )
+                                            )
+                                            .map((user) => (
+                                              <>
+                                                <div
+                                                  key={user.id}
+                                                  className={`addAssigneeDiv ${
+                                                    selectedAssignee.includes(
+                                                      user.id
+                                                    ) && "active"
+                                                  }`}
+                                                  onClick={() =>
+                                                    handleAssigneeClick(user.id)
+                                                  }
+                                                >
+                                                  <div
+                                                    className={` UserImg addedUserImages `}
+                                                    style={{ minWidth: "40px" }}
+                                                  >
+                                                    {user.profile_pic !== "" ? (
+                                                      <img
+                                                        alt={user.name}
+                                                        src={
+                                                          process.env
+                                                            .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                          user.profile_pic
+                                                        }
+                                                      />
+                                                    ) : (
+                                                      <User />
+                                                    )}
+                                                  </div>
+                                                  <div>
+                                                    <h4>{user.name}</h4>
+                                                    <p>{user.email}</p>
+                                                  </div>
+                                                  <div className="checkAddBtn">
+                                                    {selectedAssignee.includes(
+                                                      user.id
+                                                    )
+                                                      ? "-"
+                                                      : "+"}
+                                                  </div>
+                                                </div>
+                                              </>
+                                            ))}
+                                        </div>
+                                        <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
+                                          <button
+                                            className="colorOutlineBtn"
+                                            onClick={() =>
+                                              handleAddAssignee(task.id)
+                                            }
+                                          >
+                                            Add Assignee
+                                          </button>
+                                          <button
+                                            className="colorOutlineBtn"
+                                            onClick={() =>
+                                              handleCloseAddAssignee()
+                                            }
+                                          >
+                                            Cancel
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )} */}
                                 </div>
                               </div>
                             </td>
-
                             <td className="px-3">
                               <div className="jobDescriptionTextDiv">
                                 {job.latest_update}
