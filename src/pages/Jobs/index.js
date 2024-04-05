@@ -6,15 +6,25 @@ import { getJobs, getJobsByFilter } from "../../services/auth";
 import { Bars } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import moment from "moment";
+import Filter from "../../Components/Filter/Filter";
+import JobModal from "../../Components/JobModal/JobModal";
 
 const Jobs = () => {
-  const [jobs, setJobs] = useState();
-  const [loading, setLoading] = useState(false);
   const containerRef = useRef(null);
+
+  const [jobs, setJobs] = useState();
   const [divWidth, setDivWidth] = useState(0);
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [status, setStatus] = useState("current-jobs");
   const [filter, setFilter] = useState("");
+  const [getJob, setGetJob] = useState({
+    data: {},
+    stage: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [showJobModal, setShowJobModal] = useState(false);
 
   useEffect(() => {
     fetchJobs();
@@ -55,6 +65,7 @@ const Jobs = () => {
 
     data?.stages.forEach((stage) => {
       stage?.tasks.forEach((task) => {
+       
         const dueDate = new Date(task.due_date);
         const currentDate = new Date();
 
@@ -63,6 +74,7 @@ const Jobs = () => {
         if (difference > 0 && difference < nearestDueDate) {
           nearestDueDate = difference;
           nearestStage = stage;
+          console.log("tasks", task)
         }
       });
     });
@@ -148,6 +160,18 @@ const Jobs = () => {
           />
         </div>
       )}
+
+      {showJobModal && (
+        <JobModal
+          data={getJob.data}
+          stage={getJob.stage}
+          handleClose={() => {
+            setGetJob();
+            setShowJobModal(false);
+          }}
+        />
+      )}
+
       <div className="jobsBg">
         <div className="JobsHeading d-flex justify-content-between align-items-center gap-3 flex-wrap">
           <div className="d-flex leftGap align-items-center">
@@ -219,8 +243,9 @@ const Jobs = () => {
               Delete {selectedJobs.length} Item(s)
             </div>
           </div>
-          <div className="job-filters">
+          <div className="job-filters position-relative">
             <FilterIcon /> <span>Filter</span>
+            {/* <Filter /> */}
           </div>
         </div>
         <div className="JobsContainer d-flex" ref={containerRef}>
@@ -236,13 +261,13 @@ const Jobs = () => {
                             type="checkbox"
                             checked={
                               selectedJobs &&
-                              (selectedJobs?.length === jobs?.length)
+                              selectedJobs?.length === jobs?.length
                             }
                             id={`select_all`}
                             onChange={handleSelectAll}
                             style={{ display: "none" }}
                           />
-                          {(selectedJobs?.length === jobs?.length) ? (
+                          {selectedJobs?.length === jobs?.length ? (
                             <div className="svg-box-2 mx-2">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -321,7 +346,20 @@ const Jobs = () => {
                           </td>
                           <td className="px-3">
                             <div className="job-name">
-                              <h4>{job.title}</h4>
+                              <h4
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setShowJobModal(true);
+                                  setGetJob({
+                                    data: job,
+                                    stage: findNearestStage(job),
+                                  });
+                                }}
+                              >
+                                {job.title}
+                              </h4>
                               <h6>{job.description}</h6>
                             </div>
                           </td>
