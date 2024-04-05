@@ -579,14 +579,15 @@
                                     }
 
                                     button {
-                                        
+
                                         //    padding: 10px 27px;
                                         width: 83px;
                                         height: 28px;
                                         color: #000000;
                                         font-size: 12px;
                                         border-radius: 4px;
-                                        &.active{
+
+                                        &.active {
                                             background: #E2E31F;
                                         }
 
@@ -598,6 +599,27 @@
                                 ul {
 
                                     li {
+                                        .svg-box {
+                                            border: 2px solid #e2e31f;
+                                            width: 15px;
+                                            height: 15px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: pointer;
+                                        }
+
+                                        .svg-box-2 {
+                                            border: 2px solid #e2e31f;
+                                            width: 15px;
+                                            height: 15px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            background-color: #e2e31f;
+                                            cursor: pointer;
+                                        }
+
                                         display: flex;
                                         gap: 12px;
                                         align-items: center;
@@ -734,43 +756,43 @@
                                 }
                             }
 
-                          
 
-                                .btm-statusBtn {
-                                    padding: 7px 37px;
-                                    border-radius: 5px;
-                                    color: #FFFFFF;
-                                    text-transform: capitalize;
-                                    font-size: 14px;
-                                    font-weight: 700;
-            
-                                    &.pending {
-                                        background: #1FB4E366;
-                                        border: 1px solid #1FB4E3;
-                                        
-                                    }
-            
-                                    &.in-progress {
-                                        background: #c5b9507d;
-                                        border: 1px solid #c5b450;
-                                        
-                                    }
-            
-                                    &.completed {
-                                        background: #3B923999;
-                                        border: 1px solid #3B9239;
-                                       
-                                    }
-            
-                                    &.not-started {
-                                        background: #ff000066;
-                                        border: 1px solid #ff0000;
-                                       
-                                    }
-            
+
+                            .btm-statusBtn {
+                                padding: 7px 37px;
+                                border-radius: 5px;
+                                color: #FFFFFF;
+                                text-transform: capitalize;
+                                font-size: 14px;
+                                font-weight: 700;
+
+                                &.pending {
+                                    background: #1FB4E366;
+                                    border: 1px solid #1FB4E3;
+
                                 }
 
-                            
+                                &.in-progress {
+                                    background: #c5b9507d;
+                                    border: 1px solid #c5b450;
+
+                                }
+
+                                &.completed {
+                                    background: #3B923999;
+                                    border: 1px solid #3B9239;
+
+                                }
+
+                                &.not-started {
+                                    background: #ff000066;
+                                    border: 1px solid #ff0000;
+
+                                }
+
+                            }
+
+
 
                             .showMore {
                                 margin-bottom: 100px;

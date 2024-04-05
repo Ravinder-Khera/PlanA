@@ -8,6 +8,8 @@ const JobModal = ({ data, handleClose, stage }) => {
   const [dueDate, setDueDate] = useState(null);
   const [latestUpdate, setLatestUpdate] = useState("");
   const [selectedTab, setSelectedTab] = useState("to-do");
+  const [selectedStage, setSelectedStage] = useState();
+  const [selectedTasks, setSelectedTasks] = useState();
   const settings = {
     className: "center",
     centerMode: true,
@@ -87,7 +89,7 @@ const JobModal = ({ data, handleClose, stage }) => {
     const _tempTasks = createTaskArrayWithStageTitle(data);
     _tempTasks?.map((task) => task.status !== "completed");
     setTasks(_tempTasks);
-    setFilteredTasks(_tempTasks)
+    setFilteredTasks(_tempTasks);
   }, [data]);
 
   // Function to create task array with stageTitle field
@@ -113,6 +115,30 @@ const JobModal = ({ data, handleClose, stage }) => {
     console.log("temp tasks----->", _tempTasks);
     setFilteredTasks(_tempTasks);
   }, [selectedTab]);
+
+  const handleStageCheckBoxSelect = (e, id) => {
+    console.log("checked", e.target.checked, id);
+    const { checked } = e.target;
+    if (checked) {
+      setSelectedStage((prevIds) => (prevIds ? [...prevIds, id] : [id]));
+    } else {
+      setSelectedStage((prevIds) =>
+        prevIds ? prevIds.filter((selectedId) => selectedId !== id) : []
+      );
+    }
+  };
+
+  const handleTasksCheckBoxSelect = (e, id) => {
+    console.log("checked", e.target.checked, id);
+    const { checked } = e.target;
+    if (checked) {
+      setSelectedTasks((prevIds) => (prevIds ? [...prevIds, id] : [id]));
+    } else {
+      setSelectedTasks((prevIds) =>
+        prevIds ? prevIds.filter((selectedId) => selectedId !== id) : []
+      );
+    }
+  };
 
   return (
     <>
@@ -204,8 +230,12 @@ const JobModal = ({ data, handleClose, stage }) => {
                                   type="checkbox"
                                   id={`select_${index}`}
                                   style={{ display: "none" }}
+                                  checked={selectedStage?.includes(stage.id)}
+                                  onChange={(e) =>
+                                    handleStageCheckBoxSelect(e, stage.id)
+                                  }
                                 />
-                                {true ? (
+                                {selectedStage?.includes(stage.id) ? (
                                   <div className="svg-box-2 mx-2">
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
@@ -288,13 +318,39 @@ const JobModal = ({ data, handleClose, stage }) => {
                       <ul>
                         {filteredTasks?.length > 0 &&
                           filteredTasks?.map((task, index) => (
-                            <li>
-                              <input
-                                type="checkbox"
-                                className="table-checkbox"
-                                name=""
-                                id=""
-                              />
+                            <li key={index}>
+                              <label
+                                htmlFor={`task_select_${index}`}
+                                className="align-self-center"
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`task_select_${index}`}
+                                  style={{ display: "none" }}
+                                  checked={selectedTasks?.includes(task.id)}
+                                  onChange={(e) =>
+                                    handleTasksCheckBoxSelect(e, task.id)
+                                  }
+                                />
+                                {selectedTasks?.includes(task.id) ? (
+                                  <div className="svg-box-2 mx-2">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="24"
+                                      height="15"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                    >
+                                      <path
+                                        d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                        fill="black"
+                                      />
+                                    </svg>
+                                  </div>
+                                ) : (
+                                  <div className="svg-box mx-2"></div>
+                                )}
+                              </label>
                               <div className="d-flex justify-content-between w-100 application-lodge">
                                 <div className="d-flex gap-3 align-items-center ">
                                   <img
