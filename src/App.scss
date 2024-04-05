@@ -1094,8 +1094,8 @@ body {
         list-style: none;
         overflow-x: hidden;
         position: relative;
-
-        li {
+        min-height: 450px;
+        li{
             border-radius: 2px;
             display: flex;
             align-items: center;
@@ -1986,7 +1986,6 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
-    z-index: 99999;
 }
 
 

@@ -56,6 +56,7 @@ function TaskPage() {
   const selectDateRef = useRef(null);
   const selectDueDateRef = useRef(null);
   const selectUserRef = useRef(null);
+  const selectAssigneeRef = useRef(null);
 
   const fetchTasksToDo = async () => {
     try {
@@ -266,57 +267,6 @@ function TaskPage() {
     }
   };
 
-  const handleRevert = async (taskId) => {
-    try {
-      const cleanedTaskId = taskId.replace(/^select_/, "");
-      const authToken = localStorage.getItem("authToken");
-      setLoading(true);
-      const response = await updateTask(
-        { status: "to-do" },
-        authToken,
-        cleanedTaskId
-      );
-      console.log("update Task --", response);
-      if (response.res) {
-        const listItem = document.querySelector(`#stage_${cleanedTaskId}`);
-        if (listItem) {
-          listItem.classList.add("addTodo");
-        }
-        setTimeout(() => {
-          fetchTasksToDo();
-          fetchTasksCompleted();
-        }, 1000);
-        toast.success("Task Moved to To Do", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      } else {
-        console.error("Task update failed:", response.error);
-
-        toast.error(`${response.error.message}`, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      }
-    } catch (error) {
-      console.error("There was an error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleAssigneeClick = (userId) => {
     setSelectedAssignee((prevUsers) => {
       if (prevUsers.includes(userId)) {
@@ -385,7 +335,8 @@ function TaskPage() {
     const handleClickOutside = (event) => {
       if (
         userDropdownStates.includes(true) &&
-        !selectUserRef.current.contains(event.target)
+        selectAssigneeRef.current &&
+        !selectAssigneeRef.current.contains(event.target)
       ) {
         const newUserDropdownStates = userDropdownStates.map(() => false);
         setUserDropdownStates(newUserDropdownStates);
@@ -1192,19 +1143,17 @@ function TaskPage() {
                         ) : (
                           <div
                             className="UserImg withAddBtn"
-                            onClick={() =>
-                              setAddTaskJobUserDropdown(!addTaskJobUserDropdown)
-                            }
+                           onClick={() => toggleUserDropdown(i)}
                             style={{ minWidth: "40px" }}
                           >
                             <User />
                           </div>
                         )}
-                        {userDropdownStates[i] && task.users.length > 0 && (
+                        {userDropdownStates[i] && (
                           <div className="addAssigneeDropdown ">
                             <div
                               className="addTaskJobListScroll"
-                              ref={selectUserRef}
+                              ref={selectAssigneeRef}
                             >
                               <div className="addTaskJobListItems">
                                 <label className="addedAssignees">

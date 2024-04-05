@@ -33,8 +33,6 @@ function Dashboard() {
     }
   }
 
-  console.log('dashboard Data',data);
-
   return (<>
   {loading &&  <div className='loaderDiv'>
     <Bars

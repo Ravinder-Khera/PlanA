@@ -8,9 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
-
-
+    z-index: 99;
     .popup-body {
         background: #353535;
         padding: 15px 30px;
@@ -46,7 +44,15 @@
             background: rgba(255, 255, 255, 0.15);
             padding: 18px;
             border-radius: 10px;
-
+            .selectDueDateDiv{
+                position: relative;
+                .selectDueDateBtn{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                }
+            }
             .top {
                 .left {
                     margin-right: 30px;
@@ -56,15 +62,21 @@
                         font-size: 16px;
                     }
 
-                    h4 {
-                        font-size: 14px;
+                    .taskTitleInput{
+                        background: transparent;
+                        outline: none;
+                        border: none;
+                        color: #FFF;
+                        font-size: 12px;
+                        font-style: normal;
                         font-weight: 300;
+                        line-height: normal;
+                        letter-spacing: -0.48px;
                     }
                 }
 
                 .right {
                     .date {
-                        margin-right: 10px;
 
                         h4 {
                             line-height: 8px;
@@ -137,16 +149,11 @@
             flex-direction: column;
             margin-top: 20px;
 
-            button {
+            .cancel {
                 color: #fff;
                 border: none;
                 background: transparent;
-
                 padding: 10px 40px;
-
-                &.return {
-                    border: 2px solid #e2e31f;
-                }
             }
         }
     }
