@@ -267,57 +267,6 @@ function TaskPage() {
     }
   };
 
-  const handleRevert = async (taskId) => {
-    try {
-      const cleanedTaskId = taskId.replace(/^select_/, "");
-      const authToken = localStorage.getItem("authToken");
-      setLoading(true);
-      const response = await updateTask(
-        { status: "to-do" },
-        authToken,
-        cleanedTaskId
-      );
-      console.log("update Task --", response);
-      if (response.res) {
-        const listItem = document.querySelector(`#stage_${cleanedTaskId}`);
-        if (listItem) {
-          listItem.classList.add("addTodo");
-        }
-        setTimeout(() => {
-          fetchTasksToDo();
-          fetchTasksCompleted();
-        }, 1000);
-        toast.success("Task Moved to To Do", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      } else {
-        console.error("Task update failed:", response.error);
-
-        toast.error(`${response.error.message}`, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      }
-    } catch (error) {
-      console.error("There was an error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleAssigneeClick = (userId) => {
     setSelectedAssignee((prevUsers) => {
       if (prevUsers.includes(userId)) {

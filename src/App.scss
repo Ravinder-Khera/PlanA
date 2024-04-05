@@ -955,6 +955,7 @@ body{
         list-style: none;
         overflow-x: hidden;
         position: relative;
+        min-height: 450px;
         li{
             border-radius: 2px;
             display: flex;

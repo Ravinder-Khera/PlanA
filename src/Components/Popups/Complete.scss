@@ -149,16 +149,11 @@
             flex-direction: column;
             margin-top: 20px;
 
-            button {
+            .cancel {
                 color: #fff;
                 border: none;
                 background: transparent;
-
                 padding: 10px 40px;
-
-                &.return {
-                    border: 2px solid #e2e31f;
-                }
             }
         }
     }
