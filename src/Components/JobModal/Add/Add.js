@@ -31,7 +31,7 @@ const Add = ({ handleClose, fetchJobs }) => {
   const [selectedTasks, setSelectedTasks] = useState();
   const [showStages, setShowStages] = useState(false);
   const [loader, setLoader] = useState(false);
-  const addTaskRef = useRef(null)
+  const addTaskRef = useRef(null);
 
   const handleCardChange = (index) => {
     setActiveCardId(index + 1);
@@ -222,11 +222,12 @@ const Add = ({ handleClose, fetchJobs }) => {
                   >
                     <div className="topsection-left">
                       <div className="top-left-content">
-                        <img
-                          src="/assets/Frame 60.png"
-                          alt=""
+                        <div
                           onClick={handleClose}
-                        />
+                          style={{ cursor: "pointer" }}
+                        >
+                          <img src="/assets/Frame 60.png" alt="" />
+                        </div>
                         <div className="position w-100">
                           <div className="">
                             <div className="title">
@@ -332,11 +333,14 @@ const Add = ({ handleClose, fetchJobs }) => {
                               <div className="card-slider">
                                 <h1>{item.title}</h1>
                                 <p>{item.para}</p>
-                                <button className="d-flex justify-content-center align-items-center gap-2" onClick={() => {
-                                    if(index === 1){
-                                        addTaskRef.current.focus()
+                                <button
+                                  className="d-flex justify-content-center align-items-center gap-2"
+                                  onClick={() => {
+                                    if (index === 1) {
+                                      addTaskRef.current.focus();
                                     }
-                                }}>
+                                  }}
+                                >
                                   <img
                                     src="/assets/Vector (19).png"
                                     style={{ width: "12px", height: "12px" }}
@@ -356,7 +360,9 @@ const Add = ({ handleClose, fetchJobs }) => {
                     <div className="table-top-section">
                       <div className="tableTopLeft">
                         <h1>Tasks</h1>
-                        {tasks.length === 0 && <p onClick={handleAllStages}>+ Add All Stages</p>}
+                        {tasks.length === 0 && (
+                          <p onClick={handleAllStages}>+ Add All Stages</p>
+                        )}
                       </div>
                       <div className="tableTopRight">
                         <button>To Do</button>
