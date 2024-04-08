@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import "./style.scss";
 import Slider from "react-slick";
 import { AllStages, StageList, StatusList } from "../../../helper";
@@ -31,6 +31,7 @@ const Add = ({ handleClose, fetchJobs }) => {
   const [selectedTasks, setSelectedTasks] = useState();
   const [showStages, setShowStages] = useState(false);
   const [loader, setLoader] = useState(false);
+  const addTaskRef = useRef(null)
 
   const handleCardChange = (index) => {
     setActiveCardId(index + 1);
@@ -331,7 +332,11 @@ const Add = ({ handleClose, fetchJobs }) => {
                               <div className="card-slider">
                                 <h1>{item.title}</h1>
                                 <p>{item.para}</p>
-                                <button className="d-flex justify-content-center align-items-center gap-2">
+                                <button className="d-flex justify-content-center align-items-center gap-2" onClick={() => {
+                                    if(index === 1){
+                                        addTaskRef.current.focus()
+                                    }
+                                }}>
                                   <img
                                     src="/assets/Vector (19).png"
                                     style={{ width: "12px", height: "12px" }}
@@ -443,6 +448,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                               onChange={(e) =>
                                 handleTasksCheckBoxSelect(e, tasks?.length)
                               }
+                              ref={addTaskRef}
                             />
                             {selectedTasks?.includes(tasks?.length) ? (
                               <div className="svg-box-2 mx-2">
