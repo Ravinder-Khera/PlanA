@@ -1,0 +1,1343 @@
+.loaderDiv3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.3137254902);
+
+    button {
+        border-width: 0;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    .pop-wrapper {
+        background: rgba(37, 37, 37, 0.85);
+        padding: 15px 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        color: white;
+        text-align: center;
+        position: relative;
+        height: 100vh;
+        width: 100%;
+
+        .wrapper {
+
+            // background: #353535;
+            // height: 100vh;
+            // position: relative;
+            // z-index: 99999;
+            .pop-container {
+                max-width: 1426px;
+                width: 100%;
+                // height: 300px;
+                background-color: #353535;
+                margin: 0 auto;
+                padding: 0;
+                position: absolute;
+                top: 10%;
+                left: 50%;
+                transform: translateX(-50%);
+                height: 800px;
+                overflow-y: auto;
+                overflow-x: hidden;
+
+                .popup-content {
+                    display: flex;
+
+                    .popup-section-left {
+                        max-width: 929px;
+                        width: 100%;
+                        background-color: #353535;
+                        height: 800px;
+                        overflow-y: auto;
+
+                        /* width */
+                        &::-webkit-scrollbar {
+                            width: 5px;
+                            z-index: 99999;
+                        }
+
+                        /* Track */
+                        //   &::-webkit-scrollbar-track {
+                        //     background: #00000071;
+                        //     z-index: 99999;
+                        //   }
+
+                        /* Handle */
+                        ::-webkit-scrollbar-thumb {
+                            background: #3f3f3f77;
+                            z-index: 99999;
+
+                        }
+
+                        /* Handle on hover */
+                        ::-webkit-scrollbar-thumb:hover {
+                            background: #555;
+                            z-index: 99999;
+                        }
+
+                        .top-right-content {
+                            width: 100%;
+                            max-width: 734px;
+                            margin: 0 auto;
+
+                            .discription-heading {
+                                margin-top: 37px;
+
+                                h1 {
+                                    color: #E2E31F;
+                                    font-size: 16px !important;
+                                    margin-bottom: 13px;
+                                    text-align: start;
+                                }
+
+                                textarea {
+                                    width: 100%;
+                                    text-align: left;
+                                    border: none;
+                                    outline: none;
+                                    background: transparent;
+                                    display: flex;
+                                    font-size: 14px;
+                                    color: #FFFFFF;
+                                    max-width: 650px;
+                                    font-weight: 400;
+                                    line-height: 15.23px;
+
+                                    &::placeholder {
+                                        color: #FFFFFF;
+                                    }
+                                }
+
+                                // p {
+                                //     font-size: 14px;
+                                //     color: #FFFFFF;
+                                //     max-width: 650px;
+                                //     font-weight: 400;
+                                //     line-height: 15.23px;
+
+                                // }
+
+
+                            }
+
+                            .Addslider-container {
+                                max-width: 650px;
+                                width: 100%;
+                                margin-left: 40px;
+
+                                .slider-box {
+                                    width: 200px;
+                                    height: 174px;
+                                    // background: #3B9239;
+                                    margin: 80px auto;
+                                    display: flex;
+                                    flex-direction: column;
+                                    filter: blur(2px);
+
+                                    .card-slider {
+                                        background: #7272724D;
+                                        display: flex;
+                                        justify-content: center;
+                                        flex-direction: column;
+                                        height: 100%;
+                                        margin-top: 30px;
+                                        align-items: center;
+                                        position: relative;
+                                        border-radius:
+                                            6.58px;
+
+                                        button {
+
+                                            img {
+                                                display: none;
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                .slick-slider {
+                                    min-height: 400px;
+                                }
+
+                                .slick-arrow {
+                                    display: none !important;
+                                }
+
+                                .slick-prev {
+                                    left: -41px;
+                                    background-image: url("../../../../public/assets/Frame\ 39.png");
+                                    background-size: contain;
+                                    z-index: 1;
+                                    width: 36px;
+                                    height: 36px;
+                                    background-repeat: no-repeat;
+                                    display: none;
+
+                                    &::before {
+                                        content: "";
+                                        display: none;
+                                    }
+                                }
+
+                                // .slick-next {
+                                //     right: -43px;
+                                //     background-image: url("../../../public/assets/Frame\ 40\ \(1\).png");
+                                //     background-size: contain;
+                                //     z-index: 1;
+                                //     width: 36px;
+                                //     height: 36px;
+                                //     background-repeat: no-repeat;
+
+                                //     &::before {
+                                //         content: "";
+                                //     }
+                                // }
+
+                                .slick-active {
+
+
+                                    .slider-box {
+                                        transition: 0.5s;
+
+
+                                        &.active {
+                                            transform: scale(1.2);
+                                            filter: blur(0px);
+
+                                            .card-slider {
+                                                border: 1px solid #FFFFFF;
+                                                background: #FFFFFF33;
+
+                                                h1 {
+                                                    font-family: Archivo;
+                                                    font-size: 16px;
+                                                    font-weight: 600;
+                                                    line-height: 17.41px;
+                                                    letter-spacing: -0.04em;
+                                                    text-align: center;
+                                                    margin-bottom: 0;
+
+                                                }
+
+                                                p {
+                                                    font-family: Archivo;
+                                                    font-size: 14px;
+                                                    font-weight: 300;
+                                                    line-height: 15.23px;
+                                                    letter-spacing: -0.04em;
+                                                    text-align: center;
+
+                                                }
+
+                                                button {
+                                                    max-width: 171px;
+                                                    width: 100%;
+                                                    height: 40px;
+                                                    background: #E2E31F;
+                                                    border: none;
+                                                    border-radius: 1px;
+
+                                                    font-family: Archivo;
+                                                    font-size: 16px;
+                                                    font-weight: 500;
+                                                    line-height: 17.41px;
+                                                    letter-spacing: -0.04em;
+                                                    text-align: center;
+
+                                                    img {
+                                                        display: block;
+                                                    }
+
+
+
+                                                }
+                                            }
+
+                                        }
+                                    }
+
+
+
+                                }
+
+                            }
+
+
+                        }
+
+                        .position {
+                            .title {
+                                .addInput {
+                                    background: transparent;
+                                    border: none;
+                                    outline: none;
+                                    color: #E2E31F;
+                                    font-size: 24px;
+                                    font-weight: 700;
+                                    border-bottom: 1px solid #e2e31f;
+
+                                    &::placeholder {
+                                        color: #E2E31F !important;
+
+                                    }
+                                }
+
+                                .LocationInput {
+                                    color: #FFFFFF;
+                                    border: none;
+                                    outline: none;
+                                    background: transparent;
+
+                                    &::placeholder {
+                                        color: #FFFFFF;
+                                    }
+
+
+                                }
+
+                                h1 {
+                                    font-size: 24px;
+                                    font-weight: 800;
+                                    line-height: 35px;
+                                    color: #E2E31F;
+                                    letter-spacing: -4%;
+                                    display: flex;
+
+
+
+                                }
+
+                                p {
+                                    color: #FFFFFF;
+                                    font-weight: 300;
+                                    font-size: 16px;
+                                    line-height: 18px;
+                                    letter-spacing: -4%;
+                                    text-align: start;
+
+
+                                }
+
+                                span {
+                                    width: 36px;
+                                    height: 36px;
+                                    cursor: pointer;
+
+                                    .penImage {
+                                        margin-top: 0;
+                                    }
+                                }
+                            }
+
+                            .aprication-btn {
+                                background: #3B923999;
+                                color: #FFFFFF;
+                                font-size: 14px;
+                                font-weight: 700;
+                                line-height: 15.26px;
+                                letter-spacing: -4%;
+                                border: 1px solid #3B9239;
+                                width: 176px;
+                                border-radius: 4px;
+                                height: 40px;
+
+                            }
+
+
+
+                            .groupImage {
+                                width: 127px !important;
+                                height: 44px !important;
+                                margin-top: 0 !important;
+                            }
+
+                        }
+
+
+                        .top-section {
+                            // padding: 30px 20px 30px 46px;
+
+
+
+                            .topsection-left {
+                                display: flex;
+                                justify-content: space-between;
+                                gap: 20px;
+                                // background: #353535;
+                                position: relative;
+
+                                // height: calc(100% - 28px);
+                                &::before {
+                                    content: "";
+                                    position: absolute;
+                                    width: 100%;
+                                    height: calc(100% - 30px);
+                                    background: #353535;
+                                    z-index: -1;
+                                    top: 0;
+                                    left: 0;
+
+                                }
+
+                                &::after {
+                                    content: "";
+                                    position: absolute;
+                                    width: 100%;
+                                    top: calc(100% - 30px);
+                                    height: 50px;
+                                    background: linear-gradient(180deg, #353535 27%, rgba(53, 53, 53, 0) 114%);
+                                    z-index: -1;
+
+                                }
+
+
+                                img {
+                                    margin-top: 13px;
+                                    width: 36px;
+                                    height: 36px;
+                                }
+
+                                .top-left-content {
+                                    display: flex;
+                                    gap: 20px;
+                                    // justify-content: space-between;
+                                    max-width: 1426px;
+
+                                    // background-color: #353535;
+                                    width: 100%;
+                                    height: 135px;
+                                    padding: 26px 33px 0px 46px;
+
+
+
+
+
+
+                                }
+
+
+                            }
+
+                            .progress-bar-container {
+                                margin-top: 22px;
+                                width: 100%;
+                                height: 2px;
+                                background-color: #252525 !important;
+                                position: relative;
+                                display: block;
+
+                                .progress-upper {
+                                    position: relative;
+                                    width: 25%;
+                                    background-color: white;
+                                    top: 0;
+                                    height: 2px;
+
+                                    &::after {
+                                        content: "";
+                                        position: absolute;
+                                        right: 0;
+                                        width: 10px;
+                                        height: 10px;
+                                        background-color: white;
+                                        border-radius: 100%;
+                                        top: -4px;
+                                        z-index: 1;
+
+
+                                    }
+
+
+                                }
+
+                                .progress-text {
+                                    // width: 25%;
+                                    position: absolute;
+                                    right: 0;
+                                    transform: translate(40%, 50%);
+
+
+                                    p {
+                                        text-align: right;
+                                        border: 1px solid #FFFFFF;
+                                        padding: 10px 27px;
+                                        border-radius: 4px;
+                                        font-size: 12px;
+                                        line-height: 13px;
+                                        letter-spacing: -4%;
+                                        color: #FFFFFF;
+                                        font-weight: 600;
+
+
+                                    }
+
+                                }
+                            }
+
+
+
+
+
+                        }
+
+                        .table-section {
+                            max-width: 750px;
+                            width: 100%;
+                            margin: 0 auto;
+
+                            .table-top-section {
+                                display: flex;
+                                justify-content: space-between;
+
+                                .tableTopLeft {
+                                    display: flex;
+                                    gap: 10px;
+                                    align-items: center;
+
+                                    h1 {
+                                        color: #E2E31F;
+                                        font-size: 16px;
+                                        font-weight: 900;
+                                        line-height: 17px;
+                                        margin-bottom: 0;
+
+                                    }
+
+                                    p {
+                                        color: #FFFFFF;
+                                        font-size: 13px;
+                                        font-weight: 400;
+                                        line-height: 13px;
+                                        border-bottom: 1px solid #FFFFFF;
+                                        margin-bottom: 0;
+                                        cursor: pointer;
+
+                                    }
+                                }
+
+                                .tableTopRight {
+                                    display: flex;
+                                    gap: 15px;
+                                    align-items: center;
+
+                                    img {
+                                        width: 13px;
+                                        height: 13px;
+                                    }
+
+                                    button {
+                                        background: #E2E31F;
+                                        //    padding: 10px 27px;
+                                        width: 83px;
+                                        height: 28px;
+                                        color: #000000;
+                                        font-size: 12px;
+                                        border-radius: 4px;
+                                        font-weight: 300;
+                                        border: none;
+                                        transition: 0.5s;
+
+                                        &:hover {
+                                            background: transparent;
+                                            color: #E2E31F;
+                                            border: 1px solid #E2E31F;
+                                        }
+
+
+                                    }
+                                }
+                            }
+
+                            .table-main-section {
+                                ul {
+
+                                    li {
+                                        .svg-box {
+                                            border: 2px solid #e2e31f;
+                                            width: 15px;
+                                            height: 15px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: pointer;
+                                        }
+
+                                        .svg-box-2 {
+                                            border: 2px solid #e2e31f;
+                                            width: 15px;
+                                            height: 15px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            background-color: #e2e31f;
+                                            cursor: pointer;
+                                        }
+
+                                        display: flex;
+                                        gap: 12px;
+                                        align-items: center;
+                                        margin-bottom: 15px;
+
+                                        .application-lodge {
+                                            background: #252525;
+                                            padding: 9px 9px;
+
+                                            .task-desc-input {
+                                                background: transparent;
+                                                border: none;
+                                                outline: none;
+                                                color: #ffff;
+                                            }
+
+                                            .addStage-btn {
+                                                font-size: 12px;
+                                                font-weight: 400;
+                                                color: rgba(95, 95, 95, 1);
+                                                text-decoration: underline;
+                                                text-underline-offset: 4px;
+                                                cursor: pointer;
+                                            }
+
+                                            p {
+
+                                                padding: 0;
+                                                margin: 0;
+
+                                                &.text_Application {
+                                                    color: #3B9239;
+
+                                                }
+
+                                                &.text_Referral {
+                                                    color: #1FB4E3;
+
+                                                }
+
+                                                &.text_Information {
+                                                    color: #8A50C5;
+
+                                                }
+
+                                                &.text_Public {
+                                                    color: #FF5C00;
+
+                                                }
+
+                                                &.text_Decision {
+                                                    color: #FF40BE;
+
+                                                }
+
+                                                &.text_Unknown {
+                                                    color: #FFF;
+
+                                                }
+
+                                            }
+
+                                            .stage-addTaskJobDiv {
+                                                position: relative;
+                                        
+                                                .stage-addTaskJobDropdown {
+                                                    position: absolute;
+                                                    left: 0;
+                                                    top: calc(100% + 22px);
+                                                    z-index: 99;
+                                        
+                                                    &.right {
+                                                        right: 0;
+                                                        left: auto;
+                                                    }
+                                        
+                                                    .addTaskJobSearchDiv {
+                                                        border-radius: 2px;
+                                                        background: #353535;
+                                                        padding: 12px 13px 13px 14px;
+                                                        display: flex;
+                                                        justify-content: space-between;
+                                                        gap: 8px;
+                                        
+                                                        .searchBox {
+                                                            border-radius: 2px;
+                                                            padding: 11px 14px;
+                                                            background: #252525;
+                                                            display: flex;
+                                                            gap: 8px;
+                                                            align-items: center;
+                                        
+                                                            input {
+                                                                background: transparent;
+                                                                border: none;
+                                                                outline: none;
+                                                                color: #E2E31F;
+                                                                font-size: 16px;
+                                                                font-style: normal;
+                                                                font-weight: 500;
+                                                                line-height: normal;
+                                                                letter-spacing: -0.64px;
+                                        
+                                                                &::placeholder {
+                                                                    color: #E2E31F;
+                                                                }
+                                        
+                                                                &::-moz-placeholder {
+                                                                    color: #E2E31F;
+                                                                    opacity: 1;
+                                                                }
+                                                            }
+                                                        }
+                                        
+                                                        .divider {
+                                                            width: 1px;
+                                                            background: #fff;
+                                                            border-radius: 2px;
+                                                        }
+                                                    }
+                                        
+                                                    .addTaskJobListScroll {
+                                                        border-radius: 8px;
+                                                        background: #353535;
+                                                        padding: 27px 18px 23px 21px;
+                                                        margin-top: 7px;
+                                        
+                                                        .addTaskJobListItems {
+                                                            max-height: 300px;
+                                                            overflow-y: auto;
+                                        
+                                                            &::-webkit-scrollbar {
+                                                                width: 4px;
+                                                            }
+                                        
+                                                            &:-moz-scrollbar {
+                                                                width: 4px;
+                                                            }
+                                        
+                                                            &::-webkit-scrollbar-track {
+                                                                border-radius: 2px;
+                                                                background: rgb(255, 255, 255);
+                                                                background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+                                                            }
+                                        
+                                                            &:-moz-scrollbar-track {
+                                                                border-radius: 2px;
+                                                                background: rgb(255, 255, 255);
+                                                                background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+                                                            }
+                                        
+                                                            &::-webkit-scrollbar-thumb {
+                                                                background: #fff;
+                                                                border-radius: 4px;
+                                                            }
+                                        
+                                                            &:-moz-scrollbar-thumb {
+                                                                background: #fff;
+                                                                border-radius: 4px;
+                                                            }
+                                        
+                                                            .addTaskJobListItem {
+                                                                padding: 14px 21px 15px 24px;
+                                                                margin-bottom: 2px;
+                                                                font-size: 16px;
+                                                                font-style: normal;
+                                                                font-weight: 600;
+                                                                line-height: normal;
+                                                                letter-spacing: -0.64px;
+                                                                transition: all 0.5s ease;
+                                                                min-width: max-content;
+                                                                color: #fff;
+                                                                cursor: pointer;
+                                                                background: linear-gradient(90deg, #e3e31f00 0%, rgba(226, 227, 31, 0.00) 100%);
+                                        
+                                                                &:hover,
+                                                                &.active {
+                                                                    background: linear-gradient(90deg, #E2E31F 0%, rgba(226, 227, 31, 0.00) 100%);
+                                                                    color: #000;
+                                                                }
+                                                            }
+                                        
+                                                            .addTaskJobStageItem {
+                                                                min-width: max-content;
+                                                                padding: 14px 21px 15px 24px;
+                                                                font-size: 16px;
+                                                                font-style: normal;
+                                                                font-weight: 600;
+                                                                line-height: normal;
+                                                                letter-spacing: -0.64px;
+                                                                transition: all 0.5s ease;
+                                                                border-radius: 4px;
+                                                                color: #FFF;
+                                                                cursor: pointer;
+                                                                border: 1px solid #FFF;
+                                                                background: rgba(255, 255, 255, 0.25);
+                                                                margin-bottom: 7px;
+                                        
+                                                                &.Application {
+                                                                    border: 1px solid #3B9239;
+                                                                    background: rgba(59, 146, 57, 0.60);
+                                                                }
+                                        
+                                                                &.Referral {
+                                                                    border: 1px solid #1FB4E3;
+                                                                    background: rgba(31, 180, 227, 0.40);
+                                                                }
+                                        
+                                                                &.Information {
+                                                                    border: 1px solid #8A50C5;
+                                                                    background: rgba(138, 80, 197, 0.49);
+                                                                }
+                                        
+                                                                &.Public {
+                                                                    border: 1px solid #FF5C00;
+                                                                    background: rgba(255, 92, 0, 0.55);
+                                                                }
+                                        
+                                                                &.Decision {
+                                                                    border: 1px solid #FF40BE;
+                                                                    background: rgba(255, 64, 190, 0.40);
+                                                                }
+                                        
+                                                            }
+                                        
+                                                            label {
+                                                                color: #E2E31F;
+                                                                font-size: 14px;
+                                                                font-style: normal;
+                                                                font-weight: 300;
+                                                                line-height: normal;
+                                                                letter-spacing: -0.56px;
+                                                                margin-bottom: 24px;
+                                        
+                                                                &.addedAssignees {
+                                                                    font-size: 16px;
+                                                                    font-weight: 600;
+                                                                    line-height: normal;
+                                                                    letter-spacing: -0.64px;
+                                                                    margin-bottom: 16px;
+                                                                }
+                                                            }
+                                        
+                                                            .addedAssigneeBorder {
+                                                                border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                                                            }
+                                        
+                                                            .addAssigneeDiv {
+                                                                display: flex;
+                                                                justify-content: flex-start;
+                                                                gap: 16px;
+                                                                margin-bottom: 21px;
+                                                                transition: all 0.5s ease;
+                                                                min-width: max-content;
+                                                                color: #fff;
+                                                                cursor: pointer;
+                                        
+                                                                h4 {
+                                                                    color: #E2E31F;
+                                                                    font-size: 16px;
+                                                                    font-style: normal;
+                                                                    font-weight: 600;
+                                                                    line-height: normal;
+                                                                    letter-spacing: -0.64px;
+                                                                    margin: 0;
+                                                                }
+                                        
+                                                                p {
+                                                                    margin: 0;
+                                                                    color: #FFF;
+                                                                    font-size: 12px;
+                                                                    font-style: normal;
+                                                                    font-weight: 300;
+                                                                    line-height: normal;
+                                                                    letter-spacing: -0.48px;
+                                                                }
+                                        
+                                                                .checkAddBtn {
+                                                                    margin-left: auto;
+                                                                    padding: 0 20px;
+                                                                    font-size: 20px;
+                                                                    color: #E2E31F;
+                                                                }
+                                        
+                                                                &.active {
+                                                                    color: #000;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            button {
+                                                max-width: 94px;
+                                                width: 100%;
+                                                height: 28px;
+                                                color: #FFFFFF;
+                                                border-radius: 5.66px;
+                                                font-size: 12px;
+                                                border: 1px solid #FFF;
+                                                background: rgba(255, 255, 255, 0.25);
+
+                                                &.btn_Application {
+                                                    border: 1px solid #3B9239;
+                                                    background: rgba(59, 146, 57, 0.60);
+                                                }
+
+                                                &.btn_Referral {
+                                                    border: 1px solid #1FB4E3;
+                                                    background: rgba(31, 180, 227, 0.40);
+                                                }
+
+                                                &.btn_Information {
+                                                    border: 1px solid #8A50C5;
+                                                    background: rgba(138, 80, 197, 0.49);
+                                                }
+
+                                                &.btn_Public {
+                                                    border: 1px solid #FF5C00;
+                                                    background: rgba(255, 92, 0, 0.55);
+                                                }
+
+                                                &.btn_Decision {
+                                                    border: 1px solid #FF40BE;
+                                                    background: rgba(255, 64, 190, 0.40);
+                                                }
+
+                                                &.btn_Unknown {
+                                                    border: 1px solid #FFF;
+                                                    background: rgba(255, 255, 255, 0.25);
+                                                }
+                                            }
+
+                                        }
+
+                                        .user-cards {
+                                            right: -80px;
+
+                                            .UserImg2 {
+                                                width: 40px;
+                                                height: 40px;
+                                                background: #e2e31f;
+                                                border-radius: 5px;
+                                                display: flex;
+                                                justify-content: center;
+                                                align-items: center;
+
+                                                box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
+
+                                                img {
+                                                    object-fit: cover;
+                                                    max-width: 100%;
+                                                    height: 100%;
+                                                    border-radius: 5px;
+                                                    border: 1px solid #000;
+                                                }
+
+                                                &.withAddBtn {
+                                                    position: relative;
+                                                    cursor: pointer;
+
+                                                    &::after {
+                                                        content: '+';
+                                                        position: absolute;
+                                                        bottom: 0;
+                                                        right: 0;
+                                                        width: 16px;
+                                                        height: 16px;
+                                                        background: #fff;
+                                                        color: #000;
+                                                        border-radius: 50%;
+                                                        transform: translateX(20%) translateY(20%);
+                                                        z-index: 1;
+                                                        display: flex;
+                                                        font-size: 12px;
+                                                        line-height: 100%;
+                                                        justify-content: center;
+                                                        align-items: center;
+                                                    }
+                                                }
+
+                                                &.addedUserImages {
+                                                    position: relative;
+                                                    z-index: 0;
+                                                    margin: 0;
+                                                    margin-right: -10px;
+
+                                                    img {
+                                                        object-fit: cover;
+                                                        max-width: 100%;
+                                                        height: 100%;
+                                                        border-radius: 5px;
+                                                    }
+                                                }
+                                            }
+
+                                            .UserImg-count {
+                                                width: 40px;
+                                                height: 40px;
+                                                background: #fff;
+                                                color: #000;
+                                                border-radius: 5px;
+                                                display: flex;
+                                                justify-content: center;
+                                                align-items: center;
+                                                margin-left: 10px;
+                                                box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
+
+                                                img {
+                                                    object-fit: cover;
+                                                    max-width: 100%;
+                                                    height: 100%;
+                                                    border-radius: 5px;
+                                                    border: 1px solid #000;
+                                                }
+
+                                                &.withAddBtn {
+                                                    position: relative;
+                                                    cursor: pointer;
+
+                                                    &::after {
+                                                        content: '+';
+                                                        position: absolute;
+                                                        bottom: 0;
+                                                        right: 0;
+                                                        width: 16px;
+                                                        height: 16px;
+                                                        background: #fff;
+                                                        color: #000;
+                                                        border-radius: 50%;
+                                                        transform: translateX(20%) translateY(20%);
+                                                        z-index: 1;
+                                                        display: flex;
+                                                        font-size: 12px;
+                                                        line-height: 100%;
+                                                        justify-content: center;
+                                                        align-items: center;
+                                                    }
+                                                }
+
+                                                &.addedUserImages {
+                                                    position: relative;
+                                                    z-index: 0;
+                                                    margin: 0;
+                                                    margin-right: -10px;
+
+                                                    img {
+                                                        object-fit: cover;
+                                                        max-width: 100%;
+                                                        height: 100%;
+                                                        border-radius: 5px;
+                                                    }
+                                                }
+
+                                                .count-card {
+                                                    font-size: 14px;
+                                                    font-weight: 600;
+                                                }
+                                            }
+                                        }
+
+                                        .table-checkbox {
+                                            width: 24px;
+                                            height: 24px;
+
+                                            input {
+                                                color: #E2E31F !important;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        .progressInputSection {
+                            max-width: 750px;
+                            width: 100%;
+                            margin: 0 auto;
+                            margin-top: 36px;
+
+                            p {
+                                max-width: 176px;
+                                height: 46px;
+                                width: 100%;
+                                background: #252525;
+                                color: #E2E31F;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                margin-bottom: 0;
+
+
+                            }
+
+                            input,
+                            .input-box {
+                                width: 100%;
+
+                                background: transparent;
+                                border: 1px solid #E2E31F;
+
+                                padding: 0px 10px;
+
+                                &::placeholder {
+                                    color: #FFFFFF;
+                                }
+
+                                &:focus {
+
+                                    outline: none;
+                                }
+                            }
+
+
+                            .btm-statusBtn {
+                                padding: 7px 37px;
+                                border-radius: 5px;
+                                color: #FFFFFF;
+                                text-transform: capitalize;
+                                font-size: 14px;
+                                font-weight: 700;
+                                background: rgb(113, 113, 113);
+                                border: 1px solid rgb(92 89 89 / 15%);
+
+                                &.pending {
+                                    background: #1FB4E366;
+                                    border: 1px solid #1FB4E3;
+
+                                }
+
+                                &.in-progress {
+                                    background: #c5b9507d;
+                                    border: 1px solid #c5b450;
+
+                                }
+
+                                &.completed {
+                                    background: #3B923999;
+                                    border: 1px solid #3B9239;
+
+                                }
+
+                                &.not-started {
+                                    background: #ff000066;
+                                    border: 1px solid #ff0000;
+
+                                }
+
+                                &.on-hold {
+                                    background: rgb(113, 113, 113);
+                                    border: 1px solid rgb(92 89 89 / 15%);
+
+                                }
+
+                            }
+
+                            .showMore {
+                                margin-bottom: 100px;
+
+                                img {
+                                    width: 36px;
+                                    height: 36px;
+                                }
+
+                                .showMoreLine {
+                                    width: 100%;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    background: #252525;
+
+                                    p {
+                                        color: #5F5F5F;
+                                        background: none;
+                                        height: 37px;
+                                    }
+                                }
+                            }
+
+                            .status-addTaskJobDiv {
+                                position: relative;
+
+                                .status-addTaskJobDropdown {
+                                    position: absolute;
+                                    left: 0;
+                                    top: calc(100% + 0px);
+                                    z-index: 99;
+
+                                    &.right {
+                                        right: 0;
+                                        left: auto;
+                                    }
+
+
+
+                                    .addTaskJobListScroll {
+                                        border-radius: 8px;
+                                        background: #353535;
+                                        padding: 27px 18px 23px 21px;
+                                        margin-top: 7px;
+
+                                        .addTaskJobListItems {
+                                            max-height: 300px;
+                                            overflow-y: auto;
+
+                                            &::-webkit-scrollbar {
+                                                width: 4px;
+                                            }
+
+                                            &:-moz-scrollbar {
+                                                width: 4px;
+                                            }
+
+                                            &::-webkit-scrollbar-track {
+                                                border-radius: 2px;
+                                                background: rgb(255, 255, 255);
+                                                background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+                                            }
+
+                                            &:-moz-scrollbar-track {
+                                                border-radius: 2px;
+                                                background: rgb(255, 255, 255);
+                                                background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+                                            }
+
+                                            &::-webkit-scrollbar-thumb {
+                                                background: #fff;
+                                                border-radius: 4px;
+                                            }
+
+                                            &:-moz-scrollbar-thumb {
+                                                background: #fff;
+                                                border-radius: 4px;
+                                            }
+
+                                            .addTaskJobListItem {
+                                                padding: 14px 21px 15px 24px;
+                                                margin-bottom: 2px;
+                                                font-size: 16px;
+                                                font-style: normal;
+                                                font-weight: 600;
+                                                line-height: normal;
+                                                letter-spacing: -0.64px;
+                                                transition: all 0.5s ease;
+                                                min-width: max-content;
+                                                color: #fff;
+                                                cursor: pointer;
+                                                background: linear-gradient(90deg, #e3e31f00 0%, rgba(226, 227, 31, 0.00) 100%);
+
+                                                &:hover,
+                                                &.active {
+                                                    background: linear-gradient(90deg, #E2E31F 0%, rgba(226, 227, 31, 0.00) 100%);
+                                                    color: #000;
+                                                }
+                                            }
+
+                                            .addTaskJobStageItem {
+                                                min-width: max-content;
+                                                padding: 14px 21px 15px 24px;
+                                                font-size: 16px;
+                                                font-style: normal;
+                                                font-weight: 600;
+                                                line-height: normal;
+                                                letter-spacing: -0.64px;
+                                                transition: all 0.5s ease;
+                                                border-radius: 4px;
+                                                color: #FFF;
+                                                cursor: pointer;
+                                                border: 1px solid #FFF;
+                                                background: rgba(255, 255, 255, 0.25);
+                                                margin-bottom: 7px;
+
+                                                &.pending {
+                                                    background: #1FB4E366;
+                                                    border: 1px solid #1FB4E3;
+
+                                                }
+
+                                                &.in-progress {
+                                                    background: #c5b9507d;
+                                                    border: 1px solid #c5b450;
+
+                                                }
+
+                                                &.completed {
+                                                    background: #3B923999;
+                                                    border: 1px solid #3B9239;
+
+                                                }
+
+                                                &.not-started {
+                                                    background: #ff000066;
+                                                    border: 1px solid #ff0000;
+
+                                                }
+
+                                                &.on-hold {
+                                                    background: rgb(113, 113, 113);
+                                                    border: 1px solid rgb(92 89 89 / 15%);
+                                                }
+
+                                            }
+
+                                            label {
+                                                color: #E2E31F;
+                                                font-size: 14px;
+                                                font-style: normal;
+                                                font-weight: 300;
+                                                line-height: normal;
+                                                letter-spacing: -0.56px;
+                                                margin-bottom: 24px;
+
+                                                &.addedAssignees {
+                                                    font-size: 16px;
+                                                    font-weight: 600;
+                                                    line-height: normal;
+                                                    letter-spacing: -0.64px;
+                                                    margin-bottom: 16px;
+                                                }
+                                            }
+
+
+                                        }
+                                    }
+                                }
+                            }
+
+                            .save-btn {
+                                padding: 7px 37px;
+                                border-radius: 5px;
+                                color: #FFFFFF;
+                                text-transform: capitalize;
+                                font-size: 14px;
+                                font-weight: 700;
+                                background: #1FB4E366;
+                                border: 1px solid #1FB4E3;
+                            }
+                        }
+
+
+
+                    }
+
+                    .popup-section-right {
+                        max-width: 497px;
+                        width: 100%;
+                        background-color: black;
+                        height: 200px;
+
+
+                    }
+                }
+            }
+        }
+
+    }
+}
