@@ -11,11 +11,11 @@ const Complete = ({ data, handleClose }) => {
   const [loading, setLoading] = useState(false);
   const [selectDueDate, setSelectDueDate] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null); 
-  const [selectTitle, setSelectTitle] = useState(data.title); 
+  const [selectTitle, setSelectTitle] = useState(data?.title); 
   const [addTaskJobStageDropdown, setAddTaskJobStageDropdown] = useState(false);
   const [searchJobStages, setSearchJobStages] = useState([]);
-  const [selectedSearchJobStage, setSelectedSearchJobStage] = useState("");
-  const [selectedSearchJobStageId, setSelectedSearchJobStageId] = useState(data.stage_id);
+  const [selectedSearchJobStage, setSelectedSearchJobStage] = useState(data?.stage?.title);
+  const [selectedSearchJobStageId, setSelectedSearchJobStageId] = useState(data?.stage_id);
   const [addTaskJobUserDropdown, setAddTaskJobUserDropdown] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [usersList, setUsersList] = useState([]);
@@ -109,11 +109,10 @@ const Complete = ({ data, handleClose }) => {
     fetchJobStages(data.job_id);
   },[data])
 
-
   const handleRevert = async (taskId) => {
+    setLoading(true);
     try {
       const authToken = localStorage.getItem("authToken");
-      setLoading(true);
       const selectedUserIds = selectedUsers.map(user => user.id)
       const response = await updateTask(
         { 
@@ -129,13 +128,13 @@ const Complete = ({ data, handleClose }) => {
       );
       console.log("update Task --", response);
       if (response.res) {
+        setLoading(false);
+        handleClose();
         setTimeout(() => {
           const listItem = document.querySelector(`#stage_${taskId}`);
           if (listItem) {
             listItem.classList.add("addTodo");
           }
-          // fetchTasksToDo();
-          // fetchTasksCompleted();
         }, 1000);
         toast.success("Task Moved to To Do", {
           position: "top-center",
@@ -149,7 +148,6 @@ const Complete = ({ data, handleClose }) => {
         });
       } else {
         console.error("Task update failed:", response.error);
-
         toast.error(`${response.error.message}`, {
           position: "top-center",
           autoClose: 5000,
@@ -254,7 +252,7 @@ const Complete = ({ data, handleClose }) => {
           </div>
           <div className="bottom addNewTaskDiv d-flex gap-2 justify-content-between align-items-center">
             <div className="addTaskJobDiv w-100">
-              <div className={`centerText addTaskJobBtn ${data.stage.title}`} style={{minHeight:'40px',fontSize:'16px'}} 
+              <div className={`centerText addTaskJobBtn ${selectedSearchJobStage}`} style={{minHeight:'40px',fontSize:'16px'}} 
                 onClick={() => {setAddTaskJobStageDropdown(!addTaskJobStageDropdown);}}>
                 {selectedSearchJobStage ? selectedSearchJobStage : data.stage.title}
               </div>
@@ -290,7 +288,6 @@ const Complete = ({ data, handleClose }) => {
                 {selectedUsers.length > 0 ? (
                   <>
                     {selectedUsers.map((user, index) => (
-                      <>
                         <div
                           key={index}
                           className={` UserImg addedUserImages ${
@@ -313,7 +310,6 @@ const Complete = ({ data, handleClose }) => {
                             <User />
                           )}
                         </div>
-                      </>
                     ))}
                   </>
                 ) : (
@@ -369,7 +365,6 @@ const Complete = ({ data, handleClose }) => {
                         {usersList
                           .filter(user => !selectedUsers.some(selectedUser => selectedUser.id === user.id))
                           .map((user) => (
-                            <>
                               <div
                                 key={user.id}
                                 className={`addAssigneeDiv ${user.id} ${
@@ -405,7 +400,6 @@ const Complete = ({ data, handleClose }) => {
                                     : "+"}
                                 </div>
                               </div>
-                            </>
                           ))}
                       </div>
                     </div>

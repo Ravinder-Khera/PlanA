@@ -625,6 +625,14 @@ function TaskPage() {
     return formattedDate;
   };
 
+  const handleClose = ()=>{
+    setTimeout(() => {
+      fetchTasksToDo();
+      fetchTasksCompleted();
+    }, 1000);
+    setShowPopup(false)
+  }
+
   return (
     <>
       {loading && (
@@ -644,7 +652,7 @@ function TaskPage() {
         {showPopup && (
           <Complete
             data={selectedTask}
-            handleClose={() => setShowPopup(false)}
+            handleClose={() => handleClose()}
           />
         )}
         <div className="DashboardHeading d-flex justify-content-between align-items-center">
@@ -1318,8 +1326,41 @@ function TaskPage() {
                       <div className="centerText">{task.due_date}</div>
                     </div>
                     <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none">
-                      <div className="UserImg" style={{ minWidth: "40px" }}>
-                        <User />
+                      <div className=" d-flex align-items-center justify-content-end">
+
+                        {task.users.length > 0 ? (
+                            <>
+                              {task.users.map((user, index) => (
+                                <>
+                                  <div
+                                    key={index}
+                                    className={` UserImg addedUserImages `}
+                                    style={{ minWidth: "40px", zIndex: index }}
+                                  >
+                                    {user.profile_pic !== "" ? (
+                                      <img
+                                        alt={user.name}
+                                        src={
+                                          process.env
+                                            .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                          user.profile_pic
+                                        }
+                                      />
+                                    ) : (
+                                      <User />
+                                    )}
+                                  </div>
+                                </>
+                              ))}
+                            </>
+                        ):(
+                          <div
+                            className="UserImg "
+                            style={{ minWidth: "40px" }}
+                          >
+                            <User />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </li>
