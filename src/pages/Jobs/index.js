@@ -59,9 +59,8 @@ const Jobs = () => {
         stage.tasks?.forEach((task) => {
           if (task.users) usersArray.push(...task.users);
         });
-        
       });
-      project.usersArray = usersArray
+      project.usersArray = usersArray;
     });
   }
 
@@ -207,9 +206,14 @@ const Jobs = () => {
         />
       )}
 
-      {showAddModal && <Add  fetchJobs={fetchJobs}  handleClose={() => {
+      {showAddModal && (
+        <Add
+          fetchJobs={fetchJobs}
+          handleClose={() => {
             setShowAddModal(false);
-          }}/>}
+          }}
+        />
+      )}
 
       <div className="jobsBg">
         <div className="JobsHeading d-flex justify-content-between align-items-center gap-3 flex-wrap">
@@ -284,11 +288,23 @@ const Jobs = () => {
               Delete {selectedJobs.length} Item(s)
             </div>
           </div>
-          <div className="job-filters position-relative">
-            <FilterIcon /> <span>Filter</span>
-            {/* <Filter /> */}
+          <div
+            className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv "
+            style={{ cursor: "pointer" }}
+          >
+            <div
+              className="d-flex align-items-center gap-2  "
+              onClick={() => setShowFilter(!showFilter)}
+            >
+              <FilterIcon />
+              <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
+                Filter
+              </p>
+            </div>
+            {showFilter && <Filter setFilteredJobs={setFilteredJobs} setLoading={setLoading} closeFilter={() => setShowFilter(false)}/>}
           </div>
         </div>
+
         <div className="JobsContainer d-flex" ref={containerRef}>
           <div className="left-side">
             <div className="first-table">
@@ -447,51 +463,49 @@ const Jobs = () => {
                             <td className="text-center">
                               <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                 <div className=" d-flex align-items-center justify-content-center">
-                                  {
-                                    job.usersArray?.length > 0 && (
-                                      <>
-                                        {job.usersArray
-                                          ?.slice(0, 1)
-                                          ?.map((user, index) => (
-                                            <>
-                                              <div
-                                                key={index}
-                                                className={`UserImg addedUserImages`}
-                                                style={{
-                                                  minWidth: "40px",
-                                                  zIndex: index,
-                                                }}
-                                                // onClick={() =>
-                                                //   toggleUserDropdown(i)
-                                                // }
-                                              >
-                                                {user.profile_pic !== "" ? (
-                                                  <img
-                                                    alt={user.name}
-                                                    src={
-                                                      process.env
-                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                      user.profile_pic
-                                                    }
-                                                  />
-                                                ) : (
-                                                  <User />
-                                                )}
-                                              </div>
-                                            </>
-                                          ))}
-                                      </>
-                                    )}
-                                  {
-                                    job.usersArray?.length === 0 && (
-                                      <div
-                                        className="UserImg"
-                                        // onClick={() => toggleUserDropdown(i)}
-                                        style={{ minWidth: "40px" }}
-                                      >
-                                        <User />
-                                      </div>
-                                    )}
+                                  {job.usersArray?.length > 0 && (
+                                    <>
+                                      {job.usersArray
+                                        ?.slice(0, 1)
+                                        ?.map((user, index) => (
+                                          <>
+                                            <div
+                                              key={index}
+                                              className={`UserImg addedUserImages`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                              }}
+                                              // onClick={() =>
+                                              //   toggleUserDropdown(i)
+                                              // }
+                                            >
+                                              {user.profile_pic !== "" ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user.profile_pic
+                                                  }
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
+                                          </>
+                                        ))}
+                                    </>
+                                  )}
+                                  {job.usersArray?.length === 0 && (
+                                    <div
+                                      className="UserImg"
+                                      // onClick={() => toggleUserDropdown(i)}
+                                      style={{ minWidth: "40px" }}
+                                    >
+                                      <User />
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </td>
