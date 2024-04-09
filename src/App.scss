@@ -1998,14 +1998,26 @@ body {
     border-radius: 4px;
 }
 
-
-
-
-.fc-header-toolbar{
-    .fc-toolbar-chunk{
-        div{
-            display: flex;
-            gap: 10px;
+.customTimeline {
+    .rct-header-root{
+        background: transparent !important;
+    }
+    .rct-calendar-header{
+        border: none !important;
+    }
+    .rct-dateHeader{
+        background-color: transparent !important;
+        border-left: none !important;
+        &.rct-dateHeader-primary{
+            display: none !important;
+        }
+    }
+    .rct-items{
+        .red{
+            background: red !important;
+        }
+        .green{
+            background: greenyellow !important;
         }
     }
 }
