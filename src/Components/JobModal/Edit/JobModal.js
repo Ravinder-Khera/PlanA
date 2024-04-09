@@ -555,7 +555,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                     <div className="table-top-section">
                       <div className="tableTopLeft">
                         <h1>Tasks</h1>
-                        <p>+ Add All Stages</p>
+                        {/* <p>+ Add All Stages</p> */}
                       </div>
                       <div className="tableTopRight">
                         <button

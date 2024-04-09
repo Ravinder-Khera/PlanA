@@ -103,6 +103,7 @@ const Jobs = () => {
         }
       });
     });
+    console.log("nearest stage", data)
     return nearestStage ? nearestStage.title : "default";
   };
 
@@ -220,6 +221,7 @@ const Jobs = () => {
                 <div className="searchBox">
                   <div className="IconBox">
                     <Search />
+        
                   </div>
                   <input
                     name="search"
@@ -270,6 +272,8 @@ const Jobs = () => {
               </div>
             </div>
           </div>
+        
+         
         </div>
         <div className="JobsHeading d-flex justify-content-between">
           <div className="delete-box">
@@ -284,11 +288,13 @@ const Jobs = () => {
               Delete {selectedJobs.length} Item(s)
             </div>
           </div>
-          <div className="job-filters position-relative">
+          <div className="job-filters">
             <FilterIcon /> <span>Filter</span>
-            {/* <Filter /> */}
           </div>
+            <Filter />
+          
         </div>
+         
         <div className="JobsContainer d-flex" ref={containerRef}>
           <div className="left-side">
             <div className="first-table">
