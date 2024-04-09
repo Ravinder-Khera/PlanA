@@ -62,6 +62,8 @@ function TaskPage() {
   const selectUserRef = useRef(null);
   const selectAssigneeRef = useRef(null);
 
+  const selectFilterRef = useRef(null);
+
   
 
   const fetchTasksToDo = async () => {
@@ -146,6 +148,13 @@ function TaskPage() {
   useEffect(() => {
     let handler = (e) => {
       if (
+        selectFilterRef.current &&
+        !selectFilterRef.current.contains(e.target)
+      ) {
+        setShowFilter(false);
+      }
+
+      if (
         addTaskJobDropdownRef.current &&
         !addTaskJobDropdownRef.current.contains(e.target)
       ) {
@@ -178,7 +187,7 @@ function TaskPage() {
     };
   }, []);
 
-  console.log("user ListItem", selectedAssignee);
+  
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: new Date(
@@ -699,7 +708,9 @@ function TaskPage() {
               <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>Filter</p>
             </div>
             {showFIlter &&(
-              <Filter/>
+              <div ref={selectFilterRef}>
+                <Filter/>
+              </div>
 
             ) }
           </div> 

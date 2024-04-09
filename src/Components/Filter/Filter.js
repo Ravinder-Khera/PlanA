@@ -11,21 +11,26 @@ const Filter = () => {
   const [showFIlter, setShowFilter] = useState(false);
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
-
   const [selectDate, setSelectDate] = useState(false);
   const [selectDueDate, setSelectDueDate] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null);
-
-  const selectDueDateRef = useRef(null);
+  const [selectStages, setSelectStages] = useState(false);
+  const selectDueDateRef1 = useRef(null);
+  const addTaskJobDropdownRef1 = useRef(null);
 
   const handleItemClick = (data) => {
     setSelectedFilter(data);
     setSelectShowFilter(false);
+    // setSelectStage(false);
+    if (data === 'stage') {
+      setSelectStages(true); 
+    }
   };
 
   const handleSelectDueDate = (date) => {
     setSelectDueDate(false);
     setSelectedDueDate(date);
+    
   };
   const SelectFilterData = [
     {
@@ -49,6 +54,25 @@ const Filter = () => {
     },
   ]
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        addTaskJobDropdownRef1.current &&
+        !addTaskJobDropdownRef1.current.contains(event.target)
+      ) {
+        // setSelectedFilter(false);
+        setSelectStages(false); 
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+
  
   return (
     <>
@@ -70,7 +94,6 @@ const Filter = () => {
                   <div className="addTaskJobListItems" >
                     {SelectFilterData.map((d, index) => (
                       <div className="addTaskJobListItem false" key={index} onClick={() => {
-                        console.log("data on select", d)
                         handleItemClick(d.data)
                       }}>
                         {d.data}
@@ -95,24 +118,17 @@ const Filter = () => {
 
                 />
               </div>)}
-            {/* {["", "stage", "Assignee", "Status", "Location"].includes(selectedFilter) && (
-              <div className="searchBox">
-                <div className="IconBox">
-                  <Search />
-                </div>
-                <input
-                  name="search"
-                  placeholder="Search “Job No.” or  “Name”"
-                  value=""
-                />
-              </div>
-            )} */}
+         
             {(selectedFilter === "Date") &&
               (<div className="searchBox" style={{ background: "transparent", padding: "0" }}>
                 <div className="date d-flex gap-3 align-items-center ">
-                  <p className="m-0"  onClick={() => setSelectDueDate(!selectDueDate)}>00/00/0000</p>
-                  {selectDueDate && (
-                        <div className="datePickerDiv" style={{left:"auto"}} ref={selectDueDateRef}>
+                  <input
+                   className="m-0 dateInput"  
+                   onClick={() => setSelectDueDate(!selectDueDate)}
+                   
+                    placeholder="00/00/0000"/>
+                    {selectDueDate && (
+                        <div className="datePickerDiv" style={{left:"auto"}} ref={selectDueDateRef1}>
                           <Calendar
                             date={selectedDueDate}
                             onChange={handleSelectDueDate}
@@ -124,7 +140,7 @@ const Filter = () => {
                         </div>
                       )}
                   <img src={swapImg} alt="" />
-                  <p onClick={() => setSelectDueDate(!selectDueDate)} className="m-0">00/00/0000</p>
+                  <input className="m-0 dateInput"   onClick={() => setSelectDueDate(!selectDueDate)} placeholder="00/00/0000"/>
                 </div>
               </div>)}
 
@@ -151,21 +167,17 @@ const Filter = () => {
           </div>
 
         </div>
-        {(selectedFilter === "stage") && (
+        {(selectedFilter === "stage" && selectStages  ) && (
 
-          <div className="stage-buttonContainer">
+          <div className="stage-buttonContainer" ref={addTaskJobDropdownRef1} >
             <button style={{ background: "#3B923999", border: " 1px solid #3B9239 " }}>Application</button>
             <button style={{ background: "#1FB4E366", border: "1px solid #1FB4E3" }}>Referral</button>
-            <button style={{ background: "#8A50C57D", border: "1px solid #8A50C5" }}>Information Request</button><br />
+            <button style={{ background: "#8A50C57D", border: "1px solid #8A50C5" }}>Information Request</button>
             <button style={{ background: " #FF5C008C", border: "1px solid #FF5C00" }}>Public Notification</button>
             <button style={{ background: "#FF40BE66", border: " 1px solid #FF40BE" }}> Decision</button>
-
-
           </div>
 
-        )
-
-        }
+        )}
 
       </div>
 
