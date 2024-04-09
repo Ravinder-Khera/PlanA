@@ -418,7 +418,7 @@ const Jobs = () => {
             </div>
           </div>
 
-          <div className="right-side flex-1 w-100">
+          <div className="right-side">
             <div className="first-table">
               <div
                 className="table-responsive"

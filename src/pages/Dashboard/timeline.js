@@ -27,8 +27,7 @@ function TimelinePage() {
         initialView="dayGridWeek"
         headerToolbar={
           {
-            left:  'prev,next today',
-            center: 'title',
+            left:  'prev,title,next',
             right: 'dayGridMonth,dayGridWeek',
           }
         }
