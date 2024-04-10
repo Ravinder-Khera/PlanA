@@ -26,6 +26,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
   const [usersList, setUsersList] = useState([]);
 
   const selectDueDateRef = useRef(null);
+  const filterJobDropdownRef = useRef(null);
   const SelectFilterData = [
     {
       data: "Title",
@@ -63,6 +64,23 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
 
   useEffect(() => {
     fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (
+        filterJobDropdownRef.current &&
+        !filterJobDropdownRef.current.contains(e.target)
+      ) {
+        setSelectShowFilter(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
   }, []);
 
   const fetchUsers = async () => {
@@ -136,19 +154,19 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
       filterString = `${selectedField}=${searchedInput}`;
     }
     console.log("filter string", filterString);
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await getJobsByFilter(filterString);
       console.log("response", response);
-      if(!response.error){
+      if (!response.error) {
         setFilteredJobs(response?.res?.data);
         handleResetFields();
-        closeFilter()
+        closeFilter();
       }
     } catch (error) {
       console.log("error in applying filter", error);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -174,6 +192,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                 className={`addTaskJobDropdown ${
                   showSelectFIlter ? "d-block" : " d-none"
                 }`}
+                ref={filterJobDropdownRef}
                 style={{ minWidth: "100%", zIndex: "100" }}
               >
                 <div className="addTaskJobListScroll">

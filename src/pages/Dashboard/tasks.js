@@ -52,7 +52,6 @@ function TaskPage() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
 
-  
   const [showFIlter, setShowFilter] = useState(false);
 
   const addTaskJobDropdownRef = useRef(null);
@@ -61,8 +60,6 @@ function TaskPage() {
   const selectDueDateRef = useRef(null);
   const selectUserRef = useRef(null);
   const selectAssigneeRef = useRef(null);
-
-  
 
   const fetchTasksToDo = async () => {
     try {
@@ -77,12 +74,13 @@ function TaskPage() {
         },
       };
       let response = await fetch(
-        `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
+        `${
+          process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
         }/tasks/by-status-and-date?status=to-do&start_date=${selectionRange.startDate
           .toISOString()
           .slice(0, 10)}&end_date=${selectionRange.endDate
-            .toISOString()
-            .slice(0, 10)}&perPage=10`,
+          .toISOString()
+          .slice(0, 10)}&perPage=10`,
         requestOptions
       );
       const isJson = response.headers
@@ -116,12 +114,13 @@ function TaskPage() {
         },
       };
       let response = await fetch(
-        `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
+        `${
+          process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
         }/tasks/by-status-and-date?status=completed&start_date=${selectionRange.startDate
           .toISOString()
           .slice(0, 10)}&end_date=${selectionRange.endDate
-            .toISOString()
-            .slice(0, 10)}&perPage=10`,
+          .toISOString()
+          .slice(0, 10)}&perPage=10`,
         requestOptions
       );
       const isJson = response.headers
@@ -201,12 +200,13 @@ function TaskPage() {
   };
 
   const handleSubmit = () => {
-    const apiUrl = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
-      }/tasks/by-status-and-date?status=to-do&start_date=${selectionRange.startDate
-        .toISOString()
-        .slice(0, 10)}&end_date=${selectionRange.endDate
-          .toISOString()
-          .slice(0, 10)}&perPage=4`;
+    const apiUrl = `${
+      process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
+    }/tasks/by-status-and-date?status=to-do&start_date=${selectionRange.startDate
+      .toISOString()
+      .slice(0, 10)}&end_date=${selectionRange.endDate
+      .toISOString()
+      .slice(0, 10)}&perPage=4`;
 
     console.log("date range", apiUrl);
   };
@@ -214,7 +214,7 @@ function TaskPage() {
   const toggleCheckbox = async (taskId) => {
     try {
       const cleanedTaskId = taskId.replace(/^select_/, "");
-      const authToken = localStorage.getItem("authToken");
+      
       setIsChecked((prevState) => ({
         ...prevState,
         [taskId]: true,
@@ -222,7 +222,6 @@ function TaskPage() {
       setLoading(true);
       const response = await updateTask(
         { status: "completed" },
-        authToken,
         cleanedTaskId
       );
       console.log("update Task --", response);
@@ -282,11 +281,10 @@ function TaskPage() {
 
   const handleAddAssignee = async (taskId) => {
     try {
-      const authToken = localStorage.getItem("authToken");
+     
       setLoading(true);
       const response = await updateTask(
         { assignee_ids: selectedAssignee },
-        authToken,
         taskId
       );
       console.log("update Task --", response);
@@ -452,7 +450,7 @@ function TaskPage() {
       return;
     }
     try {
-      const authToken = localStorage.getItem("authToken");
+     
       setLoading(true);
       let response = await createTask(
         {
@@ -461,8 +459,7 @@ function TaskPage() {
           title: createTaskTitle,
           due_date: formattedDueDate,
           assignee_ids: selectedUsers,
-        },
-        authToken
+        }
       );
       console.log("create Task --", response);
       if (response.res) {
@@ -692,18 +689,25 @@ function TaskPage() {
               />
             </div>
           )}
-           <div className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv " style={{ cursor: "pointer" }}>
-            <div className="d-flex align-items-center gap-2  " onClick={() => setShowFilter(true)}>
-              <img src={filterIcon} style={{ width: "18px", height: "10px" }} alt="" />
-              <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>Filter</p>
+          {/* <div
+            className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv "
+            style={{ cursor: "pointer" }}
+          >
+            <div
+              className="d-flex align-items-center gap-2  "
+              onClick={() => setShowFilter(!showFIlter)}
+            >
+              <img
+                src={filterIcon}
+                style={{ width: "18px", height: "10px" }}
+                alt=""
+              />
+              <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
+                Filter
+              </p>
             </div>
-            {showFIlter &&(
-              <Filter/>
-
-            ) }
-          </div> 
-
-
+            {showFIlter && <Filter tasks={true} />}
+          </div> */}
         </div>
 
         <div className="DashboardHeading d-flex justify-content-start align-items-center position-relative">
@@ -715,8 +719,9 @@ function TaskPage() {
               To Do
             </div>
             <div
-              className={`taskTab tasksCompleted ${taskTab === "completed" && "active"
-                }`}
+              className={`taskTab tasksCompleted ${
+                taskTab === "completed" && "active"
+              }`}
               onClick={() => setTaskTab("completed")}
             >
               Completed
@@ -811,14 +816,15 @@ function TaskPage() {
                                     .filter((job) =>
                                       searchJobList
                                         ? job.id.toString() ===
-                                        searchJobList.toString()
+                                          searchJobList.toString()
                                         : true
                                     )
                                     .map((job) => (
                                       <div
                                         key={job.id}
-                                        className={`addTaskJobListItem ${searchJobList === job.id && "active"
-                                          }`}
+                                        className={`addTaskJobListItem ${
+                                          searchJobList === job.id && "active"
+                                        }`}
                                         onClick={() => setSearchJobList(job.id)}
                                       >
                                         {job.id}
@@ -981,9 +987,10 @@ function TaskPage() {
                                       <>
                                         <div
                                           key={user.id}
-                                          className={`addAssigneeDiv  ${selectedUsers.includes(user.id) &&
+                                          className={`addAssigneeDiv  ${
+                                            selectedUsers.includes(user.id) &&
                                             "active"
-                                            }`}
+                                          }`}
                                           onClick={() =>
                                             handleUserClick(user.id)
                                           }
@@ -1027,9 +1034,10 @@ function TaskPage() {
                                   <>
                                     <div
                                       key={user.id}
-                                      className={`addAssigneeDiv ${selectedUsers.includes(user.id) &&
+                                      className={`addAssigneeDiv ${
+                                        selectedUsers.includes(user.id) &&
                                         "active"
-                                        }`}
+                                      }`}
                                       onClick={() => handleUserClick(user.id)}
                                     >
                                       <div
@@ -1126,10 +1134,11 @@ function TaskPage() {
                               <>
                                 <div
                                   key={index}
-                                  className={` UserImg addedUserImages ${index === task.users.length - 1
-                                    ? "withAddBtn"
-                                    : ""
-                                    }`}
+                                  className={` UserImg addedUserImages ${
+                                    index === task.users.length - 1
+                                      ? "withAddBtn"
+                                      : ""
+                                  }`}
                                   style={{ minWidth: "40px", zIndex: index }}
                                   onClick={() => toggleUserDropdown(i)}
                                 >
@@ -1178,10 +1187,11 @@ function TaskPage() {
                                         <>
                                           <div
                                             key={user.id}
-                                            className={`addAssigneeDiv  ${selectedAssignee.includes(
-                                              user.id
-                                            ) && "active"
-                                              }`}
+                                            className={`addAssigneeDiv  ${
+                                              selectedAssignee.includes(
+                                                user.id
+                                              ) && "active"
+                                            }`}
                                             onClick={() =>
                                               handleAssigneeClick(user.id)
                                             }
@@ -1228,9 +1238,10 @@ function TaskPage() {
                                     <>
                                       <div
                                         key={user.id}
-                                        className={`addAssigneeDiv ${selectedAssignee.includes(user.id) &&
+                                        className={`addAssigneeDiv ${
+                                          selectedAssignee.includes(user.id) &&
                                           "active"
-                                          }`}
+                                        }`}
                                         onClick={() =>
                                           handleAssigneeClick(user.id)
                                         }
