@@ -2012,12 +2012,50 @@ body {
             display: none !important;
         }
     }
-    .rct-items{
-        .red{
-            background: red !important;
+    .timeLineJobItem{
+        height: 100px !important;
+        &.Application {
+            border: 1px solid #3B9239;
+            background: rgba(59, 146, 57, 0.60) !important;
         }
-        .green{
-            background: greenyellow !important;
+
+        &.Referral {
+            border: 1px solid #1FB4E3;
+            background: rgba(31, 180, 227, 0.40) !important;
+        }
+
+        &.Information {
+            border: 1px solid #8A50C5;
+            background: rgba(138, 80, 197, 0.49) !important;
+        }
+
+        &.Public {
+            border: 1px solid #FF5C00;
+            background: rgba(255, 92, 0, 0.55) !important;
+        }
+
+        &.Decision {
+            border: 1px solid #FF40BE;
+            background: rgba(255, 64, 190, 0.40) !important;
+        }
+    }
+    .rct-vertical-lines{
+        .rct-vl{
+            border-left: 1px solid rgb(226, 227, 31, 0.15) !important;
+            &.rct-day-0{
+                background: #353535 !important;
+            }
+            &.rct-day-6{
+                background: #353535 !important;
+            }
+        }
+    } 
+    .rct-horizontal-lines{
+        .rct-hl-even {
+            border-bottom: 1px solid rgb(226, 227, 31, 0.0) !important;
+        }
+        .rct-hl-odd {
+            border-bottom: none !important;
         }
     }
 }
