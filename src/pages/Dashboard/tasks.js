@@ -581,7 +581,6 @@ function TaskPage() {
         let response = await getUserByRole(authToken);
         if (response.res) {
           setUsersList(response.res);
-          console.log("users-", response.res);
         } else {
           console.error("Failed to fetch Users:", response.error);
           setLoading(false);

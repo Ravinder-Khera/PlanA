@@ -7,7 +7,9 @@ import { Bars } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import moment from "moment";
 import Filter from "../../Components/Filter/Filter";
-import JobModal from "../../Components/JobModal/JobModal";
+import JobModal from "../../Components/JobModal/Edit/JobModal";
+import { StatusList } from "../../helper";
+import Add from "../../Components/JobModal/Add/Add";
 
 const Jobs = () => {
   const containerRef = useRef(null);
@@ -22,11 +24,10 @@ const Jobs = () => {
     stage: "",
   });
 
-  const [usersLists, setUsersList] = useState([]);
-
   const [loading, setLoading] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showJobModal, setShowJobModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     fetchJobs();
@@ -51,15 +52,16 @@ const Jobs = () => {
   // Function to extract users from stages
   function extractUsersFromStages(data) {
     if (!data) return;
-    const usersArray = [];
+    let usersArray;
     data?.forEach((project) => {
+      usersArray = [];
       project.stages?.forEach((stage) => {
         stage.tasks?.forEach((task) => {
-          usersArray.push(...task.users);
+          if (task.users) usersArray.push(...task.users);
         });
       });
+      project.usersArray = usersArray;
     });
-    return usersArray;
   }
 
   const fetchJobs = async () => {
@@ -68,13 +70,13 @@ const Jobs = () => {
       const res = await getJobs();
       const data = res?.res?.data;
       setJobs(data);
-      setFilteredJobs(data)
+      setFilteredJobs(data);
       // Extract users from stages
       if (data) {
-        const users = extractUsersFromStages(data);
+        extractUsersFromStages(data);
         // Print the users array
-        console.log("users", users);
-        setUsersList(users);
+        console.log("data", data);
+        // setUsersList(users);
       }
     } catch (error) {
       console.log("error while fetching jobs", error);
@@ -135,17 +137,7 @@ const Jobs = () => {
             Please choose the jobs you want to delete. Currently, no jobs have
             been selected for deletion.
           </p>
-        </>,
-        {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }
+        </>
       );
       return;
     }
@@ -156,28 +148,10 @@ const Jobs = () => {
       });
       console.log("jobs delete successful", response);
       if (response.res) {
-        toast.success(`${response.res.message}`, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
+        toast.success(`${response.res.message}`);
       } else {
         console.error("jobs delete failed:", response.error);
-        toast.error(`${response.error.message}`, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
+        toast.error(`${response.error.message}`);
       }
     } catch (error) {
       console.error("There was an error:", error);
@@ -227,6 +201,17 @@ const Jobs = () => {
             setGetJob();
             setShowJobModal(false);
           }}
+          fetchJobs={fetchJobs}
+          usersLists={getJob?.data?.usersArray}
+        />
+      )}
+
+      {showAddModal && (
+        <Add
+          fetchJobs={fetchJobs}
+          handleClose={() => {
+            setShowAddModal(false);
+          }}
         />
       )}
 
@@ -260,6 +245,7 @@ const Jobs = () => {
                     status === "in-progress" ? "active" : ""
                   }`}
                   onClick={() => {
+                    setSelectedJobs([]);
                     setStatus("in-progress");
                     handleStatusFilter("in-progress");
                   }}
@@ -269,6 +255,7 @@ const Jobs = () => {
                 <div
                   class={`jobtaskTab ${status === "completed" ? "active" : ""}`}
                   onClick={() => {
+                    setSelectedJobs([]);
                     setStatus("completed");
                     handleStatusFilter("completed");
                   }}
@@ -279,7 +266,7 @@ const Jobs = () => {
             </div>
             <div className="addjobs">
               <span>Add Job</span>
-              <div className="addJobIcon">
+              <div className="addJobIcon" onClick={() => setShowAddModal(true)}>
                 <AddIcon />
               </div>
               <div className="notifyIcon">
@@ -301,11 +288,23 @@ const Jobs = () => {
               Delete {selectedJobs.length} Item(s)
             </div>
           </div>
-          <div className="job-filters position-relative">
-            <FilterIcon /> <span>Filter</span>
-            {/* <Filter /> */}
+          <div
+            className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv "
+            style={{ cursor: "pointer" }}
+          >
+            <div
+              className="d-flex align-items-center gap-2  "
+              onClick={() => setShowFilter(!showFilter)}
+            >
+              <FilterIcon />
+              <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
+                Filter
+              </p>
+            </div>
+            {showFilter && <Filter setFilteredJobs={setFilteredJobs} setLoading={setLoading} closeFilter={() => setShowFilter(false)}/>}
           </div>
         </div>
+
         <div className="JobsContainer d-flex" ref={containerRef}>
           <div className="left-side">
             <div className="first-table">
@@ -318,14 +317,17 @@ const Jobs = () => {
                           <input
                             type="checkbox"
                             checked={
-                              selectedJobs &&
-                              selectedJobs?.length === jobs?.length
+                              filteredJobs?.length &&
+                              selectedJobs?.length &&
+                              filteredJobs?.length === selectedJobs?.length
                             }
                             id={`select_all`}
                             onChange={handleSelectAll}
                             style={{ display: "none" }}
                           />
-                          {selectedJobs?.length === jobs?.length ? (
+                          {filteredJobs?.length &&
+                          selectedJobs?.length &&
+                          filteredJobs?.length === selectedJobs?.length ? (
                             <div className="svg-box-2 mx-2">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -461,19 +463,15 @@ const Jobs = () => {
                             <td className="text-center">
                               <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                 <div className=" d-flex align-items-center justify-content-center">
-                                  {usersLists?.length > 0 ? (
+                                  {job.usersArray?.length > 0 && (
                                     <>
-                                      {usersLists
+                                      {job.usersArray
                                         ?.slice(0, 1)
                                         ?.map((user, index) => (
                                           <>
                                             <div
                                               key={index}
-                                              className={`UserImg addedUserImages ${
-                                                index === usersLists?.length - 1
-                                                  ? "withAddBtn"
-                                                  : ""
-                                              }`}
+                                              className={`UserImg addedUserImages`}
                                               style={{
                                                 minWidth: "40px",
                                                 zIndex: index,
@@ -498,159 +496,16 @@ const Jobs = () => {
                                           </>
                                         ))}
                                     </>
-                                  ) : (
+                                  )}
+                                  {job.usersArray?.length === 0 && (
                                     <div
-                                      className="UserImg withAddBtn"
+                                      className="UserImg"
                                       // onClick={() => toggleUserDropdown(i)}
                                       style={{ minWidth: "40px" }}
                                     >
                                       <User />
                                     </div>
                                   )}
-                                  {/* {userDropdownStates[i] && (
-                                    <div className="addAssigneeDropdown ">
-                                      <div
-                                        className="addTaskJobListScroll"
-                                        ref={selectAssigneeRef}
-                                      >
-                                        <div className="addTaskJobListItems">
-                                          <label className="addedAssignees">
-                                            Assignees
-                                          </label>
-                                          <div className="addedAssigneeBorder">
-                                            {usersList &&
-                                              usersList
-                                                .filter((user) =>
-                                                  selectedAssignee.includes(
-                                                    user.id
-                                                  )
-                                                )
-                                                .map((user) => (
-                                                  <>
-                                                    <div
-                                                      key={user.id}
-                                                      className={`addAssigneeDiv  ${
-                                                        selectedAssignee.includes(
-                                                          user.id
-                                                        ) && "active"
-                                                      }`}
-                                                      onClick={() =>
-                                                        handleAssigneeClick(
-                                                          user.id
-                                                        )
-                                                      }
-                                                    >
-                                                      <div
-                                                        className={` UserImg addedUserImages `}
-                                                        style={{
-                                                          minWidth: "40px",
-                                                        }}
-                                                      >
-                                                        {user.profile_pic !==
-                                                        "" ? (
-                                                          <img
-                                                            alt={user.name}
-                                                            src={
-                                                              process.env
-                                                                .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                              user.profile_pic
-                                                            }
-                                                          />
-                                                        ) : (
-                                                          <User />
-                                                        )}
-                                                      </div>
-                                                      <div>
-                                                        <h4>{user.name}</h4>
-                                                        <p>{user.email}</p>
-                                                      </div>
-                                                      <div className="checkAddBtn">
-                                                        {selectedAssignee.includes(
-                                                          user.id
-                                                        )
-                                                          ? "-"
-                                                          : "+"}
-                                                      </div>
-                                                    </div>
-                                                  </>
-                                                ))}
-                                          </div>
-                                          <label className="">
-                                            Add Assignees
-                                          </label>
-                                          {usersList
-                                            .filter(
-                                              (user) =>
-                                                !selectedAssignee.includes(
-                                                  user.id
-                                                )
-                                            )
-                                            .map((user) => (
-                                              <>
-                                                <div
-                                                  key={user.id}
-                                                  className={`addAssigneeDiv ${
-                                                    selectedAssignee.includes(
-                                                      user.id
-                                                    ) && "active"
-                                                  }`}
-                                                  onClick={() =>
-                                                    handleAssigneeClick(user.id)
-                                                  }
-                                                >
-                                                  <div
-                                                    className={` UserImg addedUserImages `}
-                                                    style={{ minWidth: "40px" }}
-                                                  >
-                                                    {user.profile_pic !== "" ? (
-                                                      <img
-                                                        alt={user.name}
-                                                        src={
-                                                          process.env
-                                                            .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                          user.profile_pic
-                                                        }
-                                                      />
-                                                    ) : (
-                                                      <User />
-                                                    )}
-                                                  </div>
-                                                  <div>
-                                                    <h4>{user.name}</h4>
-                                                    <p>{user.email}</p>
-                                                  </div>
-                                                  <div className="checkAddBtn">
-                                                    {selectedAssignee.includes(
-                                                      user.id
-                                                    )
-                                                      ? "-"
-                                                      : "+"}
-                                                  </div>
-                                                </div>
-                                              </>
-                                            ))}
-                                        </div>
-                                        <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
-                                          <button
-                                            className="colorOutlineBtn"
-                                            onClick={() =>
-                                              handleAddAssignee(task.id)
-                                            }
-                                          >
-                                            Add Assignee
-                                          </button>
-                                          <button
-                                            className="colorOutlineBtn"
-                                            onClick={() =>
-                                              handleCloseAddAssignee()
-                                            }
-                                          >
-                                            Cancel
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )} */}
                                 </div>
                               </div>
                             </td>
@@ -664,7 +519,7 @@ const Jobs = () => {
                                 className={`statusBtn
                                 ${job.status}`}
                               >
-                                {job.status}
+                                {StatusList[job.status]}
                               </span>
                             </td>
                           </tr>
