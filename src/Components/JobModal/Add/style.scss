@@ -338,7 +338,7 @@
                                     cursor: pointer;
 
                                     .penImage {
-                                        margin-top: 0;
+                                        margin-top: 0 !important;
                                     }
                                 }
                             }
@@ -405,7 +405,7 @@
                                 }
 
 
-                                img {
+                                img.back-icon, img.penImage {
                                     margin-top: 13px;
                                     width: 36px;
                                     height: 36px;
@@ -564,6 +564,7 @@
 
                             .table-main-section {
                                 ul {
+                                    padding-inline-start: 0px;
 
                                     li {
                                         .svg-box {

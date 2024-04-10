@@ -467,7 +467,7 @@
                                     cursor: pointer;
 
                                     .penImage {
-                                        margin-top: 0;
+                                        margin-top: 0 !important;
                                     }
                                 }
                             }
@@ -625,7 +625,7 @@
                                 }
 
 
-                                img {
+                                img.back-icon, img.penImage {
                                     margin-top: 13px;
                                     width: 36px;
                                     height: 36px;
@@ -776,6 +776,7 @@
 
                             .table-main-section {
                                 ul {
+                                 
 
                                     li {
                                         .svg-box {
@@ -807,6 +808,22 @@
                                         .application-lodge {
                                             background: #252525;
                                             padding: 9px 9px;
+
+                                            .task-desc-input {
+                                                background: transparent;
+                                                border: none;
+                                                outline: none;
+                                                color: #ffff;
+                                            }
+
+                                            .addStage-btn {
+                                                font-size: 12px;
+                                                font-weight: 400;
+                                                color: rgba(95, 95, 95, 1);
+                                                text-decoration: underline;
+                                                text-underline-offset: 4px;
+                                                cursor: pointer;
+                                            }
 
                                             p {
 
@@ -845,6 +862,237 @@
 
                                             }
 
+                                            .stage-addTaskJobDiv {
+                                                position: relative;
+                                        
+                                                .stage-addTaskJobDropdown {
+                                                    position: absolute;
+                                                    left: 0;
+                                                    top: calc(100% + 22px);
+                                                    z-index: 99;
+                                        
+                                                    &.right {
+                                                        right: 0;
+                                                        left: auto;
+                                                    }
+                                        
+                                                    .addTaskJobSearchDiv {
+                                                        border-radius: 2px;
+                                                        background: #353535;
+                                                        padding: 12px 13px 13px 14px;
+                                                        display: flex;
+                                                        justify-content: space-between;
+                                                        gap: 8px;
+                                        
+                                                        .searchBox {
+                                                            border-radius: 2px;
+                                                            padding: 11px 14px;
+                                                            background: #252525;
+                                                            display: flex;
+                                                            gap: 8px;
+                                                            align-items: center;
+                                        
+                                                            input {
+                                                                background: transparent;
+                                                                border: none;
+                                                                outline: none;
+                                                                color: #E2E31F;
+                                                                font-size: 16px;
+                                                                font-style: normal;
+                                                                font-weight: 500;
+                                                                line-height: normal;
+                                                                letter-spacing: -0.64px;
+                                        
+                                                                &::placeholder {
+                                                                    color: #E2E31F;
+                                                                }
+                                        
+                                                                &::-moz-placeholder {
+                                                                    color: #E2E31F;
+                                                                    opacity: 1;
+                                                                }
+                                                            }
+                                                        }
+                                        
+                                                        .divider {
+                                                            width: 1px;
+                                                            background: #fff;
+                                                            border-radius: 2px;
+                                                        }
+                                                    }
+                                        
+                                                    .addTaskJobListScroll {
+                                                        border-radius: 8px;
+                                                        background: #353535;
+                                                        padding: 27px 18px 23px 21px;
+                                                        margin-top: 7px;
+                                        
+                                                        .addTaskJobListItems {
+                                                            max-height: 300px;
+                                                            overflow-y: auto;
+                                        
+                                                            &::-webkit-scrollbar {
+                                                                width: 4px;
+                                                            }
+                                        
+                                                            &:-moz-scrollbar {
+                                                                width: 4px;
+                                                            }
+                                        
+                                                            &::-webkit-scrollbar-track {
+                                                                border-radius: 2px;
+                                                                background: rgb(255, 255, 255);
+                                                                background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+                                                            }
+                                        
+                                                            &:-moz-scrollbar-track {
+                                                                border-radius: 2px;
+                                                                background: rgb(255, 255, 255);
+                                                                background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+                                                            }
+                                        
+                                                            &::-webkit-scrollbar-thumb {
+                                                                background: #fff;
+                                                                border-radius: 4px;
+                                                            }
+                                        
+                                                            &:-moz-scrollbar-thumb {
+                                                                background: #fff;
+                                                                border-radius: 4px;
+                                                            }
+                                        
+                                                            .addTaskJobListItem {
+                                                                padding: 14px 21px 15px 24px;
+                                                                margin-bottom: 2px;
+                                                                font-size: 16px;
+                                                                font-style: normal;
+                                                                font-weight: 600;
+                                                                line-height: normal;
+                                                                letter-spacing: -0.64px;
+                                                                transition: all 0.5s ease;
+                                                                min-width: max-content;
+                                                                color: #fff;
+                                                                cursor: pointer;
+                                                                background: linear-gradient(90deg, #e3e31f00 0%, rgba(226, 227, 31, 0.00) 100%);
+                                        
+                                                                &:hover,
+                                                                &.active {
+                                                                    background: linear-gradient(90deg, #E2E31F 0%, rgba(226, 227, 31, 0.00) 100%);
+                                                                    color: #000;
+                                                                }
+                                                            }
+                                        
+                                                            .addTaskJobStageItem {
+                                                                min-width: max-content;
+                                                                padding: 14px 21px 15px 24px;
+                                                                font-size: 16px;
+                                                                font-style: normal;
+                                                                font-weight: 600;
+                                                                line-height: normal;
+                                                                letter-spacing: -0.64px;
+                                                                transition: all 0.5s ease;
+                                                                border-radius: 4px;
+                                                                color: #FFF;
+                                                                cursor: pointer;
+                                                                border: 1px solid #FFF;
+                                                                background: rgba(255, 255, 255, 0.25);
+                                                                margin-bottom: 7px;
+                                        
+                                                                &.Application {
+                                                                    border: 1px solid #3B9239;
+                                                                    background: rgba(59, 146, 57, 0.60);
+                                                                }
+                                        
+                                                                &.Referral {
+                                                                    border: 1px solid #1FB4E3;
+                                                                    background: rgba(31, 180, 227, 0.40);
+                                                                }
+                                        
+                                                                &.Information {
+                                                                    border: 1px solid #8A50C5;
+                                                                    background: rgba(138, 80, 197, 0.49);
+                                                                }
+                                        
+                                                                &.Public {
+                                                                    border: 1px solid #FF5C00;
+                                                                    background: rgba(255, 92, 0, 0.55);
+                                                                }
+                                        
+                                                                &.Decision {
+                                                                    border: 1px solid #FF40BE;
+                                                                    background: rgba(255, 64, 190, 0.40);
+                                                                }
+                                        
+                                                            }
+                                        
+                                                            label {
+                                                                color: #E2E31F;
+                                                                font-size: 14px;
+                                                                font-style: normal;
+                                                                font-weight: 300;
+                                                                line-height: normal;
+                                                                letter-spacing: -0.56px;
+                                                                margin-bottom: 24px;
+                                        
+                                                                &.addedAssignees {
+                                                                    font-size: 16px;
+                                                                    font-weight: 600;
+                                                                    line-height: normal;
+                                                                    letter-spacing: -0.64px;
+                                                                    margin-bottom: 16px;
+                                                                }
+                                                            }
+                                        
+                                                            .addedAssigneeBorder {
+                                                                border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                                                            }
+                                        
+                                                            .addAssigneeDiv {
+                                                                display: flex;
+                                                                justify-content: flex-start;
+                                                                gap: 16px;
+                                                                margin-bottom: 21px;
+                                                                transition: all 0.5s ease;
+                                                                min-width: max-content;
+                                                                color: #fff;
+                                                                cursor: pointer;
+                                        
+                                                                h4 {
+                                                                    color: #E2E31F;
+                                                                    font-size: 16px;
+                                                                    font-style: normal;
+                                                                    font-weight: 600;
+                                                                    line-height: normal;
+                                                                    letter-spacing: -0.64px;
+                                                                    margin: 0;
+                                                                }
+                                        
+                                                                p {
+                                                                    margin: 0;
+                                                                    color: #FFF;
+                                                                    font-size: 12px;
+                                                                    font-style: normal;
+                                                                    font-weight: 300;
+                                                                    line-height: normal;
+                                                                    letter-spacing: -0.48px;
+                                                                }
+                                        
+                                                                .checkAddBtn {
+                                                                    margin-left: auto;
+                                                                    padding: 0 20px;
+                                                                    font-size: 20px;
+                                                                    color: #E2E31F;
+                                                                }
+                                        
+                                                                &.active {
+                                                                    color: #000;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
                                             button {
                                                 max-width: 94px;
                                                 width: 100%;
@@ -852,6 +1100,8 @@
                                                 color: #FFFFFF;
                                                 border-radius: 5.66px;
                                                 font-size: 12px;
+                                                border: 1px solid #FFF;
+                                                background: rgba(255, 255, 255, 0.25);
 
                                                 &.btn_Application {
                                                     border: 1px solid #3B9239;
@@ -884,12 +1134,14 @@
                                                 }
                                             }
 
+                                            
+
                                         }
 
                                         .user-cards {
                                             right: -80px;
 
-                                            .UserImg2 {
+                                            .UserImg {
                                                 width: 40px;
                                                 height: 40px;
                                                 background: #e2e31f;
@@ -1299,6 +1551,128 @@
                         // height: 200px;
 
 
+                    }
+
+                    .addAssigneeDropdown1 {
+                        position: absolute;
+                        left: 0;
+                        top: 230px;
+                        z-index: 99;
+                        width: 100%;
+                        height: 100%;
+                        // background: rgba(37, 37, 37, 0.60);
+                        // backdrop-filter: blur(2px);
+                        display: flex;
+                        justify-content: flex-end;
+                        align-items: center;
+                
+                        .addTaskJobListScroll {
+                            border-radius: 8px;
+                            background: #353535;
+                            padding: 27px 18px 23px 21px;
+                            margin-top: 7px;
+                            max-width: max-content;
+                            width: 100%;
+                
+                            .addTaskJobListItems {
+                                max-height: 300px;
+                                overflow-y: auto;
+                
+                                &::-webkit-scrollbar {
+                                    width: 4px;
+                                }
+                
+                                &:-moz-scrollbar {
+                                    width: 4px;
+                                }
+                
+                                &::-webkit-scrollbar-track {
+                                    border-radius: 2px;
+                                    background: rgb(255, 255, 255);
+                                    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+                                }
+                
+                                &:-moz-scrollbar-track {
+                                    border-radius: 2px;
+                                    background: rgb(255, 255, 255);
+                                    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+                                }
+                
+                                &::-webkit-scrollbar-thumb {
+                                    background: #fff;
+                                    border-radius: 4px;
+                                }
+                
+                                &:-moz-scrollbar-thumb {
+                                    background: #fff;
+                                    border-radius: 4px;
+                                }
+                
+                                label {
+                                    color: #E2E31F;
+                                    font-size: 14px;
+                                    font-style: normal;
+                                    font-weight: 300;
+                                    line-height: normal;
+                                    letter-spacing: -0.56px;
+                                    margin-bottom: 24px;
+                
+                                    &.addedAssignees {
+                                        font-size: 16px;
+                                        font-weight: 600;
+                                        line-height: normal;
+                                        letter-spacing: -0.64px;
+                                        margin-bottom: 16px;
+                                    }
+                                }
+                
+                                .addedAssigneeBorder {
+                                    border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                                }
+                
+                                .addAssigneeDiv {
+                                    display: flex;
+                                    justify-content: flex-start;
+                                    gap: 16px;
+                                    margin-bottom: 21px;
+                                    transition: all 0.5s ease;
+                                    min-width: max-content;
+                                    color: #fff;
+                                    cursor: pointer;
+                
+                                    h4 {
+                                        color: #E2E31F;
+                                        font-size: 16px;
+                                        font-style: normal;
+                                        font-weight: 600;
+                                        line-height: normal;
+                                        letter-spacing: -0.64px;
+                                        margin: 0;
+                                    }
+                
+                                    p {
+                                        margin: 0;
+                                        color: #FFF;
+                                        font-size: 12px;
+                                        font-style: normal;
+                                        font-weight: 300;
+                                        line-height: normal;
+                                        letter-spacing: -0.48px;
+                                    }
+                
+                                    .checkAddBtn {
+                                        margin-left: auto;
+                                        padding: 0 20px;
+                                        font-size: 20px;
+                                        color: #E2E31F;
+                                    }
+                
+                                    &.active {
+                                        color: #000;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
