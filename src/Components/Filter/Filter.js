@@ -89,7 +89,6 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
       let response = await getUserByRole(authToken);
       if (response.res) {
         setUsersList(response.res);
-        console.log("users-", response.res);
       } else {
         console.error("Failed to fetch Users:", response.error);
       }
@@ -106,7 +105,6 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
   };
 
   const handleSelect = (ranges) => {
-    console.log("range", ranges.selection);
     setSelectionRange(ranges.selection);
     const { startDate, endDate } = ranges.selection;
     const year = startDate.getFullYear();
@@ -153,11 +151,9 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
     } else {
       filterString = `${selectedField}=${searchedInput}`;
     }
-    console.log("filter string", filterString);
     setLoading(true);
     try {
       const response = await getJobsByFilter(filterString);
-      console.log("response", response);
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
         handleResetFields();

@@ -35,6 +35,8 @@ import Invoice from "./pages/Invoicing/invoice";
 import TaskPage from "./pages/Dashboard/tasks";
 import TimelinePage from "./pages/Dashboard/timeline";
 import Jobs from "./pages/Jobs";
+import Pusher from "pusher-js";
+import eventEmitter from "./Event";
 
 function DashboardMenuList() {
   const location = useLocation();
@@ -206,6 +208,27 @@ function RightSide() {
 }
 
 function App() {
+  useEffect(() => {
+    const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
+      cluster: process.env.REACT_APP_CLUSTER,
+      encrypted: true,
+    });
+    const id = localStorage.getItem("jobId");
+    console.log("job id", id);
+    const channel = pusher.subscribe(`job.${id}`);
+    channel.bind("message.created", (data) => {
+      console.log("data in messages", data);
+      const { message } = data;
+      if (message > 0) {
+        eventEmitter.emit("newMessage", message);
+      }
+    });
+
+    return () => {
+      pusher.unsubscribe(`job.${id}`);
+    };
+  }, []);
+
   return (
     <div className="App">
       <ToastContainer
@@ -227,6 +250,5 @@ function App() {
     </div>
   );
 }
-
 
 export default App;

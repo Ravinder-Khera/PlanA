@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import ChatAndAttachment from "./ChatAndAttachment";
 
-const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
+const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs }) => {
   console.log("data", data);
   const [tasks, setTasks] = useState({});
   const [filteredTasks, setFilteredTasks] = useState({});
@@ -35,6 +35,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
   const [showAssignee, setShowAssignee] = useState(false);
   const [showStages, setShowStages] = useState(false);
   const [selectedAssignee, setSelectedAssignee] = useState([]);
+  
   const addTaskRef = useRef(null);
   const [newTask, setNewTask] = useState({
     title: "",
@@ -65,7 +66,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
     stages.map((stage) => {
       tempArr = { ...tempArr, [stage.title]: stage.id };
     });
-    setStageIds(tempArr)
+    setStageIds(tempArr);
   };
 
   useEffect(() => {
@@ -77,7 +78,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
       location: data?.location,
       description: data?.description,
     });
-    getIdsForStages(data?.stages)
+    getIdsForStages(data?.stages);
     function minDueDate(stage) {
       const currentDate = new Date();
       return stage.tasks.reduce((min, task) => {
@@ -156,7 +157,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
     setProgress(_per);
     setTasks(_tempTasks);
     setFilteredTasks(list1);
-    setUserDropdownStates(Array(list1.length).fill(false));
+    setUserDropdownStates(Array(list1?.length).fill(false));
   }, [data]);
 
   // Function to create task array with stageTitle field
@@ -173,15 +174,16 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
 
   useEffect(() => {
     let _tempTasks = tasks;
-    if (!tasks.length) return;
+   console.log("tasks", tasks)
+    if (!tasks?.length) return;
     if (selectedTab === "to-do") {
       _tempTasks = tasks?.filter((task) => task.status !== "completed");
     } else {
       _tempTasks = tasks?.filter((task) => task.status === "completed");
     }
-    setFilteredTasks(_tempTasks);
-    setUserDropdownStates(Array(_tempTasks.length).fill(false));
-  }, [selectedTab]);
+    setFilteredTasks(() => _tempTasks);
+    setUserDropdownStates(Array(_tempTasks?.length).fill(false));
+  }, [selectedTab, reloadTabs]);
 
   useEffect(() => {
     fetchUsers();
@@ -214,10 +216,11 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
   // };
 
   const handleTasksCheckBoxSelect = (e, id) => {
-    console.log("checked", e.target.checked, id);
+    console.log("checked", e.target.checked, id, selectedTab);
     const { checked } = e.target;
     if (checked) {
       setSelectedTasks((prevIds) => (prevIds ? [...prevIds, id] : [id]));
+      handleUpdateTaskStatus( id);
     } else {
       setSelectedTasks((prevIds) =>
         prevIds ? prevIds.filter((selectedId) => selectedId !== id) : []
@@ -270,11 +273,11 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
 
   // for task list
   const handleTaskAddAssignee = async (task) => {
-    if (!taskSelectedAssignee.length) {
+    if (!taskSelectedAssignee?.length) {
       toast.error("Please select assignee");
       return;
     }
-    setLoader(true)
+    setLoader(true);
     let reqBody = {
       assignee_ids: taskSelectedAssignee,
     };
@@ -307,7 +310,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
     } catch (error) {
       console.log("error while updating task", error);
     }
-    setLoader(false)
+    setLoader(false);
     setTaskSelectedAssignee([]);
     setUserDropdownStates(Array(19).fill(false));
   };
@@ -363,11 +366,11 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
 
   // for new task
   const handleAddAssignee = async () => {
-    if (!selectedAssignee.length) {
+    if (!selectedAssignee?.length) {
       toast.error("Please select assignee");
       return;
     }
-    setLoader(true)
+    setLoader(true);
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -401,9 +404,31 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
     } catch (error) {
       console.log("error while updating task", error);
     }
-    setLoader(false)
+    setLoader(false);
     setUserDropdownStates(Array(19).fill(false));
     setShowAssignee(false);
+  };
+
+  const handleUpdateTaskStatus = async (taskId) => {
+    try {
+      setLoader(true);
+
+      const response = await updateTask(
+        { status: selectedTab === "to-do" ? "completed" : "to-do" },
+        taskId
+      );
+      if (response.res) {
+        fetchJobs();
+        setSelectedTasks()
+        toast.success("Task Status Updated Successfully.");
+      } else {
+        toast.error("Failed to Create Task.");
+      }
+    } catch (error) {
+    } finally {
+     
+      setLoader(false);
+    }
   };
 
   return (
@@ -437,7 +462,11 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                           onClick={handleClose}
                           style={{ cursor: "pointer" }}
                         >
-                          <img src="/assets/Frame 60.png" alt="" className="back-icon" />
+                          <img
+                            src="/assets/Frame 60.png"
+                            alt=""
+                            className="back-icon"
+                          />
                         </div>
                         <div className="position w-100">
                           <div className="d-flex justify-content-between">
@@ -641,15 +670,16 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                 className={`card-slider card_${stage.title}`}
                               >
                                 <div
-                                  className={`card-image listContent d-flex align-items-center gap-2 ${stage.users?.length <= 1
+                                  className={`card-image listContent d-flex align-items-center gap-2 ${
+                                    stage?.users?.length <= 1
                                       ? ""
                                       : "justify-content-center"
-                                    } navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv`}
+                                  } navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv`}
                                 >
                                   <div className=" d-flex align-items-center justify-content-center">
-                                    {stage.users?.length > 0 && (
+                                    {stage?.users?.length > 0 && (
                                       <>
-                                        {stage.users
+                                        {stage?.users
                                           ?.slice(0, 3)
                                           .map((user, index) => (
                                             <div
@@ -674,7 +704,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                               )}
                                             </div>
                                           ))}
-                                        {stage.users?.length > 3 && (
+                                        {stage?.users?.length > 3 && (
                                           <div
                                             key={4}
                                             className={`UserImg-count addedUserImages`}
@@ -684,13 +714,13 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                             }}
                                           >
                                             <div className="count-card">
-                                              {stage.users?.length - 3}+
+                                              {stage?.users?.length - 3}+
                                             </div>
                                           </div>
                                         )}
                                       </>
                                     )}
-                                    {stage.users?.length === 0 && (
+                                    {stage?.users?.length === 0 && (
                                       <div
                                         className="UserImg"
                                         style={{ minWidth: "40px" }}
@@ -734,16 +764,18 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                       </div>
                       <div className="tableTopRight">
                         <button
-                          className={`${selectedTab === "to-do" ? "active" : ""
-                            }`}
+                          className={`${
+                            selectedTab === "to-do" ? "active" : ""
+                          }`}
                           onClick={() => setSelectedTab("to-do")}
                         >
                           To Do
                         </button>
                         <img src="/assets/doubleArrow.png" alt="" />
                         <button
-                          className={`${selectedTab === "completed" ? "active" : ""
-                            }`}
+                          className={`${
+                            selectedTab === "completed" ? "active" : ""
+                          }`}
                           onClick={() => setSelectedTab("completed")}
                         >
                           Completed
@@ -751,7 +783,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                       </div>
                     </div>
                     <div className="table-main-section mt-4 ">
-                      <ul className={`task-list ${showTask ? "show" : ""}`}>
+                      <ul className={`task-list ${showTask ? "show" : ""}`} >
                         {filteredTasks?.length > 0 &&
                           filteredTasks?.map((task, index) => (
                             <li key={index}>
@@ -811,16 +843,17 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                   <div className=" d-flex align-items-center justify-content-center">
                                     {task?.users?.length > 0 ? (
                                       <>
-                                        {task.users
+                                        {task?.users
                                           ?.slice(0, 3)
                                           .map((user, i) => (
                                             <>
                                               <div
                                                 key={task.id}
-                                                className={` UserImg addedUserImages ${i === task.users.length - 1
+                                                className={` UserImg addedUserImages ${
+                                                  i === task?.users?.length - 1
                                                     ? "withAddBtn"
                                                     : ""
-                                                  }`}
+                                                }`}
                                                 style={{
                                                   minWidth: "40px",
                                                   zIndex: i,
@@ -851,7 +884,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                               </div>
                                             </>
                                           ))}
-                                        {task.users?.length > 3 && (
+                                        {task?.users?.length > 3 && (
                                           <div
                                             key={4}
                                             className={`UserImg-count addedUserImages withAddBtn`}
@@ -861,7 +894,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                             }}
                                           >
                                             <div className="count-card">
-                                              {task.users?.length - 3}+
+                                              {task?.users?.length - 3}+
                                             </div>
                                           </div>
                                         )}
@@ -921,7 +954,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                                           }}
                                                         >
                                                           {user.profile_pic !==
-                                                            "" ? (
+                                                          "" ? (
                                                             <img
                                                               alt={user.name}
                                                               src={
@@ -984,7 +1017,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                                       }}
                                                     >
                                                       {user.profile_pic !==
-                                                        "" ? (
+                                                      "" ? (
                                                         <img
                                                           alt={user.name}
                                                           src={
@@ -1148,7 +1181,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                             </div>
                             <div className="listContent user-cards d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                               <div className=" d-flex align-items-center justify-content-end">
-                                {selectedAssignee.length > 0 ? (
+                                {selectedAssignee?.length > 0 ? (
                                   <>
                                     {selectedAssignee
                                       ?.slice(0, 3)
@@ -1157,7 +1190,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                           <div
                                             key={user.id}
                                             className={` UserImg addedUserImages ${
-                                              i === selectedAssignee.length - 1
+                                              i === selectedAssignee?.length - 1
                                                 ? "withAddBtn"
                                                 : ""
                                             }`}
@@ -1493,7 +1526,9 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                     </div>
                   </div>
                 </div>
-                <div className="popup-section-right"></div>
+                <div className="popup-section-right">
+                  <ChatAndAttachment JobId={data.id} />
+                </div>
               </div>
             </div>
           </div>

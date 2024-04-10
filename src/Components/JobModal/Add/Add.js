@@ -86,7 +86,6 @@ const Add = ({ handleClose, fetchJobs }) => {
       let response = await getUserByRole(authToken);
       if (response.res) {
         setUsersList(response.res);
-        console.log("users-", response.res);
       } else {
         console.error("Failed to fetch Users:", response.error);
       }
@@ -328,7 +327,7 @@ const Add = ({ handleClose, fetchJobs }) => {
           title,
           due_date,
           status,
-          assignee_ids: users ? users.map(user => user.id) : [],
+          users: users ? users.map(user => user.id) : [],
         })),
       }));
     }
@@ -364,7 +363,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                       title: task.title,
                       due_date: formattedDate,
                       status: task.status,
-                      assignee_ids: task.users ? task.users.map(user => user.id) : [],
+                      users: task.users ? task.users.map(user => user.id) : [],
                   });
               } else {
                   // If the stage doesn't exist, create a new stage object and push it to stages
@@ -375,7 +374,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                               title: task.title,
                               due_date: formattedDate,
                               status: task.status,
-                              assignee_ids: task.users ? task.users.map(user => user.id) : [],
+                              users: task.users ? task.users.map(user => user.id) : [],
                           },
                       ],
                   });
@@ -415,7 +414,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                     title: task.title,
                     due_date: formattedDate,
                     status: task.status,
-                    assignee_ids: task.users ? task.users.map(user => user.id) : [],
+                    users: task.users ? task.users.map(user => user.id) : [],
                 });
             } else {
                 // If the stage doesn't exist, create a new stage object and push it to stages
@@ -426,7 +425,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                             title: task.title,
                             due_date: formattedDate,
                             status: task.status,
-                            assignee_ids: task.users ? task.users.map(user => user.id) : [],
+                            users: task.users ? task.users.map(user => user.id) : [],
                         },
                     ],
                 });
@@ -435,8 +434,6 @@ const Add = ({ handleClose, fetchJobs }) => {
     });
       
     }
-
-    console.log("stages", stages);
 
     try {
       setLoader(true);
