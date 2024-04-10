@@ -60,6 +60,7 @@ function TaskPage() {
   const selectDueDateRef = useRef(null);
   const selectUserRef = useRef(null);
   const selectAssigneeRef = useRef(null);
+  const selectFilterRef = useRef(null);
 
   const fetchTasksToDo = async () => {
     try {
@@ -698,7 +699,8 @@ function TaskPage() {
           )}
           {/* <div
             className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv "
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer" }} 
+            ref={selectFilterRef}
           >
             <div
               className="d-flex align-items-center gap-2  "
