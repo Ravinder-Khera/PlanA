@@ -1543,7 +1543,8 @@
         &::before {
             content: "";
             position: absolute;
-            background: linear-gradient(0deg, #353535 -5%, rgba(53, 53, 53, 0) 95%);
+            // background: linear-gradient(0deg, #353535 -5%, rgba(53, 53, 53, 0) 95%);
+            
             height: 43px;
             width: 100%;
             left: 0;
