@@ -2060,7 +2060,43 @@ body {
     }
 }
 
-
+.ec{
+    &.ec-time-grid{
+        .ec-body{
+            display: none;
+        }
+        .ec-header{
+            .ec-sidebar{
+                display: none;
+            }
+            .ec-lines{
+                display: none;
+            }
+        }
+        .ec-all-day{
+            .ec-sidebar{
+                display: none;
+            }
+            .ec-lines{
+                display: none;
+            }
+        }
+        .ec-content{
+            .ec-day {
+                border: none !important;
+                &.ec-today{
+                    background-color: #35353599;
+                }
+                .ec-events{
+                    padding: 10px 0;
+                    .ec-event-body{
+                        padding: 10px;
+                    }
+                }
+            }
+        }
+    }
+} 
 
 
 .select-fliter{
