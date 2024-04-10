@@ -7,6 +7,7 @@ import { StageList, StatusList } from "../../../helper";
 import { getUserByRole, updateJobs } from "../../../services/auth";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
+import ChatAndAttachment from "./ChatAndAttachment";
 
 const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
   const [tasks, setTasks] = useState({});
@@ -557,11 +558,10 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                 className={`card-slider card_${stage.title}`}
                               >
                                 <div
-                                  className={`card-image listContent d-flex align-items-center gap-2 ${
-                                    stage.users?.length <= 1
+                                  className={`card-image listContent d-flex align-items-center gap-2 ${stage.users?.length <= 1
                                       ? ""
                                       : "justify-content-center"
-                                  } navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv`}
+                                    } navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv`}
                                 >
                                   <div className=" d-flex align-items-center justify-content-center">
                                     {stage.users?.length > 0 && (
@@ -651,18 +651,16 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                       </div>
                       <div className="tableTopRight">
                         <button
-                          className={`${
-                            selectedTab === "to-do" ? "active" : ""
-                          }`}
+                          className={`${selectedTab === "to-do" ? "active" : ""
+                            }`}
                           onClick={() => setSelectedTab("to-do")}
                         >
                           To Do
                         </button>
                         <img src="/assets/doubleArrow.png" alt="" />
                         <button
-                          className={`${
-                            selectedTab === "completed" ? "active" : ""
-                          }`}
+                          className={`${selectedTab === "completed" ? "active" : ""
+                            }`}
                           onClick={() => setSelectedTab("completed")}
                         >
                           Completed
@@ -736,11 +734,10 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                             <>
                                               <div
                                                 key={task.id}
-                                                className={` UserImg addedUserImages ${
-                                                  i === task.users.length - 1
+                                                className={` UserImg addedUserImages ${i === task.users.length - 1
                                                     ? "withAddBtn"
                                                     : ""
-                                                }`}
+                                                  }`}
                                                 style={{
                                                   minWidth: "40px",
                                                   zIndex: i,
@@ -822,13 +819,12 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                                     <>
                                                       <div
                                                         key={user.id}
-                                                        className={`addAssigneeDiv  ${
-                                                          taskSelectedAssignee?.some(
-                                                            (item) =>
-                                                              item.id ===
-                                                              user.id
-                                                          ) && "active"
-                                                        }`}
+                                                        className={`addAssigneeDiv  ${taskSelectedAssignee?.some(
+                                                          (item) =>
+                                                            item.id ===
+                                                            user.id
+                                                        ) && "active"
+                                                          }`}
                                                         onClick={() =>
                                                           handleTaskAssigneeClick(
                                                             user
@@ -842,7 +838,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                                           }}
                                                         >
                                                           {user.profile_pic !==
-                                                          "" ? (
+                                                            "" ? (
                                                             <img
                                                               alt={user.name}
                                                               src={
@@ -887,12 +883,11 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                                 <>
                                                   <div
                                                     key={user.id}
-                                                    className={`addAssigneeDiv ${
-                                                      taskSelectedAssignee?.some(
-                                                        (item) =>
-                                                          item.id === user.id
-                                                      ) && "active"
-                                                    }`}
+                                                    className={`addAssigneeDiv ${taskSelectedAssignee?.some(
+                                                      (item) =>
+                                                        item.id === user.id
+                                                    ) && "active"
+                                                      }`}
                                                     onClick={() =>
                                                       handleTaskAssigneeClick(
                                                         user
@@ -906,7 +901,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                                                       }}
                                                     >
                                                       {user.profile_pic !==
-                                                      "" ? (
+                                                        "" ? (
                                                         <img
                                                           alt={user.name}
                                                           src={
@@ -1071,7 +1066,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs }) => {
                   </div>
                 </div>
                 <div className="popup-section-right">
-                  
+                  <ChatAndAttachment />
                 </div>
               </div>
             </div>
