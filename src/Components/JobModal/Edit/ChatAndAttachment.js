@@ -41,7 +41,7 @@ const ChatAndAttachment = ({ JobId }) => {
       cluster: process.env.REACT_APP_CLUSTER,
       encrypted: true,
     });
-    const id = localStorage.getItem("jobId");
+    const id = localStorage.getItem("jobId") || "x";
 
     const channel = pusher.subscribe(`job.${id}`);
     channel.bind("message.created", (data) => {

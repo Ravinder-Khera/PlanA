@@ -55,6 +55,7 @@ function DashboardMenuList() {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("jobId")
     setIsLoggedIn(false);
   };
 
