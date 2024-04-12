@@ -429,7 +429,9 @@ const ChatAndAttachment = ({ JobId }) => {
                 </>
               ))}
             {!chats && <p className="loading">Loading Chats...</p>}
-            {!chats && chats?.length === 0 && <p className="no-chats">No Chats yet</p>}
+            {!chats && chats?.length === 0 && (
+              <p className="no-chats">No Chats yet</p>
+            )}
           </div>
           <div
             className="tab-pane fade"
@@ -478,6 +480,11 @@ const ChatAndAttachment = ({ JobId }) => {
                       </div>
                     </div>
                   ))}
+              </div>
+              <div className="text-center">
+                {attachments?.length === 0 && (
+                  <p className="no-chats">No Attachments Found</p>
+                )}
               </div>
             </div>
           </div>
