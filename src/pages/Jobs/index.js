@@ -207,7 +207,7 @@ const Jobs = () => {
             color="#E2E31F"
             ariaLabel="bars-loading"
             wrapperStyle={{}}
-            wrapperClass=""
+            wrapperclassName=""
             visible={true}
           />
         </div>
@@ -260,9 +260,9 @@ const Jobs = () => {
           </div>
           <div className="d-flex align-items-center">
             <div className="navSearchTab">
-              <div class="jobsTaskTabsDiv">
+              <div className="jobsTaskTabsDiv">
                 <div
-                  class={`jobtaskTab ${
+                  className={`jobtaskTab ${
                     status === "in-progress" ? "active" : ""
                   }`}
                   onClick={() => {
@@ -274,7 +274,7 @@ const Jobs = () => {
                   Current Jobs
                 </div>
                 <div
-                  class={`jobtaskTab ${status === "completed" ? "active" : ""}`}
+                  className={`jobtaskTab ${status === "completed" ? "active" : ""}`}
                   onClick={() => {
                     setSelectedJobs([]);
                     setStatus("completed");
@@ -337,7 +337,7 @@ const Jobs = () => {
           <div className="left-side">
             <div className="first-table">
               <div className="job_table_outer_div  ">
-                <table class="table table-borderless text-light">
+                <table className="table table-borderless text-light">
                   <thead>
                     <tr>
                       <th scope="col" className="text-center">
@@ -463,14 +463,14 @@ const Jobs = () => {
             </div>
           </div>
 
-          <div className="right-side flex-1 w-100">
+          <div className="right-side">
             <div className="first-table">
               <div
                 className="table-responsive"
                 style={{ maxWidth: divWidth - 800 }}
               >
                 <div className="job_table_outer_div">
-                  <table class="table table-borderless text-light">
+                  <table className="table table-borderless text-light">
                     <thead>
                       <tr>
                         <th scope="col">

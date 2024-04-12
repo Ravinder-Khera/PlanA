@@ -395,7 +395,9 @@ body {
             z-index: 0;
             margin: 0;
             margin-right: -10px;
-
+            &:last-child{
+                margin-right: 0;
+            }
             img {
                 object-fit: cover;
                 max-width: 100%;
@@ -1964,30 +1966,99 @@ body {
 }
 
 
-/* width */
 ::-webkit-scrollbar {
-    width: 5px;
-    z-index: 99999;
+    width: 4px;
+    height: 4px;
 }
 
-/* Track */
+:-moz-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
 ::-webkit-scrollbar-track {
-    background: #00000071;
-    z-index: 99999;
+    border-radius: 2px;
+    background: rgb(255, 255, 255);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
 }
 
-/* Handle */
+:-moz-scrollbar-track {
+    border-radius: 2px;
+    background: rgb(255, 255, 255);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
+}
+
 ::-webkit-scrollbar-thumb {
-    background: #3f3f3f77;
-    z-index: 99999;
-
+    background: #fff;
+    border-radius: 4px;
 }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
+:-moz-scrollbar-thumb {
+    background: #fff;
+    border-radius: 4px;
 }
 
+.customTimeline {
+    .rct-header-root{
+        background: transparent !important;
+    }
+    .rct-calendar-header{
+        border: none !important;
+    }
+    .rct-dateHeader{
+        background-color: transparent !important;
+        border-left: none !important;
+        &.rct-dateHeader-primary{
+            display: none !important;
+        }
+    }
+    .timeLineJobItem{
+        height: 100px !important;
+        &.Application {
+            border: 1px solid #3B9239;
+            background: rgba(59, 146, 57, 0.60) !important;
+        }
+
+        &.Referral {
+            border: 1px solid #1FB4E3;
+            background: rgba(31, 180, 227, 0.40) !important;
+        }
+
+        &.Information {
+            border: 1px solid #8A50C5;
+            background: rgba(138, 80, 197, 0.49) !important;
+        }
+
+        &.Public {
+            border: 1px solid #FF5C00;
+            background: rgba(255, 92, 0, 0.55) !important;
+        }
+
+        &.Decision {
+            border: 1px solid #FF40BE;
+            background: rgba(255, 64, 190, 0.40) !important;
+        }
+    }
+    .rct-vertical-lines{
+        .rct-vl{
+            border-left: 1px solid rgb(226, 227, 31, 0.15) !important;
+            &.rct-day-0{
+                background: #353535 !important;
+            }
+            &.rct-day-6{
+                background: #353535 !important;
+            }
+        }
+    } 
+    .rct-horizontal-lines{
+        .rct-hl-even {
+            border-bottom: 1px solid rgb(226, 227, 31, 0.0) !important;
+        }
+        .rct-hl-odd {
+            border-bottom: none !important;
+        }
+    }
+}
 
 
 

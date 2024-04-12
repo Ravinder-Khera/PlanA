@@ -448,7 +448,7 @@
 
     .right-side {
         padding: 6px 16px 6px 0;
-
+        max-width: calc(100% - 800px);
         // position: absolute;
         // left: 800px;
         // height: 100vh;

@@ -672,7 +672,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                               <div className="w-100  d-flex align-items-center position-relative ">
                                 <div
                                   className="d-flex justify-content-between application-lodge "
-                                  style={{ "min-width": "92%" }}
+                                  style={{ minWidth: "92%" }}
                                 >
                                   <div className="d-flex gap-3 align-items-center ">
                                     <img
