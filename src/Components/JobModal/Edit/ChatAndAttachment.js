@@ -428,8 +428,8 @@ const ChatAndAttachment = ({ JobId }) => {
                   )}
                 </>
               ))}
-            {!chats && "Loading..."}
-            {chats && chats?.length === 0 && <p>No Chats yet</p>}
+            {!chats && <p className="loading">Loading Chats...</p>}
+            {!chats && chats?.length === 0 && <p className="no-chats">No Chats yet</p>}
           </div>
           <div
             className="tab-pane fade"
@@ -492,7 +492,7 @@ const ChatAndAttachment = ({ JobId }) => {
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onClick={handleFileUpload}
-              className="imgUploadArea"
+              className="imgUploadArea w-100"
             >
               <div
                 className="w-100"
