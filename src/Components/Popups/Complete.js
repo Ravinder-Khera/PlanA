@@ -113,6 +113,7 @@ const Complete = ({ data, handleClose }) => {
     setLoading(true);
     try {
       const authToken = localStorage.getItem("authToken");
+      setLoading(true);
       const selectedUserIds = selectedUsers.map(user => user.id)
       const response = await updateTask(
         { 
@@ -123,8 +124,7 @@ const Complete = ({ data, handleClose }) => {
           due_date: formattedDueDate,
           assignee_ids: selectedUserIds
         },
-        authToken,
-        taskId
+         taskId
       );
       console.log("update Task --", response);
       if (response.res) {

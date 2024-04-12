@@ -235,7 +235,8 @@ export const getTasksByStatus = async (data) => {
     }
 };
 
-export const createTask = async (data,authToken) => {
+export const createTask = async (data) => {
+    const authToken = localStorage.getItem("authToken");
     const requestOptions = {
         method: "POST",
         headers: {
@@ -261,7 +262,8 @@ export const createTask = async (data,authToken) => {
     }
 };
 
-export const updateTask = async (data,authToken,taskId) => {
+export const updateTask = async (data,taskId) => {
+    const authToken = localStorage.getItem("authToken");
     const requestOptions = {
         method: "PATCH",
         headers: {

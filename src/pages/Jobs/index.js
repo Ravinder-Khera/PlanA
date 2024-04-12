@@ -28,6 +28,8 @@ const Jobs = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [showJobModal, setShowJobModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const filterRef = useRef(null);
+  const [reloadTabs, setReloadTabs] = useState(false);
 
   useEffect(() => {
     fetchJobs();
@@ -46,6 +48,20 @@ const Jobs = () => {
 
     return () => {
       window.removeEventListener("resize", updateDivWidth);
+    };
+  }, []);
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setShowFilter(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
     };
   }, []);
 
@@ -77,6 +93,7 @@ const Jobs = () => {
         // Print the users array
         console.log("data", data);
         // setUsersList(users);
+        setReloadTabs(!reloadTabs);
       }
     } catch (error) {
       console.log("error while fetching jobs", error);
@@ -203,6 +220,7 @@ const Jobs = () => {
           }}
           fetchJobs={fetchJobs}
           usersLists={getJob?.data?.usersArray}
+          reloadTabs={reloadTabs}
         />
       )}
 
@@ -291,6 +309,7 @@ const Jobs = () => {
           <div
             className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv "
             style={{ cursor: "pointer" }}
+            ref={filterRef}
           >
             <div
               className="d-flex align-items-center gap-2  "
@@ -301,7 +320,13 @@ const Jobs = () => {
                 Filter
               </p>
             </div>
-            {showFilter && <Filter setFilteredJobs={setFilteredJobs} setLoading={setLoading} closeFilter={() => setShowFilter(false)}/>}
+            {showFilter && (
+              <Filter
+                setFilteredJobs={setFilteredJobs}
+                setLoading={setLoading}
+                closeFilter={() => setShowFilter(false)}
+              />
+            )}
           </div>
         </div>
 
@@ -411,6 +436,7 @@ const Jobs = () => {
                                   cursor: "pointer",
                                 }}
                                 onClick={() => {
+                                  localStorage.setItem("jobId", job.id);
                                   setShowJobModal(true);
                                   setGetJob({
                                     data: job,
