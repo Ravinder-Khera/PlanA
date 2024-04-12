@@ -404,6 +404,10 @@ body {
                 height: 100%;
                 border-radius: 5px;
             }
+            &.CountUsers{
+                background: #fff;
+                color: #000;
+            }
         }
     }
 
@@ -1998,106 +2002,199 @@ body {
     border-radius: 4px;
 }
 
-.customTimeline {
-    .rct-header-root{
-        background: transparent !important;
-    }
-    .rct-calendar-header{
-        border: none !important;
-    }
-    .rct-dateHeader{
-        background-color: transparent !important;
-        border-left: none !important;
-        &.rct-dateHeader-primary{
-            display: none !important;
-        }
-    }
-    .timeLineJobItem{
-        height: 100px !important;
-        &.Application {
-            border: 1px solid #3B9239;
-            background: rgba(59, 146, 57, 0.60) !important;
-        }
-
-        &.Referral {
-            border: 1px solid #1FB4E3;
-            background: rgba(31, 180, 227, 0.40) !important;
-        }
-
-        &.Information {
-            border: 1px solid #8A50C5;
-            background: rgba(138, 80, 197, 0.49) !important;
-        }
-
-        &.Public {
-            border: 1px solid #FF5C00;
-            background: rgba(255, 92, 0, 0.55) !important;
-        }
-
-        &.Decision {
-            border: 1px solid #FF40BE;
-            background: rgba(255, 64, 190, 0.40) !important;
-        }
-    }
-    .rct-vertical-lines{
-        .rct-vl{
-            border-left: 1px solid rgb(226, 227, 31, 0.15) !important;
-            &.rct-day-0{
-                background: #353535 !important;
-            }
-            &.rct-day-6{
-                background: #353535 !important;
-            }
-        }
-    } 
-    .rct-horizontal-lines{
-        .rct-hl-even {
-            border-bottom: 1px solid rgb(226, 227, 31, 0.0) !important;
-        }
-        .rct-hl-odd {
-            border-bottom: none !important;
-        }
-    }
-}
-
-.ec{
-    &.ec-time-grid{
-        .ec-body{
-            display: none;
-        }
-        .ec-header{
-            .ec-sidebar{
-                display: none;
-            }
-            .ec-lines{
-                display: none;
-            }
-        }
-        .ec-all-day{
-            .ec-sidebar{
-                display: none;
-            }
-            .ec-lines{
-                display: none;
-            }
-        }
-        .ec-content{
-            .ec-day {
-                border: none !important;
-                &.ec-today{
-                    background-color: #35353599;
+.mapContainerDiv{
+    overflow-x: auto;
+    max-width: 100%;
+    .customTimeline {
+        .timelineHeader{
+            display: flex;
+            width: 100%;
+            .timeLineDateDiv{
+                // flex: 1 1 auto;
+                min-width: 40px;
+                &.current-day{
+                    position: relative;
+                    // &::after{
+                    //     content: '';
+                    //     position: absolute;
+                    //     left: 50%;
+                    //     top: 0;
+                    //     height: 100vh;
+                    //     width: 1px;
+                    //     background: #fff;
+                    // }
                 }
-                .ec-events{
-                    padding: 10px 0;
-                    .ec-event-body{
-                        padding: 10px;
+                .timeLineDate{
+                    color: #FFF;
+                    text-align: center;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 700;
+                    line-height: normal;
+                    letter-spacing: -0.64px;                    
+                }
+                .timeLineDay{
+                    color: #E2E31F;
+                    text-align: center;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.48px;
+                }
+            }
+        }
+        .timelineBody{
+            margin-top: 70px;
+            .jobRow{
+                display: flex;
+                width: 100%;
+                margin: 40px auto;
+                
+                .jobCell{
+                    // flex: 1 1 auto;
+                    min-width: 40px;
+                    .timeLineDot{
+                        color: transparent;
+                    }
+                    .timeLineJob{
+                        min-height: 104px ;
+                        position: relative;
+                        .timeLineJobItem{
+                            position: absolute;
+                            top: 0;
+                            right: 1px;
+                            overflow: hidden;
+                            height: 100%;
+                            border-radius: 8px;
+                            z-index: 1;
+                            .textDiv{
+                                min-width: max-content;
+                                span{
+                                    color: #FFF;
+                                    font-size: 12px;
+                                    font-style: normal;
+                                    font-weight: 300;
+                                    line-height: normal;
+                                    letter-spacing: -0.48px;                                    
+                                }
+                                p{
+                                    color: #FFF;
+                                    font-size: 16px;
+                                    font-style: normal;
+                                    font-weight: 600;
+                                    line-height: normal;
+                                    letter-spacing: -0.64px;                                    
+                                }
+                            }
+                        }
+                        .jobProgressBg{
+                            position: absolute;
+                            top: 0;
+                            left: 0px;
+                            height: 100%;
+                            border-radius: 8px;
+                            z-index: -1;
+                        }
+                    }
+                    &.Application {
+                        background: transparent;
+                        
+                        .timeLineJobItem{
+                            border: 1px solid #3B9239;
+                        }
+                        .jobProgressBg{
+                            background: rgba(59, 146, 57, 0.60) ;
+                        }
+                    }
+                    &.Referral {
+                        background: rgba(31, 180, 227, 0.40) ;
+                        border-top: 1px solid;
+                        border-bottom: 1px solid;
+                        border-color: #1FB4E3;
+                        &.first {
+                            border-left: 1px solid;
+                            border-radius: 8px 0 0 8px;
+                            border-color: #1FB4E3;
+                        }
+                        &.last {
+                            border-right: 1px solid;
+                            border-radius: 0 8px 8px 0;
+                            border-color: #1FB4E3;
+                        }
+                    }
+                    &.Information {
+                        background: rgba(138, 80, 197, 0.49) ;
+                        border-top: 1px solid;
+                        border-bottom: 1px solid;
+                        border-color: #8A50C5;
+                        &.first {
+                            border-left: 1px solid;
+                            border-color: #8A50C5;
+                            border-radius: 8px 0 0 8px;
+                        }
+                        &.last {
+                            border-right: 1px solid;
+                            border-color: #8A50C5;
+                            border-radius: 0 8px 8px 0;
+                        }
+                    }
+                    &.Public {
+                        background: rgba(255, 92, 0, 0.55) ;
+                        border-top: 1px solid;
+                        border-bottom: 1px solid ;
+                        border-color: #FF5C00;
+                        &.first {
+                            border-left: 1px solid ;
+                            border-color: #FF5C00;
+                            border-radius: 8px 0 0 8px;
+                        }
+                        &.last {
+                            border-right: 1px solid ;
+                            border-color: #FF5C00;
+                            border-radius: 0 8px 8px 0;
+                        }
+                    }
+                    &.Decision {
+                        background: rgba(255, 64, 190, 0.40) ;
+                        border-top: 1px solid;
+                        border-bottom: 1px solid ;
+                        border-color: #FF40BE;
+                        &.first {
+                            border-left: 1px solid ;
+                            border-color: #FF40BE;
+                            border-radius: 8px 0 0 8px;
+                        }
+                        &.last {
+                            border-right: 1px solid ;
+                            border-color: #FF40BE;
+                            border-radius: 0 8px 8px 0;
+                        }
                     }
                 }
             }
         }
+        .rct-vertical-lines{
+            .rct-vl{
+                border-left: 1px solid rgb(226, 227, 31, 0.15) !important;
+                &.rct-day-0{
+                    background: #353535 !important;
+                }
+                &.rct-day-6{
+                    background: #353535 !important;
+                }
+            }
+        } 
+        .rct-horizontal-lines{
+            .rct-hl-even {
+                border-bottom: 1px solid rgb(226, 227, 31, 0.0) !important;
+            }
+            .rct-hl-odd {
+                border-bottom: none !important;
+            }
+        }
     }
-} 
-
+}
 
 .select-fliter{
     display: flex;
