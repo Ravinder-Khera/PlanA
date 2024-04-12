@@ -386,6 +386,14 @@ const JobModal = ({
       toast.error("Please select assignee");
       return;
     }
+    if(!newTask.title || newTask.title?.trim() === ""){
+      toast.error("Please Enter Task Title.");
+      return;
+    }
+    if(newTask.stageTitle === ""){
+      toast.error("Please Select Task Stage.");
+      return;
+    }
     setLoader(true);
     const date = new Date();
     const year = date.getFullYear();
@@ -397,9 +405,8 @@ const JobModal = ({
       stage_id: stageIds[newTask.stageTitle],
       title: newTask.title,
       due_date: formattedDueDate,
-      assignee_ids: selectedAssignee,
+      assignee_ids: selectedAssignee
     };
-    console.log("selected assignee", reqBody);
     try {
       const response = await createTask(reqBody);
       if (response.res) {
@@ -1113,9 +1120,9 @@ const JobModal = ({
                               id={`task_select_${tasks?.length}`}
                               style={{ display: "none" }}
                               checked={selectedTasks?.includes(tasks?.length)}
-                              onChange={(e) =>
-                                handleTasksCheckBoxSelect(e, tasks?.length)
-                              }
+                              // onChange={(e) =>
+                              //   handleTasksCheckBoxSelect(e, tasks?.length)
+                              // }
                               ref={addTaskRef}
                             />
                             {selectedTasks?.includes(tasks?.length) ? (
