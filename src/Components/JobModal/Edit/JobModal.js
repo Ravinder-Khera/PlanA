@@ -14,7 +14,14 @@ import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import ChatAndAttachment from "./ChatAndAttachment";
 
-const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs }) => {
+const JobModal = ({
+  data,
+  handleClose,
+  stage,
+  usersLists,
+  fetchJobs,
+  reloadTabs,
+}) => {
   console.log("data", data);
   const [tasks, setTasks] = useState({});
   const [filteredTasks, setFilteredTasks] = useState({});
@@ -35,7 +42,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
   const [showAssignee, setShowAssignee] = useState(false);
   const [showStages, setShowStages] = useState(false);
   const [selectedAssignee, setSelectedAssignee] = useState([]);
-  
+
   const addTaskRef = useRef(null);
   const [newTask, setNewTask] = useState({
     title: "",
@@ -158,7 +165,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
     setTasks(_tempTasks);
     setFilteredTasks(list1);
     setUserDropdownStates(Array(list1?.length).fill(false));
-  }, [data]);
+  }, [data, reloadTabs]);
 
   // Function to create task array with stageTitle field
   function createTaskArrayWithStageTitle(data) {
@@ -173,8 +180,8 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
   }
 
   useEffect(() => {
+    
     let _tempTasks = tasks;
-   console.log("tasks", tasks)
     if (!tasks?.length) return;
     if (selectedTab === "to-do") {
       _tempTasks = tasks?.filter((task) => task.status !== "completed");
@@ -183,7 +190,16 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
     }
     setFilteredTasks(() => _tempTasks);
     setUserDropdownStates(Array(_tempTasks?.length).fill(false));
-  }, [selectedTab, reloadTabs]);
+    const ul = document.getElementById("task-list-ul");
+    if (ul) {
+      const listItems = ul.querySelectorAll("li");
+      listItems.forEach((item) => {
+        item.classList.remove(
+          selectedTab === "to-do" ? "addCompleted" : "addTodo"
+        );
+      });
+    }
+  }, [selectedTab, tasks]);
 
   useEffect(() => {
     fetchUsers();
@@ -220,7 +236,7 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
     const { checked } = e.target;
     if (checked) {
       setSelectedTasks((prevIds) => (prevIds ? [...prevIds, id] : [id]));
-      handleUpdateTaskStatus( id);
+      handleUpdateTaskStatus(id);
     } else {
       setSelectedTasks((prevIds) =>
         prevIds ? prevIds.filter((selectedId) => selectedId !== id) : []
@@ -370,6 +386,14 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
       toast.error("Please select assignee");
       return;
     }
+    if(!newTask.title || newTask.title?.trim() === ""){
+      toast.error("Please Enter Task Title.");
+      return;
+    }
+    if(newTask.stageTitle === ""){
+      toast.error("Please Select Task Stage.");
+      return;
+    }
     setLoader(true);
     const date = new Date();
     const year = date.getFullYear();
@@ -381,9 +405,8 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
       stage_id: stageIds[newTask.stageTitle],
       title: newTask.title,
       due_date: formattedDueDate,
-      assignee_ids: selectedAssignee,
+      assignee_ids: selectedAssignee
     };
-    console.log("selected assignee", reqBody);
     try {
       const response = await createTask(reqBody);
       if (response.res) {
@@ -412,21 +435,29 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
   const handleUpdateTaskStatus = async (taskId) => {
     try {
       setLoader(true);
-
       const response = await updateTask(
         { status: selectedTab === "to-do" ? "completed" : "to-do" },
         taskId
       );
       if (response.res) {
-        fetchJobs();
-        setSelectedTasks()
-        toast.success("Task Status Updated Successfully.");
+        const listItem = document.querySelector(`#stage_${taskId}`);
+        console.log("listItem", listItem);
+        if (listItem) {
+          listItem.classList.add(
+            selectedTab === "to-do" ? "addCompleted" : "addTodo"
+          );
+        }
+
+        setTimeout(() => {
+          fetchJobs();
+          setSelectedTasks();
+          toast.success("Task Status Updated Successfully.");
+        }, 2000);
       } else {
         toast.error("Failed to Create Task.");
       }
     } catch (error) {
     } finally {
-     
       setLoader(false);
     }
   };
@@ -783,10 +814,13 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
                       </div>
                     </div>
                     <div className="table-main-section mt-4 ">
-                      <ul className={`task-list ${showTask ? "show" : ""}`} >
+                      <ul
+                        className={`task-list ${showTask ? "show" : ""}`}
+                        id="task-list-ul"
+                      >
                         {filteredTasks?.length > 0 &&
                           filteredTasks?.map((task, index) => (
-                            <li key={index}>
+                            <li id={`stage_` + task.id} key={index}>
                               <label
                                 htmlFor={`task_select_${index}`}
                                 className="align-self-center"
@@ -1086,9 +1120,9 @@ const JobModal = ({ data, handleClose, stage, usersLists, fetchJobs, reloadTabs 
                               id={`task_select_${tasks?.length}`}
                               style={{ display: "none" }}
                               checked={selectedTasks?.includes(tasks?.length)}
-                              onChange={(e) =>
-                                handleTasksCheckBoxSelect(e, tasks?.length)
-                              }
+                              // onChange={(e) =>
+                              //   handleTasksCheckBoxSelect(e, tasks?.length)
+                              // }
                               ref={addTaskRef}
                             />
                             {selectedTasks?.includes(tasks?.length) ? (

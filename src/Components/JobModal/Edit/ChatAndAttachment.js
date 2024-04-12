@@ -41,7 +41,7 @@ const ChatAndAttachment = ({ JobId }) => {
       cluster: process.env.REACT_APP_CLUSTER,
       encrypted: true,
     });
-    const id = localStorage.getItem("jobId");
+    const id = localStorage.getItem("jobId") || "x";
 
     const channel = pusher.subscribe(`job.${id}`);
     channel.bind("message.created", (data) => {
@@ -428,8 +428,10 @@ const ChatAndAttachment = ({ JobId }) => {
                   )}
                 </>
               ))}
-            {!chats && "Loading..."}
-            {chats && chats?.length === 0 && <p>No Chats yet</p>}
+            {!chats && <p className="loading">Loading Chats...</p>}
+            {!chats && chats?.length === 0 && (
+              <p className="no-chats">No Chats yet</p>
+            )}
           </div>
           <div
             className="tab-pane fade"
@@ -479,6 +481,11 @@ const ChatAndAttachment = ({ JobId }) => {
                     </div>
                   ))}
               </div>
+              <div className="text-center">
+                {attachments?.length === 0 && (
+                  <p className="no-chats">No Attachments Found</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -492,7 +499,7 @@ const ChatAndAttachment = ({ JobId }) => {
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onClick={handleFileUpload}
-              className="imgUploadArea"
+              className="imgUploadArea w-100"
             >
               <div
                 className="w-100"

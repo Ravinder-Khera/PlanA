@@ -776,10 +776,24 @@
                             }
 
                             .table-main-section {
-                                ul {
-
+                                ul.task-list {
+                                    // overflow-x: hidden;
+                                    padding: 0;
 
                                     li {
+                                        border-radius: 2px;
+                                        transition: all 1.5s ease;
+
+                                        &.addCompleted {
+                                            transform: translateX(150%) ;
+                                            opacity: 0.5;
+                                        }
+
+                                        &.addTodo {
+                                            transform: translateX(-150%) ;
+                                            opacity: 0.5;
+                                        }
+
                                         .svg-box {
                                             border: 2px solid #e2e31f;
                                             width: 15px;
@@ -788,6 +802,7 @@
                                             align-items: center;
                                             justify-content: center;
                                             cursor: pointer;
+                                            transition: all 1.5s ease;
                                         }
 
                                         .svg-box-2 {
@@ -1762,6 +1777,16 @@
             border-radius: 4px;
         }
 
+        .loading {
+            font-size: 14px;
+
+        }
+
+        .no-chats {
+            font-size: 18px;
+            color: #888f96;
+        }
+
         .chats-content-reciever {
             width: 100%;
             padding: 0px 29px;
@@ -1948,12 +1973,12 @@
 
 
         }
-       
+
 
 
     }
 
-    .cursor{
+    .cursor {
         cursor: pointer;
     }
 

@@ -87,11 +87,15 @@ const Jobs = () => {
       const data = res?.res?.data;
       setJobs(data);
       setFilteredJobs(data);
+      const selectedJob = data.filter((item) => item?.id === getJob?.data?.id);
+      setGetJob({
+        data: selectedJob[0],
+        stage: findNearestStage(selectedJob[0]),
+      });
       // Extract users from stages
       if (data) {
         extractUsersFromStages(data);
         // Print the users array
-        console.log("data", data);
         // setUsersList(users);
         setReloadTabs(!reloadTabs);
       }
@@ -184,7 +188,6 @@ const Jobs = () => {
     try {
       const filterString = `status=${_status}`;
       const res = await getJobsByFilter(filterString);
-      console.log("res of filtered job", res);
       const { data } = res?.res;
       setFilteredJobs(data);
     } catch (error) {

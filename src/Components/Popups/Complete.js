@@ -112,7 +112,6 @@ const Complete = ({ data, handleClose }) => {
   const handleRevert = async (taskId) => {
     setLoading(true);
     try {
-      const authToken = localStorage.getItem("authToken");
       setLoading(true);
       const selectedUserIds = selectedUsers.map(user => user.id)
       const response = await updateTask(

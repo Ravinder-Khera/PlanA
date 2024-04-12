@@ -1148,31 +1148,28 @@ function TaskPage() {
                         {task.users.length > 0 ? (
                           <>
                             {task.users.map((user, index) => (
-                              <>
-                                <div
-                                  key={index}
-                                  className={` UserImg addedUserImages ${
-                                    index === task.users.length - 1
-                                      ? "withAddBtn"
-                                      : ""
+                              <div
+                                key={index}
+                                className={` UserImg addedUserImages ${index === task.users.length - 1
+                                  ? "withAddBtn"
+                                  : ""
                                   }`}
-                                  style={{ minWidth: "40px", zIndex: index }}
-                                  onClick={() => toggleUserDropdown(i)}
-                                >
-                                  {user.profile_pic !== "" ? (
-                                    <img
-                                      alt={user.name}
-                                      src={
-                                        process.env
-                                          .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                        user.profile_pic
-                                      }
-                                    />
-                                  ) : (
-                                    <User />
-                                  )}
-                                </div>
-                              </>
+                                style={{ minWidth: "40px", zIndex: index }}
+                                onClick={() => toggleUserDropdown(i)}
+                              >
+                                {user.profile_pic !== "" ? (
+                                  <img
+                                    alt={user.name}
+                                    src={
+                                      process.env
+                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                      user.profile_pic
+                                    }
+                                  />
+                                ) : (
+                                  <User />
+                                )}
+                              </div>
                             ))}
                           </>
                         ) : (
