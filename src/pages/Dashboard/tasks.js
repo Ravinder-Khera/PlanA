@@ -622,7 +622,7 @@ function TaskPage() {
     });
   };
 
-  const handleFomatedDate = (date) => {
+  const handleFormatedDate = (date) => {
     const originalDate = new Date(date);
     const formattedDate = originalDate.toLocaleDateString("en-AU", {
       day: "numeric",
@@ -1140,7 +1140,7 @@ function TaskPage() {
                         {task.stage.title}
                       </div>
                       <div className="centerText">
-                        {handleFomatedDate(task.due_date)}
+                        {handleFormatedDate(task.due_date)}
                       </div>
                     </div>
                     <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
