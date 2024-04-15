@@ -4,8 +4,6 @@
 /node_modules
 package-lock.json
 
-.vscode
-
 /.pnp
 .pnp.js
 
