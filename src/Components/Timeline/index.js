@@ -22,6 +22,14 @@ function Timeline({timeFrame}) {
       block: "center"
     })
   }
+  useEffect(() => {
+    if (currentDayRef.current) {
+        currentDayRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        })
+      }
+  }, [currentDayRef]);
 
   function extractUsersFromStages(data) {
     if (!data) return;
@@ -240,7 +248,7 @@ function Timeline({timeFrame}) {
         </div>
       )}
         <div className="mapContainerDiv">
-          <div className="customTimeline" style={{maxHeight:`calc(100vh - ${timeFrame && timeFrame === 'weekly' ? '320px' : timeFrame === 'monthly' ? '210px' : ''})` }}>
+          <div className="customTimeline" style={{maxHeight:`calc(100vh - ${timeFrame && timeFrame === 'weekly' ? '375px' : timeFrame === 'monthly' ? '210px' : ''})` }}>
             <div className="timeLineFixedTop">
               <div className="timelineHeader timelineMonthsRow">
                 {Object.entries(datesByMonthCount).map(([monthKey, count]) => {
