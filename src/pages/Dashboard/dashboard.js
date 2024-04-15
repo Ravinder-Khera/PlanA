@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import CountUp from 'react-countup';
 import { Bars } from 'react-loader-spinner';
 import { getDashboardSummary } from '../../services/auth';
+import Timeline from '../../Components/Timeline';
 
 function Dashboard() {
   const [data, setData] = useState(null);
@@ -68,6 +69,7 @@ function Dashboard() {
         <p>Total Jobs</p>
       </div>
     </div>
+    <Timeline timeFrame='weekly' />
   </div>
   </>)
 }
