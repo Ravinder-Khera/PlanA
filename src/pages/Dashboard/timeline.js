@@ -10,8 +10,8 @@ function TimelinePage() {
     const [jobs, setJobs] = useState([]);
     const [selectDate, setSelectDate] = useState(false);
     const [selectionRange, setSelectionRange] = useState({
-      startDate: new Date(new Date().getFullYear(), new Date().getMonth() -1), 
-      endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 3), 
+      startDate: new Date(new Date().getDate() -7), 
+      endDate: new Date(new Date().getDate() + 7), 
       key: "selection",
     });
 
@@ -87,11 +87,11 @@ function TimelinePage() {
     
       // Adjust startDate to one month less
       const adjustedStartDate = new Date(minCreatedAt);
-      adjustedStartDate.setMonth(adjustedStartDate.getMonth() - 1);
+      adjustedStartDate.setDate(adjustedStartDate.getDate() - 7);
     
       // Adjust endDate to one month more
       const adjustedEndDate = new Date(maxDueDate);
-      adjustedEndDate.setMonth(adjustedEndDate.getMonth() + 1);
+      adjustedEndDate.setDate(adjustedEndDate.getDate() + 7);
     
       // Set selectionRange
       setSelectionRange({
@@ -100,42 +100,11 @@ function TimelinePage() {
         key: "selection",
       });
     };
-    
-  
   
     useEffect(() => {
       fetchJobs();
     }, []);
 
-    // const handleNextMonth = () => {
-    //   setSelectionRange((prevState) => {
-    //     const nextMonthStartDate = new Date(prevState.startDate);
-    //     const nextMonthEndDate = new Date(prevState.endDate);
-    //     nextMonthStartDate.setMonth(nextMonthStartDate.getMonth() + 1);
-    //     nextMonthStartDate.setDate(1); 
-    //     nextMonthEndDate.setMonth(nextMonthEndDate.getMonth() + 2, 0); 
-    //     return {
-    //       ...prevState,
-    //       startDate: nextMonthStartDate,
-    //       endDate: nextMonthEndDate,
-    //     };
-    //   });
-    // };
-  
-    // const handlePrevMonth = () => {
-    //   setSelectionRange((prevState) => {
-    //     const prevMonthStartDate = new Date(prevState.startDate);
-    //     const prevMonthEndDate = new Date(prevState.endDate);
-    //     prevMonthStartDate.setMonth(prevMonthStartDate.getMonth() - 1);
-    //     prevMonthStartDate.setDate(1);
-    //     prevMonthEndDate.setDate(0); 
-    //     return {
-    //       ...prevState,
-    //       startDate: prevMonthStartDate,
-    //       endDate: prevMonthEndDate,
-    //     };
-    //   });
-    // };
 
     const formattedStartDate = selectionRange.startDate.toLocaleDateString(
       "en-AU",
@@ -146,6 +115,7 @@ function TimelinePage() {
       month: "short",
       year: "numeric",
     });
+
 
     const formatDate = (date) => {
       const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -173,6 +143,24 @@ function TimelinePage() {
 
     const selectedDates = getAllDatesInRange(selectionRange.startDate, selectionRange.endDate);
 
+    const countDatesByMonth = (dates) => {
+      const monthCounts = {};
+      
+      dates.forEach((date) => {
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+        if (!monthCounts[monthKey]) {
+          monthCounts[monthKey] = 1;
+        } else {
+          monthCounts[monthKey]++;
+        }
+      });
+    
+      return monthCounts;
+    };
+
+    const datesByMonthCount = countDatesByMonth(selectedDates);
+    console.log(datesByMonthCount);
+
     const jobIdsForDates = selectedDates.map(date => {
       const relevantJobs = jobs.filter(job => {
         const jobStartDate = moment(job.created_at);
@@ -184,42 +172,43 @@ function TimelinePage() {
       });
       return relevantJobs.map(job => job.id);
     });
-  const maxLength = Math.max(...jobIdsForDates.map(arr => arr.length));
 
-  const rows = [];
+    const maxLength = Math.max(...jobIdsForDates.map(arr => arr.length));
 
-  for (let i = 0; i < maxLength; i++) {
-    const row = [];
-    selectedDates.forEach((date, index) => {
-      const jobId = jobIdsForDates[index].find(id => {
-        const jobStartDate = moment(jobs.find(job => job.id === id).created_at);
-        const jobEndDate = moment(jobs.find(job => job.id === id).due_date);
-        return jobStartDate.isSameOrBefore(date, 'day') && jobEndDate.isSameOrAfter(date, 'day');
+    const rows = [];
+
+    for (let i = 0; i < maxLength; i++) {
+      const row = [];
+      selectedDates.forEach((date, index) => {
+        const jobId = jobIdsForDates[index].find(id => {
+          const jobStartDate = moment(jobs.find(job => job.id === id).created_at);
+          const jobEndDate = moment(jobs.find(job => job.id === id).due_date);
+          return jobStartDate.isSameOrBefore(date, 'day') && jobEndDate.isSameOrAfter(date, 'day');
+        });
+    
+        row.push(jobId || 0);
       });
-  
-      row.push(jobId || 0);
+      rows.push(row);
+    }
+    
+    const adjustedRows = [];
+    rows.forEach(row => {
+      const newRow = [];
+      let jobIdFound = false;
+      row.forEach(id => {
+        if (id !== 0 && !jobIdFound) {
+          newRow.push(id);
+          jobIdFound = true;
+        } else {
+          newRow.push(0);
+        }
+      });
+      adjustedRows.push(newRow);
     });
-    rows.push(row);
-  }
-  
-  const adjustedRows = [];
-  rows.forEach(row => {
-    const newRow = [];
-    let jobIdFound = false;
-    row.forEach(id => {
-      if (id !== 0 && !jobIdFound) {
-        newRow.push(id);
-        jobIdFound = true;
-      } else {
-        newRow.push(0);
-      }
-    });
-    adjustedRows.push(newRow);
-  });
-  
-  const jobCellActive = document.querySelector('.jobCell.active');
+    
+    const jobCellActive = document.querySelector('.jobCell.active');
 
-  const cellWidth = jobCellActive?.offsetWidth;
+    const cellWidth = jobCellActive?.offsetWidth;
 
   return (<>
     {loading && <div className='loaderDiv'>
@@ -261,6 +250,23 @@ function TimelinePage() {
         <div className='mapContainerDiv mt-5'>
           <div className='customTimeline'>
             <div className='timelineHeader'>
+              {/* <div className='timeLineMonth'> */}
+              {Object.entries(datesByMonthCount).map(([monthKey, count]) => {
+                const [year, month] = monthKey.split('-');
+                const monthName = new Date(year, month, 1).toLocaleString('default', { month: 'long' });
+                return (
+                  <div
+                    key={`month-${year}-${month}`}
+                    className="monthLabel"
+                    style={{ minWidth: `calc(${count * 40}px)` }}
+                  >
+                    {monthName}
+                  </div>
+                );
+              })}
+              {/* </div> */}
+            </div>
+            <div className='timelineHeader'>
               {selectedDates.map((date) => (
                 <div key={date} className={`timeLineDateDiv ${isCurrentDay(date) && 'current-day'}`}>
                   <div className='timeLineDate'>{formatDate(date)[0]}</div>
@@ -285,7 +291,6 @@ function TimelinePage() {
                     if (currentDate >= createdAt && currentDate <= dueDate) {
                       activeColumnsCount++;
                     }
-                    console.log(isLast,currentDate,dueDate);
                     return (
                       <div key={`${job.id}-${date}`} className={`jobCell ${currentDate >= createdAt && currentDate <= dueDate &&findNearestStage(job)+' active'} ${isFirst ? 'first' : ''} ${isLast ? 'last' : ''}`}>
                         {currentDate >= createdAt && currentDate <= dueDate ? 

@@ -2005,6 +2005,8 @@ body {
 .mapContainerDiv{
     overflow-x: auto;
     max-width: 100%;
+    position: relative;
+    margin-bottom: 20px;
     .customTimeline {
         .timelineHeader{
             display: flex;
@@ -2042,6 +2044,9 @@ body {
                     line-height: normal;
                     letter-spacing: -0.48px;
                 }
+            }
+            .monthLabel{
+                text-align: center;
             }
         }
         .timelineBody{
