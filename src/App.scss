@@ -241,7 +241,6 @@ body {
     .RightSide {
         width: 70%;
         position: relative;
-
         @media screen and (min-width:1080px) {
             width: calc(100% - 325px);
             max-width: calc(100% - 325px);
@@ -1026,7 +1025,11 @@ body {
 
 .DashboardTopMenu {
     padding: 32px 40px 0;
-
+    &.DashboardBgLines{
+        background-color: #252525;
+        background-size: 155px 20px;
+        background-image:  repeating-linear-gradient(to left, rgb(227, 227, 31, 0.15), rgb(227, 227, 31, 0.15) 1px, #252525 1px, #252525);
+    }
     .DashboardHeading {
         h2 {
             color: #fff;
@@ -2018,8 +2021,12 @@ body {
             top: 0;
             width: max-content;
             z-index: 2;
-            background: #252525;
+            background-color: #252525;
+            // background-size: 155px 20px;
+            // background-image:  repeating-linear-gradient(to left, rgb(227, 227, 31, 0.15), rgb(227, 227, 31, 0.15) 1px, #252525 1px, #252525);
             padding-bottom: 10px;
+            border-top: 1px solid rgb(227, 227, 31, 0.15);
+            border-bottom: 1px solid rgb(227, 227, 31, 0.15);
             &::after{
                 position: absolute;
                 content: '';
@@ -2028,39 +2035,25 @@ body {
                 top: 100%;
                 left: 0;
                 z-index: 2;
-                background: linear-gradient(180deg, #252525 10%, rgba(53, 53, 53, 0.00) 100%);;
+                background: linear-gradient(180deg, #252525 10%, rgba(53, 53, 53, 0.00) 100%);
             }
         }
         .timelineHeader{
             display: flex;
             width: 100%;
-            background: #252525;
-            &.timelineDaysRow{
-                position: relative;
-                &::after{
-                    position: absolute;
-                    content: '';
-                    width: 100%;
-                    height: 20px;
-                    top: 100%;
-                    left: 0;
-                    z-index: 2;
-                    background: linear-gradient(180deg, #252525 10%, rgba(53, 53, 53, 0.00) 100%);;
-                }
-            }
             .timeLineDateDiv{
-                // flex: 1 1 auto;
                 min-width: 40px;
                 &.current-day{
                     position: relative;
                     // &::after{
                     //     content: '';
                     //     position: absolute;
-                    //     left: 50%;
-                    //     top: 0;
-                    //     height: 100vh;
-                    //     width: 1px;
-                    //     background: #fff;
+                    //     left: 0%;
+                    //     top: calc(100% + 10px);
+                    //     height: 50px;
+                    //     width: 100%;
+                    //     background: #353535;
+                    //     z-index: -1;
                     // }
                 }
                 .timeLineDate{
@@ -2083,9 +2076,11 @@ body {
                 }
             }
             .monthLabel{
-                margin-bottom: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
                 text-align: center;
                 border-left: 1px solid #E2E31F;
+                border-bottom: 1px solid rgb(227, 227, 31, 0.15);
                 color: #FFF;
                 font-size: 16px;
                 font-style: normal;
@@ -2095,6 +2090,9 @@ body {
                 &:first-child{
                     border-left: none;
                 } 
+            }
+            &.timelineDaysRow{
+                padding-top: 10px;
             }
         }
         .timelineBody{
@@ -2107,7 +2105,20 @@ body {
                 
                 .jobCell{
                     // flex: 1 1 auto;
-                    min-width: 40px;
+                    // min-width: 40px;
+                    &.current-day{
+                        position: relative;
+                        &::after{
+                            position: absolute;
+                            content: '';
+                            width: 100%;
+                            height: 100vh;
+                            top: calc(0% - 50px);
+                            left: 0;
+                            z-index: 0;
+                            background: #353535;
+                        }
+                    }
                     .timeLineDot{
                         color: transparent;
                         display: none;

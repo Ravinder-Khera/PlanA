@@ -19,7 +19,7 @@ function Timeline({timeFrame}) {
   if (currentDayRef.current) {
     currentDayRef.current.scrollIntoView({
       behavior: "smooth",
-      block: "start"
+      block: "center"
     })
   }
 
@@ -118,7 +118,7 @@ function Timeline({timeFrame}) {
       if (currentDayRef.current) {
         currentDayRef.current.scrollIntoView({
           behavior: "smooth",
-          block: "start"
+          block: "center"
         })
       }
     }
@@ -239,9 +239,8 @@ function Timeline({timeFrame}) {
           />
         </div>
       )}
-      <div className="DashboardTopMenu">
         <div className="mapContainerDiv">
-          <div className="customTimeline" style={{maxHeight:`calc(100vh - ${timeFrame && timeFrame === 'weekly' ? '350px' : timeFrame === 'monthly' ? '210px' : ''})` }}>
+          <div className="customTimeline" style={{maxHeight:`calc(100vh - ${timeFrame && timeFrame === 'weekly' ? '320px' : timeFrame === 'monthly' ? '210px' : ''})` }}>
             <div className="timeLineFixedTop">
               <div className="timelineHeader timelineMonthsRow">
                 {Object.entries(datesByMonthCount).map(([monthKey, count]) => {
@@ -255,7 +254,7 @@ function Timeline({timeFrame}) {
                     <div
                       key={`month-${year}-${month}`}
                       className="monthLabel"
-                      style={{ minWidth: `calc(${count * 40}px)` }}
+                      style={{ minWidth: `calc(${count} * ${timeFrame !== undefined && timeFrame === 'weekly' ? 140 : timeFrame === 'monthly' ? 40 : ''}px)` }}
                     >
                       {monthName}-{year}
                     </div>
@@ -305,7 +304,9 @@ function Timeline({timeFrame}) {
                             currentDate >= createdAt &&
                             currentDate <= dueDate &&
                             findNearestStage(job) + " active"
-                          } ${isFirst ? "first" : ""} ${isLast ? "last" : ""}`}
+                          } ${isFirst ? "first" : ""} ${isLast ? "last" : ""} ${
+                            isCurrentDay(currentDate) && "current-day"
+                          }`}
                         >
                           {currentDate >= createdAt &&
                           currentDate <= dueDate ? (
@@ -438,7 +439,6 @@ function Timeline({timeFrame}) {
             </div>
           </div>
         </div>
-      </div>
     </>
   );
 }

@@ -46,7 +46,7 @@ function Dashboard() {
       visible={true}
     />
   </div>}
-  <div className='DashboardTopMenu'>
+  <div className='DashboardTopMenu DashboardBgLines'>
     <div className='DashboardHeading'>
       <h2>Dashboard</h2>
     </div>

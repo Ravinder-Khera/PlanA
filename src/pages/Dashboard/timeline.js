@@ -20,7 +20,7 @@ function TimelinePage() {
           />
         </div>
       )}
-      <div className="DashboardTopMenu">
+      <div className="DashboardTopMenu DashboardBgLines">
         <div className="DashboardHeading">
           <h2>Timeline</h2>
         </div>
