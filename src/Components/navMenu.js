@@ -46,7 +46,7 @@ function NavMenu() {
     setIsPopupOpen(true);
   };
   const handleInputBlur = () => {
-    setIsPopupOpen(false);
+    // setIsPopupOpen(false);
   };
 
   return (
@@ -137,7 +137,20 @@ function NavMenu() {
                 <h2>Search Results</h2>
               </div>
               <div className="resultContainer">
-                Search result map here
+                {/* mapping here */}
+                <div className="resultMap">
+                    <div className="d-flex align-items-center" style={{gap:'16px'}}>
+                      <div className="identityBadge">
+                        Job
+                        {/* Invoice */}
+                        {/* Task */}
+                      </div>
+                      <div className="searchContext">
+                        <h3>Title</h3>
+                        <span>description</span>
+                      </div>
+                    </div>
+                </div>
               </div>
             </div>
           </div>

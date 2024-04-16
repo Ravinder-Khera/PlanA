@@ -2353,4 +2353,49 @@ body {
     background: #252525;
     z-index: 90;
     box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
+    .resultContainer{
+        max-width: 100%;
+        overflow-y: auto;
+        padding: 32px 0;
+        max-height: calc(100vh - 148px);
+        .resultMap{
+            width: 100%;
+            padding: 24px 32px;
+            border: 1px solid #E2E31F;
+            border-radius: 5px;
+            .identityBadge{
+                padding: 10px;
+                background: #E2E31F;
+                border-radius: 5px;
+                color: #000;
+                text-align: center;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: normal;
+                letter-spacing: -0.64px;
+            }
+            .searchContext{
+                display: flex;
+                flex-direction: column;
+                h3{
+                    margin: 0;
+                    color: #E2E31F;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                }
+                span{
+                    color: #E2E31F;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 300;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                }
+            }
+        }
+    }
 }
