@@ -99,7 +99,7 @@ const Jobs = () => {
       setJobs(data);
       setFilteredJobs(data);
       const selectedJob = data.filter(
-        (item) => item?.id === getJob?.data?.id || item?.id === state.id
+        (item) => item?.id === getJob?.data?.id || item?.id === state?.id
       );
       setGetJob({
         data: selectedJob[0],
@@ -507,12 +507,14 @@ const Jobs = () => {
                             <td className="text-center">
                               <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                 <div className=" d-flex align-items-center justify-content-center">
-                                  {job.usersArray?.length > 0 && (
+                                  {job?.usersArray?.length > 0 && (
                                     <>
-                                      {job.usersArray
+                                    {console.log("usersArray", job.usersArray)}
+                                      {job?.usersArray
                                         ?.slice(0, 1)
                                         ?.map((user, index) => (
                                           <>
+                                          
                                             <div
                                               key={index}
                                               className={`UserImg addedUserImages`}
