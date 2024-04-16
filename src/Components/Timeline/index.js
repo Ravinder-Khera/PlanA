@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import moment from "moment";
 import { getJobs } from "../../services/auth";
@@ -7,7 +7,7 @@ import { User } from "../../assets/svg";
 function Timeline({timeFrame}) {
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
-  const excessCalendarDate = timeFrame && timeFrame === 'weekly' ? 3 : timeFrame === 'monthly' ? 7 : 1
+  const excessCalendarDate = timeFrame !== undefined && timeFrame === 'weekly' ? 3 : timeFrame === 'monthly' ? 7 : 1
   const [selectionRange, setSelectionRange] = useState({
     startDate: new Date(new Date().getDate() - excessCalendarDate ),
     endDate: new Date(new Date().getDate() + excessCalendarDate ),
@@ -83,7 +83,7 @@ function Timeline({timeFrame}) {
     return nearestStage ? nearestStage.title : "default";
   };
 
-  const setSelectionRangeFromJobs = (jobs) => {
+  const setSelectionRangeFromJobs = useCallback((jobs) => {
     if (jobs.length === 0) return;
     let minCreatedAt = new Date(jobs[0].created_at);
     let maxDueDate = new Date(jobs[0].due_date);
@@ -115,9 +115,59 @@ function Timeline({timeFrame}) {
       endDate: adjustedEndDate,
       key: "selection",
     });
-  };
+  }, [excessCalendarDate]);
 
   useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      try {
+        const res = await getJobs();
+        const data = res?.res?.data;
+        if (data) {
+          setJobs(data);
+          extractUsersFromStages(data);
+          setSelectionRangeFromJobs(data);
+          console.log("data", data);
+        }
+      } catch (error) {
+        console.log("error while fetching jobs", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    const setSelectionRangeFromJobs = (jobs) => {
+      if (jobs.length === 0) return;
+      let minCreatedAt = new Date(jobs[0].created_at);
+      let maxDueDate = new Date(jobs[0].due_date);
+  
+      jobs.forEach((job) => {
+        const createdAt = new Date(job.created_at);
+        const dueDate = new Date(job.due_date);
+  
+        if (createdAt < minCreatedAt) {
+          minCreatedAt = createdAt;
+        }
+  
+        if (dueDate > maxDueDate) {
+          maxDueDate = dueDate;
+        }
+      });
+  
+      // Adjust startDate to one month less
+      const adjustedStartDate = new Date(minCreatedAt);
+      adjustedStartDate.setDate(adjustedStartDate.getDate() - excessCalendarDate );
+  
+      // Adjust endDate to one month more
+      const adjustedEndDate = new Date(maxDueDate);
+      adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate );
+  
+      // Set selectionRange
+      setSelectionRange({
+        startDate: adjustedStartDate,
+        endDate: adjustedEndDate,
+        key: "selection",
+      });
+    };
     try {
       fetchJobs();
     } catch (error) {
@@ -130,7 +180,7 @@ function Timeline({timeFrame}) {
         })
       }
     }
-  }, []);
+  }, [excessCalendarDate, setSelectionRangeFromJobs]);
 
   const formatDate = (date) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -229,8 +279,7 @@ function Timeline({timeFrame}) {
   });
 
   const jobCellActive = document.querySelector(".jobCell.active");
-
-  const cellWidth = jobCellActive?.offsetWidth;
+  const cellWidth = timeFrame !== undefined && timeFrame === 'weekly' ? 140 : timeFrame === 'monthly' ? 40 : jobCellActive?.offsetWidth;
 
   return (
     <>
@@ -332,7 +381,7 @@ function Timeline({timeFrame}) {
                                         className="jobProgressBg"
                                         style={{
                                           width: `calc(${cellWidth}px * ${
-                                            activeColumnsCount - 2
+                                            activeColumnsCount - 1
                                           })`,
                                         }}
                                       ></div>
