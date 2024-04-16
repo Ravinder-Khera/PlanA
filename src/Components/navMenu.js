@@ -46,7 +46,7 @@ function NavMenu() {
     setIsPopupOpen(true);
   };
   const handleInputBlur = () => {
-    // setIsPopupOpen(false);
+    setIsPopupOpen(false);
   };
 
   return (
