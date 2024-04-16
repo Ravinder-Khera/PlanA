@@ -88,7 +88,7 @@ const JobModal = ({
 
   const getIdsForStages = (stages) => {
     let tempArr = {};
-    stages.map((stage) => {
+    stages?.map((stage) => {
       tempArr = { ...tempArr, [stage.title]: stage.id };
     });
     setStageIds(tempArr);
@@ -131,7 +131,7 @@ const JobModal = ({
     }
 
     // Sorting stages
-    sortStages(data.stages);
+    sortStages(data?.stages);
 
     // Function to sort tasks based on due date
     function sortTasks(tasks) {
@@ -148,7 +148,7 @@ const JobModal = ({
     }
 
     // Sorting tasks in all stages
-    sortTasksInStages(data.stages);
+    sortTasksInStages(data?.stages);
 
     // Function to calculate days left for nearest task
     function daysLeftForNearestTask(tasks) {
@@ -165,7 +165,7 @@ const JobModal = ({
     }
 
     // Loop through stages to calculate days left for nearest task in each stage
-    data.stages?.forEach((stage) => {
+    data?.stages?.forEach((stage) => {
       stage.daysLeftForNearestTask = daysLeftForNearestTask(stage.tasks);
       let arr;
       stage.tasks.forEach((task) => {
@@ -287,7 +287,7 @@ const JobModal = ({
   // for task list
   const toggleUserDropdown = (index) => {
     setUserDropdownStates((prevStates) => {
-      const newState = prevStates.map((state, i) => {
+      const newState = prevStates?.map((state, i) => {
         return i === index ? true : false;
       });
       return newState;
@@ -585,7 +585,7 @@ const JobModal = ({
                                     <>
                                       {usersLists
                                         ?.slice(0, 3)
-                                        .map((user, index) => (
+                                        ?.map((user, index) => (
                                           <div
                                             key={index}
                                             className={`UserImg addedUserImages `}
@@ -730,7 +730,7 @@ const JobModal = ({
                                       <>
                                         {stage?.users
                                           ?.slice(0, 3)
-                                          .map((user, index) => (
+                                          ?.map((user, index) => (
                                             <div
                                               key={index}
                                               className={`UserImg addedUserImages`}
@@ -897,7 +897,7 @@ const JobModal = ({
                                       <>
                                         {task?.users
                                           ?.slice(0, 3)
-                                          .map((user, i) => (
+                                          ?.map((user, i) => (
                                             <>
                                               <div
                                                 key={task.id}
@@ -977,13 +977,13 @@ const JobModal = ({
                                             <div className="addedAssigneeBorder">
                                               {assignee &&
                                                 assignee
-                                                  .filter((user) =>
+                                                  ?.filter((user) =>
                                                     taskSelectedAssignee?.some(
                                                       (itemId) =>
                                                         itemId === user.id
                                                     )
                                                   )
-                                                  .map((user) => (
+                                                  ?.map((user) => (
                                                     <>
                                                       <div
                                                         key={user.id}
@@ -1039,14 +1039,14 @@ const JobModal = ({
                                               Add Assignees
                                             </label>
                                             {assignee
-                                              .filter(
+                                              ?.filter(
                                                 (user) =>
                                                   !taskSelectedAssignee?.some(
                                                     (itemId) =>
                                                       itemId === user.id
                                                   )
                                               )
-                                              .map((user) => (
+                                              ?.map((user) => (
                                                 <>
                                                   <div
                                                     key={user.id}
@@ -1209,7 +1209,7 @@ const JobModal = ({
                                   <div className="stage-addTaskJobDropdown">
                                     <div className="addTaskJobListScroll">
                                       <div className="addTaskJobListItems">
-                                        {Object.keys(StageList).map((key) => (
+                                        {Object.keys(StageList)?.map((key) => (
                                           <div
                                             key={key}
                                             className={`addTaskJobStageItem ${key}`}
@@ -1237,7 +1237,7 @@ const JobModal = ({
                                   <>
                                     {selectedAssignee
                                       ?.slice(0, 3)
-                                      .map((user, i) => (
+                                      ?.map((user, i) => (
                                         <>
                                           <div
                                             key={user.id}
@@ -1336,12 +1336,12 @@ const JobModal = ({
                                         <div className="addedAssigneeBorder">
                                           {assignee &&
                                             assignee
-                                              .filter((user) =>
+                                              ?.filter((user) =>
                                                 selectedAssignee?.some(
                                                   (itemId) => itemId === user.id
                                                 )
                                               )
-                                              .map((user) => (
+                                              ?.map((user) => (
                                                 <>
                                                   <div
                                                     key={user.id}
@@ -1397,13 +1397,13 @@ const JobModal = ({
                                           Add Assignees
                                         </label>
                                         {assignee
-                                          .filter(
+                                          ?.filter(
                                             (user) =>
                                               !selectedAssignee?.some(
                                                 (itemId) => itemId === user.id
                                               )
                                           )
-                                          .map((user) => (
+                                          ?.map((user) => (
                                             <>
                                               <div
                                                 key={user.id}
@@ -1544,7 +1544,7 @@ const JobModal = ({
                           <div className="status-addTaskJobDropdown">
                             <div className="addTaskJobListScroll">
                               <div className="addTaskJobListItems">
-                                {Object.keys(StatusList).map((key) => (
+                                {Object.keys(StatusList)?.map((key) => (
                                   <div
                                     key={key}
                                     className={`addTaskJobStageItem ${key}`}
@@ -1579,7 +1579,7 @@ const JobModal = ({
                   </div>
                 </div>
                 <div className="popup-section-right">
-                  <ChatAndAttachment JobId={data.id} />
+                  <ChatAndAttachment JobId={data?.id} />
                 </div>
               </div>
             </div>
