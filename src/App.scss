@@ -2344,3 +2344,13 @@ body {
    }
 }
 
+.searchPagePopUp{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 74px);
+    background: #252525;
+    z-index: 90;
+    box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
+}
