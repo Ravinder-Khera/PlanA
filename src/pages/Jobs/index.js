@@ -543,10 +543,9 @@ const Jobs = () => {
                                 {job.latest_update}
                               </div>
                             </td>
-                            <td className="text-center">
+                            <td className="text-center d-flex align-items-center">
                               <span
-                                className={`statusBtn
-                                ${job.status}`}
+                                className={`statusBtn ${job.status}`}
                               >
                                 {StatusList[job.status]}
                               </span>

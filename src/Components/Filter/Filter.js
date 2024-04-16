@@ -263,18 +263,58 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
 
             {selectedFilter === "Assignee" && (
               <div
-                className="searchBox d-flex align-items-center"
+                className="searchBox navMenuDiv d-flex align-items-center"
                 style={{ background: "transparent", padding: "0" }}
               >
                 <div
-                  className="IconBox"
+                  className="IconBox addTaskJobDiv "
                   onClick={() => setShowAssignee(!showAssignee)}
                 >
                   <img
                     src={assignImg}
                     className=""
+                    alt={assignImg}
                     style={{ marginBottom: "-5px" }}
-                  />
+                    />
+                    {showAssignee && (
+                        <div className="addTaskJobDropdown right" style={{maxWidth:'max-content'}}>
+                          <div className="addTaskJobListScroll">
+                            <div className="addTaskJobListItems">
+                              <label className="addedAssignees">Assignees</label>
+                              {usersList.map((user) => (
+                                <>
+                                  <div
+                                    key={user.id}
+                                    className={`addAssigneeDiv `}
+                                    onClick={() => handleAssigneeClick(user)}
+                                  >
+                                    <div
+                                      className={` UserImg addedUserImages `}
+                                      style={{ minWidth: "40px" }}
+                                    >
+                                      {user.profile_pic !== "" ? (
+                                        <img
+                                          alt={user.name}
+                                          src={
+                                            process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                            user.profile_pic
+                                          }
+                                        />
+                                      ) : (
+                                        <User />
+                                      )}
+                                    </div>
+                                    <div>
+                                      <h4>{user.name}</h4>
+                                      <p>{user.email}</p>
+                                    </div>
+                                  </div>
+                                </>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                    )}
                 </div>
                 <input
                   style={{ background: "#252525", padding: "14px 30px" }}
@@ -342,48 +382,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
           </div>
         )}
 
-        {showAssignee && (
-          <div className="stage-buttonContainer">
-            <div className="addAssigneeDropdown12">
-              <div className="addTaskJobListScroll12">
-                <div className="addTaskJobListItems12">
-                  <label className="addedAssignees">Assignees</label>
-                  {usersList.map((user) => (
-                    <>
-                      <div
-                        key={user.id}
-                        className={`addAssigneeDiv`}
-                        onClick={() => handleAssigneeClick(user)}
-                      >
-                        <div
-                          className={` UserImg addedUserImages `}
-                          style={{ minWidth: "40px" }}
-                        >
-                          {user.profile_pic !== "" ? (
-                            <img
-                              alt={user.name}
-                              src={
-                                process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                user.profile_pic
-                              }
-                            />
-                          ) : (
-                            <User />
-                          )}
-                        </div>
-                        <div>
-                          <h4>{user.name}</h4>
-                          <p>{user.email}</p>
-                        </div>
-                        <div className="checkAddBtn"></div>
-                      </div>
-                    </>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        
       </div>
     </>
   );

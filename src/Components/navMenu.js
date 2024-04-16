@@ -3,11 +3,17 @@ import { BellIcon, Search, User } from "../assets/svg";
 import { getProfile } from "../services/auth";
 import { Bars } from "react-loader-spinner";
 import eventEmitter from "../Event";
+import { Link } from "react-router-dom";
 
 function NavMenu() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState("");
   const [userImg, setUserImg] = useState("");
+  const [selectedValue, setSelectedValue] = useState('');
+
+  const handleChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
 
   const fetchProfileData = async () => {
     try {
@@ -67,11 +73,14 @@ function NavMenu() {
               <select
                 className="form-select"
                 aria-label="Default select example"
+                placeholder="Select"
+                value={selectedValue}
+                onChange={handleChange}
               >
-                <option value={""}>Select</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+                <option value="">Select</option>
+                <option value="Job">Job</option>
+                <option value="Task">Task</option>
+                <option value="Invoice">Invoice</option>
               </select>
             </div>
           </form>
@@ -80,27 +89,29 @@ function NavMenu() {
               className="d-flex align-items-center justify-content-end"
               style={{ minWidth: "250px" }}
             >
-              <div
-                style={{ textAlign: "end" }}
-                className="d-flex flex-column justify-content-center"
-              >
-                <p>{[user]}</p>
-                <span style={{ fontSize: "12px", fontWeight: "300" }}>
-                  Town Planner
-                </span>
-              </div>
-              <div className="UserImg" style={{ minWidth: "40px" }}>
-                {userImg ? (
-                  <img
-                    alt={userImg}
-                    src={
-                      process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userImg
-                    }
-                  />
-                ) : (
-                  <User />
-                )}
-              </div>
+              <Link className="d-flex" style={{textDecoration:'none'}} to="/settings">
+                <div
+                  style={{ textAlign: "end" }}
+                  className="d-flex flex-column justify-content-center"
+                >
+                  <p>{[user]}</p>
+                  <span style={{ fontSize: "12px", fontWeight: "300" }}>
+                  {[user?.job_title]}
+                  </span>
+                </div>
+                <div className="UserImg" style={{ minWidth: "40px" }}>
+                  {userImg ? (
+                    <img
+                      alt={userImg}
+                      src={
+                        process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userImg
+                      }
+                    />
+                  ) : (
+                    <User />
+                  )}
+                </div>
+              </Link>
               <div className="bellIcon">
                 <BellIcon />
               </div>

@@ -49,7 +49,33 @@
                 height: 800px;
                 overflow-y: auto;
                 overflow-x: hidden;
+                &::-webkit-scrollbar {
+                    width: 0px;
+                }
 
+                &:-moz-scrollbar {
+                    width: 0px;
+                }
+
+                &::-webkit-scrollbar-track {
+                    border-radius: 2px;
+                    background: transparent;
+                }
+
+                &:-moz-scrollbar-track {
+                    background: transparent;
+                    border-radius: 2px;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    background: transparent;
+                    border-radius: 4px;
+                }
+
+                &:-moz-scrollbar-thumb {
+                    background: transparent;
+                    border-radius: 4px;
+                }
                 .popup-content {
                     display: flex;
 

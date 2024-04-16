@@ -58,6 +58,7 @@ const JobModal = ({
   const [isEdit, setIsEdit] = useState(false);
   const [showTask, setShowTask] = useState(false);
   const selectDueDateRef = useRef(null);
+  const popUpRef = useRef(null);
   const settings = {
     className: "center",
     centerMode: true,
@@ -67,6 +68,23 @@ const JobModal = ({
     speed: 500,
     arrow: true,
   };
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (
+        popUpRef.current &&
+        !popUpRef.current.contains(e.target)
+      ) {
+        handleClose()
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
 
   const getIdsForStages = (stages) => {
     let tempArr = {};
@@ -480,7 +498,7 @@ const JobModal = ({
       <div className="loaderDiv2">
         <div className="pop-wrapper">
           <div className="wrapper">
-            <div className="container pop-container">
+            <div className="container pop-container" ref={popUpRef}>
               <div className="popup-content">
                 <div className="popup-section-left">
                   <div

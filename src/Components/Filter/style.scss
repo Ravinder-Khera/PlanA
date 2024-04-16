@@ -31,5 +31,39 @@
         border-radius: 4px;
         color: #FFFFFF;
     }
+    .filter-statusBtn{
+        padding: 8px 14px;
+        border-radius: 5px;
+        text-transform: capitalize;
 
+        &.pending {
+            background: #1FB4E366;
+            border: 1px solid #1FB4E3;
+            color: #1FB4E3;
+        }
+
+        &.in-progress {
+            background: #c5b9507d;
+            border: 1px solid #c5b450;
+            color: #c5b450;
+        }
+
+        &.completed {
+            background: #3B923999;
+            border: 1px solid #3B9239;
+            color: #3B9239;
+        }
+
+        &.not-started {
+            background: #ff000066;
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+
+        &.on-hold {
+            background: #29232366;
+            border: 1px solid #332929;
+            color: #3c3e3f
+        }
+    }
 }
