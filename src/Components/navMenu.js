@@ -16,6 +16,20 @@ function NavMenu() {
     setSelectedValue(event.target.value);
   };
 
+  useEffect(() => {
+    const bodyScroll = document.getElementById('rightSCroll')
+    if (isPopupOpen) {
+      bodyScroll.style.overflow = "hidden";
+    } else {
+      bodyScroll.style.overflow = "auto"; 
+    }
+
+    return () => {
+      bodyScroll.style.overflow = "auto";
+    };
+  }, [isPopupOpen]);
+
+
   const fetchProfileData = async () => {
     try {
       setLoading(true);
