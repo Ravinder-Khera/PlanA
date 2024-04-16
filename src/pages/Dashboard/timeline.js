@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import Timeline from "../../Components/Timeline";
 
 function TimelinePage() {
   const [loading, setLoading] = useState(false);
+  const [randomNumber, setRandomNumber] = useState(0);
+
+  useEffect(() => {
+    const newRandomNumber = Math.floor(Math.random() * 100); 
+    setRandomNumber(newRandomNumber);
+  }, []);
 
   return (
     <>
@@ -24,7 +30,7 @@ function TimelinePage() {
         <div className="DashboardHeading">
           <h2>Timeline</h2>
         </div>
-        <Timeline timeFrame='monthly' />
+        <Timeline timeFrame='monthly' loadNo={randomNumber} />
       </div>
     </>
   );

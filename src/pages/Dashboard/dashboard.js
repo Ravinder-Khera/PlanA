@@ -7,8 +7,11 @@ import Timeline from '../../Components/Timeline';
 function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [randomNumber, setRandomNumber] = useState(0);
 
   useEffect(() => {
+    const newRandomNumber = Math.floor(Math.random() * 100); 
+    setRandomNumber(newRandomNumber);
     if (!data) {
       setLoading(true);
       fetchData();
@@ -69,7 +72,7 @@ function Dashboard() {
         <p>Total Jobs</p>
       </div>
     </div>
-    <Timeline timeFrame='weekly' />
+    <Timeline timeFrame='weekly' loadNo={randomNumber} />
   </div>
   </>)
 }

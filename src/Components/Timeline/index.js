@@ -4,7 +4,7 @@ import moment from "moment";
 import { getJobs } from "../../services/auth";
 import { User } from "../../assets/svg";
 
-function Timeline({timeFrame}) {
+function Timeline({timeFrame , loadNo}) {
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
   const excessCalendarDate = timeFrame !== undefined && timeFrame === 'weekly' ? 3 : timeFrame === 'monthly' ? 7 : 1
@@ -14,22 +14,20 @@ function Timeline({timeFrame}) {
     key: "selection",
   });
 
+  const [scrollPerformed, setScrollPerformed] = useState(false);
   const currentDayRef = useRef(null);
 
-  if (currentDayRef.current) {
-    currentDayRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    })
-  }
   useEffect(() => {
-    if (currentDayRef.current) {
+    if (loadNo && !scrollPerformed) {
+      if (currentDayRef.current) {
         currentDayRef.current.scrollIntoView({
           behavior: "smooth",
           block: "center"
-        })
+        });
+        setScrollPerformed(true);
       }
-  }, [currentDayRef]);
+    }
+  }, [loadNo, scrollPerformed]);
 
   function extractUsersFromStages(data) {
     if (!data) return;
@@ -44,24 +42,6 @@ function Timeline({timeFrame}) {
       project.usersArray = usersArray;
     });
   }
-
-  const fetchJobs = async () => {
-    setLoading(true);
-    try {
-      const res = await getJobs();
-      const data = res?.res?.data;
-      if (data) {
-        setJobs(data);
-        extractUsersFromStages(data);
-        setSelectionRangeFromJobs(data);
-        console.log("data", data);
-      }
-    } catch (error) {
-      console.log("error while fetching jobs", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const findNearestStage = (data) => {
     let nearestStage = null;
