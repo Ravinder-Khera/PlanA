@@ -408,6 +408,47 @@ body {
                 color: #000;
             }
         }
+
+        &.createTaskBtn{
+            background: transparent;
+            border: 1px solid#e2e31f;
+            cursor: pointer;
+            svg{
+                transition: all 0.5s ease;
+                path{
+                    stroke: #e2e31f;
+                }
+            }
+            &:hover{
+                background: #e2e31f;
+                svg{
+                    path{
+                        stroke: black;
+                    }
+                }
+            }
+        }
+        &.cancelTaskBtn{
+            background: transparent;
+            border: 1px solid#e2e31f;
+            cursor: pointer;
+            svg{
+                transition: all 0.5s ease;
+                transform: rotate(45deg);
+                path{
+                    fill: #e2e31f;
+                }
+            }
+            &:hover{
+                background: #e2e31f;
+                svg{
+                    transform: rotate(-45deg);
+                    path{
+                        fill: black;
+                    }
+                }
+            }
+        }
     }
 
     .bellIcon {
@@ -1208,7 +1249,6 @@ body {
                         background-color: #fff;
                         cursor: pointer;
                     }
-
                     p {
                         color: #FFF;
                         font-size: 16px;

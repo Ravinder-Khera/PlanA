@@ -458,7 +458,6 @@ function TaskPage() {
       return;
     }
     try {
-     
       setLoading(true);
       let response = await createTask(
         {
@@ -766,13 +765,7 @@ function TaskPage() {
                 <li className="heading addNewTaskDiv">
                   <div className="listContent">
                     <div className="addNewTaskBtn d-flex align-items-center gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none">
-                      <div
-                        className="UserImg m-0"
-                        style={{ minWidth: "40px" }}
-                        onClick={handleCreateTask}
-                      >
-                        <AddIcon />
-                      </div>
+                      
                       <div className="addTaskJobDiv">
                         <div
                           className="addTaskJobBtn"
@@ -1090,6 +1083,24 @@ function TaskPage() {
                           </div>
                         </div>
                       )}
+                    </div>
+                      <div
+                          className="UserImg createTaskBtn m-0"
+                          style={{ minWidth: "40px" }}
+                          onClick={handleCreateTask}
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                          <rect width="100%" height="100%" fill="none" />
+                          <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                        </svg>
+                      </div>
+
+                    <div
+                        className="UserImg cancelTaskBtn m-0"
+                        style={{ minWidth: "40px" }}
+                        onClick={()=> setAddTask(false)}
+                      >
+                      <AddIcon />
                     </div>
                   </div>
                 </li>
