@@ -429,7 +429,7 @@ const ChatAndAttachment = ({ JobId }) => {
                 </>
               ))}
             {!chats && <p className="loading">Loading Chats...</p>}
-            {!chats && chats?.length === 0 && (
+            {chats?.length === 0 && (
               <p className="no-chats">No Chats yet</p>
             )}
           </div>

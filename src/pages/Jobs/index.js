@@ -10,9 +10,11 @@ import Filter from "../../Components/Filter/Filter";
 import JobModal from "../../Components/JobModal/Edit/JobModal";
 import { StatusList } from "../../helper";
 import Add from "../../Components/JobModal/Add/Add";
+import { useLocation } from "react-router-dom";
 
 const Jobs = () => {
   const containerRef = useRef(null);
+  const location = useLocation();
 
   const [jobs, setJobs] = useState();
   const [divWidth, setDivWidth] = useState(0);
@@ -31,9 +33,18 @@ const Jobs = () => {
   const filterRef = useRef(null);
   const [reloadTabs, setReloadTabs] = useState(false);
 
+  const { state } = location;
   useEffect(() => {
+    if (state) {
+      localStorage.setItem("jobId", state?.id);
+      setShowJobModal(true);
+      setGetJob({
+        data: state,
+        stage: findNearestStage(state),
+      });
+    }
     fetchJobs();
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     const updateDivWidth = () => {
@@ -87,7 +98,9 @@ const Jobs = () => {
       const data = res?.res?.data;
       setJobs(data);
       setFilteredJobs(data);
-      const selectedJob = data.filter((item) => item?.id === getJob?.data?.id);
+      const selectedJob = data.filter(
+        (item) => item?.id === getJob?.data?.id || item?.id === state?.id
+      );
       setGetJob({
         data: selectedJob[0],
         stage: findNearestStage(selectedJob[0]),
@@ -274,7 +287,9 @@ const Jobs = () => {
                   Current Jobs
                 </div>
                 <div
-                  className={`jobtaskTab ${status === "completed" ? "active" : ""}`}
+                  className={`jobtaskTab ${
+                    status === "completed" ? "active" : ""
+                  }`}
                   onClick={() => {
                     setSelectedJobs([]);
                     setStatus("completed");
@@ -492,12 +507,14 @@ const Jobs = () => {
                             <td className="text-center">
                               <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                 <div className=" d-flex align-items-center justify-content-center">
-                                  {job.usersArray?.length > 0 && (
+                                  {job?.usersArray?.length > 0 && (
                                     <>
-                                      {job.usersArray
+                                    {console.log("usersArray", job.usersArray)}
+                                      {job?.usersArray
                                         ?.slice(0, 1)
                                         ?.map((user, index) => (
                                           <>
+                                          
                                             <div
                                               key={index}
                                               className={`UserImg addedUserImages`}
@@ -544,9 +561,7 @@ const Jobs = () => {
                               </div>
                             </td>
                             <td className="text-center d-flex align-items-center">
-                              <span
-                                className={`statusBtn ${job.status}`}
-                              >
+                              <span className={`statusBtn ${job.status}`}>
                                 {StatusList[job.status]}
                               </span>
                             </td>

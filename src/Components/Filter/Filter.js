@@ -322,7 +322,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                   placeholder="Assignee Name"
                   value={searchedInput}
                   onChange={(e) => setSearchedInput(e.target.value)}
-                  disabled={selectedFilter === "Assignee"}
+                  // disabled={selectedFilter === "Assignee"}
                 />
               </div>
             )}
