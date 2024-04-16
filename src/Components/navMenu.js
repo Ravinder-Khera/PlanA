@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { BellIcon, Search, User } from "../assets/svg";
+import React, { useEffect, useRef, useState } from "react";
+import { BellIcon, CrossIcon, Search, User } from "../assets/svg";
 import { getProfile } from "../services/auth";
 import { Bars } from "react-loader-spinner";
 import eventEmitter from "../Event";
@@ -11,10 +11,30 @@ function NavMenu() {
   const [userImg, setUserImg] = useState("");
   const [selectedValue, setSelectedValue] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [notificationDropDown, setNotificationDropDown] = useState(false);
+  const notificationRef = useRef(null);
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target)
+      ) {
+        setNotificationDropDown(false);
+      }
+
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
 
   useEffect(() => {
     const bodyScroll = document.getElementById('rightSCroll')
@@ -137,8 +157,65 @@ function NavMenu() {
                     )}
                   </div>
                 </Link>
-                <div className="bellIcon">
-                  <BellIcon />
+                <div className="addNewTaskDiv">
+                  <div className="bellIcon addTaskJobDiv" style={{cursor:'pointer'}}>
+                    <div onClick={()=>setNotificationDropDown(!notificationDropDown)}>
+                      <BellIcon />
+                    </div>
+                    {notificationDropDown && (
+                      <div
+                        className="addTaskJobDropdown notificationDropdown right"
+                        ref={notificationRef}
+                      >
+                        <div className="addTaskJobListScroll">
+                          <div className="addTaskJobListItems">
+
+                              <div className="notificationItems">
+                                <div className="notificationTime">
+                                  1min<br/>Ago
+                                </div>
+                                <div className="notificationContent">
+                                    <div className="notificationIcon">! </div>
+                                    <div className="notificationText">
+                                      <h3>Notification Heading</h3>
+                                      <span>Notification Description goes here</span>
+                                    </div>
+                                    <div className="notificationCrossIcon"><CrossIcon /> </div>
+                                </div>
+                              </div>
+                              <div className="notificationItems">
+                                <div className="notificationTime">
+                                  1min<br/>Ago
+                                </div>
+                                <div className="notificationContent">
+                                    <div className="notificationIcon">! </div>
+                                    <div className="notificationText">
+                                      <h3>Notification Heading</h3>
+                                      <span>Notification Description goes here</span>
+                                    </div>
+                                    <div className="notificationCrossIcon"><CrossIcon /> </div>
+                                </div>
+                              </div>
+
+                              <div className="notificationItems">
+                                <div className="notificationTime">
+                                  1min<br/>Ago
+                                </div>
+                                <div className="notificationContent">
+                                    <div className="notificationIcon">! </div>
+                                    <div className="notificationText">
+                                      <h3>Notification Heading</h3>
+                                      <span>Notification Description goes here</span>
+                                    </div>
+                                    <div className="notificationCrossIcon"><CrossIcon /> </div>
+                                </div>
+                              </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

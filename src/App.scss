@@ -2423,3 +2423,66 @@ body {
         }
     }
 }
+
+.notificationDropdown{
+    box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
+}
+.notificationItems{
+    display: flex;
+    margin-bottom: 10px;
+    gap: 28px;
+    align-items: center;
+    min-width: max-content;
+    .notificationTime{
+        color: #FFF;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: normal;
+        letter-spacing: -0.48px;        
+    }
+    .notificationContent{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 260px;
+        min-height: 65px;
+        border-radius: 2px;
+        background: #353535;
+        box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
+        padding: 10px 15px;
+        gap: 15px;
+        margin-right: 10px;
+        .notificationIcon{
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            color: #E2E31F;
+            border: 1px solid #E2E31F;
+            font-weight: 900;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: -32px;
+        }
+        .notificationText{
+            h3{
+                color: #FFF;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: normal;
+                letter-spacing: -0.64px;
+                margin: 0;
+            }
+            span{
+                color: #FFF;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 300;
+                line-height: normal;
+                letter-spacing: -0.48px;                
+            }
+        }
+    }
+}
