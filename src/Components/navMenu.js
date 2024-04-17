@@ -172,7 +172,7 @@ function NavMenu() {
 
                               <div className="notificationItems">
                                 <div className="notificationTime">
-                                  1min<br/>Ago
+                                  1 min<br/>Ago
                                 </div>
                                 <div className="notificationContent">
                                     <div className="notificationIcon">! </div>
@@ -185,7 +185,7 @@ function NavMenu() {
                               </div>
                               <div className="notificationItems">
                                 <div className="notificationTime">
-                                  1min<br/>Ago
+                                  1 hour<br/>Ago
                                 </div>
                                 <div className="notificationContent">
                                     <div className="notificationIcon">! </div>

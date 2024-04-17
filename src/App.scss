@@ -2203,6 +2203,16 @@ body {
                             position: absolute;
                             top: 0;
                             right: 1px;
+                            &:hover{
+                                .timeLineJobItemDiv{
+                                    min-width: max-content !important;
+                                }
+                                .jobProgressDiv{
+                                    &.hidden{
+                                        opacity: 1;
+                                    }
+                                }                                
+                            }
                             .timeLineJobItemDiv{
                                 overflow: hidden;
                                 height: 100%;
@@ -2212,9 +2222,6 @@ body {
                                 min-width: 10px;
                                 cursor: pointer;
                                 transition: all 0.55s ease;
-                                &:hover{
-                                    min-width: max-content !important;
-                                }
                             }
                             .textDiv{
                                 min-width: max-content;
@@ -2259,6 +2266,9 @@ body {
                             letter-spacing: -0.48px;
                             span{
                                 font-weight: 600;
+                            }
+                            &.hidden{
+                                opacity: 0;
                             }
                         }
                     }
