@@ -72,6 +72,7 @@ function NavMenu() {
         !searchPopUpRef.current.contains(e.target)
       ) {
         setIsPopupOpen(false);
+        setSearchValue('');
       }
 
     };
@@ -274,7 +275,11 @@ function NavMenu() {
                 className="d-flex align-items-center justify-content-end"
                 style={{ minWidth: "250px" }}
               >
-                <Link className="d-flex" style={{textDecoration:'none'}} onClick={()=> setIsPopupOpen(false)} to="/settings">
+                <Link className="d-flex" style={{textDecoration:'none'}} 
+                onClick={()=> { 
+                  setIsPopupOpen(false);
+                  setSearchValue('');
+                  }} to="/settings">
                   <div
                     style={{ textAlign: "end" }}
                     className="d-flex flex-column justify-content-center"
@@ -310,12 +315,12 @@ function NavMenu() {
                         <div className="addTaskJobListScroll">
                           <div className="addTaskJobListItems">
 
-                              <div className="notificationItems">
+                              <div className="notificationItems fullColor">
                                 <div className="notificationTime">
                                   1 min<br/>Ago
                                 </div>
                                 <div className="notificationContent">
-                                    <div className="notificationIcon">! </div>
+                                    <div className="notificationIcon user"> <User /> </div>
                                     <div className="notificationText">
                                       <h3>Notification Heading</h3>
                                       <span>Notification Description goes here</span>
@@ -323,12 +328,12 @@ function NavMenu() {
                                     <div className="notificationCrossIcon"><CrossIcon /> </div>
                                 </div>
                               </div>
-                              <div className="notificationItems">
+                              <div className="notificationItems password">
                                 <div className="notificationTime">
                                   1 hour<br/>Ago
                                 </div>
                                 <div className="notificationContent">
-                                    <div className="notificationIcon">! </div>
+                                    <div className="notificationIcon info">! </div>
                                     <div className="notificationText">
                                       <h3>Notification Heading</h3>
                                       <span>Notification Description goes here</span>
@@ -337,12 +342,12 @@ function NavMenu() {
                                 </div>
                               </div>
 
-                              <div className="notificationItems">
+                              <div className="notificationItems failed">
                                 <div className="notificationTime">
-                                  1min<br/>Ago
+                                  2 hours<br/>Ago
                                 </div>
                                 <div className="notificationContent">
-                                    <div className="notificationIcon">! </div>
+                                    <div className="notificationIcon fail">! </div>
                                     <div className="notificationText">
                                       <h3>Notification Heading</h3>
                                       <span>Notification Description goes here</span>
@@ -371,7 +376,7 @@ function NavMenu() {
                 {/* mapping here */}
                 {filteredJobs && filteredJobs.map((job, index)=>(
                   <div className="resultMap" key={index} onClick={() => {
-                    navigate("/jobs", { state: job }); setIsPopupOpen(false)
+                    navigate("/jobs", { state: job }); setIsPopupOpen(false);setSearchValue('')
                   }}>
                       <div className="d-flex align-items-center" style={{gap:'16px'}}>
                         <div className="identityBadge">
@@ -388,7 +393,7 @@ function NavMenu() {
                 ))}
                 {filteredTasks && filteredTasks.map((Task, index)=>(
                   <div className="resultMap" key={index} onClick={() => {
-                    navigate("/dashboard/tasks", { state: Task }); setIsPopupOpen(false)
+                    navigate("/dashboard/tasks", { state: Task }); setIsPopupOpen(false);setSearchValue('');
                   }}>
                       <div className="d-flex align-items-center" style={{gap:'16px'}}>
                         <div className="identityBadge">
@@ -403,7 +408,7 @@ function NavMenu() {
 
                 {filteredInvoice && filteredInvoice.map((Invoice, index)=>(
                   <div className="resultMap" key={index} onClick={() => {
-                    navigate("/invoice", { state: Invoice }); setIsPopupOpen(false)
+                    navigate("/invoice", { state: Invoice }); setIsPopupOpen(false);setSearchValue('');
                   }}>
                       <div className="d-flex align-items-center" style={{gap:'16px'}}>
                         <div className="identityBadge">

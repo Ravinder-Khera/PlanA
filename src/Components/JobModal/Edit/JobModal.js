@@ -84,7 +84,7 @@ const JobModal = ({
     return () => {
       document.removeEventListener("mousedown", handler);
     };
-  }, []);
+  }, [handleClose]);
 
   const getIdsForStages = (stages) => {
     let tempArr = {};
