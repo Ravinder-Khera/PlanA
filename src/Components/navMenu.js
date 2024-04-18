@@ -1,21 +1,62 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BellIcon, CrossIcon, Search, User } from "../assets/svg";
-import { getProfile } from "../services/auth";
+import { getJobs, getProfile, getTasks } from "../services/auth";
 import { Bars } from "react-loader-spinner";
 import eventEmitter from "../Event";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function NavMenu() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState("");
   const [userImg, setUserImg] = useState("");
   const [selectedValue, setSelectedValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [notificationDropDown, setNotificationDropDown] = useState(false);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [filteredInvoice, setFilteredInvoice] = useState([]);
   const notificationRef = useRef(null);
+  const navigate = useNavigate();
+
+  const searchPopUpRef = useRef(null);
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
+    if(searchValue !== ''){
+      setIsPopupOpen(true);
+      if (event.target.value === ''){
+        fetchJobs();
+        fetchTasks();
+        fetchInvoice();
+      } else if(event.target.value === 'Job'){
+        fetchJobs();
+        setFilteredTasks([])
+        setFilteredInvoice([])
+      } else if (event.target.value === 'Task'){
+        fetchTasks()
+        setFilteredJobs([])
+        setFilteredInvoice([])
+      } else if (event.target.value === 'Invoice'){
+        setFilteredJobs([])
+        setFilteredTasks([])
+        fetchInvoice()
+      }  
+    } else {
+      setIsPopupOpen(false);
+    }
+  };
+
+  const handleInputSearch = (e) => {
+    setSearchValue(e.target.value);
+    if(e.target.value !== ''){
+      setIsPopupOpen(true);
+      fetchJobs();
+      fetchTasks();
+      fetchInvoice();
+    } else {
+      setIsPopupOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -25,6 +66,12 @@ function NavMenu() {
         !notificationRef.current.contains(e.target)
       ) {
         setNotificationDropDown(false);
+      }
+      if (
+        searchPopUpRef.current &&
+        !searchPopUpRef.current.contains(e.target)
+      ) {
+        setIsPopupOpen(false);
       }
 
     };
@@ -76,11 +123,105 @@ function NavMenu() {
   eventEmitter.removeAllListeners("updateProfile");
   eventEmitter.on("updateProfile", fetchProfileData);
 
-  const handleInputFocus = () => {
-    setIsPopupOpen(true);
+  const fetchJobs = async () => {
+    setLoading(true);
+    try {
+      const res = await getJobs();
+      const data = res?.res?.data;
+      
+      const lowerCaseQuery = searchValue.toLowerCase();
+      const filtered = data.filter((job) => {
+        // Check if job title or description contains the search query
+        return (
+          job.title.toLowerCase().includes(lowerCaseQuery) ||
+          job.description.toLowerCase().includes(lowerCaseQuery) ||
+          job.id.toString().includes(lowerCaseQuery)
+        );
+      });
+      setFilteredJobs(filtered);
+    } catch (error) {
+      console.log("error while fetching jobs", error);
+    } finally {
+      setLoading(false);
+    }
   };
-  const handleInputBlur = () => {
-    setIsPopupOpen(false);
+
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      setLoading(true);
+      const authToken = localStorage.getItem("authToken");
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+      let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks`,requestOptions);
+      const isJson = response.headers
+        .get("content-type")
+        ?.includes("application/json");
+      const res = isJson && (await response.json());
+      const data = res.data;
+      const lowerCaseQuery = searchValue.toLowerCase();
+      const filtered = data.filter((task) => {
+        // Check if job title or description contains the search query
+        return (
+          task.title.toLowerCase().includes(lowerCaseQuery) ||
+          task.id.toString().includes(lowerCaseQuery)
+        );
+      });
+      setFilteredTasks(filtered);
+      if (response.status === 200) {
+        setLoading(false);
+        return { res: data, error: null };
+      } else {
+        return { res: null, error: data };
+      }
+    } catch (error) {
+      console.log("error while fetching jobs", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchInvoice = async () => {
+    try {
+      setLoading(true);
+      const authToken = localStorage.getItem("authToken");
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+      const response = await fetch(
+        `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/invoices`,
+        requestOptions
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const jsonData = await response.json();
+      const data = jsonData.data;
+      const lowerCaseQuery = searchValue.toLowerCase();
+      const filtered = data.filter((Invoice) => {
+        return (
+          Invoice.to.toLowerCase().includes(lowerCaseQuery) ||
+          Invoice.from.toLowerCase().includes(lowerCaseQuery) ||
+          Invoice.id.toString().includes(lowerCaseQuery)
+        );
+      });
+      setFilteredInvoice(filtered);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
   };
 
   return (
@@ -98,7 +239,7 @@ function NavMenu() {
           />
         </div>
       )}
-      <div className="position-relative">
+      <div className="position-relative" ref={searchPopUpRef}>
         <nav className="container-fluid navMenuDiv position-relative" style={{zIndex:'91'}}>
           <div className="d-flex justify-content-between">
             <form>
@@ -109,9 +250,8 @@ function NavMenu() {
                 <input
                   name="search"
                   placeholder="Search"
-                  onChange={(e) => e.preventDefault}
-                  onFocus={handleInputFocus}
-                  onBlur={handleInputBlur}
+                  onChange={(e) => handleInputSearch(e)}
+                  value={searchValue}
                 />
               </div>
               <div className="selectBox">
@@ -120,7 +260,7 @@ function NavMenu() {
                   aria-label="Default select example"
                   placeholder="Select"
                   value={selectedValue}
-                  onChange={handleChange}
+                  onChange={(event)=> handleChange(event)}
                 >
                   <option value="">Select</option>
                   <option value="Job">Job</option>
@@ -134,7 +274,7 @@ function NavMenu() {
                 className="d-flex align-items-center justify-content-end"
                 style={{ minWidth: "250px" }}
               >
-                <Link className="d-flex" style={{textDecoration:'none'}} to="/settings">
+                <Link className="d-flex" style={{textDecoration:'none'}} onClick={()=> setIsPopupOpen(false)} to="/settings">
                   <div
                     style={{ textAlign: "end" }}
                     className="d-flex flex-column justify-content-center"
@@ -229,19 +369,48 @@ function NavMenu() {
               </div>
               <div className="resultContainer">
                 {/* mapping here */}
-                <div className="resultMap">
-                    <div className="d-flex align-items-center" style={{gap:'16px'}}>
-                      <div className="identityBadge">
-                        Job
-                        {/* Invoice */}
-                        {/* Task */}
+                {filteredJobs && filteredJobs.map((job, index)=>(
+                  <div className="resultMap" key={index} onClick={() => {
+                    navigate("/jobs", { state: job });
+                  }}>
+                      <div className="d-flex align-items-center" style={{gap:'16px'}}>
+                        <div className="identityBadge">
+                          Job
+                          {/* Invoice */}
+                          {/* Task */}
+                        </div>
+                        <div className="searchContext">
+                          <h3>{job.title}</h3>
+                          <span>{job.description}</span>
+                        </div>
                       </div>
-                      <div className="searchContext">
-                        <h3>Title</h3>
-                        <span>description</span>
+                  </div>
+                ))}
+                {filteredTasks && filteredTasks.map((Task, index)=>(
+                  <div className="resultMap" key={index}>
+                      <div className="d-flex align-items-center" style={{gap:'16px'}}>
+                        <div className="identityBadge">
+                          Task
+                        </div>
+                        <div className="searchContext">
+                          <h3>|{Task.id}|{Task.title}</h3>
+                        </div>
                       </div>
-                    </div>
-                </div>
+                  </div>
+                ))}
+
+                {filteredInvoice && filteredInvoice.map((Invoice, index)=>(
+                  <div className="resultMap" key={index}>
+                      <div className="d-flex align-items-center" style={{gap:'16px'}}>
+                        <div className="identityBadge">
+                          Inv
+                        </div>
+                        <div className="searchContext">
+                          <h3>{`INV-${String(Invoice.id).padStart(4, "0")}`}</h3>
+                        </div>
+                      </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

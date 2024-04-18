@@ -509,12 +509,9 @@ const Jobs = () => {
                                 <div className=" d-flex align-items-center justify-content-center">
                                   {job?.usersArray?.length > 0 && (
                                     <>
-                                    {console.log("usersArray", job.usersArray)}
                                       {job?.usersArray
                                         ?.slice(0, 1)
                                         ?.map((user, index) => (
-                                          <>
-                                          
                                             <div
                                               key={index}
                                               className={`UserImg addedUserImages`}
@@ -539,7 +536,6 @@ const Jobs = () => {
                                                 <User />
                                               )}
                                             </div>
-                                          </>
                                         ))}
                                     </>
                                   )}

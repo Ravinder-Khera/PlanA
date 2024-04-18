@@ -12,7 +12,6 @@ import {
 import {
   createTask,
   getJobIds,
-  getTasks,
   getUserByRole,
   updateTask,
 } from "../../services/auth";
@@ -34,7 +33,6 @@ function TaskPage() {
   const [selectDate, setSelectDate] = useState(false);
   const [selectDueDate, setSelectDueDate] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null);
-  const [tasks, setTasks] = useState([]);
   const [tasksToDo, setTasksToDo] = useState([]);
   const [tasksCompleted, setTasksCompleted] = useState([]);
   const [jobList, setJobList] = useState([]);
@@ -1366,7 +1364,6 @@ function TaskPage() {
                         {task.users.length > 0 ? (
                             <>
                               {task.users.map((user, index) => (
-                                <>
                                   <div
                                     key={index}
                                     className={` UserImg addedUserImages `}
@@ -1385,7 +1382,6 @@ function TaskPage() {
                                       <User />
                                     )}
                                   </div>
-                                </>
                               ))}
                             </>
                         ):(

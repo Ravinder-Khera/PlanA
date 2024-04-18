@@ -406,8 +406,10 @@ function Timeline({ timeFrame, loadNo }) {
                                   }}
                                 >
                                   <div className={`jobProgressDiv ${timeFrame === "monthly" && activeColumnsCount <= 2 ? 'hidden' : ''}`}>
-                                    Progress:{" "}
-                                    <span>
+                                    <span className="text">
+                                      Progress:{" "}
+                                    </span>
+                                    <span className="percentage">
                                       {job.progress % 1 !== 0
                                         ? job.progress.toFixed(2)
                                         : job.progress}
