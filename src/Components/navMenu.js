@@ -371,7 +371,7 @@ function NavMenu() {
                 {/* mapping here */}
                 {filteredJobs && filteredJobs.map((job, index)=>(
                   <div className="resultMap" key={index} onClick={() => {
-                    navigate("/jobs", { state: job });
+                    navigate("/jobs", { state: job }); setIsPopupOpen(false)
                   }}>
                       <div className="d-flex align-items-center" style={{gap:'16px'}}>
                         <div className="identityBadge">
@@ -387,7 +387,9 @@ function NavMenu() {
                   </div>
                 ))}
                 {filteredTasks && filteredTasks.map((Task, index)=>(
-                  <div className="resultMap" key={index}>
+                  <div className="resultMap" key={index} onClick={() => {
+                    navigate("/dashboard/tasks", { state: Task }); setIsPopupOpen(false)
+                  }}>
                       <div className="d-flex align-items-center" style={{gap:'16px'}}>
                         <div className="identityBadge">
                           Task
@@ -400,7 +402,9 @@ function NavMenu() {
                 ))}
 
                 {filteredInvoice && filteredInvoice.map((Invoice, index)=>(
-                  <div className="resultMap" key={index}>
+                  <div className="resultMap" key={index} onClick={() => {
+                    navigate("/invoice", { state: Invoice }); setIsPopupOpen(false)
+                  }}>
                       <div className="d-flex align-items-center" style={{gap:'16px'}}>
                         <div className="identityBadge">
                           Inv
