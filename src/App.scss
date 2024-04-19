@@ -2634,6 +2634,7 @@ body {
                     line-height: normal;
                     letter-spacing: -0.96px;  
                     margin: 0;
+                    
                 }
             }
             &:hover{
@@ -2659,8 +2660,17 @@ body {
                     line-height: normal;
                     letter-spacing: -0.96px;  
                     margin: 0;
+                    span{
+                        color: #fff;
+                        font-weight: normal;
+                    }
                 }
             }
         }
     }
+}
+
+.requiredSpan{
+    color: red !important;
+    font-weight: 600 !important;
 }

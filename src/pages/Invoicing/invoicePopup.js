@@ -9,7 +9,12 @@ const InvoicePopup = ({ handleClose }) => {
   const [state, setState] = useState([]);
   
   const [items, setItems] = useState([]);
-  const [itemState, setItemState] = useState({});
+  const [itemState, setItemState] = useState({
+    description: '',
+    rate: null,
+    hours: null,
+    amount: null
+  });
   const [selectedDueDate, setSelectedDueDate] = useState(null);
   const [selectDueDate, setSelectDueDate] = useState(false);
   const [loader, setLoading] = useState(false);
@@ -45,9 +50,19 @@ const InvoicePopup = ({ handleClose }) => {
   };
 
   const handleAddItem = () => {
-    const hasNonEmptyValue = Object.values(itemState).some(value => value !== '');
-    if (!hasNonEmptyValue) {
-      toast.error(`Values can not be empty`, {
+    const newItem = {
+      description: itemState.description,
+      rate: itemState.rate,
+      hours: itemState.hours,
+      amount: itemState.rate*itemState.hours
+    };
+  
+    // Check if any field is empty in the newItem object
+    const hasEmptyValue = Object.values(newItem).some(value => value === '' || value === null);
+  
+    // If any field is empty, show an error toast and return early
+    if (hasEmptyValue) {
+      toast.error(`All values must be filled`, {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: true,
@@ -57,12 +72,19 @@ const InvoicePopup = ({ handleClose }) => {
         progress: undefined,
         theme: "colored",
       });
-    }else{
-      const newItem = { ...itemState };
-      setItems((prevItems) => [...prevItems, newItem]);
-      setItemState({});
+      return;
     }
+  
+    // If all fields are filled, add the new item to the items array
+    setItems(prevItems => [...prevItems, newItem]);
+    setItemState({
+      description: '',
+      rate: null,
+      hours: null,
+      amount: null
+    });
   };
+  
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -88,7 +110,6 @@ const InvoicePopup = ({ handleClose }) => {
   }
 
   const handleCreateInvoice = async () => {
-    console.log(!state.to);
     if (!state.to || state.to === "") {
       toast.error(`Billed To can not be empty`, {
         position: "top-center",
@@ -239,7 +260,7 @@ const InvoicePopup = ({ handleClose }) => {
                             </div>
                             <div className="d-flex gap-4">
                               <button
-                                className={`stageBtn `}
+                                className={`stageBtn paid`}
                                 style={{ cursor: "pointer" }}
                                 onClick={handleCreateInvoice}
                               >
@@ -271,7 +292,7 @@ const InvoicePopup = ({ handleClose }) => {
                           className="addTaskDueDateBtn"
                           onClick={() => setSelectDueDate(!selectDueDate)}
                         >
-                          <TaskIcon /> {selectedDueDate && formattedDueDate}
+                          <TaskIcon /><span className="requiredSpan">*</span> {selectedDueDate ? formattedDueDate : 'Due Date'}
                         </div>
                         {selectDueDate && (
                           <div className="datePickerDiv" style={{right:'0',left:'auto'}} ref={selectDueDateRef}>
@@ -289,7 +310,7 @@ const InvoicePopup = ({ handleClose }) => {
                     </div>
                     <div className="billingDetails">
                       <div className="billingInfo">
-                        <h3 className="BoldHeading heading">Billed To:</h3>
+                        <h3 className="BoldHeading heading">Billed To:<span className="requiredSpan">*</span></h3>
                         <input
                           onChange={handleOnChange}
                           className="addInput"
@@ -310,7 +331,7 @@ const InvoicePopup = ({ handleClose }) => {
                         </span>
                       </div>
                       <div className="billingInfo">
-                        <h3 className="BoldHeading heading">Pay To:</h3>
+                        <h3 className="BoldHeading heading">Pay To:<span className="requiredSpan">*</span></h3>
                         <input
                           onChange={handleOnChange}
                           className="addInput"
@@ -401,7 +422,7 @@ const InvoicePopup = ({ handleClose }) => {
                       <ul className="invoiceItemUl ">
                         <li className="addItemInput itemHeading gap-0">
                           <div className="itemData">
-                            <p>Description</p>
+                            <p>Description <span> (minimum 1 required)</span><span className="requiredSpan">*</span></p>
                           </div>
                           <div className="itemData">
                             <p>Rate</p>
@@ -420,7 +441,7 @@ const InvoicePopup = ({ handleClose }) => {
                                   <p>{item['description']}</p>
                                 </div>
                                 <div className="itemData">
-                                  <p>{item['rate']}</p>
+                                  <p>${item['rate']}/hr</p>
                                 </div>
                                 <div className="itemData">
                                   <p>{item['hours']}</p>
@@ -452,7 +473,7 @@ const InvoicePopup = ({ handleClose }) => {
                           <input
                             onChange={handleItemChange}
                             className="addInput"
-                            type="text"
+                            type="number"
                             name="hours"
                             value={itemState['hours'] || ''}
                             id=""
@@ -461,9 +482,10 @@ const InvoicePopup = ({ handleClose }) => {
                           <input
                             onChange={handleItemChange}
                             className="addInput"
-                            type="text"
+                            type="number"
+                            readOnly
                             name="amount"
-                            value={itemState['amount'] || ''}
+                            value={itemState['rate']* itemState['hours'] || ''}
                             id=""
                             placeholder="0.00"
                           />
