@@ -3,11 +3,13 @@ import { AddIcon, DeleteIcon, Print } from "../../assets/svg";
 import { Bars } from "react-loader-spinner";
 import { deleteInvoices } from "../../services/auth";
 import { toast } from "react-toastify";
+import InvoicePopup from "./invoicePopup";
 
 function Invoice() {
   const [isChecked, setIsChecked] = useState({});
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [addInvoice, setAddInvoice] = useState(false);
   const invoiceRef = useRef(null);
 
   const authToken = localStorage.getItem("authToken");
@@ -173,6 +175,9 @@ function Invoice() {
           />
         </div>
       )}
+      {addInvoice && 
+        <InvoicePopup handleClose={() => { setAddInvoice(false);}}/>
+      }
       <div className="DashboardTopMenu">
         <div className="DashboardHeading d-flex justify-content-between align-items-center gap-3 flex-wrap">
           <div className="d-flex justify-content-start align-items-center gap-3 flex-wrap">
@@ -195,7 +200,8 @@ function Invoice() {
             <div
               className="addIcon"
               onClick={() => {
-                if (invoiceRef.current) invoiceRef.current.click();
+                // if (invoiceRef.current) invoiceRef.current.click();
+                setAddInvoice(true)
               }}
             >
               <AddIcon />

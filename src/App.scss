@@ -2568,3 +2568,99 @@ body {
         }
     }
 }
+
+.invoiceItemUl{
+    .addItemInput{
+        display: flex;
+        align-items: center;
+        background: #252525;
+        max-width: 100%;
+        padding-left: 10px;
+        margin-bottom: 8px !important;
+        border-radius: 2px;
+        input{
+            padding: 10px 0;
+            flex: 1 1 auto;
+            max-width: calc(15% - 10px);
+            background: transparent;
+            color: #fff;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+            letter-spacing: -0.96px;       
+            outline: none;
+            border: none;
+            &:first-child{
+                max-width: calc(55% - 10px);
+            }     
+            &::placeholder {
+                color: #fff;
+                opacity: 0.75;
+            }
+            &::-moz-placeholder {
+                color: #fff;
+                opacity: 0.75;
+            }        
+        }
+        button{
+            background: #E2E31F;
+            border: 1px solid #E2E31F;
+            outline: none;
+            padding: 10px 0;
+            width: 40px;
+            height: 100%;
+            svg{
+                path{
+                    stroke: #252525;
+                }
+            }
+        }
+        &.itemInput{
+            min-height: 47px;
+            align-items: center;
+            .itemData{
+                padding: 10px 0;
+                min-width: calc(15% - 10px);
+                &:first-child{
+                    min-width: calc(55% - 10px);
+                } 
+                text-align: start;
+                p{
+                    color: #E2E31F;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: normal;
+                    letter-spacing: -0.96px;  
+                    margin: 0;
+                }
+            }
+            &:hover{
+                background: rgba(226, 227, 31, 0.20);
+            }
+        }
+        &.itemHeading{
+            min-height: 47px;
+            align-items: center;
+            background: #353535;
+            .itemData{
+                padding: 10px 0;
+                min-width: calc(15% - 10px);
+                &:first-child{
+                    min-width: calc(55% - 10px);
+                } 
+                text-align: start;
+                p{
+                    color: #E2E31F;
+                    font-size: 18px;
+                    font-style: normal;
+                    font-weight: 700;
+                    line-height: normal;
+                    letter-spacing: -0.96px;  
+                    margin: 0;
+                }
+            }
+        }
+    }
+}

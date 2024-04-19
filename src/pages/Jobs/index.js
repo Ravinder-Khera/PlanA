@@ -403,7 +403,7 @@ const Jobs = () => {
                   </thead>
                   <tbody>
                     {filteredJobs &&
-                      filteredJobs?.length > 0 &&
+                      filteredJobs?.length > 0 ?
                       filteredJobs?.map((job, index) => (
                         <tr key={index}>
                           <th scope="row" className="text-center">
@@ -471,7 +471,18 @@ const Jobs = () => {
                             {moment(job.due_date).local().format("L")}
                           </td>
                         </tr>
-                      ))}
+                      )) :
+                      <tr>
+                        <td></td>
+                        <td className="text-center">
+                            <span
+                              className={`stageBtn btn_`}
+                            >
+                              No Results Found
+                            </span>
+                          </td>
+                        </tr>
+                      }
                   </tbody>
                 </table>
               </div>

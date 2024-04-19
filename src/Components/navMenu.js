@@ -405,7 +405,6 @@ function NavMenu() {
                       </div>
                   </div>
                 ))}
-
                 {filteredInvoice && filteredInvoice.map((Invoice, index)=>(
                   <div className="resultMap" key={index} onClick={() => {
                     navigate("/invoice", { state: Invoice }); setIsPopupOpen(false);setSearchValue('');
@@ -420,6 +419,9 @@ function NavMenu() {
                       </div>
                   </div>
                 ))}
+                {filteredJobs.length === 0 && filteredTasks.length === 0 && filteredInvoice.length === 0 && (
+                  <p className="noREsult">No Results Found</p>
+                )}
               </div>
             </div>
           </div>

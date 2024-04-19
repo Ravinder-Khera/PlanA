@@ -129,7 +129,70 @@
 
 
                             }
-
+                            .billingDetails{
+                                margin-top: 40px;
+                                margin-bottom: 40px;
+                                .billingInfo{
+                                    display: flex;
+                                    gap: 20px;
+                                    align-items: center;
+                                    .heading{
+                                        text-align: start;
+                                        color: #FFF;
+                                        font-style: normal;
+                                        line-height: normal;     
+                                        margin: 0;     
+                                        font-size: 16px;
+                                        font-weight: normal;
+                                        min-width: 150px;                              
+                                    }
+                                    .BoldHeading{
+                                        font-weight: 900;
+                                        font-size: 24px;
+                                    }
+                                    input , textarea{
+                                        background: transparent;
+                                        color: #fff;
+                                        font-size: 18px;
+                                        font-style: normal;
+                                        font-weight: 500;
+                                        line-height: normal;
+                                        letter-spacing: -0.96px;       
+                                        outline: none;
+                                        border: none;     
+                                        &::placeholder {
+                                            color: #fff;
+                                        }
+                        
+                                        &::-moz-placeholder {
+                                            color: #fff;
+                                            opacity: 1;
+                                        }                            
+                                    }
+                                    .penImage{
+                                        max-width: 40px;
+                                        cursor: pointer;
+                                    }
+                                }
+                            }
+                            .dueDateDiv{
+                                .addTaskJobDiv{
+                                    // display: flex;
+                                    // justify-content: end;
+                                    float: right;
+                                    transform: translateY(calc(0% + 10px));
+                                    position: relative;
+                                    z-index: 1;
+                                }
+                                .addTaskDueDateBtn{
+                                    svg{
+                                        fill: #E2E31F;
+                                        path{
+                                            fill: #E2E31F;
+                                        }
+                                    }
+                                }
+                            }
                             .Addslider-container {
                                 max-width: 650px;
                                 width: 100%;
@@ -381,6 +444,28 @@
                                 position: relative;
 
                                 // height: calc(100% - 28px);
+                                &.invoice{
+                                    &::before {
+                                        height: 100%;
+                                    }
+                                    &::after {
+                                        top: calc(100% - 30px);
+                                        height: 55px;
+                                        background: linear-gradient(180deg, #353535 27%, #353535 97%, rgba(53, 53, 53, 0) 174%);
+                                        z-index: -1;
+    
+                                    }
+                                    .stageBtn{
+                                        background: #252525;
+                                        cursor: pointer;
+                                        &.paid{
+                                            background: rgba(59, 146, 57, 0.6);
+                                        }
+                                        &.pending{
+                                            background: rgba(255, 0, 0, 0.4);
+                                        }
+                                    }
+                                }
                                 &::before {
                                     content: "";
                                     position: absolute;
