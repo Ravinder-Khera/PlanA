@@ -45,9 +45,23 @@ const InvoicePopup = ({ handleClose }) => {
   };
 
   const handleAddItem = () => {
-    const newItem = { ...itemState };
-    setItems((prevItems) => [...prevItems, newItem]);
-    setItemState({});
+    const hasNonEmptyValue = Object.values(itemState).some(value => value !== '');
+    if (!hasNonEmptyValue) {
+      toast.error(`Values can not be empty`, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }else{
+      const newItem = { ...itemState };
+      setItems((prevItems) => [...prevItems, newItem]);
+      setItemState({});
+    }
   };
 
   const handleOnChange = (e) => {
@@ -257,7 +271,7 @@ const InvoicePopup = ({ handleClose }) => {
                           className="addTaskDueDateBtn"
                           onClick={() => setSelectDueDate(!selectDueDate)}
                         >
-                          {selectedDueDate ? formattedDueDate : <TaskIcon />}
+                          <TaskIcon /> {selectedDueDate && formattedDueDate}
                         </div>
                         {selectDueDate && (
                           <div className="datePickerDiv" style={{right:'0',left:'auto'}} ref={selectDueDateRef}>
