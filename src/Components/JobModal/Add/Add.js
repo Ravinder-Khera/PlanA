@@ -7,6 +7,7 @@ import { AddIcon, User } from "../../../assets/svg";
 import { createJobs, getUserByRole } from "../../../services/auth";
 import { Bars } from "react-loader-spinner";
 import { toast } from "react-toastify";
+import ChatAndAttachment from "../Edit/ChatAndAttachment";
 
 const Add = ({ handleClose, fetchJobs }) => {
   const [state, setState] = useState({
@@ -46,6 +47,25 @@ const Add = ({ handleClose, fetchJobs }) => {
     Array(1).fill(false)
   );
   const [taskSelectedAssignee, setTaskSelectedAssignee] = useState([]);
+
+  const popUpRef = useRef(null);
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (
+        popUpRef.current &&
+        !popUpRef.current.contains(e.target)
+      ) {
+        handleClose()
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
 
   const handleCardChange = (index) => {
     setActiveCardId(index + 1);
@@ -156,8 +176,6 @@ const Add = ({ handleClose, fetchJobs }) => {
       );
     }
   };
-
- 
 
   const handleTaskAssigneeClick = (user) => {
     console.log("selected task assignee", taskSelectedAssignee);
@@ -474,7 +492,7 @@ const Add = ({ handleClose, fetchJobs }) => {
       <div className="loaderDiv3">
         <div className="pop-wrapper">
           <div className="wrapper">
-            <div className="container pop-container">
+            <div className="container pop-container" ref={popUpRef}>
               <div className="popup-content">
                 <div className="popup-section-left">
                   <div
@@ -1282,12 +1300,12 @@ const Add = ({ handleClose, fetchJobs }) => {
                         ))}
                       </ul>
                     </div>
-                    <p className="read-more">
+                    {/* <p className="read-more">
                       Hide Task{" "}
                       <span className="downArrow">
                         <img src="/assets/downArrow.svg" alt="" />
                       </span>
-                    </p>
+                    </p> */}
                   </div>
 
                   <div className="progressInputSection">
@@ -1392,7 +1410,9 @@ const Add = ({ handleClose, fetchJobs }) => {
                     </div>
                   </div>
                 </div>
-                <div className="popup-section-right"></div>
+                <div className="popup-section-right">
+                  <ChatAndAttachment />
+                </div>
               </div>
             </div>
           </div>

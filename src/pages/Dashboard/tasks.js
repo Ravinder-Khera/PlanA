@@ -12,7 +12,6 @@ import {
 import {
   createTask,
   getJobIds,
-  getTasks,
   getUserByRole,
   updateTask,
 } from "../../services/auth";
@@ -34,7 +33,6 @@ function TaskPage() {
   const [selectDate, setSelectDate] = useState(false);
   const [selectDueDate, setSelectDueDate] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null);
-  const [tasks, setTasks] = useState([]);
   const [tasksToDo, setTasksToDo] = useState([]);
   const [tasksCompleted, setTasksCompleted] = useState([]);
   const [jobList, setJobList] = useState([]);
@@ -920,7 +918,6 @@ function TaskPage() {
                             onChange={handleSelectDueDate}
                             value={selectedDueDate}
                             calendarType="ISO 8601"
-                            minDate={new Date()}
                             rangeColors={["#E2E31F"]}
                           />
                         </div>
@@ -934,26 +931,24 @@ function TaskPage() {
                           {usersList
                             .filter((user) => selectedUsers.includes(user.id))
                             .map((user, index) => (
-                              <>
-                                <div
-                                  key={index}
-                                  className={`UserImg addedUserImages ${index}`}
-                                  style={{ minWidth: "40px", zIndex: index }}
-                                >
-                                  {user.profile_pic !== "" ? (
-                                    <img
-                                      alt={user.name}
-                                      src={
-                                        process.env
-                                          .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                        user.profile_pic
-                                      }
-                                    />
-                                  ) : (
-                                    <User />
-                                  )}
-                                </div>
-                              </>
+                              <div
+                                key={index}
+                                className={`UserImg addedUserImages ${index}`}
+                                style={{ minWidth: "40px", zIndex: index }}
+                              >
+                                {user.profile_pic !== "" ? (
+                                  <img
+                                    alt={user.name}
+                                    src={
+                                      process.env
+                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                      user.profile_pic
+                                    }
+                                  />
+                                ) : (
+                                  <User />
+                                )}
+                              </div>
                             ))}
                           <div
                             className="UserImg withAddBtn m-0"
@@ -969,7 +964,6 @@ function TaskPage() {
                         <div
                           className="UserImg withAddBtn"
                           onClick={() => {
-                            console.log("clicked!!122");
                             setAddTaskJobUserDropdown(!addTaskJobUserDropdown);
                           }}
                           style={{ minWidth: "40px" }}
@@ -1366,7 +1360,6 @@ function TaskPage() {
                         {task.users.length > 0 ? (
                             <>
                               {task.users.map((user, index) => (
-                                <>
                                   <div
                                     key={index}
                                     className={` UserImg addedUserImages `}
@@ -1385,7 +1378,6 @@ function TaskPage() {
                                       <User />
                                     )}
                                   </div>
-                                </>
                               ))}
                             </>
                         ):(

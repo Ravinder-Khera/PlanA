@@ -3,11 +3,16 @@ import { AddIcon, DeleteIcon, Print } from "../../assets/svg";
 import { Bars } from "react-loader-spinner";
 import { deleteInvoices } from "../../services/auth";
 import { toast } from "react-toastify";
+import InvoicePopup from "./invoicePopup";
 
 function Invoice() {
   const [isChecked, setIsChecked] = useState({});
   const [data, setData] = useState(null);
+  const [pageUrls, setPageUrls] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [addInvoice, setAddInvoice] = useState(false);
   const invoiceRef = useRef(null);
 
   const authToken = localStorage.getItem("authToken");
@@ -18,8 +23,33 @@ function Invoice() {
       [id]: !prevCheckboxes[id],
     }));
   };
+  
+  const handleNextPage = (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  
+  const handlePrevPage = (e) => {
+    e.preventDefault();
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
-  const fetchData = async () => {
+  const handlePageChange = (url) => {
+    const pageNumber = parseInt(url.match(/page=(\d+)/)[1]);
+    setCurrentPage(pageNumber)
+  };
+
+console.log(currentPage);
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage]);
+
+  const fetchData = async (page) => {
+    setLoading(true)
     try {
       const requestOptions = {
         method: "GET",
@@ -30,7 +60,7 @@ function Invoice() {
         },
       };
       const response = await fetch(
-        `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/invoices`,
+        `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/invoices?page=${page}`,
         requestOptions
       );
       if (!response.ok) {
@@ -38,16 +68,14 @@ function Invoice() {
       }
       const jsonData = await response.json();
       setData(jsonData.data);
-      console.log(jsonData.data);
+      setTotalPages(jsonData.last_page)
+      setPageUrls(jsonData.links.slice(1, -1))
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const downloadPdf = async (invoiceId) => {
     try {
@@ -173,6 +201,9 @@ function Invoice() {
           />
         </div>
       )}
+      {addInvoice && 
+        <InvoicePopup handleClose={() => { setAddInvoice(false);}}/>
+      }
       <div className="DashboardTopMenu">
         <div className="DashboardHeading d-flex justify-content-between align-items-center gap-3 flex-wrap">
           <div className="d-flex justify-content-start align-items-center gap-3 flex-wrap">
@@ -195,7 +226,8 @@ function Invoice() {
             <div
               className="addIcon"
               onClick={() => {
-                if (invoiceRef.current) invoiceRef.current.click();
+                // if (invoiceRef.current) invoiceRef.current.click();
+                setAddInvoice(true)
               }}
             >
               <AddIcon />
@@ -292,6 +324,33 @@ function Invoice() {
                 ))}
             </tbody>
           </table>
+        </div>
+        <div className="paginationDiv">
+          <div className="paginationSections">
+            <div className="btnDiv">
+              <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+            </div>
+            <div className="pageNoDiv">
+              {pageUrls && currentPage >= 4 &&
+                <button disabled className='pageBtn pageDots' >...</button>
+              }
+              {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(link.url)}
+                  className={`${link.active && 'activePageBtn'} pageBtn`}
+                >
+                    {link.label}
+                </button>
+              ))}
+              {pageUrls && currentPage <= pageUrls.length - 3 &&
+                <button disabled className='pageBtn pageDots' >...</button>
+              }
+            </div>
+            <div className="btnDiv">
+              <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+            </div>
+          </div>
         </div>
       </div>
     </>

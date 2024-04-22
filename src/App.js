@@ -179,7 +179,7 @@ function RightSide() {
   }, []);
 
   return (
-    <div className="RightSide">
+    <div className="RightSide " id="rightSCroll">
       {isLoggedIn ? (
         <>
           {pathname !== "/Jobs" && <NavMenu />}
