@@ -21,6 +21,8 @@ const InvoicePopup = ({ handleClose }) => {
   });
   const [selectedDueDate, setSelectedDueDate] = useState(null);
   const [selectDueDate, setSelectDueDate] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [dropDownStatus, setDropDownStatus] = useState(false);
   const [selectUser, setSelectUser] = useState(false);
   const [loader, setLoading] = useState(false);
 
@@ -28,6 +30,7 @@ const InvoicePopup = ({ handleClose }) => {
   const billingToRef = useRef(null);
   const payToRef = useRef(null);
   const selectDueDateRef = useRef(null);
+  const selectStatusRef = useRef(null);
 
   useEffect(() => {
     let handler = (e) => {
@@ -36,6 +39,12 @@ const InvoicePopup = ({ handleClose }) => {
         !popUpRef.current.contains(e.target)
       ) {
         handleClose()
+      }
+      if (
+        selectStatusRef.current &&
+        !selectStatusRef.current.contains(e.target)
+      ) {
+        setDropDownStatus(false)
       }
     };
 
@@ -235,6 +244,7 @@ const InvoicePopup = ({ handleClose }) => {
           bank_name: state.bank_name,
           account_name: state.account_name,
           bsb: state.bsb,
+          status: selectedStatus,
           account_number: state.account_number,
           items: items,
           contact: {
@@ -338,6 +348,39 @@ const InvoicePopup = ({ handleClose }) => {
                               >
                                 {'Save'}
                               </button>
+                              <div className=" listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                <div className="addTaskJobDiv">
+                                    <button
+                                    className={`stageBtn ${selectedStatus}`}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                      setDropDownStatus(true);
+                                    }}
+                                  >
+                                    {selectedStatus ? selectedStatus : 'Select'}
+                                  </button>
+                                  {dropDownStatus && 
+                                    <div className="addTaskJobDropdown right" ref={selectStatusRef}>
+                                      <div className="addInvoiceCContactDetails">
+                                      <button
+                                        className={`stageBtn paid`}
+                                        style={{ cursor: "pointer" }}
+                                        onClick={()=>setSelectedStatus('paid')}
+                                      >
+                                        Paid
+                                      </button>
+                                      <button
+                                        className={`stageBtn unpaid m-2`}
+                                        style={{ cursor: "pointer" }}
+                                        onClick={()=>setSelectedStatus('unpaid')}
+                                      >
+                                        Unpaid
+                                      </button>
+                                      </div>
+                                    </div>
+                                  }
+                                </div>
+                              </div>
                               <div className=" listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                 <div className="addTaskJobDiv">
                                   <div
