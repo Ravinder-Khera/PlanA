@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { TaskIcon, User } from "../../assets/svg";
+import { DeleteIcon, TaskIcon, User } from "../../assets/svg";
 import { Bars } from "react-loader-spinner";
 import { Calendar } from "react-date-range";
 import { createInvoice } from "../../services/auth";
@@ -31,6 +31,7 @@ const InvoicePopup = ({ handleClose }) => {
   const payToRef = useRef(null);
   const selectDueDateRef = useRef(null);
   const selectStatusRef = useRef(null);
+  const selectUserRef = useRef(null);
 
   useEffect(() => {
     let handler = (e) => {
@@ -45,6 +46,19 @@ const InvoicePopup = ({ handleClose }) => {
         !selectStatusRef.current.contains(e.target)
       ) {
         setDropDownStatus(false)
+      }
+      if (
+        selectUserRef.current &&
+        !selectUserRef.current.contains(e.target)
+      ) {
+        setSelectUser(false)
+      }
+
+      if (
+        selectDueDateRef.current &&
+        !selectDueDateRef.current.contains(e.target)
+      ) {
+        setSelectDueDate(false)
       }
     };
 
@@ -99,6 +113,23 @@ const InvoicePopup = ({ handleClose }) => {
     });
   };
   
+  const handleDeleteItem = (index) => {
+    setItems((prevItems) => {
+      const updatedItems = [...prevItems];
+      updatedItems.splice(index, 1); // Remove the item at the specified index
+      return updatedItems;
+    });
+  };
+
+  const handleEditItem = (index) => {
+    setItems((prevItems) => {
+      const updatedItems = [...prevItems];
+      updatedItems.splice(index, 1);
+      return updatedItems;
+    });
+    const selectedItem = items[index];
+    setItemState(selectedItem);
+  };
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -395,7 +426,7 @@ const InvoicePopup = ({ handleClose }) => {
                                     </div>
                                   </div>
                                   {selectUser && 
-                                    <div className="addTaskJobDropdown right">
+                                    <div className="addTaskJobDropdown right" ref={selectUserRef}>
                                       <div className="addInvoiceCContactDetails">
                                         <div className="userDetails">
                                           <div className="userProfile">
@@ -593,7 +624,7 @@ const InvoicePopup = ({ handleClose }) => {
                         </li>
                           {items.length > 0 &&
                             items.map((item, index) => (
-                              <li key={index} className="addItemInput itemInput gap-0">
+                              <li key={index} className="addItemInput position-relative itemInput gap-0">
                                 <div className="itemData">
                                   <p>{item['description']}</p>
                                 </div>
@@ -605,6 +636,21 @@ const InvoicePopup = ({ handleClose }) => {
                                 </div>
                                 <div className="itemData">
                                   <p>{item['amount']}</p>
+                                </div>
+                                <div className="editDeleteDiv">
+                                  <div className="boxes">
+                                    <span>
+                                      <img
+                                        className="penImage"
+                                        src="/assets/pan.png"
+                                        alt=""
+                                        onClick={() => handleEditItem(index)}
+                                      />
+                                    </span>
+                                    <span className="delete" onClick={() => handleDeleteItem(index)}>
+                                      <DeleteIcon />
+                                    </span>
+                                  </div>
                                 </div>
                               </li>
                           ))}

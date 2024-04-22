@@ -2588,6 +2588,35 @@ body {
         padding-left: 10px;
         margin-bottom: 8px !important;
         border-radius: 2px;
+        .editDeleteDiv{
+            position: absolute;
+            top: 0;
+            left: 100%;
+            display: none;
+            .boxes{
+                display: flex;
+                justify-content: center;
+                gap: 5px;
+                img{
+                    width: 40px;
+                    height: 40px;
+                    cursor: pointer;
+                }
+                .delete{
+                    cursor: pointer;
+                    svg{
+                        path{
+                            fill: #fff;
+                        }
+                    }
+                }
+            }
+        }
+        &:hover{
+            .editDeleteDiv{
+                display: block;
+            }
+        }
         input{
             padding: 10px 0;
             flex: 1 1 auto;
