@@ -346,8 +346,10 @@ const InvoicePopup = ({ handleClose }) => {
                                       setSelectUser(true);
                                     }}
                                     style={{ minWidth: "40px" }}
-                                  >
-                                    <User />
+                                  > 
+                                    <div className="userName">
+                                       {!user.name ? <User /> : getInitials(user.name)}
+                                    </div>
                                   </div>
                                   {selectUser && 
                                     <div className="addTaskJobDropdown right">
