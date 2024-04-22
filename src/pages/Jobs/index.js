@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AddIcon, BellIcon, FilterIcon, Search, User } from "../../assets/svg";
+import { AddIcon, BellIcon, CrossIcon, FilterIcon, Search, User } from "../../assets/svg";
 import "./Jobs.scss";
 import { DeleteIcon } from "../../assets/svg";
 import { deleteJobs, getJobs, getJobsByFilter } from "../../services/auth";
@@ -31,7 +31,43 @@ const Jobs = () => {
   const [showJobModal, setShowJobModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const filterRef = useRef(null);
+  const [notificationDropDown, setNotificationDropDown] = useState(false);
   const [reloadTabs, setReloadTabs] = useState(false);
+  const notificationRef = useRef(null);
+  const [searchedInput, setSearchedInput] = useState("");
+
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      time: '1 min',
+      icon: 'user',
+      type: 'fullColor',
+      heading: 'Notification Heading',
+      description: 'Notification Description goes here',
+    },
+    {
+      id: 2,
+      time: '1 hour ',
+      icon: 'info',
+      type: 'password',
+      heading: 'Notification Heading',
+      description: 'Notification Description goes here',
+    },
+    {
+      id: 3,
+      time: '2 hours',
+      icon: 'fail',
+      type: 'failed',
+      heading: 'Notification Heading',
+      description: 'Notification Description goes here',
+    },
+  ]);
+
+  const removeNotification = (id) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification.id !== id)
+    );
+  };
 
   const { state } = location;
   useEffect(() => {
@@ -46,6 +82,23 @@ const Jobs = () => {
     fetchJobs();
   }, [location]);
 
+  const handleApply = async () => {
+    
+    let filterString = `title=${searchedInput}`;
+    
+    setLoading(true);
+    try {
+      const response = await getJobsByFilter(filterString);
+      if (!response.error) {
+        setFilteredJobs(response?.res?.data);
+      }
+    } catch (error) {
+      console.log("error in applying filter", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const updateDivWidth = () => {
       if (containerRef.current) {
@@ -59,6 +112,24 @@ const Jobs = () => {
 
     return () => {
       window.removeEventListener("resize", updateDivWidth);
+    };
+  }, []);
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target)
+      ) {
+        setNotificationDropDown(false);
+      }
+
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
     };
   }, []);
 
@@ -250,7 +321,7 @@ const Jobs = () => {
       )}
 
       <div className="jobsBg">
-        <div className="JobsHeading d-flex justify-content-between align-items-center gap-3 flex-wrap">
+        <div className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap" style={{zIndex:'1'}}>
           <div className="d-flex leftGap align-items-center">
             <h2>Jobs</h2>
             <div className="navSearchDiv">
@@ -262,11 +333,15 @@ const Jobs = () => {
                   <input
                     name="search"
                     placeholder="Search"
-                    onChange={(e) => e.preventDefault}
+                    value={searchedInput}
+                    onChange={(e) => setSearchedInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleApply();
+                      }
+                    }}
                   />
-                </div>
-                <div className="searchUserImg">
-                  <User />
                 </div>
               </form>
             </div>
@@ -306,7 +381,49 @@ const Jobs = () => {
                 <AddIcon />
               </div>
               <div className="notifyIcon">
-                <BellIcon />
+                <div className="addNewTaskDiv">
+                  <div className="bellIcon addTaskJobDiv" style={{cursor:'pointer'}}>
+                    <div onClick={()=>setNotificationDropDown(!notificationDropDown)}>
+                      <BellIcon />
+                    </div>
+                    {notificationDropDown && (
+                      <div
+                        className="addTaskJobDropdown notificationDropdown right"
+                        ref={notificationRef}
+                      >
+                        <div className="addTaskJobListScroll">
+                          <div className="addTaskJobListItems">
+                            {notifications.length > 0 ? notifications.map((notification) => (
+                                <div key={notification.id} className={`notificationItems ${notification.type}`}>
+                                  <div className="notificationTime">{notification.time}<br/>Ago</div>
+                                  <div className="notificationContent">
+                                    <div className={`notificationIcon ${notification.icon}`}>{notification.icon === 'user' ? <User /> : '!'}</div>
+                                    <div className="notificationText">
+                                      <h3>{notification.heading}</h3>
+                                      <span>{notification.description}</span>
+                                    </div>
+                                    <div className="notificationCrossIcon" onClick={() => removeNotification(notification.id)}>
+                                      <CrossIcon />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                            : 
+                                <div className={`notificationItems `}>
+                                  <div className="notificationContent w-100">
+                                    <div className="notificationTime"></div>
+                                    <div className="notificationText">
+                                      <h3>No Notification</h3>
+                                    </div>
+                                  </div>
+                                </div>}
+
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -249,7 +249,7 @@ const InvoicePopup = ({ handleClose }) => {
           items: items,
           contact: {
             name: user.name,
-            email: user.name,
+            email: user.email,
           }
         }
       );

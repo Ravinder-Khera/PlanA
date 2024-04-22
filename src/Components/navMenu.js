@@ -21,6 +21,39 @@ function NavMenu() {
 
   const searchPopUpRef = useRef(null);
 
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      time: '1 min',
+      icon: 'user',
+      type: 'fullColor',
+      heading: 'Notification Heading',
+      description: 'Notification Description goes here',
+    },
+    {
+      id: 2,
+      time: '1 hour ',
+      icon: 'info',
+      type: 'password',
+      heading: 'Notification Heading',
+      description: 'Notification Description goes here',
+    },
+    {
+      id: 3,
+      time: '2 hours',
+      icon: 'fail',
+      type: 'failed',
+      heading: 'Notification Heading',
+      description: 'Notification Description goes here',
+    },
+  ]);
+
+  const removeNotification = (id) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification.id !== id)
+    );
+  };
+
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
     if(searchValue !== ''){
@@ -314,48 +347,31 @@ function NavMenu() {
                       >
                         <div className="addTaskJobListScroll">
                           <div className="addTaskJobListItems">
-
-                              <div className="notificationItems fullColor">
-                                <div className="notificationTime">
-                                  1 min<br/>Ago
-                                </div>
-                                <div className="notificationContent">
-                                    <div className="notificationIcon user"> <User /> </div>
+                            {notifications.length > 0 ? notifications.map((notification) => (
+                                <div key={notification.id} className={`notificationItems ${notification.type}`}>
+                                  <div className="notificationTime">{notification.time}<br/>Ago</div>
+                                  <div className="notificationContent">
+                                    <div className={`notificationIcon ${notification.icon}`}>{notification.icon === 'user' ? <User /> : '!'}</div>
                                     <div className="notificationText">
-                                      <h3>Notification Heading</h3>
-                                      <span>Notification Description goes here</span>
+                                      <h3>{notification.heading}</h3>
+                                      <span>{notification.description}</span>
                                     </div>
-                                    <div className="notificationCrossIcon"><CrossIcon /> </div>
+                                    <div className="notificationCrossIcon" onClick={() => removeNotification(notification.id)}>
+                                      <CrossIcon />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                            : 
+                              <div className={`notificationItems `}>
+                                <div className="notificationContent w-100">
+                                  <div className="notificationTime"></div>
+                                  <div className="notificationText">
+                                    <h3>No Notification</h3>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="notificationItems password">
-                                <div className="notificationTime">
-                                  1 hour<br/>Ago
-                                </div>
-                                <div className="notificationContent">
-                                    <div className="notificationIcon info">! </div>
-                                    <div className="notificationText">
-                                      <h3>Notification Heading</h3>
-                                      <span>Notification Description goes here</span>
-                                    </div>
-                                    <div className="notificationCrossIcon"><CrossIcon /> </div>
-                                </div>
-                              </div>
-
-                              <div className="notificationItems failed">
-                                <div className="notificationTime">
-                                  2 hours<br/>Ago
-                                </div>
-                                <div className="notificationContent">
-                                    <div className="notificationIcon fail">! </div>
-                                    <div className="notificationText">
-                                      <h3>Notification Heading</h3>
-                                      <span>Notification Description goes here</span>
-                                    </div>
-                                    <div className="notificationCrossIcon"><CrossIcon /> </div>
-                                </div>
-                              </div>
-
+                            }
                           </div>
                         </div>
                       </div>
