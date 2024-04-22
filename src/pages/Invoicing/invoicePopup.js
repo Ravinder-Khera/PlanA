@@ -164,7 +164,7 @@ const InvoicePopup = ({ handleClose }) => {
       let response = await createInvoice(
         {
           to: state.to,
-          from: state.from+ state.fromAddress,
+          from: state.from+' '+state.fromAddress,
           due_date: formattedDueDate,
           bank_name: state.bank_name,
           account_name: state.account_name,

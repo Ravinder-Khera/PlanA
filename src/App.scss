@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 .root {
     font-family: 'Archivo', sans-serif;
@@ -2673,4 +2674,66 @@ body {
 .requiredSpan{
     color: red !important;
     font-weight: 600 !important;
+}
+.paginationDiv{
+    padding: 15px 0;
+    .paginationSections{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        .btnDiv{
+            button{
+                min-width: 114px;
+                background: transparent;
+                min-height: 40px;
+                padding: 7px 20px;
+                text-align: center;
+                border-radius: 1px;
+                border: 2px solid #E2E31F;
+                color: #FFF;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: normal;
+                letter-spacing: -0.64px;
+                transition: all 0.5s ease;
+                &:hover{
+                    background: #E2E31F;
+                    color: #000;
+                }
+                &:disabled{
+                    opacity: 0.75;
+                    &:hover{
+                        background: transparent;
+                        color: #fff;
+                    }
+                }
+            }
+        }
+        .pageNoDiv{
+            .pageBtn{
+                background: transparent;
+                border: none;
+                padding: 7.5px;
+                border-bottom: 1px solid transparent;
+                color: #E2E31F;
+                text-align: center;
+                font-family: "Roboto", sans-serif;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 18px; 
+                letter-spacing: 0.375px;            
+                transition: all 0.5s ease;
+                &.activePageBtn{
+                    border-bottom: 1px solid #E2E31F;
+                    cursor: auto;
+                }    
+                &.pageDots{
+                    letter-spacing: 2.375px;  
+                }
+            }
+        }
+    }
 }
