@@ -22,6 +22,7 @@ import moment from "moment";
 import { ColorRing } from "react-loader-spinner";
 import Pusher from "pusher-js";
 import eventEmitter from "../../../Event";
+import { getProfile } from "../../../services/auth";
 
 const ChatAndAttachment = ({ JobId }) => {
   const maxLength = 10;
@@ -31,6 +32,30 @@ const ChatAndAttachment = ({ JobId }) => {
   const [body, setBody] = useState("");
   const attachmentRef = useRef(null);
   const [attachments, setAttachments] = useState([]);
+  const [newMsg, setNewMsg] = useState({
+    type: "",
+    data: "",
+  });
+  const [userDetails, setUserDetails] = useState();
+
+  const fetchProfileData = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getProfile(authToken);
+      if (response.res) {
+        console.log(response.res.user);
+        setUserDetails(response.res.user);
+      } else {
+        console.error("profile error:", response.error);
+      }
+    } catch (error) {
+      console.error("There was an error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
 
   useEffect(() => {
     fetchChats();
@@ -119,6 +144,10 @@ const ChatAndAttachment = ({ JobId }) => {
       console.log("error in sending messages", error);
     } finally {
       setLoading(false);
+      setNewMsg({
+        type: "",
+        data: "",
+      });
     }
   };
 
@@ -126,6 +155,10 @@ const ChatAndAttachment = ({ JobId }) => {
     if (!e.target.files) return;
     const selectedFile = e.target?.files[0];
     if (selectedFile && selectedFile.type.startsWith("image/")) {
+      setNewMsg({
+        type: "attachment",
+        data: selectedFile,
+      });
       handleImageUpload(selectedFile);
     }
   };
@@ -135,6 +168,10 @@ const ChatAndAttachment = ({ JobId }) => {
     const droppedFile = e.dataTransfer.files[0];
 
     if (droppedFile && droppedFile.type.startsWith("image/")) {
+      setNewMsg({
+        type: "attachment",
+        data: droppedFile,
+      });
       handleImageUpload(droppedFile);
     }
   };
@@ -164,6 +201,10 @@ const ChatAndAttachment = ({ JobId }) => {
         toast.error("An error occurred while uploading the attachment");
       } finally {
         setLoading(false);
+        setNewMsg({
+          type: "",
+          data: "",
+        });
       }
     };
     reader.readAsDataURL(file);
@@ -428,10 +469,72 @@ const ChatAndAttachment = ({ JobId }) => {
                   )}
                 </>
               ))}
-            {!chats && <p className="loading">Loading Chats...</p>}
-            {chats?.length === 0 && (
-              <p className="no-chats">No Chats yet</p>
+            {loading && newMsg.type === "msg" && (
+              <div className="chats-content-sender my-3">
+                <div className="d-flex justify-content-between gap-3 align-items-center">
+                  <div className="msg-timing">
+                    <p>sending</p>
+                  </div>
+
+                  <div className="reciver-chats">
+                    <div
+                      className="position-absolute"
+                      style={{ top: "-10px", right: "16px" }}
+                    >
+                      <p className="text-name p-0 ">You</p>
+                    </div>
+                    <div
+                      className="position-absolute"
+                      style={{ top: "31px", left: "-14px" }}
+                    >
+                      {userDetails?.profile_pic !== "" ? (
+                        <img
+                          alt={userDetails.name}
+                          src={
+                            process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
+                            userDetails.profile_pic
+                          }
+                          className="profileImg"
+                          onError={(e) => (e.target.src = `${profileChat}`)}
+                        />
+                      ) : (
+                        <img src={profileChat} alt="" className="profileImg" />
+                      )}
+                    </div>
+                    <p className="text-right">{newMsg.data}</p>
+                  </div>
+                </div>
+              </div>
             )}
+            {loading && newMsg.type === "attachment" && (
+              <div className="sender-attachments w-100 my-3">
+                <div className="d-flex gap-2 justify-content-end ">
+                  <img src={attachmentsIcon} className="" alt="" /> 1
+                </div>
+                <div className="sender d-flex flex-wrap justify-content-end gap-3  mt-3 ">
+                  <div>
+                    <div className="attachments-box d-flex  flex-column align-items-center">
+                      <div className="d-flex pt-3 px-3 justify-content-end w-100 cursor">
+                        <img src={cut} alt="" className="cut" />
+                      </div>
+                      <div className="file-apload">
+                        <img src={pngFIle} className="" alt="" />
+                      </div>
+                      <h1>
+                        {newMsg.data?.name?.length > maxLength
+                          ? `${newMsg.data?.name?.slice(0, maxLength)}...`
+                          : newMsg.data?.name} sending
+                      </h1>
+                    </div>
+                    <div className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor">
+                      <img src={download} alt="" className="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {!chats && <p className="loading">Loading Chats...</p>}
+            {chats?.length === 0 && <p className="no-chats">No Chats yet</p>}
           </div>
           <div
             className="tab-pane fade"
@@ -510,7 +613,13 @@ const ChatAndAttachment = ({ JobId }) => {
                     <input
                       type="text"
                       placeholder="Add a comment..."
-                      onChange={(e) => setBody(e.target.value)}
+                      onChange={(e) => {
+                        setBody(e.target.value);
+                        setNewMsg({
+                          type: "msg",
+                          data: e.target.value,
+                        });
+                      }}
                       value={body}
                     />
                   </form>
