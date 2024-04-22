@@ -75,7 +75,7 @@ const ChatAndAttachment = ({ JobId }) => {
       if (message) {
         const tempChats = chats;
         console.log("tempChats before push", tempChats);
-        tempChats.push(message);
+        tempChats?.push(message);
         console.log("tempChats after push", tempChats);
         setChats(tempChats);
       }
@@ -90,7 +90,7 @@ const ChatAndAttachment = ({ JobId }) => {
   eventEmitter.on("newMessage", (data) => {
     const tempChats = data;
     console.log("tempChats before push", tempChats);
-    tempChats.push(message);
+    tempChats?.push(message);
     console.log("tempChats after push", tempChats);
     setChats(tempChats);
   });
@@ -137,6 +137,11 @@ const ChatAndAttachment = ({ JobId }) => {
       setLoading(true);
       const response = await sendMessage(JobId, { body });
       if (!response.error) {
+        setLoading(false);
+        setNewMsg({
+          type: "",
+          data: "",
+        });
         fetchChats();
         setBody("");
       }
@@ -191,6 +196,11 @@ const ChatAndAttachment = ({ JobId }) => {
         let response = await addAttachments(formData, JobId);
         console.log("response 123--->", response);
         if (response.res) {
+          setLoading(false);
+          setNewMsg({
+            type: "",
+            data: "",
+          });
           toast.success(response.res?.message);
           fetchChats();
         } else {
@@ -523,7 +533,8 @@ const ChatAndAttachment = ({ JobId }) => {
                       <h1>
                         {newMsg.data?.name?.length > maxLength
                           ? `${newMsg.data?.name?.slice(0, maxLength)}...`
-                          : newMsg.data?.name} sending
+                          : newMsg.data?.name}{" "}
+                        sending
                       </h1>
                     </div>
                     <div className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor">
