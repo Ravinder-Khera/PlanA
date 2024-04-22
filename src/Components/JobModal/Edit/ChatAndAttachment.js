@@ -114,6 +114,10 @@ const ChatAndAttachment = ({ JobId }) => {
           const dateB = new Date(b.created_at);
           return dateA - dateB;
         });
+        setNewMsg({
+          type: "",
+          data: "",
+        });
         setChats(sortedMessages);
         setAttachments(sortedAttachhment);
       } else {
@@ -137,11 +141,6 @@ const ChatAndAttachment = ({ JobId }) => {
       setLoading(true);
       const response = await sendMessage(JobId, { body });
       if (!response.error) {
-        setLoading(false);
-        setNewMsg({
-          type: "",
-          data: "",
-        });
         fetchChats();
         setBody("");
       }
@@ -196,11 +195,6 @@ const ChatAndAttachment = ({ JobId }) => {
         let response = await addAttachments(formData, JobId);
         console.log("response 123--->", response);
         if (response.res) {
-          setLoading(false);
-          setNewMsg({
-            type: "",
-            data: "",
-          });
           toast.success(response.res?.message);
           fetchChats();
         } else {
