@@ -9,7 +9,10 @@ const InvoicePopup = ({ handleClose }) => {
   const [state, setState] = useState([]);
   
   const [items, setItems] = useState([]);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({
+    name: '',
+    email: ''
+  });
   const [itemState, setItemState] = useState({
     description: '',
     rate: null,
@@ -98,22 +101,29 @@ const InvoicePopup = ({ handleClose }) => {
 
   const handleUser = (e) => {
     const { name, value } = e.target;
-    if (name === 'name') {
-      if (/^[A-Za-z\s]+$/.test(value) || value === '') {
-        setUser((prevUser) => ({
-          ...prevUser,
-          [name]: value,
-        }));
-      } else {
-        console.log('Invalid name input:', value);
-      }
-    }
+    setUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }))
+    
   };
 
   const validateUser = () => {
     if(validateEmail(user.email)){
-      setSelectUser(false)
-    } else{
+      if (validateName(user.name)){
+        setSelectUser(false)
+      }else{
+        toast.error(`Name can not contain number or special characters`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+    }}else{
       toast.error(`Enter A valid email`, {
         position: "top-center",
         autoClose: 5000,
@@ -130,6 +140,11 @@ const InvoicePopup = ({ handleClose }) => {
   const validateEmail = (email) => {
     // Email should not be empty and should match a valid email format
     return email.trim() !== '' && /^\S+@\S+\.\S+$/.test(email);
+  };
+
+  const validateName = (name) => {
+    // Name should not be empty and should contain only letters and spaces
+    return /^[a-zA-Z\s]+$/.test(name.trim());
   };
 
   const handleSelectDueDate = (date) => {
