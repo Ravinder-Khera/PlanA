@@ -43,7 +43,6 @@ function Invoice() {
     setCurrentPage(pageNumber)
   };
 
-console.log(currentPage);
   useEffect(() => {
     fetchData(currentPage);
   }, [currentPage]);

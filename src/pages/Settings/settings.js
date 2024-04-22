@@ -45,7 +45,7 @@ function ProfileDetails({ userFirstName, userLastName, fetchProfileData }) {
 
       if (response.res) {
         console.log("update successful", response);
-        toast.success("profile update successful", {
+        toast.success("Profile updated successfully", {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: true,

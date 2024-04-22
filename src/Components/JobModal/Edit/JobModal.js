@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./style.scss";
 import Slider from "react-slick";
-import { User } from "../../../assets/svg";
+import { RedoIcon, User } from "../../../assets/svg";
 import { Calendar } from "react-date-range";
 import { StageList, StatusList } from "../../../helper";
 import {
@@ -59,6 +59,9 @@ const JobModal = ({
   const [showTask, setShowTask] = useState(false);
   const selectDueDateRef = useRef(null);
   const popUpRef = useRef(null);
+  const cardRef = useRef(null);
+  const sliderRef = useRef(null);
+  const activeCardRef = useRef(null);
   const settings = {
     className: "center",
     centerMode: true,
@@ -67,6 +70,13 @@ const JobModal = ({
     slidesToShow: 3,
     speed: 500,
     arrow: true,
+  };
+
+  const handleResetClick = () => {
+    // Get the index of the active card
+    const activeIndex = Array.from(activeCardRef.current.parentElement.parentElement.children).indexOf(activeCardRef.current.parentElement);
+    // Go to the slide corresponding to the active card
+    sliderRef.current.slickGoTo(activeIndex);
   };
 
   useEffect(() => {
@@ -679,8 +689,8 @@ const JobModal = ({
                     </div>
 
                     <div className="slider-container">
-                      <Slider {...settings}>
-                        {data?.stages?.map((stage, index) => (
+                      <Slider {...settings} ref={sliderRef}>
+                        {data?.stages?.map((stageMap, index) => (
                           <div>
                             <div className="slider-box">
                               {/* <label
@@ -716,19 +726,19 @@ const JobModal = ({
                                 )}
                               </label> */}
                               <div
-                                className={`card-slider card_${stage.title}`}
+                                className={`card-slider card_${stageMap.title} `} ref={stageMap.title === stage ? activeCardRef : cardRef}
                               >
                                 <div
                                   className={`card-image listContent d-flex align-items-center gap-2 ${
-                                    stage?.users?.length <= 1
+                                    stageMap?.users?.length <= 1
                                       ? ""
                                       : "justify-content-center"
                                   } navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv`}
                                 >
                                   <div className=" d-flex align-items-center justify-content-center">
-                                    {stage?.users?.length > 0 && (
+                                    {stageMap?.users?.length > 0 && (
                                       <>
-                                        {stage?.users
+                                        {stageMap?.users
                                           ?.slice(0, 3)
                                           ?.map((user, index) => (
                                             <div
@@ -753,7 +763,7 @@ const JobModal = ({
                                               )}
                                             </div>
                                           ))}
-                                        {stage?.users?.length > 3 && (
+                                        {stageMap?.users?.length > 3 && (
                                           <div
                                             key={4}
                                             className={`UserImg-count addedUserImages`}
@@ -763,13 +773,13 @@ const JobModal = ({
                                             }}
                                           >
                                             <div className="count-card">
-                                              {stage?.users?.length - 3}+
+                                              {stageMap?.users?.length - 3}+
                                             </div>
                                           </div>
                                         )}
                                       </>
                                     )}
-                                    {stage?.users?.length === 0 && (
+                                    {stageMap?.users?.length === 0 && (
                                       <div
                                         className="UserImg"
                                         style={{ minWidth: "40px" }}
@@ -781,13 +791,13 @@ const JobModal = ({
                                 </div>
                                 <h1 className="card-head mt-2">Applicant</h1>
                                 <p className="card-para mt-2">
-                                  {stage.tasks[0]?.title}
+                                  {stageMap.tasks[0]?.title}
                                 </p>
                                 <p className="card-days-text mt-2">
-                                  {stage.daysLeftForNearestTask} Days Left
+                                  {stageMap.daysLeftForNearestTask} Days Left
                                 </p>
                                 <button
-                                  className={`card-btn mt-2 btnn_${stage.title}`}
+                                  className={`card-btn mt-2 btnn_${stageMap.title}`}
                                 >
                                   <p className="btn-text">Jane Doe</p>
                                   <p
@@ -802,6 +812,12 @@ const JobModal = ({
                           </div>
                         ))}
                       </Slider>
+                      <div className="resetDiv">
+                        <div className="resetBtn" onClick={handleResetClick}>
+                          <span>Reset</span>
+                          <RedoIcon />
+                        </div>
+                      </div>
                     </div>
                   </div>
 

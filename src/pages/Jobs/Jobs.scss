@@ -16,7 +16,8 @@
 
 .JobsHeading {
     padding: 17px 26px 17px 32px;
-
+    position: relative;
+    z-index: 1;
     h2 {
         color: #fff;
         font-family: 'Archivo', sans-serif;

@@ -36,6 +36,7 @@ const ChatAndAttachment = ({ JobId }) => {
     type: "",
     data: "",
   });
+  const chatScroll = useRef()
   const [userDetails, setUserDetails] = useState();
 
   const fetchProfileData = async () => {
@@ -56,6 +57,12 @@ const ChatAndAttachment = ({ JobId }) => {
   useEffect(() => {
     fetchProfileData();
   }, []);
+
+  useEffect(() => {
+    if (chatScroll.current) {
+      chatScroll.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chats]);
 
   useEffect(() => {
     fetchChats();
@@ -84,7 +91,7 @@ const ChatAndAttachment = ({ JobId }) => {
     return () => {
       pusher.unsubscribe(`job.${id}`);
     };
-  }, []);
+  }, [chats]);
 
   eventEmitter.removeAllListeners("newMessage");
   eventEmitter.on("newMessage", (data) => {
@@ -98,6 +105,7 @@ const ChatAndAttachment = ({ JobId }) => {
   const fetchChats = async () => {
     try {
       setLoading(true);
+      console.log("chats", chats);
       const response1 = await getMessages(JobId);
       const response2 = await getAttachments(JobId);
       // Combine both arrays
@@ -144,6 +152,9 @@ const ChatAndAttachment = ({ JobId }) => {
       console.log("error in sending messages", error);
     } finally {
       setLoading(false);
+      if (chatScroll.current) {
+        chatScroll.current.scrollIntoView({ behavior: "smooth" });
+      }
       setNewMsg({
         type: "",
         data: "",
@@ -283,7 +294,7 @@ const ChatAndAttachment = ({ JobId }) => {
                   {msg.body && (
                     <>
                       {msg.user.name !== localStorage.getItem("user") && (
-                        <div className="chats-content-reciever my-3 ">
+                        <div className="chats-content-reciever ">
                           <div className="d-flex justify-content-between gap-3 align-items-center">
                             <div className="reciver-chats">
                               <div
@@ -331,7 +342,7 @@ const ChatAndAttachment = ({ JobId }) => {
                       )}
 
                       {msg.user.name === localStorage.getItem("user") && (
-                        <div className="chats-content-sender my-3">
+                        <div className="chats-content-sender ">
                           <div className="d-flex justify-content-between gap-3 align-items-center">
                             <div className="msg-timing">
                               <p>sent</p>
@@ -470,7 +481,7 @@ const ChatAndAttachment = ({ JobId }) => {
                 </>
               ))}
             {loading && newMsg.type === "msg" && (
-              <div className="chats-content-sender my-3">
+              <div className="chats-content-sender my-3" ref={chatScroll}>
                 <div className="d-flex justify-content-between gap-3 align-items-center">
                   <div className="msg-timing">
                     <p>sending</p>
@@ -523,7 +534,8 @@ const ChatAndAttachment = ({ JobId }) => {
                       <h1>
                         {newMsg.data?.name?.length > maxLength
                           ? `${newMsg.data?.name?.slice(0, maxLength)}...`
-                          : newMsg.data?.name} sending
+                          : newMsg.data?.name}{" "}
+                        sending
                       </h1>
                     </div>
                     <div className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor">
@@ -631,6 +643,7 @@ const ChatAndAttachment = ({ JobId }) => {
                       onClick={() => {
                         if (attachmentRef.current) {
                           attachmentRef.current.click();
+                          
                         }
                       }}
                     />

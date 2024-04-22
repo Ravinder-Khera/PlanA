@@ -21,6 +21,9 @@ const Jobs = () => {
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [status, setStatus] = useState("in-progress");
   const [filteredJobs, setFilteredJobs] = useState("");
+  const [pageUrls, setPageUrls] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [getJob, setGetJob] = useState({
     data: {},
     stage: "",
@@ -99,6 +102,25 @@ const Jobs = () => {
     }
   };
 
+  const handleNextPage = (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  
+  const handlePrevPage = (e) => {
+    e.preventDefault();
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handlePageChange = (url) => {
+    const pageNumber = parseInt(url.match(/page=(\d+)/)[1]);
+    setCurrentPage(pageNumber)
+  };
+
   useEffect(() => {
     const updateDivWidth = () => {
       if (containerRef.current) {
@@ -162,10 +184,14 @@ const Jobs = () => {
     });
   }
 
+  useEffect(() => {
+    fetchJobs(currentPage);
+  }, [currentPage]);
+
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const res = await getJobs();
+      const res = await getJobs(currentPage);
       const data = res?.res?.data;
       setJobs(data);
       setFilteredJobs(data);
@@ -181,6 +207,8 @@ const Jobs = () => {
         extractUsersFromStages(data);
         // Print the users array
         // setUsersList(users);
+        setTotalPages(res?.res.last_page)
+        setPageUrls(res?.res.links.slice(1, -1))
         setReloadTabs(!reloadTabs);
       }
     } catch (error) {
@@ -698,6 +726,35 @@ const Jobs = () => {
             </div>
           </div>
         </div>
+
+        <div className="JobsHeading paginationDiv">
+          <div className="paginationSections">
+            <div className="btnDiv">
+              <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+            </div>
+            <div className="pageNoDiv">
+              {pageUrls && currentPage >= 4 &&
+                <button disabled className='pageBtn pageDots' >...</button>
+              }
+              {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(link.url)}
+                  className={`${link.active && 'activePageBtn'} pageBtn`}
+                >
+                    {link.label}
+                </button>
+              ))}
+              {pageUrls && currentPage <= pageUrls.length - 3 &&
+                <button disabled className='pageBtn pageDots' >...</button>
+              }
+            </div>
+            <div className="btnDiv">
+              <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </>
   );

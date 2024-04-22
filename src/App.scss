@@ -364,6 +364,7 @@ body {
             height: 100%;
             border-radius: 5px;
             border: 1px solid #000;
+            box-sizing: content-box;
         }
 
         &.withAddBtn {
@@ -2770,7 +2771,7 @@ body {
                 font-weight: 400;
                 line-height: 18px; 
                 letter-spacing: 0.375px;            
-                transition: all 0.5s ease;
+                // transition: all 0.5s ease;
                 &.activePageBtn{
                     border-bottom: 1px solid #E2E31F;
                     cursor: auto;

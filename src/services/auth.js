@@ -365,7 +365,7 @@ export const getDashboardSummary = async (data) => {
     }
 };
 
-export const getJobs = async () => {
+export const getJobs = async (page) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
         method: "GET",
@@ -374,11 +374,9 @@ export const getJobs = async () => {
           "Accept": "application/json",
           "Authorization": `Bearer ${authToken}`,
         }
-        
-
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs`, requestOptions);;
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs?page=${page}`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response,data);
