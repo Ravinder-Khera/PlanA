@@ -282,34 +282,32 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                             <div className="addTaskJobListItems">
                               <label className="addedAssignees">Assignees</label>
                               {usersList.map((user) => (
-                                <>
+                                <div
+                                  key={user.id}
+                                  className={`addAssigneeDiv `}
+                                  onClick={() => handleAssigneeClick(user)}
+                                >
                                   <div
-                                    key={user.id}
-                                    className={`addAssigneeDiv `}
-                                    onClick={() => handleAssigneeClick(user)}
+                                    className={` UserImg addedUserImages `}
+                                    style={{ minWidth: "40px" }}
                                   >
-                                    <div
-                                      className={` UserImg addedUserImages `}
-                                      style={{ minWidth: "40px" }}
-                                    >
-                                      {user.profile_pic !== "" ? (
-                                        <img
-                                          alt={user.name}
-                                          src={
-                                            process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                            user.profile_pic
-                                          }
-                                        />
-                                      ) : (
-                                        <User />
-                                      )}
-                                    </div>
-                                    <div>
-                                      <h4>{user.name}</h4>
-                                      <p>{user.email}</p>
-                                    </div>
+                                    {user.profile_pic !== "" ? (
+                                      <img
+                                        alt={user.name}
+                                        src={
+                                          process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                          user.profile_pic
+                                        }
+                                      />
+                                    ) : (
+                                      <User />
+                                    )}
                                   </div>
-                                </>
+                                  <div>
+                                    <h4>{user.name}</h4>
+                                    <p>{user.email}</p>
+                                  </div>
+                                </div>
                               ))}
                             </div>
                           </div>
@@ -371,8 +369,9 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
 
         {!showSelectFIlter && selectedFilter === "Status" && (
           <div className="stage-buttonContainer">
-            {Object.keys(StatusList).map((key) => (
+            {Object.keys(StatusList).map((key,i) => (
               <button
+              key={i}
                 className={`filter-statusBtn ${key} h-100`}
                 onClick={() => setSearchedInput(StatusList[key])}
               >

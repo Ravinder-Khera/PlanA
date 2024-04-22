@@ -2602,7 +2602,14 @@ body {
             &::-moz-placeholder {
                 color: #fff;
                 opacity: 0.75;
-            }        
+            }       
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+            }
+            -moz-appearance: textfield;
+            
         }
         button{
             background: #E2E31F;
@@ -2732,6 +2739,117 @@ body {
                 }    
                 &.pageDots{
                     letter-spacing: 2.375px;  
+                }
+            }
+        }
+    }
+}
+
+.addInvoiceCContactDetails{
+    border-radius: 8px;
+    background: #353535;
+    min-width: 300px;
+    padding: 27px 34px;
+    box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.30);
+    .userDetails{
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgb(226, 227, 31 , 0.15);
+        display: flex;
+        gap: 16px;
+        justify-content: start;
+        .userProfile{
+            border-radius: 8px;
+            background: #E2E31F;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            color: #000;
+            text-align: center;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.64px;            
+        }
+        .userName{
+            text-align: start;
+            h4{
+                margin: 0;
+                color: #E2E31F;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: normal;
+                letter-spacing: -0.64px;                
+            }
+            span{
+                color: #FFF;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 300;
+                line-height: normal;
+                letter-spacing: -0.48px;                
+            }
+        }
+    }
+    .userInput{
+        padding-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        .userInput{
+            padding: 11px 14px;
+            background: #252525;
+            border: none;
+            outline: none;
+            color: #E2E31F;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+            letter-spacing: -0.64px;
+
+            &::placeholder {
+                color: #4A4A4A;
+            }
+
+            &::-moz-placeholder {
+                color: #4A4A4A;
+                opacity: 1;
+            }
+        }
+    }
+    .userSave{
+        padding-top: 24px;
+        display: flex;
+        justify-content: flex-end;
+        button{
+            min-width: 114px;
+            background: transparent;
+            min-height: 40px;
+            padding: 7px 20px;
+            text-align: center;
+            border-radius: 1px;
+            border: 2px solid #E2E31F;
+            color: #FFF;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+            letter-spacing: -0.64px;
+            transition: all 0.5s ease;
+            &:hover{
+                background: #E2E31F;
+                color: #000;
+            }
+            &:disabled{
+                opacity: 0.75;
+                &:hover{
+                    background: transparent;
+                    color: #fff;
                 }
             }
         }

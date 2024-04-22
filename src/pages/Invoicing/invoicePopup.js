@@ -9,6 +9,7 @@ const InvoicePopup = ({ handleClose }) => {
   const [state, setState] = useState([]);
   
   const [items, setItems] = useState([]);
+  const [user, setUser] = useState([]);
   const [itemState, setItemState] = useState({
     description: '',
     rate: null,
@@ -17,6 +18,7 @@ const InvoicePopup = ({ handleClose }) => {
   });
   const [selectedDueDate, setSelectedDueDate] = useState(null);
   const [selectDueDate, setSelectDueDate] = useState(false);
+  const [selectUser, setSelectUser] = useState(false);
   const [loader, setLoading] = useState(false);
 
   const popUpRef = useRef(null);
@@ -94,6 +96,42 @@ const InvoicePopup = ({ handleClose }) => {
     }));
   };
 
+  const handleUser = (e) => {
+    const { name, value } = e.target;
+    if (name === 'name') {
+      if (/^[A-Za-z\s]+$/.test(value) || value === '') {
+        setUser((prevUser) => ({
+          ...prevUser,
+          [name]: value,
+        }));
+      } else {
+        console.log('Invalid name input:', value);
+      }
+    }
+  };
+
+  const validateUser = () => {
+    if(validateEmail(user.email)){
+      setSelectUser(false)
+    } else{
+      toast.error(`Enter A valid email`, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+
+  const validateEmail = (email) => {
+    // Email should not be empty and should match a valid email format
+    return email.trim() !== '' && /^\S+@\S+\.\S+$/.test(email);
+  };
+
   const handleSelectDueDate = (date) => {
     setSelectDueDate(false);
     setSelectedDueDate(date);
@@ -158,6 +196,19 @@ const InvoicePopup = ({ handleClose }) => {
         theme: "colored",
       });
       return;
+    } else if (!user.name || !user.email){
+      toast.error(`Add User details`, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      setSelectUser(true);
+      return;
     }
     try {
       setLoading(true);
@@ -172,8 +223,8 @@ const InvoicePopup = ({ handleClose }) => {
           account_number: state.account_number,
           items: items,
           contact: {
-            name: "John",
-            email: "johndoe@test.com",
+            name: user.name,
+            email: user.name,
           }
         }
       );
@@ -210,6 +261,12 @@ const InvoicePopup = ({ handleClose }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getInitials = (str) => {
+    const words = str.split(' ');
+    const initials = words.map((word) => word.charAt(0)).join('').slice(0, 2);
+    return initials;
   };
 
   return (
@@ -267,14 +324,54 @@ const InvoicePopup = ({ handleClose }) => {
                                 {'Save'}
                               </button>
                               <div className=" listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                                <div
-                                  className="UserImg withAddBtn"
-                                  onClick={() => {
-                                    console.log("clicked!!122");
-                                  }}
-                                  style={{ minWidth: "40px" }}
-                                >
-                                  <User />
+                                <div className="addTaskJobDiv">
+                                  <div
+                                    className="UserImg withAddBtn "
+                                    onClick={() => {
+                                      setSelectUser(true);
+                                    }}
+                                    style={{ minWidth: "40px" }}
+                                  >
+                                    <User />
+                                  </div>
+                                  {selectUser && 
+                                    <div className="addTaskJobDropdown right">
+                                      <div className="addInvoiceCContactDetails">
+                                        <div className="userDetails">
+                                          <div className="userProfile">
+                                          {!user.name ? 'UN' : getInitials(user.name)}
+                                          </div>
+                                          <div className="userName">
+                                            <h4>{!user.name ? 'User Name' : user.name}</h4>
+                                            <span> {!user.email ? '[Empty Email]' : user.email}</span>
+                                          </div>
+                                        </div>
+                                        <div className="userInput">
+                                          <input
+                                            onChange={handleUser}
+                                            className="userInput"
+                                            type="text"
+                                            name="name"
+                                            value={user.name}
+                                            id="contactName"
+                                            placeholder="Name"
+                                          />
+                                          <input
+                                            onChange={handleUser}
+                                            className="userInput"
+                                            type="text"
+                                            name="email"
+                                            value={user.email}
+                                            id="contactEmail"
+                                            placeholder="Email"
+                                          />
+                                        </div>
+                                        <div className="userSave">
+                                          <button onClick={validateUser}>Save</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  }
                                 </div>
                               </div>
                             </div>
