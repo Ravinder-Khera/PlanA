@@ -75,7 +75,7 @@ const ChatAndAttachment = ({ JobId }) => {
       if (message) {
         const tempChats = chats;
         console.log("tempChats before push", tempChats);
-        tempChats.push(message);
+        tempChats?.push(message);
         console.log("tempChats after push", tempChats);
         setChats(tempChats);
       }
@@ -90,7 +90,7 @@ const ChatAndAttachment = ({ JobId }) => {
   eventEmitter.on("newMessage", (data) => {
     const tempChats = data;
     console.log("tempChats before push", tempChats);
-    tempChats.push(message);
+    tempChats?.push(message);
     console.log("tempChats after push", tempChats);
     setChats(tempChats);
   });
@@ -623,46 +623,31 @@ const ChatAndAttachment = ({ JobId }) => {
                       value={body}
                     />
                   </form>
-                  {!loading ? (
-                    <div className="d-flex gap-3 ">
-                      <img
-                        src={file}
-                        className="cursor"
-                        alt=""
-                        onClick={() => {
-                          if (attachmentRef.current) {
-                            attachmentRef.current.click();
-                          }
-                        }}
-                      />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        ref={attachmentRef}
-                        className="d-none"
-                        onChange={handleFileUpload}
-                      />
-                      <img
-                        src={message}
-                        className="cursor"
-                        alt=""
-                        onClick={handleSendMessage}
-                      />
-                    </div>
-                  ) : (
-                    <ColorRing
-                      visible={true}
-                      height="30"
-                      width="30"
-                      colors={[
-                        "#E2E31F",
-                        "#E2E31F",
-                        "#E2E31F",
-                        "#E2E31F",
-                        "#E2E31F",
-                      ]}
+                  <div className="d-flex gap-3 ">
+                    <img
+                      src={file}
+                      className="cursor"
+                      alt=""
+                      onClick={() => {
+                        if (attachmentRef.current) {
+                          attachmentRef.current.click();
+                        }
+                      }}
                     />
-                  )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={attachmentRef}
+                      className="d-none"
+                      onChange={handleFileUpload}
+                    />
+                    <img
+                      src={message}
+                      className="cursor"
+                      alt=""
+                      onClick={handleSendMessage}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
