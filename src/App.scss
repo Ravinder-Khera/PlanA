@@ -2546,6 +2546,10 @@ body {
         padding: 10px 15px;
         gap: 15px;
         margin-right: 10px;
+        &.empty{
+            box-shadow: none;
+            justify-content: center;
+        }
         .notificationIcon{
             width: 40px;
             height: 40px;

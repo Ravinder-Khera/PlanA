@@ -349,7 +349,7 @@ const Jobs = () => {
       )}
 
       <div className="jobsBg">
-        <div className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap" style={{zIndex:'1'}}>
+        <div className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap" style={{zIndex:'2'}}>
           <div className="d-flex leftGap align-items-center">
             <h2>Jobs</h2>
             <div className="navSearchDiv">
@@ -438,7 +438,7 @@ const Jobs = () => {
                               ))
                             : 
                                 <div className={`notificationItems `}>
-                                  <div className="notificationContent w-100">
+                                  <div className="notificationContent empty w-100">
                                     <div className="notificationTime"></div>
                                     <div className="notificationText">
                                       <h3>No Notification</h3>

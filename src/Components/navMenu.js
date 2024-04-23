@@ -364,7 +364,7 @@ function NavMenu() {
                               ))
                             : 
                               <div className={`notificationItems `}>
-                                <div className="notificationContent w-100">
+                                <div className="notificationContent empty w-100">
                                   <div className="notificationTime"></div>
                                   <div className="notificationText">
                                     <h3>No Notification</h3>
