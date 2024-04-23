@@ -287,9 +287,6 @@ function Dashboard() {
           </div>
         </div>
         <div className={`dashboard_task`}>
-          <div className='taskCount'>
-            {taskCount} Tasks
-          </div>
           <div className='taskDetails'>
             {chats && chats.map((chat, index) => {
               const trimmedTitle = chat.body.length > 100 ? chat.body.substring(0, 100) + '...' : chat.body;
