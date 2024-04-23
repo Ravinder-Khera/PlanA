@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import "./style.scss";
 import Slider from "react-slick";
-import { RedoIcon, User } from "../../../assets/svg";
+import { RedoIcon, User } from "../../assets/svg";
 import { Calendar } from "react-date-range";
-import { StageList, StatusList } from "../../../helper";
+import { StageList, StatusList } from "../../helper";
 import {
   createTask,
   getUserByRole,
   updateJobs,
   updateTask,
-} from "../../../services/auth";
+} from "../../services/auth";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
-import ChatAndAttachment from "./ChatAndAttachment";
+import ChatAndAttachment from "../JobModal/Edit/ChatAndAttachment";
 
-const JobModal = ({
+const DashboardTask = ({
   data,
   handleClose,
   stage,
@@ -28,7 +28,6 @@ const JobModal = ({
   const [dueDate, setDueDate] = useState(null);
   const [latestUpdate, setLatestUpdate] = useState("");
   const [selectedTab, setSelectedTab] = useState("to-do");
-  const [selectedStage, setSelectedStage] = useState();
   const [selectedTasks, setSelectedTasks] = useState();
   const [progress, setProgress] = useState(0);
   const [selectDueDate, setSelectDueDate] = useState(false);
@@ -1605,4 +1604,4 @@ const JobModal = ({
   );
 };
 
-export default JobModal;
+export default DashboardTask;

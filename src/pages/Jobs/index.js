@@ -309,6 +309,19 @@ const Jobs = () => {
     }
   };
 
+  useEffect(() => {
+    const bodyScroll = document.getElementById('rightSCroll')
+    if (showJobModal) {
+      bodyScroll.style.overflow = "hidden";
+    } else {
+      bodyScroll.style.overflow = "auto"; 
+    }
+
+    return () => {
+      bodyScroll.style.overflow = "auto";
+    };
+  }, [showJobModal]);
+
   return (
     <>
       {loading && (

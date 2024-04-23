@@ -43,39 +43,9 @@
                 margin: 0 auto;
                 padding: 0;
                 position: absolute;
-                top: 10%;
+                top: 74px;
                 left: 50%;
                 transform: translateX(-50%);
-                height: 800px;
-                overflow-y: auto;
-                overflow-x: hidden;
-                &::-webkit-scrollbar {
-                    width: 0px;
-                }
-
-                &:-moz-scrollbar {
-                    width: 0px;
-                }
-
-                &::-webkit-scrollbar-track {
-                    border-radius: 2px;
-                    background: transparent;
-                }
-
-                &:-moz-scrollbar-track {
-                    background: transparent;
-                    border-radius: 2px;
-                }
-
-                &::-webkit-scrollbar-thumb {
-                    background: transparent;
-                    border-radius: 4px;
-                }
-
-                &:-moz-scrollbar-thumb {
-                    background: transparent;
-                    border-radius: 4px;
-                }
                 .popup-content {
                     display: flex;
 
@@ -558,6 +528,10 @@
                                     border: 1px solid #FFF;
                                     background: rgba(255, 255, 255, 0.25);
                                 }
+                                &.btn_default {
+                                    border: 1px solid #FFF;
+                                    background: rgba(255, 255, 255, 0.25);
+                                }
                             }
 
                             .groupImage {
@@ -828,16 +802,34 @@
 
                                     li {
                                         border-radius: 2px;
-                                        transition: all 1.5s ease;
+                                        transition: all 2.5s ease;
 
                                         &.addCompleted {
-                                            transform: translateX(150%) ;
-                                            opacity: 0.5;
+                                            animation: slideOut 1.5s linear forwards;
+                                            @keyframes slideOut {
+                                                0% {
+                                                  transform: translateX(0%);
+                                                  opacity: 1;
+                                                }
+                                                100% {
+                                                  transform: translateX(150%);
+                                                  opacity: 0.5;
+                                                }
+                                            }
                                         }
 
                                         &.addTodo {
-                                            transform: translateX(-150%) ;
-                                            opacity: 0.5;
+                                            animation: slideIn 1.5s linear forwards;
+                                            @keyframes slideIn {
+                                                0% {
+                                                  transform: translateX(0%);
+                                                  opacity: 1;
+                                                }
+                                                100% {
+                                                  transform: translateX(-150%);
+                                                  opacity: 0.5;
+                                                }
+                                            }
                                         }
 
                                         .svg-box {
@@ -891,7 +883,7 @@
 
                                                 padding: 0;
                                                 margin: 0;
-
+                                                text-align: start;
                                                 &.text_Application {
                                                     color: #3B9239;
 
@@ -1416,6 +1408,10 @@
                                     border: 1px solid rgb(92 89 89 / 15%);
 
                                 }
+                                &.undefined {
+                                    border: 1px solid #FFF;
+                                    background: rgba(255, 255, 255, 0.25);
+                                }
 
                             }
 
@@ -1611,7 +1607,7 @@
                         width: 100%;
                         background: #252525;
                         // height: 200px;
-
+                        padding-top: 26px;
 
                     }
 
@@ -1993,9 +1989,9 @@
         &::before {
             content: "";
             position: absolute;
-            // background: linear-gradient(0deg, #353535 -5%, rgba(53, 53, 53, 0) 95%);
+            background: linear-gradient(0deg, #353535 25%, rgba(53, 53, 53, 0) 95%);
 
-            background: #272323;
+            // background: #272323;
             opacity: 0.7;
             height: 43px;
             width: 100%;

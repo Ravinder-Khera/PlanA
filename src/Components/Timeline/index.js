@@ -5,7 +5,7 @@ import { getJobs } from "../../services/auth";
 import { User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 
-function Timeline({ timeFrame, loadNo }) {
+function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
@@ -402,7 +402,7 @@ function Timeline({ timeFrame, loadNo }) {
                                 <div
                                   className="timeLineJobItem"
                                   onClick={() => {
-                                    navigate("/jobs", { state: job });
+                                    setSelectedJob(job)
                                   }}
                                 >
                                   <div className={`jobProgressDiv ${timeFrame === "monthly" && activeColumnsCount <= 2 ? 'hidden' : ''}`}>
