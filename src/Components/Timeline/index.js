@@ -401,10 +401,13 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                               <>
                                 <div
                                   className="timeLineJobItem"
-                                  onClick={() => {
-                                    setSelectedJob(job)
-                                  }}
-                                >
+                                  onClick={() => { 
+                                    if(timeFrame === "weekly"){
+                                      setSelectedJob(job)
+                                    }else{
+                                      navigate("/jobs", { state: job })
+                                    }
+                                    }}>
                                   <div className={`jobProgressDiv ${timeFrame === "monthly" && activeColumnsCount <= 2 ? 'hidden' : ''}`}>
                                     <span className="text">
                                       Progress:{" "}
