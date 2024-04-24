@@ -2905,6 +2905,11 @@ body {
     }
 }
 
+.slideOverflow{
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 .jobTaskPopUp{
     position: absolute;
     right: 0;
@@ -2915,7 +2920,12 @@ body {
     box-shadow: 0px 8px 8px 8px rgba(0, 0, 0, 0.3);
     z-index: 90;
     padding: 32px;
-    overflow-y: auto;
+    // overflow-y: auto;
+    transition: all 0.5s ease;
+    transform: translateX(100%);
+    &.slideIn{
+        transform: translateX(0%);
+    }
     .dashboard_task{
         margin-top: 28px;
         .taskCount{

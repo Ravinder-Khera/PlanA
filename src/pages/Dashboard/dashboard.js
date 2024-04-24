@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import CountUp from 'react-countup';
 import { Bars } from 'react-loader-spinner';
 import { getDashboardSummary } from '../../services/auth';
@@ -16,6 +16,9 @@ function Dashboard() {
   const [selectedJobTask, setSelectedJobTask] = useState();
   const [taskCount, setTaskCount] = useState(0);
   const [chats, setChats] = useState(null);
+
+  const selectedJobRef = useRef(null);
+  const overFlowRef = useRef(null);
 
   const findNearestStage = (data) => {
     let nearestStage = null;
@@ -70,6 +73,31 @@ function Dashboard() {
     }
   };
 
+  const handleSelectJobClose = ()=>{
+    if (selectedJob){
+      const popUpSlide = selectedJobRef.current
+      popUpSlide.classList.remove("slideIn");
+    }
+    setTimeout(() => {
+      setSelectedJob()
+    }, 1000);
+  }
+
+  useEffect(() => {
+    const slideOverflow = overFlowRef.current
+    if (selectedJob){
+      slideOverflow.classList.add("slideOverflow");
+    } else{
+      slideOverflow.classList.remove("slideOverflow");
+    }
+    setTimeout(() => {
+      if (selectedJob){
+        const popUpSlide = selectedJobRef.current
+        popUpSlide.classList.add("slideIn");
+      }
+    }, 1000);
+  },[selectedJob])
+
   useEffect(() => {
     if(selectedJob){
       const currentStage = findNearestStage(selectedJob)
@@ -121,7 +149,7 @@ function Dashboard() {
       visible={true}
     />
   </div>}
-  <div className='DashboardTopMenu DashboardBgLines position-relative'>
+  <div className='DashboardTopMenu DashboardBgLines position-relative' ref={overFlowRef}>
     <div className='DashboardHeading'>
       <h2>Dashboard</h2>
     </div>
@@ -146,12 +174,12 @@ function Dashboard() {
     </div>
     <Timeline timeFrame='weekly' loadNo={randomNumber} setSelectedJob={setSelectedJob} />
     {selectedJob && 
-      <div className='jobTaskPopUp'>
+      <div className='jobTaskPopUp' ref={selectedJobRef}>
         <div className='DashboardHeading DashboardJobHeading d-flex justify-content-between align-items-center'>
           <h2>Tasks Today</h2>
           <div
             className="addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none"
-            onClick={() => setSelectedJob()}
+            onClick={handleSelectJobClose}
           >
             <div className="UserImg" style={{ minWidth: "40px"}}>
               <div style={{ transform:'rotate(45deg)' }}>
