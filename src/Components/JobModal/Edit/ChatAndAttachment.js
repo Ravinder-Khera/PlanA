@@ -557,8 +557,8 @@ const ChatAndAttachment = ({ JobId }) => {
             <div className="sender-attachments">
               <div className="sender d-flex flex-wrap justify-content-start gap-3  mt-3">
                 {attachments?.length > 0 &&
-                  attachments?.map((msg) => (
-                    <div>
+                  attachments?.map((msg,i) => (
+                    <div key={i}>
                       <div
                         className={`attachments-box d-flex  flex-column align-items-center ${
                           msg.user.name !== localStorage.getItem("user")

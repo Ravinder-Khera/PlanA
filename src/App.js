@@ -66,27 +66,46 @@ function DashboardMenuList() {
           isLoggedIn ? "d-none" : "d-flex"
         } align-items-center flex-column`}
       >
-        <a href="/" className="mx-auto siteLogo">
-          <img src={logo} className="img-fluid" alt="Plan a" />
-        </a>
-        <ul className=" mx-auto px-1 menuList">
-          <li className={location.pathname.includes("/login") ? "active" : ""}>
-            <Link to="/login">
-              <div className="iconBox">
-                <Key />
+
+        <nav className="navbar navbar-expand-lg bg-transparent w-100">
+          <div className="container-fluid navContainer">
+            <a href="/" className="siteLogo">
+              <img src={logo} className="img-fluid" alt="Plan a" />
+            </a>
+            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                <rect width="24" height="24" fill="none" />
+                <path fill="none" stroke="#E2E31F" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 17h14M5 12h14M5 7h14" />
+              </svg>
+            </button>
+            <div className="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul className=" mx-auto px-1 menuList">
+                <li className={location.pathname.includes("/login") ? "active" : ""}>
+                  <Link to="/login">
+                    <div className="iconBox">
+                      <Key />
+                    </div>
+                    <p>Login</p>
+                  </Link>
+                </li>
+                <li className={location.pathname.includes("/signup") ? "active" : ""}>
+                  <Link to="/signup">
+                    <div className="iconBox">
+                      <Lock />{" "}
+                    </div>
+                    <p>Sign Up</p>
+                  </Link>
+                </li>
+              </ul>
+              <div className={`forgotPasswordMenu mobile ${isLoggedIn ? "d-none" : ""}`}>
+                <Link to="/forgot-password">
+                  <ForgotPswd /> Forgot Password?
+                </Link>
               </div>
-              <p>Login</p>
-            </Link>
-          </li>
-          <li className={location.pathname.includes("/signup") ? "active" : ""}>
-            <Link to="/signup">
-              <div className="iconBox">
-                <Lock />{" "}
-              </div>
-              <p>Sign Up</p>
-            </Link>
-          </li>
-        </ul>
+            </div>
+          </div>
+        </nav>
+
       </div>
       <div className={`forgotPasswordMenu ${isLoggedIn ? "d-none" : ""}`}>
         <Link to="/forgot-password">
@@ -98,61 +117,80 @@ function DashboardMenuList() {
           isLoggedIn ? "d-flex" : "d-none"
         } align-items-center flex-column`}
       >
-        <a href="/" className="mx-auto siteLogo">
-          <img src={logo} className="img-fluid" alt="Plan a" />
-        </a>
-        <ul className=" dashboardMenuList">
-          <li
-            className={location.pathname.includes("/dashboard") ? "active" : ""}
-          >
-            <Link to="/dashboard">
-              <DashboardIcon />
-              <p>Dashboard</p>
-            </Link>
-          </li>
-          {location.pathname.includes("/dashboard") && (
-            <div className="dropDownMenu">
-              <li
-                className={
-                  location.pathname.includes("/timeline") ? "active" : ""
-                }
-              >
-                <Link to="/dashboard/timeline">
-                  <TimelineIcon />
-                  <p>Timeline</p>
-                </Link>
-              </li>
-              <li
-                className={location.pathname.includes("/tasks") ? "active" : ""}
-              >
-                <Link to="/dashboard/tasks">
-                  <TaskIcon />
-                  <p>Tasks</p>
-                </Link>
-              </li>
+
+        <nav className="navbar navbar-expand-lg bg-transparent w-100">
+          <div className="container-fluid navContainer">
+            <a href="/" className=" siteLogo">
+              <img src={logo} className="img-fluid" alt="Plan a" />
+            </a>
+            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                <rect width="24" height="24" fill="none" />
+                <path fill="none" stroke="#E2E31F" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 17h14M5 12h14M5 7h14" />
+              </svg>
+            </button>
+            <div className="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul className=" dashboardMenuList">
+                <li
+                  className={location.pathname.includes("/dashboard") ? "active" : ""}
+                >
+                  <Link to="/dashboard">
+                    <DashboardIcon />
+                    <p>Dashboard</p>
+                  </Link>
+                </li>
+                {location.pathname.includes("/dashboard") && (
+                  <div className="dropDownMenu">
+                    <li
+                      className={
+                        location.pathname.includes("/timeline") ? "active" : ""
+                      }
+                    >
+                      <Link to="/dashboard/timeline">
+                        <TimelineIcon />
+                        <p>Timeline</p>
+                      </Link>
+                    </li>
+                    <li
+                      className={location.pathname.includes("/tasks") ? "active" : ""}
+                    >
+                      <Link to="/dashboard/tasks">
+                        <TaskIcon />
+                        <p>Tasks</p>
+                      </Link>
+                    </li>
+                  </div>
+                )}
+                <li className={location.pathname.includes("/Jobs") ? "active" : ""}>
+                  <Link to="/Jobs">
+                    <JobsIcon />
+                    <p>Jobs</p>
+                  </Link>
+                </li>
+                <li
+                  className={location.pathname.includes("/invoice") ? "active" : ""}
+                >
+                  <Link to="/invoice">
+                    <InvoiceIcon /> <p>Invoicing</p>
+                  </Link>
+                </li>
+                <li
+                  className={location.pathname.includes("/settings") ? "active" : ""}
+                >
+                  <Link to="/settings">
+                    <SettingsIcon /> <p>Settings</p>
+                  </Link>
+                </li>
+              </ul>
+              <div className={`forgotPasswordMenu mobile ${isLoggedIn ? "" : "d-none"}`}>
+                <a href="/login" onClick={handleLogout}>
+                  <LogoutIcon /> Log Out
+                </a>
+              </div>
             </div>
-          )}
-          <li className={location.pathname.includes("/Jobs") ? "active" : ""}>
-            <Link to="/Jobs">
-              <JobsIcon />
-              <p>Jobs</p>
-            </Link>
-          </li>
-          <li
-            className={location.pathname.includes("/invoice") ? "active" : ""}
-          >
-            <Link to="/invoice">
-              <InvoiceIcon /> <p>Invoicing</p>
-            </Link>
-          </li>
-          <li
-            className={location.pathname.includes("/settings") ? "active" : ""}
-          >
-            <Link to="/settings">
-              <SettingsIcon /> <p>Settings</p>
-            </Link>
-          </li>
-        </ul>
+          </div>
+        </nav>
+
       </div>
       <div className={`forgotPasswordMenu ${isLoggedIn ? "" : "d-none"}`}>
         <a href="/login" onClick={handleLogout}>
@@ -182,9 +220,9 @@ function RightSide() {
     <div className="RightSide " id="rightSCroll">
       {isLoggedIn ? (
         <>
-          {pathname !== "/Jobs" && <NavMenu />}
+          {pathname.toLowerCase() !== "/jobs" && <NavMenu />}
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard"  />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/timeline" element={<TimelinePage />} />
             <Route path="/dashboard/tasks" element={<TaskPage />} />

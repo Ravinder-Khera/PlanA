@@ -340,7 +340,7 @@ function SettingsPage() {
           />
         </div>
       )}
-      <div className="d-flex squareBg">
+      <div className="squareBg settingPageFlex">
         <div className="settingsPageSection">
           <h3 className="settingsHeading">Settings</h3>
           <ul className="pt-3 mx-auto px-1 settingsList">
