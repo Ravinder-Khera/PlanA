@@ -365,7 +365,7 @@ const Jobs = () => {
         <div className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap" style={{zIndex:'2'}}>
           <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
             <h2>Jobs</h2>
-            <div className="navSearchDiv">
+            <div className="navSearchDiv jobSearchDiv">
               <form>
                 <div className="searchBox">
                   <div className="IconBox">
@@ -416,7 +416,7 @@ const Jobs = () => {
                 </div>
               </div>
             </div>
-            <div className="addjobs">
+            <div className="addjobs addJobsMobile">
               <span>Add Job</span>
               <div className="addJobIcon" onClick={() => setShowAddModal(true)}>
                 <AddIcon />
@@ -469,7 +469,7 @@ const Jobs = () => {
             </div>
           </div>
         </div>
-        <div className="JobsHeading d-flex justify-content-between">
+        <div className="JobsHeading d-flex align-items-center justify-content-between">
           <div className="delete-box">
             <div
               className="searchUserImg"

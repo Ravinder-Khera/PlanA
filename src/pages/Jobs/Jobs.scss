@@ -35,6 +35,20 @@
     }
 
     .navSearchDiv {
+        &.jobSearchDiv{
+            @media screen and (max-width:767px) {
+                max-width: 100%;
+                form{
+                    width: 100%;
+                    .searchBox{
+                        width: 100%;
+                        input{
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
         form {
             width: max-content;
             display: flex;
@@ -86,6 +100,12 @@
     }
 
     .navSearchTab {
+        @media screen and (max-width:767px) {
+            width: 100%;
+            .jobtaskTab{
+                width: calc(100%);
+            }
+        }
         form {
             width: max-content;
             display: flex;
@@ -157,6 +177,11 @@
 
             &:nth-child(2) {
                 transform: translateX(-16px);
+                @media screen and (max-width:767px) {
+                    width: calc(100% + 16px);
+                    transform: translateX(0px);
+                    margin-left: -16px;
+                }
             }
 
             &.active {
@@ -171,7 +196,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
-
+        &.addJobsMobile{
+            @media screen and (max-width: 767px) {
+                margin-left: auto;
+            }
+        }
         span {
             color: #E2E31F;
         }
@@ -234,6 +263,8 @@
         cursor: pointer;
     }
 }
+
+
 
 .JobsContainer {
     width: 100%;

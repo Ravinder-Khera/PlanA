@@ -5,7 +5,7 @@ import { Bars } from "react-loader-spinner";
 import eventEmitter from "../Event";
 import { Link, useNavigate } from "react-router-dom";
 
-function NavMenu() {
+function MobileMenu() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState("");
   const [userImg, setUserImg] = useState("");
@@ -275,7 +275,7 @@ function NavMenu() {
       )}
       <div className="position-relative" ref={searchPopUpRef}>
         <nav className="container-fluid navMenuDiv position-relative" style={{zIndex:'91'}}>
-          <div className="d-flex  gap-2 justify-content-between">
+          <div className="d-flex flex-wrap gap-2 justify-content-between">
             <form>
               <div className="searchBox">
                 <div className="IconBox">
@@ -304,8 +304,11 @@ function NavMenu() {
               </div>
             </form>
             <div>
-              <div className="d-flex align-items-center justify-content-end justify-content-md-end">
-                <Link className=" mobileProfile" style={{textDecoration:'none'}} 
+              <div
+                className="d-flex align-items-center justify-content-start justify-content-md-end"
+                style={{ minWidth: "250px" }}
+              >
+                <Link className="d-flex" style={{textDecoration:'none'}} 
                 onClick={()=> { 
                   setIsPopupOpen(false);
                   setSearchValue('');
@@ -455,4 +458,4 @@ export async function getServerSideProps() {
   }
 }
 
-export default NavMenu;
+export default MobileMenu;

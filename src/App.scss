@@ -34,6 +34,7 @@ body {
                 margin: auto;
                 @media screen and (max-width:992px) {
                     margin: 0px 0 0 0;
+                    max-width: 97px;
                 }
             }
         }
@@ -264,16 +265,50 @@ body {
             width: 100%;
             max-width: 100%;
             min-height: 84px;
+            // display: none;
+            .navbar-toggler{
+                outline: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            .navbar-collapse{
+                position: absolute;
+                width: 100%;
+                top: 50%;
+                left: calc(0% - 10px);
+                max-width: calc(100% - 57px);
+                min-height: calc(100vh - 76px);
+                background: #353535;
+                padding: 21px;
+                border-radius: 0px 40px 40px 0px;
+                box-shadow: 0px 8px 8px 8px rgba(0, 0, 0, 0.30);
+                transition: all 0.75s ease;
+                &.collapse:not(.show) {
+                    display: block;
+                    transform: translateX(-200%);
+                }
+            }
             .forgotPasswordMenu{
                 display: none;
                 &.mobile{
                     display: block;
-                    position: relative;
+                    bottom: 21px;
+                    // right: 0;
+                    left: 0;
+                    width: calc(100% - 21px);
+                    background: #353535;
+                    .navMenuDiv{
+                        background: #353535;
+                        box-shadow: none;
+                        padding: 0;
+                    }
                 }
             }
         }
         .RightSide {
             width: 100%;
+            max-width: calc(100% - 20px);
+            margin: auto;
         }
     }
     @media screen and (min-width:993px) {
@@ -304,7 +339,7 @@ body {
     form {
         width: max-content;
         display: flex;
-        flex-wrap: wrap;
+        // flex-wrap: wrap;
         gap: 10px;
         .searchBox {
             border-radius: 2px;
@@ -369,6 +404,24 @@ body {
 
                 &:focus {
                     box-shadow: none;
+                }
+            }
+        }
+        @media screen and (max-width: 767px) {
+            max-width: calc(100% - 60px);
+            .searchBox{
+                max-width: 185px;
+                input {
+                    max-width: 115px;
+                }
+            }
+            .selectBox{
+                max-width: 105px;
+                &::after {
+                    right: 1.85rem;
+                }
+                select{
+                    min-width: 100px;
                 }
             }
         }
@@ -517,6 +570,12 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+    .mobileProfile{
+        display: flex;
+        @media screen and (max-width:992px) {
+            display: none;
+        }
     }
 }
 
