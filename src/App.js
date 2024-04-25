@@ -52,7 +52,9 @@ function DashboardMenuList() {
   const menuRefLoggedIn = useRef(null);
   
   const handleMenuOpen = () => {
-    if (menuRef && menuRef.current) {
+    if(isMenuOpen){
+      setIsMenuOpen(false)
+    } else if (menuRef && menuRef.current) {
       const menu = menuRef.current;
       if (typeof menu.classList !== 'undefined') {
         menu.classList.add('show');
@@ -95,7 +97,6 @@ function DashboardMenuList() {
     }
   };
 
-  console.log('isMenuOpen',isMenuOpen);
   useEffect(() => {
     let handler = (e) => {
         if (isMenuOpen &&
@@ -140,6 +141,7 @@ function DashboardMenuList() {
       console.error("There was an error:", error);
     } finally {
       setLoading(false);
+      handleMenuClose();
     }
   };
 
@@ -193,7 +195,7 @@ function DashboardMenuList() {
         >
 
           <nav className="navbar navbar-expand-lg bg-transparent w-100">
-            <div className="container-fluid navContainer">
+            <div className="container-fluid navContainer  p-0">
               <a href="/" className=" siteLogo">
                 <img src={logo} className="img-fluid" alt="Plan a" />
               </a>
@@ -205,6 +207,17 @@ function DashboardMenuList() {
               </button>
               <div className="collapse navbar-collapse" id="navbarSupportedContent1" ref={menuRefLoggedIn}>
                 <ul className=" dashboardMenuList">
+                  <li className="backBtn">
+                    <div onClick={handleMenuClose}>
+                      <p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 1024 1024">
+                          <rect width="1024" height="1024" fill="none" />
+                          <path fill="#E2E31F" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64" />
+                          <path fill="#E2E31F" d="m237.248 512l265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312z" />
+                        </svg> Back
+                      </p>
+                    </div>
+                  </li>
                   <li
                     className={location.pathname.includes("/dashboard") ? "active" : ""}
                   >
@@ -322,6 +335,17 @@ function DashboardMenuList() {
               </button>
               <div className="collapse navbar-collapse" id="navbarSupportedContent" ref={menuRef}>
                 <ul className=" mx-auto px-1 menuList">
+                  <li className="backBtn">
+                    <div onClick={handleMenuClose}>
+                      <p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 1024 1024">
+                          <rect width="1024" height="1024" fill="none" />
+                          <path fill="#E2E31F" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64" />
+                          <path fill="#E2E31F" d="m237.248 512l265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312z" />
+                        </svg> Back
+                      </p>
+                    </div>
+                  </li>
                   <li className={location.pathname.includes("/login") ? "active" : ""}>
                     <Link to="/login" onClick={handleMenuClose}>
                       <div className="iconBox">

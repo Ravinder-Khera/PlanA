@@ -198,7 +198,7 @@ const Complete = ({ data, handleClose }) => {
 };
 
   return (
-    <div className="popup-container">
+    <div className="popup-container taskContainerMobile">
       {loading && (
         <div className="loaderDiv">
           <Bars
@@ -222,7 +222,7 @@ const Complete = ({ data, handleClose }) => {
         </p>
 
         <div className="content">
-          <div className="top  d-flex justify-content-between align-items-center ">
+          <div className="top flex-wrap gap-2 d-flex justify-content-between align-items-center ">
             <div className="left d-flex flex-column justify-content-center align-items-start">
               <h1>{data.job_id}</h1>
               <input className="taskTitleInput" value={selectTitle} onChange={(e)=> setSelectTitle(e.target.value)} />

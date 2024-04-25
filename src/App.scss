@@ -46,7 +46,9 @@ body {
             width: 100%;
             margin-bottom: 0;
             list-style: none;
-
+            @media screen and (max-width:992px) {
+                margin-top: 21px;
+            }
             li {
                 border-radius: 2px;
                 border: 1px solid #E2E31F;
@@ -54,7 +56,23 @@ body {
                 padding: 15px 21px;
                 transition: all 0.5s ease;
                 cursor: pointer;
-
+                &.backBtn{
+                    margin-bottom: 0;
+                    border: none;
+                    padding: 0;
+                    p{
+                        color: #FFF;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        margin: 0
+                    }
+                    @media screen and (min-width:993px) {
+                        display: none;
+                    }
+                }
                 a {
                     display: flex;
                     align-items: center;
@@ -97,14 +115,30 @@ body {
             width: 100%;
             margin-bottom: 0;
             list-style: none;
-
+            @media screen and (max-width:992px) {
+                margin-top: 21px;
+            }
             li {
                 margin: 10px auto;
                 padding: 2px;
                 border: 1px solid transparent;
                 transition: all 0.5s ease;
                 cursor: pointer;
-
+                &.backBtn{
+                    margin-bottom: 0;
+                    p{
+                        color: #FFF;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        margin: 0
+                    }
+                    @media screen and (min-width:993px) {
+                        display: none;
+                    }
+                }
                 a {
                     display: flex;
                     align-items: center;
@@ -265,6 +299,7 @@ body {
             width: 100%;
             max-width: 100%;
             min-height: 84px;
+            padding-left: 20px;
             // display: none;
             .navbar-toggler{
                 outline: none;
@@ -275,7 +310,7 @@ body {
                 position: absolute;
                 width: 100%;
                 top: 50%;
-                left: calc(0% - 10px);
+                left: calc(0% - 20px);
                 max-width: calc(100% - 57px);
                 min-height: calc(100vh - 76px);
                 background: #353535;
@@ -1202,6 +1237,9 @@ body {
         background-size: 155px 20px;
         background-image:  repeating-linear-gradient(to left, rgb(227, 227, 31, 0.15), rgb(227, 227, 31, 0.15) 1px, #252525 1px, #252525);
     }
+    @media screen and (max-width:992px) {
+        padding: 16px 0;
+    }
     .DashboardHeading {
         h2 {
             color: #fff;
@@ -1239,9 +1277,6 @@ body {
                 margin-left: 10px;
                 box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
             }
-
-            
-
         }
     }
 
@@ -1250,14 +1285,19 @@ body {
         flex-wrap: wrap;
         gap: 28px;
         margin-top: 27px;
-
+        @media screen and (max-width:992px) {
+            gap: 10px;
+        }
         .custom_box {
             background: #353535;
             padding: 35px;
             flex: 1 1 auto;
             text-align: center;
             font-family: 'Archivo', sans-serif;
-
+            @media screen and (max-width:992px) {
+                flex: 0.5 1 auto;
+                width: calc(50% - 5px);
+            }
             h3 {
                 color: #E2E31F;
                 font-weight: 900;
@@ -1387,7 +1427,10 @@ body {
                 &.listTitle {
                     display: flex;
                     align-items: center;
-
+                    @media screen and (max-width:992px) {
+                        max-width: calc(100% - 60px);
+                        min-width: auto;
+                    }
                     .svg-box-not-selected {
                         border-radius: 1px;
                         border: 1px solid #FFF;
@@ -1417,7 +1460,12 @@ body {
                         line-height: normal;
                         letter-spacing: -0.64px;
                         margin-bottom: 0;
-
+                        @media screen and (max-width:992px) {
+                            max-width: calc(100% - 60px);
+                            word-wrap: break-word;
+                            word-break: break-all;
+                            text-align: end;
+                        }
                         span {
                             font-weight: 300;
                         }
@@ -1508,6 +1556,43 @@ body {
                 .btn_Unknown {
                     border: 1px solid #FFF;
                     background: rgba(255, 255, 255, 0.25);
+                }
+            }
+        }
+    }
+    @media screen and (max-width:992px) {
+        display: none;
+    }
+    &.mobile{
+        display: none;   
+        @media screen and (max-width:992px) {
+            display: block;
+            .taskBox{
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+                .taskItem{
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    .taskHeading{
+                        color: #FFF;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;                        
+                    }
+                    .listContent{
+                        &.listTitle{
+                            justify-content: end;
+                        }
+                    }
+                    .centerContent{
+                        justify-content: end;
+                    }
                 }
             }
         }

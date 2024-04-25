@@ -3,6 +3,9 @@
     .Toastify__toast{
       padding: 24px 30px;
       min-width: 500px;
+      @media screen and (max-width:992px) {
+        min-width: auto;
+    }
       &::before{
         position: absolute;
         content: '';
