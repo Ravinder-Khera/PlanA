@@ -275,7 +275,7 @@ function NavMenu() {
       )}
       <div className="position-relative" ref={searchPopUpRef}>
         <nav className="container-fluid navMenuDiv position-relative" style={{zIndex:'91'}}>
-          <div className="d-flex justify-content-between">
+          <div className="d-flex flex-wrap gap-2 justify-content-between">
             <form>
               <div className="searchBox">
                 <div className="IconBox">
@@ -305,7 +305,7 @@ function NavMenu() {
             </form>
             <div>
               <div
-                className="d-flex align-items-center justify-content-end"
+                className="d-flex align-items-center justify-content-start justify-content-md-end"
                 style={{ minWidth: "250px" }}
               >
                 <Link className="d-flex" style={{textDecoration:'none'}} 
