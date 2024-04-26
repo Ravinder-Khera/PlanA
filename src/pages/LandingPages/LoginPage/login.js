@@ -88,7 +88,7 @@ function Login() {
             </div>
             <p>You're logged in. Let's get to work!</p>
           </>, {
-            position: "top-center",
+            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -109,7 +109,7 @@ function Login() {
             </div>
             <p>We couldn’t sign you in with the details provided. Please check your email and password and try again. If you've forgotten your password, use the 'Forgot Password' link to reset it.</p>
           </>, {
-            position: "top-center",
+            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,

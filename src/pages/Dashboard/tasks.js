@@ -264,7 +264,7 @@ function TaskPage() {
           }));
         }, 1000);
         toast.success("Task moved to Completed", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -277,7 +277,7 @@ function TaskPage() {
         console.error("Task update failed:", response.error);
 
         toast.error(`${response.error.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -325,7 +325,7 @@ function TaskPage() {
         setSelectedAssignee([]);
         setUserDropdownStates([]);
         toast.success("Assignee added to Task", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -341,7 +341,7 @@ function TaskPage() {
         setSelectedAssignee([]);
         setUserDropdownStates([]);
         toast.error(`${response.error.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -421,7 +421,7 @@ function TaskPage() {
   const handleCreateTask = async () => {
     if (createTaskTitle === "") {
       toast.error(`Task title can not be empty`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -433,7 +433,7 @@ function TaskPage() {
       return;
     } else if (!selectedDueDate) {
       toast.error(`Select Task Due Date`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -445,7 +445,7 @@ function TaskPage() {
       return;
     } else if (selectedSearchJob === "") {
       toast.error(`Select Job Id`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -457,7 +457,7 @@ function TaskPage() {
       return;
     } else if (selectedSearchJobStage === "") {
       toast.error(`Select Stage `, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -469,7 +469,7 @@ function TaskPage() {
       return;
     } else if (selectedUsers.length <= 0) {
       toast.error(`Add Assignee to Task`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -495,7 +495,7 @@ function TaskPage() {
       if (response.res) {
         console.log("create Task successful", response);
         toast.success("Task created successful", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -517,7 +517,7 @@ function TaskPage() {
         console.error("Task creation failed:", response.error);
 
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -826,7 +826,7 @@ function TaskPage() {
                                 onClick={() => {
                                   if (searchJobList === "") {
                                     toast.error("Select a Job Id to search", {
-                                      position: "top-center",
+                                      position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
                                       autoClose: 5000,
                                       hideProgressBar: true,
                                       closeOnClick: true,
@@ -886,7 +886,7 @@ function TaskPage() {
                           setAddTaskJobStageDropdown(!addTaskJobStageDropdown);
                           if (searchJobStages.length <= 0) {
                             toast.error("Select a Job Id first", {
-                              position: "top-center",
+                              position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
                               autoClose: 5000,
                               hideProgressBar: true,
                               closeOnClick: true,
@@ -1391,7 +1391,7 @@ function TaskPage() {
                                       onClick={() => {
                                         if (searchJobList === "") {
                                           toast.error("Select a Job Id to search", {
-                                            position: "top-center",
+                                            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
                                             autoClose: 5000,
                                             hideProgressBar: true,
                                             closeOnClick: true,
@@ -1454,7 +1454,7 @@ function TaskPage() {
                                   setAddTaskJobStageDropdown(!addTaskJobStageDropdown);
                                   if (searchJobStages.length <= 0) {
                                     toast.error("Select a Job Id first", {
-                                      position: "top-center",
+                                      position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
                                       autoClose: 5000,
                                       hideProgressBar: true,
                                       closeOnClick: true,

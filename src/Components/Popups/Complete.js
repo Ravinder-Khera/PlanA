@@ -145,7 +145,7 @@ const Complete = ({ data, handleClose,scrollRef }) => {
           }
         }, 1000);
         toast.success("Task Moved to To Do", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -157,7 +157,7 @@ const Complete = ({ data, handleClose,scrollRef }) => {
       } else {
         console.error("Task update failed:", response.error);
         toast.error(`${response.error.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,

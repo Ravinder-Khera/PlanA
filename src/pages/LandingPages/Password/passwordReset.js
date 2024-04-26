@@ -91,7 +91,7 @@ function PasswordReset() {
             </div>
             <p>Your password has been updated. You can now log in with your new password.</p>
           </>, {
-            position: "top-center",
+            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -110,7 +110,7 @@ function PasswordReset() {
               </div>
               <p>There was an issue resetting your password. Please try again or contact support.</p>
             </>, {
-              position: "top-center",
+              position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
               autoClose: 5000,
               hideProgressBar: true,
               closeOnClick: true,

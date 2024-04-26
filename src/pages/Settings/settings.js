@@ -46,7 +46,7 @@ function ProfileDetails({ userFirstName, userLastName, fetchProfileData }) {
       if (response.res) {
         console.log("update successful", response);
         toast.success("Profile updated successfully", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -61,7 +61,7 @@ function ProfileDetails({ userFirstName, userLastName, fetchProfileData }) {
       } else {
         console.error("profile update failed:", response.error);
         toast.error(`${response.error.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -165,7 +165,7 @@ function ProfilePic({ userPicture, fetchProfileData }) {
         if (response.res) {
           console.log(response);
           toast.success(`${response.res.message}`, {
-            position: "top-center",
+            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -178,7 +178,7 @@ function ProfilePic({ userPicture, fetchProfileData }) {
           eventEmitter.emit("updateProfile");
         } else {
           toast.error(`${response.error.message}`, {
-            position: "top-center",
+            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -191,7 +191,7 @@ function ProfilePic({ userPicture, fetchProfileData }) {
       } catch (error) {
         console.error("There was an error:", error);
         toast.error("An error occurred while uploading the image", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,

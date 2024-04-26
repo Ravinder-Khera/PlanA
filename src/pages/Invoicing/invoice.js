@@ -136,7 +136,7 @@ function Invoice() {
         console.log("invoice delete successful", response);
 
         toast.success(`${response.res.deletedCount} ${response.res.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -148,7 +148,7 @@ function Invoice() {
       } else {
         console.error("invoice delete failed:", response.error);
         toast.error(`${response.error.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,

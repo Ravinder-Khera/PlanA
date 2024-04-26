@@ -124,7 +124,7 @@ function SignUp() {
           </div>
           <p>Your sign-up was successful. You can now explore your new account.</p>
         </>, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -145,7 +145,7 @@ function SignUp() {
             </div>
             <p>We couldn't create your account due to a hiccup. Please double-check your information and try again. If the problem persists, reach out to our support team for help.</p>
           </>, {
-            position: "top-center",
+            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,

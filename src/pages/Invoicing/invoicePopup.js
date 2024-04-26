@@ -91,7 +91,7 @@ const InvoicePopup = ({ handleClose }) => {
     // If any field is empty, show an error toast and return early
     if (hasEmptyValue) {
       toast.error(`All values must be filled`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -154,7 +154,7 @@ const InvoicePopup = ({ handleClose }) => {
         setSelectUser(false)
       }else{
         toast.error(`Name can not contain number or special characters`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -165,7 +165,7 @@ const InvoicePopup = ({ handleClose }) => {
         });
     }}else{
       toast.error(`Enter A valid email`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -205,7 +205,7 @@ const InvoicePopup = ({ handleClose }) => {
   const handleCreateInvoice = async () => {
     if (!state.to || state.to === "") {
       toast.error(`Billed To can not be empty`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -217,7 +217,7 @@ const InvoicePopup = ({ handleClose }) => {
       return;
     } else if (!state.from || state.from === '') {
       toast.error(`Pay To can not be empty`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -229,7 +229,7 @@ const InvoicePopup = ({ handleClose }) => {
       return;
     } else if (formattedDueDate === '') {
       toast.error(`Due Date can not be empty`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -241,7 +241,7 @@ const InvoicePopup = ({ handleClose }) => {
       return;
     } else if (items.length === 0) {
       toast.error(`Items can not be empty`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -253,7 +253,7 @@ const InvoicePopup = ({ handleClose }) => {
       return;
     } else if (!user.name || !user.email){
       toast.error(`Add User details`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -288,7 +288,7 @@ const InvoicePopup = ({ handleClose }) => {
       if (response.res) {
         console.log("create Task successful", response);
         toast.success(response.message, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -302,7 +302,7 @@ const InvoicePopup = ({ handleClose }) => {
         console.error("Invoice creation failed:", response.error);
 
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
