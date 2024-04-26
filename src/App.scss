@@ -370,7 +370,9 @@ body {
     background: #252525;
     box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.30);
     padding: 17px;
-
+    @media screen and (max-width:992px) {
+        padding: 10px;
+    }
     form {
         width: max-content;
         display: flex;
@@ -1239,6 +1241,9 @@ body {
     }
     @media screen and (max-width:992px) {
         padding: 16px 0;
+        .DashboardHeading{
+            padding: 10px;
+        }
     }
     .DashboardHeading {
         h2 {

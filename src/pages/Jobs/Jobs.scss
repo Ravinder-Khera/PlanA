@@ -21,6 +21,9 @@
     padding: 17px 26px 17px 32px;
     position: relative;
     z-index: 1;
+    @media screen and (max-width:992px) {
+        padding: 10px;
+    }
     h2 {
         color: #fff;
         font-family: 'Archivo', sans-serif;
