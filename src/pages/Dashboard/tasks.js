@@ -291,6 +291,12 @@ function TaskPage() {
       console.error("There was an error:", error);
     } finally {
       setLoading(false);
+      if (window.innerWidth < 992) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } 
     }
   };
 
