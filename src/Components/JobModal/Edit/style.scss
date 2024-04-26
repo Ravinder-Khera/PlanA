@@ -796,6 +796,15 @@
                             }
 
                             .table-main-section {
+                                @media screen and (max-width:992px) {
+                                    display: none;
+                                }
+                                &.mobile{
+                                    display: block;
+                                    @media screen and (min-width:993px) {
+                                        display: none;
+                                    }
+                                }
                                 ul.task-list {
                                     // overflow-x: hidden;
                                     padding: 0;
@@ -1335,6 +1344,21 @@
 
                                             input {
                                                 color: #E2E31F !important;
+                                            }
+                                        }
+                                        .taskBox{
+                                            display: flex;
+                                            flex-direction: column;
+                                            gap: 10px;
+                                            width: 100%;
+                                            .taskItem{
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: space-between;
+                                                .taskHeading{
+                                                    display: flex;
+                                                    align-items: center;
+                                                }
                                             }
                                         }
                                     }
