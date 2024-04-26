@@ -175,7 +175,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
     <>
       <div className="addTaskJobDiv">
         <div className="addTaskJobDropdown right">
-          <div className="addTaskJobSearchDiv addNewTaskDiv d-flex ">
+          <div className="addTaskJobSearchDiv addNewTaskDiv d-flex flex-wrap">
             <div className="addTaskJobDiv">
               <div
                 className="select-fliter h-100 "
@@ -216,7 +216,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
               selectedFilter === "Description" ||
               selectedFilter === "Latest Update" ||
               selectedFilter === "Title") && (
-              <div className="searchBox">
+              <div className="searchBox w-100">
                 <div className="IconBox">
                   <Search />
                 </div>
@@ -234,7 +234,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                 className="searchBox"
                 style={{ background: "transparent", padding: "0" }}
               >
-                <div className="date d-flex gap-3 align-items-center ">
+                <div className="date d-flex gap-3 align-items-center flex-wrap">
                   <p className="m-0" onClick={handleShowDatePicker}>
                     {startDate}
                   </p>
@@ -264,7 +264,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
             {selectedFilter === "Assignee" && (
               <div
                 className="searchBox navMenuDiv d-flex align-items-center"
-                style={{ background: "transparent", padding: "0" }}
+                style={{ background: "transparent", padding: "0", maxWidth:'264px' }}
               >
                 <div
                   className="IconBox addTaskJobDiv "
@@ -277,7 +277,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                     style={{ marginBottom: "-5px" }}
                     />
                     {showAssignee && (
-                        <div className="addTaskJobDropdown right" style={{maxWidth:'max-content'}}>
+                        <div className="addTaskJobDropdown right mobileLeft" style={{maxWidth:'max-content'}}>
                           <div className="addTaskJobListScroll">
                             <div className="addTaskJobListItems">
                               <label className="addedAssignees">Assignees</label>
@@ -315,7 +315,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                     )}
                 </div>
                 <input
-                  style={{ background: "#252525", padding: "14px 30px" }}
+                  style={{ background: "#252525", padding: "14px 30px",maxWidth:'calc(100% - 120px)' }}
                   name="search"
                   placeholder="Assignee Name"
                   value={searchedInput}
@@ -350,7 +350,6 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
             >
               Information Request
             </button>
-            <br />
             <button
               style={{ background: " #FF5C008C", border: "1px solid #FF5C00" }}
               onClick={() => setSearchedInput("Public Notification")}

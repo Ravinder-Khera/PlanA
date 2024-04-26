@@ -1787,6 +1787,12 @@ body {
                 right: 0;
                 left: auto;
             }
+            &.mobileLeft{
+                @media screen and (max-width:992px) {
+                    right: auto;
+                    left: 0;
+                }
+            }
 
             .addTaskJobSearchDiv {
                 border-radius: 2px;
@@ -1830,6 +1836,9 @@ body {
                     width: 1px;
                     background: #fff;
                     border-radius: 2px;
+                    @media screen and (max-width:992px) {
+                        display: none;
+                    }
                 }
             }
 
@@ -2598,6 +2607,7 @@ body {
     color:#E2E31F;
     justify-content: space-between;
     align-items: center;
+    padding: 11px 14px;
    p{
     margin-bottom: 0;
    }
@@ -2790,6 +2800,54 @@ body {
                 font-weight: 300;
                 line-height: normal;
                 letter-spacing: -0.48px;                
+            }
+        }
+    }
+    @media screen and (max-width: 992px) {
+        gap: 12px;
+        align-items: center;
+        min-width: auto;
+        justify-content: center;
+        .notificationTime{
+            display: none;       
+        }
+        .notificationContent{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 276px;
+            min-height: 65px;
+            border-radius: 2px;
+            background: #353535;
+            box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
+            padding: 10px 15px;
+            gap: 15px;
+            margin-right: 10px;
+            &.empty{
+                box-shadow: none;
+                justify-content: center;
+            }
+            .notificationIcon{
+                margin-left: 0px;
+            }
+            .notificationText{
+                margin-left: -28px;
+                color: #fff;
+                h3{
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                    margin: 0;
+                }
+                span{
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 300;
+                    line-height: normal;
+                    letter-spacing: -0.48px;                
+                }
             }
         }
     }

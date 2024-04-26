@@ -11,6 +11,9 @@
         height: 100%;
         z-index: 0;
         box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
+        @media screen and (max-width:992px) {
+            width: auto;
+        }
     }
 }
 
@@ -37,7 +40,7 @@
     .navSearchDiv {
         &.jobSearchDiv{
             @media screen and (max-width:767px) {
-                max-width: 100%;
+                width: 100%;
                 form{
                     width: 100%;
                     .searchBox{
@@ -199,6 +202,9 @@
         &.addJobsMobile{
             @media screen and (max-width: 767px) {
                 margin-left: auto;
+                span, .addJobIcon{
+                    display: none;
+                }
             }
         }
         span {
@@ -269,7 +275,12 @@
 .JobsContainer {
     width: 100%;
     position: relative;
-
+    &.desktop{
+        display: flex;
+        @media screen and (max-width:992px) {
+            display: none;
+        }
+    }
     .left-side {
         padding: 6px 0px 6px 16px;
         min-width: 800px;
@@ -412,20 +423,121 @@
 
                 }
 
-
-
                 th,
                 td {
                     vertical-align: middle;
                 }
-
-
 
                 /* Apply border-bottom to all table rows except the last one */
                 tr:not(:last-child) {
                     border-bottom: 1px solid rgba(226, 227, 31, 0.15);
 
 
+                }
+
+                ul{
+                    padding: 0;
+                    list-style: none;
+                    li{
+                        padding: 10px;
+                        margin-bottom: 10px;
+                        border: 1px solid rgba(226, 227, 31, 0.15);
+                        .jobBox{
+                            display: flex;
+                            flex-direction: column;
+                            max-width: 100%;
+                            gap: 10px;
+                            align-items: center;
+                            .jobItem{
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                width: 100%;
+                                // &:first-child{
+                                //     justify-content: center;
+                                // }
+                                .svg-box {
+                                    border: 2px solid #e2e31f;
+                                    width: 15px;
+                                    height: 15px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    cursor: pointer;
+                                }
+            
+                                .svg-box-2 {
+                                    border: 2px solid #e2e31f;
+                                    width: 15px;
+                                    height: 15px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #e2e31f;
+                                    cursor: pointer;
+                                }
+            
+                                .job-name {
+                                    max-width: calc(100% - 100px);
+                                    h4 {
+                                        font-size: 16px;
+                                        color: #E2E31F;
+                                        line-height: normal;
+                                        margin-bottom: 0;
+                                    }
+            
+                                    h6 {
+                                        font-size: 12px;
+                                        color: #FFFFFF;
+                                    }
+                                }
+            
+                                .stageBtn {
+                                    border-radius: 4px;
+                                    color: #FFF;
+                                    font-size: 16px;
+                                    font-style: normal;
+                                    font-weight: 700;
+                                    line-height: normal;
+                                    letter-spacing: -0.48px;
+                                    min-height: 28px;
+                                    align-content: center;
+                                    min-width: max-content;
+                                    padding: 8px 14px;
+            
+                                    &.btn_Application {
+                                        border: 1px solid #3B9239;
+                                        background: rgba(59, 146, 57, 0.60);
+                                    }
+            
+                                    &.btn_Referral {
+                                        border: 1px solid #1FB4E3;
+                                        background: rgba(31, 180, 227, 0.40);
+                                    }
+            
+                                    &.btn_Information {
+                                        border: 1px solid #8A50C5;
+                                        background: rgba(138, 80, 197, 0.49);
+                                    }
+            
+                                    &.btn_Public {
+                                        border: 1px solid #FF5C00;
+                                        background: rgba(255, 92, 0, 0.55);
+                                    }
+            
+                                    &.btn_Decision {
+                                        border: 1px solid #FF40BE;
+                                        background: rgba(255, 64, 190, 0.40);
+                                    }
+            
+                                    &.btn_Unknown {
+                                        border: 1px solid #FFF;
+                                        background: rgba(255, 255, 255, 0.25);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
 
@@ -447,6 +559,17 @@
 
     }
 
+    &.mobile{
+        @media screen and (min-width:993px) {
+            display: none;
+        }
+        .left-side {
+            min-width: auto;
+            .job_table_outer_div{
+                min-width: auto;
+            }
+        }
+    }
     .jobsTaskTabsDiv {
         display: flex;
 

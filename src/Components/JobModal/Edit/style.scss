@@ -862,12 +862,20 @@
                                         .application-lodge {
                                             background: #252525;
                                             padding: 9px 9px;
-
+                                            &.mobile{
+                                                min-width: 100%;
+                                                @media screen and (min-width:993px) {
+                                                    min-width: 92%;
+                                                }
+                                            }
                                             .task-desc-input {
                                                 background: transparent;
                                                 border: none;
                                                 outline: none;
                                                 color: #ffff;
+                                                @media screen and (max-width:992px) {
+                                                    max-width: calc(100% - 30px);
+                                                }
                                             }
 
                                             .addStage-btn {
@@ -884,6 +892,9 @@
                                                 padding: 0;
                                                 margin: 0;
                                                 text-align: start;
+                                                @media screen and (max-width:992px) {
+                                                    max-width: calc(100% - 75px);
+                                                }
                                                 &.text_Application {
                                                     color: #3B9239;
 
@@ -1150,7 +1161,7 @@
                                             button {
                                                 max-width: 94px;
                                                 width: 100%;
-                                                height: 28px;
+                                                min-height: 28px;
                                                 color: #FFFFFF;
                                                 border-radius: 5.66px;
                                                 font-size: 12px;
@@ -1801,6 +1812,58 @@
             }
 
 
+        }
+    }
+    &.mobile{
+        @media screen and (max-width:992px) {
+            align-items: start;
+            .popup-section-right{
+                display: none   ;
+            }
+            .slider-container{
+                display: none;
+            }
+            .pop-wrapper{
+                .wrapper{
+                    .pop-container{
+                        .popup-content{
+                            .progress-bar-container{
+                                margin-bottom: 10px;
+                                .progress-upper{
+                                    margin-bottom: 10px;
+                                    .progress-text{
+                                        position: inherit;
+                                        transform: translate(0);
+                                        padding-top: 10px;
+                                        p{
+                                            text-align: center;
+                                            min-width: max-content;
+                                        }
+                                    }
+                                }
+                            }
+                            .popup-section-left{
+                                .topsection-left{
+                                    .top-left-content{
+                                        padding: 10px;  
+                                        height: auto;
+                                        flex-wrap: wrap;
+                                    }
+                                }
+                                .table-section ,.top-right-content, .progressInputSection{
+                                    padding: 10px;
+                                }
+                                .task-list{
+                                    li{
+                                        padding: 10px 0;
+                                        border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                                    }
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

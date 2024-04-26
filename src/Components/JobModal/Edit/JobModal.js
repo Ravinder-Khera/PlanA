@@ -21,6 +21,7 @@ const JobModal = ({
   usersLists,
   fetchJobs,
   reloadTabs,
+  scrollRef
 }) => {
   console.log("data", data);
   const [tasks, setTasks] = useState({});
@@ -62,6 +63,9 @@ const JobModal = ({
   const cardRef = useRef(null);
   const sliderRef = useRef(null);
   const activeCardRef = useRef(null);
+  const addTaskAssigneeRef = useRef(null);
+  const showStagesRef = useRef(null);
+  const showAssigneeRef = useRef(null);
   const settings = {
     className: "center",
     centerMode: true,
@@ -87,6 +91,16 @@ const JobModal = ({
       ) {
         handleClose()
       }
+      if (
+        showStagesRef.current &&
+        !showStagesRef.current.contains(e.target)
+      ) {
+        setShowStages(false)
+      }
+      if(showAssigneeRef.current &&
+        !showAssigneeRef.current.contains(e.target)){
+        setShowAssignee(false)
+      }
     };
 
     document.addEventListener("mousedown", handler);
@@ -95,6 +109,15 @@ const JobModal = ({
       document.removeEventListener("mousedown", handler);
     };
   }, [handleClose]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [scrollRef]);
 
   const getIdsForStages = (stages) => {
     let tempArr = {};
@@ -504,15 +527,15 @@ const JobModal = ({
           />
         </div>
       )}
-      <div className="loaderDiv2">
+      <div className="loaderDiv2 mobile">
         <div className="pop-wrapper">
           <div className="wrapper">
             <div className="container pop-container" ref={popUpRef}>
-              <div className="popup-content">
+              <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
                   <div
                     className="top-section"
-                    style={{ position: "sticky", top: "0", zIndex: "2" }}
+                    style={{ position: "sticky", top: "0", zIndex: "9" }}
                   >
                     <div className="topsection-left">
                       <div className="top-left-content">
@@ -527,7 +550,7 @@ const JobModal = ({
                           />
                         </div>
                         <div className="position w-100">
-                          <div className="d-flex justify-content-between">
+                          <div className="d-flex justify-content-between flex-wrap">
                             <div className="title">
                               <div className="d-flex flex-column">
                                 {!isEdit && (
@@ -886,10 +909,10 @@ const JobModal = ({
                                   <div className="svg-box mx-2"></div>
                                 )}
                               </label>
-                              <div className="w-100  d-flex align-items-center position-relative">
+                              <div className="w-100  d-flex align-items-center position-relative flex-wrap">
                                 <div
-                                  className="d-flex justify-content-between application-lodge"
-                                  style={{ "min-width": "92%" }}
+                                  className="d-flex justify-content-between application-lodge mobile"
+                                  // style={{ "min-width": "92%" }}
                                 >
                                   <div className="d-flex gap-3 align-items-center ">
                                     <img
@@ -983,8 +1006,8 @@ const JobModal = ({
                                       </div>
                                     )}
                                     {userDropdownStates[index] && (
-                                      <div className="addAssigneeDropdown ">
-                                        <div className="addTaskJobListScroll">
+                                      <div className="addAssigneeDropdown " >
+                                        <div className="addTaskJobListScroll" ref={addTaskAssigneeRef}>
                                           <div className="addTaskJobListItems">
                                             <label className="addedAssignees">
                                               Assignees
@@ -1125,6 +1148,7 @@ const JobModal = ({
                                             <button
                                               className="colorOutlineBtn"
                                               onClick={() => {
+
                                                 setUserDropdownStates(
                                                   Array(19).fill(false)
                                                 );
@@ -1177,10 +1201,10 @@ const JobModal = ({
                               <div className="svg-box mx-2"></div>
                             )}
                           </label>
-                          <div className="w-100  d-flex align-items-center position-relative">
+                          <div className="w-100  d-flex align-items-center position-relative flex-wrap">
                             <div
-                              className="d-flex justify-content-between application-lodge"
-                              style={{ "min-width": "92%" }}
+                              className="d-flex justify-content-between application-lodge mobile"
+                              // style={{ "min-width": "92%" }}
                             >
                               <div className="d-flex gap-3 align-items-center ">
                                 <img
@@ -1221,8 +1245,8 @@ const JobModal = ({
                                   </button>
                                 )}
                                 {showStages && (
-                                  <div className="stage-addTaskJobDropdown">
-                                    <div className="addTaskJobListScroll">
+                                  <div className="stage-addTaskJobDropdown right" ref={showStagesRef}>
+                                    <div className="addTaskJobListScroll ">
                                       <div className="addTaskJobListItems">
                                         {Object.keys(StageList)?.map((key) => (
                                           <div
@@ -1342,7 +1366,7 @@ const JobModal = ({
                                   </div>
                                 )}
                                 {showAssignee && (
-                                  <div className="addAssigneeDropdown1">
+                                  <div className="addAssigneeDropdown1" ref={showAssigneeRef}>
                                     <div className="addTaskJobListScroll">
                                       <div className="addTaskJobListItems">
                                         <label className="addedAssignees">

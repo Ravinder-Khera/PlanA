@@ -37,6 +37,7 @@ const Jobs = () => {
   const [notificationDropDown, setNotificationDropDown] = useState(false);
   const [reloadTabs, setReloadTabs] = useState(false);
   const notificationRef = useRef(null);
+  const taskMobileScrollRef = useRef(null);
   const [searchedInput, setSearchedInput] = useState("");
 
   const [notifications, setNotifications] = useState([
@@ -70,6 +71,21 @@ const Jobs = () => {
     setNotifications((prevNotifications) =>
       prevNotifications.filter((notification) => notification.id !== id)
     );
+  };
+
+  useEffect(() => {
+    if (showJobModal && taskMobileScrollRef.current) {
+      handleTScroll();
+    }
+  }, [showJobModal]);
+
+  const handleTScroll = () => {
+    if (taskMobileScrollRef.current) {
+      taskMobileScrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
   };
 
   const { state } = location;
@@ -349,6 +365,7 @@ const Jobs = () => {
           fetchJobs={fetchJobs}
           usersLists={getJob?.data?.usersArray}
           reloadTabs={reloadTabs}
+          scrollRef={taskMobileScrollRef}
         />
       )}
 
@@ -483,7 +500,7 @@ const Jobs = () => {
             </div>
           </div>
           <div
-            className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv "
+            className="d-flex  align-items-baseline pe-md-4 addNewTaskDiv "
             style={{ cursor: "pointer" }}
             ref={filterRef}
           >
@@ -506,7 +523,7 @@ const Jobs = () => {
           </div>
         </div>
 
-        <div className="JobsContainer d-flex" ref={containerRef}>
+        <div className="JobsContainer desktop" ref={containerRef}>
           <div className="left-side">
             <div className="first-table">
               <div className="job_table_outer_div  ">
@@ -740,10 +757,114 @@ const Jobs = () => {
           </div>
         </div>
 
+        <div className="JobsContainer mobile">
+          <div className="left-side">
+            <div className="first-table">
+              <div className="job_table_outer_div  ">
+                <ul>
+                {filteredJobs &&
+                  filteredJobs?.length > 0 ?
+                    filteredJobs?.map((job, index) => (
+                      <li key={index}>
+                        <div className="jobBox">
+                          <div className="jobItem">
+                          <div className="jobHeading">Select </div>
+                            <div  className="text-center">
+                              {" "}
+                              <label htmlFor={`select_${index}`}>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedJobs.includes(job.id)}
+                                  onChange={(e) =>
+                                    handleCheckBoxSelect(e, job.id)
+                                  }
+                                  id={`select_${index}`}
+                                  style={{ display: "none" }}
+                                />
+                                {selectedJobs.includes(job.id) ? (
+                                  <div className="svg-box-2 mx-2">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="24"
+                                      height="15"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                    >
+                                      <path
+                                        d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                        fill="black"
+                                      />
+                                    </svg>
+                                  </div>
+                                ) : (
+                                  <div className="svg-box mx-2"></div>
+                                )}
+                              </label>
+                            </div>
+                          </div>
+                          <div className="jobItem" style={{minHeight:'40px'}}>
+                            <div className="jobHeading">Job No.</div>
+                            <div className="text-center">
+                              <span
+                                className={`stageBtn btn_${findNearestStage(
+                                  job
+                                )}`}
+                              >
+                                {job.id}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="jobItem align-items-start">
+                            <div className="jobHeading">Job </div>
+                            <div className="ps-3 text-end w-100">
+                              <div className="job-name ms-auto">
+                                <h4
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => {
+                                    localStorage.setItem("jobId", job.id);
+                                    setShowJobModal(true);
+                                    setGetJob({
+                                      data: job,
+                                      stage: findNearestStage(job),
+                                    });
+                                  }}
+                                >
+                                  {job.title}
+                                </h4>
+                                <h6>{job.description}</h6>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="jobItem">
+                            <div className="jobHeading">Due/FUP On</div>
+                            <div className="text-center">
+                              {moment(job.due_date).local().format("L")}
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    )):
+                  <li className="text-center">
+                    <span
+                      className={`stageBtn btn_`}
+                    >
+                      No Results Found
+                    </span>
+                  </li>
+                }
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="JobsHeading paginationDiv">
           <div className="paginationSections">
             <div className="btnDiv">
               <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+              <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
             </div>
             <div className="pageNoDiv">
               {pageUrls && currentPage >= 4 &&
@@ -764,6 +885,7 @@ const Jobs = () => {
             </div>
             <div className="btnDiv">
               <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+              <button className="nextBtn mobile" onClick={handleNextPage} disabled={currentPage === totalPages}>{'>'}</button>
             </div>
           </div>
         </div>
