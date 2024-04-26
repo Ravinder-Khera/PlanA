@@ -1598,7 +1598,50 @@
                             }
                         }
 
-
+                        &.invoicePopUp{
+                            @media screen and (max-width:992px) {                                
+                                display: none;
+                            }
+                        }
+                        &.invoicePopUpMobile{
+                            @media screen and (min-width:993px) {                                
+                                display: none;
+                            }
+                            .top-section {
+                                .topsection-left {
+                                    &::after {
+                                        height: 0;
+                                    }
+                                    .top-left-content {
+                                        padding: 10px 10px 0 10px;
+                                    }
+                                }
+                            }
+                            .top-right-content {
+                                .billingDetails{
+                                    padding: 0 10px;
+                                }
+                            }
+                            .addNewTaskDiv{
+                                .addTaskJobDiv{
+                                    position: inherit;
+                                }
+                            } 
+                            .itemBox{
+                                display: flex;
+                                flex-direction: column;
+                                width: 100%;
+                                .itemData{
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    .editDeleteDiv{
+                                        display: block;
+                                        position: relative;
+                                    }
+                                }
+                            }
+                        }
 
                     }
 

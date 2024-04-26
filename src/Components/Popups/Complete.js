@@ -6,7 +6,7 @@ import { getUserByRole, updateTask } from "../../services/auth";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 
-const Complete = ({ data, handleClose }) => {
+const Complete = ({ data, handleClose,scrollRef }) => {
 
   const [loading, setLoading] = useState(false);
   const [selectDueDate, setSelectDueDate] = useState(false);
@@ -31,8 +31,17 @@ const Complete = ({ data, handleClose }) => {
     const day = String(selectedDueDate.getDate()).padStart(2, "0");
     formattedDueDate = `${year}-${month}-${day}`;
   } else {
-    formattedDueDate = data.due_date;
+    formattedDueDate = data?.due_date;
   }
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [scrollRef]);
 
   useEffect(() => {
     let handler = (e) => {
@@ -212,7 +221,7 @@ const Complete = ({ data, handleClose }) => {
           />
         </div>
       )}
-      <div className="popup-body">
+      <div className="popup-body" id="taskMobileScroll" ref={scrollRef}>
         <div className="close-icon" onClick={handleClose}>
           <CrossIcon />
         </div>

@@ -59,6 +59,7 @@ function TaskPage() {
   const selectUserRef = useRef(null);
   const selectAssigneeRef = useRef(null);
   const selectFilterRef = useRef(null);
+  const taskMobileScrollRef = useRef(null);
 
   const fetchTasksToDo = async () => {
     try {
@@ -183,7 +184,25 @@ function TaskPage() {
     };
   }, []);
 
-  
+  useEffect(() => {
+    if (showPopup && taskMobileScrollRef.current) {
+      handleTScroll();
+    }
+  }, [showPopup]);
+
+  const handleTScroll = () => {
+    if (taskMobileScrollRef.current) {
+      taskMobileScrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  };
+
+  const handleTaskRedo = (task) => {
+    setSelectedTask(task);
+    setShowPopup(true);
+  };
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: new Date(
@@ -657,6 +676,7 @@ function TaskPage() {
           <Complete
             data={selectedTask}
             handleClose={() => handleClose()}
+            scrollRef={taskMobileScrollRef}
           />
         )}
         <div className="DashboardHeading d-flex justify-content-between align-items-center">
@@ -2011,8 +2031,9 @@ function TaskPage() {
                           <div
                             className="me-2 revertToDo"
                             onClick={() => {
-                              setSelectedTask(task);
-                              setShowPopup(true);
+                              // setSelectedTask(task);
+                              // setShowPopup(true);
+                              handleTaskRedo(task);
                             }}
                           >
                             <RedoIcon />

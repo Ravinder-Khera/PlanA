@@ -2970,6 +2970,16 @@ body {
                         color: #fff;
                     }
                 }
+                &.mobile{
+                    display: none;
+                }
+                @media screen and (max-width:992px) {
+                    display: none;
+                    &.mobile{
+                        display: block;
+                        min-width: auto;
+                    }
+                }
             }
         }
         .pageNoDiv{

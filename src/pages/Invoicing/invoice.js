@@ -328,6 +328,7 @@ function Invoice() {
           <div className="paginationSections">
             <div className="btnDiv">
               <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+              <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
             </div>
             <div className="pageNoDiv">
               {pageUrls && currentPage >= 4 &&
@@ -348,6 +349,7 @@ function Invoice() {
             </div>
             <div className="btnDiv">
               <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+              <button className="nextBtn mobile" onClick={handleNextPage} disabled={currentPage === totalPages}>{'>'}</button>
             </div>
           </div>
         </div>

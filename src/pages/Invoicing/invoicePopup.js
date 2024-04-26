@@ -345,7 +345,7 @@ const InvoicePopup = ({ handleClose }) => {
           <div className="wrapper">
             <div className="container pop-container" ref={popUpRef} style={{maxWidth:'929px'}}>
               <div className="popup-content">
-                <div className="popup-section-left">
+                <div className="popup-section-left invoicePopUp">
                   <div
                     className="top-section"
                     style={{ position: "sticky", top: "0", zIndex: "2" }}
@@ -698,6 +698,406 @@ const InvoicePopup = ({ handleClose }) => {
                                 <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
                               </svg>
                            </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div className="popup-section-left invoicePopUpMobile">
+                  <div
+                    className="top-section"
+                    style={{ position: "sticky", top: "0", zIndex: "2" }}
+                  >
+                    <div className="topsection-left invoice">
+                      <div className="top-left-content align-items-center" style={{height:'auto',padding:''}}>
+                        <div
+                          onClick={handleClose}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <img
+                            src="/assets/Frame 60.png"
+                            alt=""
+                            className="back-icon mt-0"
+                          />
+                        </div>
+                        <div className="position w-100">
+                          <div className="d-flex justify-content-between align-items-center gap-2">
+                            <div className="title">
+                              <div className="d-flex flex-column">
+                                  <h1 >
+                                    Invoice
+                                  </h1>
+                              </div>
+                            </div>
+                            <div className="d-flex gap-4">
+                              <button
+                                className={`stageBtn paid`}
+                                style={{ cursor: "pointer" }}
+                                onClick={handleCreateInvoice}
+                              >
+                                {'Save'}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="top-left-content align-items-center" style={{height:'auto',padding:''}}>
+                        <div className="position w-100">
+                          <div className=" listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                            <div className="addTaskJobDiv">
+                                <button
+                                className={`stageBtn ${selectedStatus}`}
+                                style={{ cursor: "pointer" }}
+                                onClick={() => {
+                                  setDropDownStatus(true);
+                                }}
+                              >
+                                {selectedStatus ? selectedStatus : 'Select'}
+                              </button>
+                              {dropDownStatus && 
+                                <div className="addTaskJobDropdown right" ref={selectStatusRef}>
+                                  <div className="addInvoiceCContactDetails">
+                                  <button
+                                    className={`stageBtn paid`}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={()=>setSelectedStatus('paid')}
+                                  >
+                                    Paid
+                                  </button>
+                                  <button
+                                    className={`stageBtn unpaid m-2`}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={()=>setSelectedStatus('unpaid')}
+                                  >
+                                    Unpaid
+                                  </button>
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                        <div className="position w-100">
+                            
+                          <div className=" listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                            <div className="addTaskJobDiv">
+                              <div
+                                className="UserImg withAddBtn "
+                                onClick={() => {
+                                  setSelectUser(true);
+                                }}
+                                style={{ minWidth: "40px" }}
+                              > 
+                                <div className="userName">
+                                    {!user.name ? <User /> : getInitials(user.name)}
+                                </div>
+                              </div>
+                              {selectUser && 
+                                <div className="addTaskJobDropdown w-100 right" ref={selectUserRef}>
+                                  <div className="addInvoiceCContactDetails">
+                                    <div className="userDetails">
+                                      <div className="userProfile">
+                                      {!user.name ? 'UN' : getInitials(user.name)}
+                                      </div>
+                                      <div className="userName">
+                                        <h4>{!user.name ? 'User Name' : user.name}</h4>
+                                        <span> {!user.email ? '[Empty Email]' : user.email}</span>
+                                      </div>
+                                    </div>
+                                    <div className="userInput">
+                                      <input
+                                        onChange={handleUser}
+                                        className="userInput"
+                                        type="text"
+                                        name="name"
+                                        value={user.name}
+                                        id="contactName"
+                                        placeholder="Name"
+                                      />
+                                      <input
+                                        onChange={handleUser}
+                                        className="userInput"
+                                        type="text"
+                                        name="email"
+                                        value={user.email}
+                                        id="contactEmail"
+                                        placeholder="Email"
+                                      />
+                                    </div>
+                                    <div className="userSave">
+                                      <button onClick={validateUser}>Save</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="top-right-content ">
+                    <div className="billingDetails">
+                      <div className="billingInfo ">
+                        <div className="dueDateDiv addNewTaskDiv w-100">
+                          <div className="centerText mb-3 addTaskJobDiv float-none text-start" style={{transform:'translateY(0)'}}>
+                            <div
+                              className="addTaskDueDateBtn"
+                              onClick={() => setSelectDueDate(!selectDueDate)}
+                            >
+                              <span className="requiredSpan">*</span><TaskIcon /> {selectedDueDate ? formattedDueDate : 'Due Date'}
+                            </div>
+                            {selectDueDate && (
+                              <div className="datePickerDiv" style={{right:'10px',left:'auto'}} ref={selectDueDateRef}>
+                                <Calendar
+                                  date={selectedDueDate}
+                                  onChange={handleSelectDueDate}
+                                  value={selectedDueDate}
+                                  calendarType="ISO 8601"
+                                  // minDate={new Date()}
+                                  rangeColors={["#E2E31F"]}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="billingInfo flex-wrap gap-1">
+                        <h3 className="BoldHeading heading">Billed To:<span className="requiredSpan">*</span></h3>
+                        <div  className="d-flex align-items-center">
+                          <input
+                            onChange={handleOnChange}
+                            className="addInput"
+                            type="text"
+                            name="to"
+                            value={state.to}
+                            id=""
+                            ref={billingToRef}
+                            placeholder="Add Name Here.."
+                          />
+                          <span>
+                            <img
+                              className="penImage"
+                              src="/assets/pan.png"
+                              alt=""
+                              onClick={()=> billingToRef.current.focus()}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                      <div className="billingInfo flex-wrap gap-1">
+                        <h3 className="BoldHeading heading">Pay To:<span className="requiredSpan">*</span></h3>
+                        <div  className="d-flex align-items-center">
+                          <input
+                            onChange={handleOnChange}
+                            className="addInput"
+                            type="text"
+                            name="from"
+                            value={state.from}
+                            ref={payToRef}
+                            id=""
+                            placeholder="Add Name Here.."
+                          />
+                          <span>
+                            <img
+                              className="penImage"
+                              src="/assets/pan.png"
+                              alt=""
+                              onClick={()=> payToRef.current.focus()}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                      <div className="billingInfo">
+                        <textarea 
+                          onChange={handleOnChange}
+                          className="addInput"
+                          type="text"
+                          name="fromAddress"
+                          value={state.fromAddress}
+                          rows={2}
+                          id=""
+                          placeholder="Add Address Here.."
+                        />
+                      </div>
+
+                      <div className="billingInfo">
+                        <h3 className="heading">Bank:</h3>
+                        <input
+                          onChange={handleOnChange}
+                          className="addInput"
+                          type="text"
+                          name="bank_name"
+                          style={{maxWidth:'180px'}}
+                          value={state.bank_name}
+                          id=""
+                          placeholder="Bank Name"
+                        />
+                      </div>
+
+                      <div className="billingInfo">
+                        <h3 className=" heading">Account Name:</h3>
+                        <input
+                          onChange={handleOnChange}
+                          className="addInput"
+                          type="text"
+                          style={{maxWidth:'180px'}}
+                          name="account_name"
+                          value={state.account_name}
+                          id=""
+                          placeholder="Account Name"
+                        />
+                      </div>
+                      <div className="billingInfo">
+                        <h3 className=" heading">BSB:</h3>
+                        <input
+                          onChange={handleOnChange}
+                          className="addInput"
+                          type="text"
+                          style={{maxWidth:'180px'}}
+                          name="bsb"
+                          value={state.bsb}
+                          id=""
+                          placeholder="0000-000"
+                        />
+                      </div>
+                      <div className="billingInfo">
+                        <h3 className=" heading">Account Number:</h3>
+                        <input
+                          onChange={handleOnChange}
+                          className="addInput"
+                          style={{maxWidth:'180px'}}
+                          type="text"
+                          name="account_number"
+                          value={state.account_number}
+                          id=""
+                          placeholder="0000 0000"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="table-section position-relative " style={{zIndex:'0',maxWidth:'calc(100% - 20px)'}}>
+                    <div className="table-main-section mt-4">
+                      <ul className="invoiceItemUl ">
+                          {items.length > 0 &&
+                            items.map((item, index) => (
+                              <li key={index} className="addItemInput position-relative itemInput px-2 gap-0">
+                                <div className="itemBox">
+                                  <div className="itemData">
+                                    <div className="itemHeading">
+                                      <p>Description</p>
+                                    </div>
+                                    <p>{item['description']}</p>
+                                  </div>
+                                  <div className="itemData">
+                                    <div className="itemHeading">
+                                      <p>Rate</p>
+                                    </div>
+                                    <p>${item['rate']}/hr</p>
+                                  </div>
+                                  <div className="itemData">
+                                    <div className="itemHeading">
+                                      <p>Hours</p>
+                                    </div>
+                                    <p>{item['hours']}</p>
+                                  </div>
+                                  <div className="itemData">
+                                    <div className="itemHeading">
+                                      <p>Amount</p>
+                                    </div>
+                                    <p>{item['amount']}</p>
+                                  </div>
+                                  <div className="editDeleteDiv">
+                                    <div className="boxes">
+                                      <span>
+                                        <img
+                                          className="penImage"
+                                          src="/assets/pan.png"
+                                          alt=""
+                                          onClick={() => handleEditItem(index)}
+                                        />
+                                      </span>
+                                      <span className="delete" onClick={() => handleDeleteItem(index)}>
+                                        <DeleteIcon />
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>
+                          ))}
+                        <li className="addItemInput p-2">
+                          <div className="itemBox">
+                            <div className="itemData">
+                              <div className="itemHeading">
+                                <p>Description:</p>
+                              </div>
+                              <input
+                                onChange={handleItemChange}
+                                className="addInput"
+                                style={{maxWidth:'calc(100% - 100px)'}}
+                                type="text"
+                                name="description"
+                                value={itemState['description'] || ''}
+                                id=""
+                                placeholder="Add description here ..."
+                              />
+                            </div>
+                            <div className="itemData">
+                              <div className="itemHeading">
+                                <p>Rate:</p>
+                              </div>
+                              <input
+                                onChange={handleItemChange}
+                                className="addInput"
+                                type="number"
+                                name="rate"
+                                value={itemState['rate'] || ''}
+                                id=""
+                                placeholder="$0/hr"
+                              />
+                            </div>
+                            <div className="itemData">
+                              <div className="itemHeading">
+                                <p>Hours:</p>
+                              </div>
+                              <input
+                                onChange={handleItemChange}
+                                className="addInput"
+                                type="number"
+                                name="hours"
+                                value={itemState['hours'] || ''}
+                                id=""
+                                placeholder="0"
+                              />
+                            </div>
+                            <div className="itemData">
+                              <div className="itemHeading">
+                                <p>Amount:</p>
+                              </div>
+                              <input
+                                onChange={handleItemChange}
+                                className="addInput"
+                                type="number"
+                                readOnly
+                                name="amount"
+                                value={itemState['rate']* itemState['hours'] || ''}
+                                id=""
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div className="itemData">
+                              <div className="itemHeading">
+                                <p>Add</p>
+                              </div>
+                              <button onClick={handleAddItem}>
+                                <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                                    <rect width="100%" height="100%" fill="none" />
+                                    <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                                  </svg>
+                              </button>
+                            </div>
+                          </div>
                         </li>
                       </ul>
                     </div>
