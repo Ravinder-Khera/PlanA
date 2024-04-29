@@ -46,6 +46,7 @@
                 top: 74px;
                 left: 50%;
                 transform: translateX(-50%);
+                border-radius: 12px;
                 .popup-content {
                     display: flex;
 
@@ -55,6 +56,7 @@
                         background-color: #353535;
                         height: 800px;
                         overflow-y: auto;
+                        border-radius: 12px;
 
                         /* width */
                         &::-webkit-scrollbar {
@@ -229,7 +231,8 @@
                                             width: 56px;
                                             height: 32px;
                                             position: absolute;
-                                            top: -25px;
+                                            top: 0;
+                                            transform: translateY(-50%) scale(1);
 
                                         }
 
@@ -299,11 +302,11 @@
 
                                         .card-head {
                                             font-size: 13.11px;
-                                            line-height: 14.32px;
+                                            line-height: 100%;
                                             font-weight: 600;
                                             text-align: center;
                                             color: #FFFFFF;
-
+                                            margin-bottom: 0;
                                         }
 
                                         .card-para {
@@ -318,10 +321,11 @@
                                             // padding: 16px 88px;
                                             background: #FFFFFF66;
                                             color: #FFFFFF;
-                                            color: #FFFFFF;
+                                            border: 1px solid #fff;
                                             font-size: 11px;
-                                            width: 88px;
-                                            height: 16px;
+                                            font-weight: 700;
+                                            min-width: 88px;
+                                            // height: 16px;
                                             margin: 0 auto;
                                             text-align: center;
                                             border-radius: 30px;
@@ -331,11 +335,11 @@
                                         .card-btn {
                                             max-width: 155px;
                                             width: 100%;
-                                            height: 28px;
+                                            min-height: 28px;
                                             color: #FFFFFF;
                                             margin: 0 auto;
                                             border-radius: 5.66px;
-
+                                            padding: 5px;
                                             .btn-text {
                                                 font-size: 11px;
                                                 line-height: 12px;
@@ -410,9 +414,52 @@
                                 .slick-center {
                                     transition: 0.5s;
                                     transform: scale(1.5);
-
                                     .slider-box {
                                         filter: blur(0px);
+                                        .navMenuDiv{
+                                            transform: translateY(-50%) scale(0.75);
+                                        }
+                                        .card-slider{
+                                            .card-btn {
+                                                max-width: 155px;
+                                                width: 100%;
+                                                min-height: 28px;
+                                                background: #FFFFFF;
+                                                border: 1px solid #fff;
+                                                margin: 0 auto;
+                                                border-radius: 5.66px;
+                                                padding: 5px;
+                                                .btn-text {
+                                                    font-size: 11px;
+                                                    line-height: 12px;
+                                                    font-weight: 700;
+                                                }
+    
+                                                &.btnn_Application {
+                                                    color: rgba(59, 146, 57);
+                                                }
+    
+                                                &.btnn_Referral {
+                                                    color: rgba(31, 180, 227);
+                                                }
+    
+                                                &.btnn_Information {
+                                                    color: rgba(138, 80, 197);
+                                                }
+    
+                                                &.btnn_Public {
+                                                    color: rgba(255, 92, 0);
+                                                }
+    
+                                                &.btnn_Decision {
+                                                    color: rgba(255, 64, 190);
+                                                }
+    
+                                                &.btnn_Unknown {
+                                                    color: rgba(255, 255, 255);
+                                                }
+                                            }
+                                        }
                                     }
 
 
@@ -674,7 +721,7 @@
                             }
 
                             .progress-bar-container {
-                                margin-top: 22px;
+                                margin-top: 12px;
                                 width: 100%;
                                 height: 2px;
                                 background-color: #252525 !important;
@@ -1969,7 +2016,11 @@
                 width: 100%;
                 border-radius: 5px;
                 position: relative;
-
+                .receiverImg{
+                    top: 50%;
+                    right: 0%;
+                    transform: translateX(50%) translateY(-50%);
+                }
                 .text-name {
                     font-family: Archivo;
                     font-size: 16px;
@@ -2021,14 +2072,17 @@
             padding: 0px 29px;
             margin: 25px auto;
             .reciver-chats {
-                background: #FFFFFF33;
+                background: #353535;
                 max-width: 319px;
                 width: 100%;
                 border-radius: 5px;
                 position: relative;
                 box-shadow: 0px 8px 8px 0px #0000004D;
-
-
+                .receiverImg{
+                    top: 50%;
+                    left: 0%;
+                    transform: translateX(-50%) translateY(-50%);
+                }
                 .text-name {
                     font-family: Archivo;
                     font-size: 16px;

@@ -438,7 +438,7 @@ body {
                 line-height: 22.914px;
                 background-size: 10px 5.8px;
                 background-image: url('./assets/icons/arrowDown.png');
-
+                padding: 4px 2.25rem 4px 0.25rem;
                 &:focus {
                     box-shadow: none;
                 }
@@ -492,8 +492,7 @@ body {
         justify-content: center;
         align-items: center;
         margin-left: 10px;
-        box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
-
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
         img {
             object-fit: cover;
             max-width: 100%;
@@ -545,6 +544,12 @@ body {
             &.CountUsers{
                 background: #fff;
                 color: #000;
+                text-align: center;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: normal;
+                letter-spacing: -0.56px;
             }
         }
 
@@ -1563,6 +1568,15 @@ body {
                     background: rgba(255, 255, 255, 0.25);
                 }
             }
+            position: relative;
+            .taskToJob{
+                position: absolute;
+                cursor: pointer;
+                left: 55px;
+                top: 0;
+                height: 100%;
+                width: calc(100% - 130px);
+            }
         }
     }
     @media screen and (max-width:992px) {
@@ -2221,7 +2235,8 @@ body {
     display: flex;
     margin-top: 27px;
     margin-bottom: 10px;
-
+    width: 100%;
+    border-bottom: 1px solid rgb(226, 227, 31 , 0.15);
     .taskTab {
         background: #353535;
         min-width: 144px;
@@ -2276,10 +2291,18 @@ body {
     width: 4px;
     height: 4px;
 }
+*:not(.Right):hover::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
 
 :-moz-scrollbar {
     width: 4px;
     height: 4px;
+}
+*:hover:-moz-scrollbar {
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -2299,9 +2322,6 @@ body {
     cursor: grab;
     border-radius: 4px;
     opacity: 1;
-    &:hover{
-       transform: scale(1.1);
-    }
 }
 
 :-moz-scrollbar-thumb {
@@ -2310,9 +2330,6 @@ body {
     opacity: 1;
     cursor: pointer;
     pointer-events: auto;
-    &:hover{
-        transform: scale(1.1);
-     }
 }
 
 .mapContainerDiv{
@@ -2321,10 +2338,30 @@ body {
     max-width: 100%;
     position: relative;
     margin-bottom: 20px;
+    @media screen and (max-width:992px) {
+        margin-top: 0px;
+    }
     .customTimeline {
         overflow-y: auto;
         max-height: calc(100vh - 210px);
         position: relative;
+        @media screen and (max-width:992px) {
+            display: none;
+        }
+        &.mobile{
+            display: none;
+            @media screen and (max-width:992px) {
+                display: block;
+                max-height: none;
+                overflow-y: hidden;
+                .timelineBody{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 40px;
+                    padding: 0 10px;
+                }
+            }
+        }
         .timeLineFixedTop{
             position: sticky;
             top: 0;
@@ -2439,9 +2476,23 @@ body {
                             position: absolute;
                             top: 0;
                             right: 1px;
+                            height: 100%;
                             &:hover{
                                 .timeLineJobItemDiv{
                                     min-width: max-content !important;
+                                    &.hidden{
+                                        .jobBox{
+                                            .jobProgressBg{
+                                                width: auto;
+                                            }
+                                            .textDiv{
+                                                opacity: 1;
+                                            }
+                                            .listContent{
+                                                opacity: 1;
+                                            }
+                                        }
+                                    }
                                 }
                                 .jobProgressDiv{
                                     &.hidden{
@@ -2460,9 +2511,25 @@ body {
                                 min-width: 10px;
                                 cursor: pointer;
                                 transition: all 0.55s ease;
+                                &.hidden{
+                                    .jobBox{
+                                        .jobProgressBg{
+                                            width: 100%;
+                                        }
+                                        .textDiv{
+                                            opacity: 0;
+                                        }
+                                        .listContent{
+                                            opacity: 0;
+                                        }
+                                    }
+                                }
                             }
                             .textDiv{
                                 min-width: max-content;
+                                &.mobile{
+                                    min-width: auto;
+                                }
                                 span{
                                     color: #FFF;
                                     font-size: 12px;
@@ -2477,7 +2544,8 @@ body {
                                     font-style: normal;
                                     font-weight: 600;
                                     line-height: normal;
-                                    letter-spacing: -0.64px;                                    
+                                    letter-spacing: -0.64px;       
+                                    margin-bottom: 0;                             
                                 }
                             }
                         }
@@ -3259,8 +3327,18 @@ body {
                 .chatBtnDiv{
                     display: flex;
                     width: 100%;
-                    justify-content: end;
+                    justify-content: space-between;
+                    align-items: center;
                     padding-top: 27px;
+                    p{
+                        color: #FFF;
+                        font-size: 12px;
+                        font-style: normal;
+                        font-weight: 300;
+                        line-height: normal;
+                        letter-spacing: -0.48px;
+                        margin: 0;
+                    }
                     button{
                         border-radius: 1px;
                         border: 2px solid #E2E31F;

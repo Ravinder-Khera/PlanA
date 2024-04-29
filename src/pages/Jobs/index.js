@@ -79,6 +79,12 @@ const Jobs = () => {
     }
   }, [showJobModal]);
 
+  useEffect(() => {
+    if (location.state === true) {
+      setShowAddModal(true);
+    }
+  }, [location]);
+
   const handleTScroll = () => {
     if (taskMobileScrollRef.current) {
       taskMobileScrollRef.current.scrollIntoView({
@@ -382,7 +388,7 @@ const Jobs = () => {
         <div className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap" style={{zIndex:'2'}}>
           <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
             <h2>Jobs</h2>
-            <div className="navSearchDiv jobSearchDiv">
+            <div className="navSearchDiv jobSearchDiv jobSearchBar">
               <form>
                 <div className="searchBox">
                   <div className="IconBox">
@@ -571,9 +577,9 @@ const Jobs = () => {
                       <th scope="col">
                         <div className="headerDiv">Job Name</div>
                       </th>
-                      <th scope="col">
+                      {/* <th scope="col">
                         <div className="headerDiv">Due/FUP On</div>
-                      </th>
+                      </th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -642,9 +648,9 @@ const Jobs = () => {
                               <h6>{job.description}</h6>
                             </div>
                           </td>
-                          <td className="text-center">
+                          {/* <td className="text-center">
                             {moment(job.due_date).local().format("L")}
-                          </td>
+                          </td> */}
                         </tr>
                       )) :
                       <tr>
@@ -668,12 +674,15 @@ const Jobs = () => {
             <div className="first-table">
               <div
                 className="table-responsive"
-                style={{ maxWidth: divWidth - 800 }}
+                style={{ maxWidth: divWidth - 650 }}
               >
                 <div className="job_table_outer_div">
                   <table className="table table-borderless text-light">
                     <thead>
                       <tr>
+                        <th scope="col">
+                          <div className="headerDiv">Due/FUP On</div>
+                        </th>
                         <th scope="col">
                           <div className="headerDiv">Job Manager</div>
                         </th>
@@ -690,6 +699,9 @@ const Jobs = () => {
                         filteredJobs?.length > 0 &&
                         filteredJobs?.map((job) => (
                           <tr key={job.id}>
+                            <td className="text-center">
+                              {moment(job.due_date).local().format("L")}
+                            </td>
                             <td className="text-center">
                               <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                 <div className=" d-flex align-items-center justify-content-center">

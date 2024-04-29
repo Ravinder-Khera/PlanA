@@ -306,8 +306,7 @@ const ChatAndAttachment = ({ JobId }) => {
                                 </p>
                               </div>
                               <div
-                                className="position-absolute"
-                                style={{ top: "31px", right: "-14px" }}
+                                className="position-absolute receiverImg "
                               >
                                 {msg.user?.profile_pic !== "" ? (
                                   <img
@@ -357,8 +356,7 @@ const ChatAndAttachment = ({ JobId }) => {
                                 <p className="text-name p-0 ">You</p>
                               </div>
                               <div
-                                className="position-absolute"
-                                style={{ top: "31px", left: "-14px" }}
+                                className="position-absolute receiverImg"
                               >
                                 {msg.user?.profile_pic !== "" ? (
                                   <img

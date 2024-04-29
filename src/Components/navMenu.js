@@ -319,9 +319,10 @@ function NavMenu() {
                     {[user?.job_title]}
                     </span>
                   </div>
-                  <div className="UserImg" style={{ minWidth: "40px" }}>
+                  <div className="UserImg border-0" style={{ minWidth: "40px" }}>
                     {userImg ? (
                       <img
+                        className="border-0"
                         alt={userImg}
                         src={
                           process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userImg

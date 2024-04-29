@@ -7,7 +7,7 @@
         content: '';
         top: 0;
         left: 0;
-        width: 800px;
+        width: 650px;
         height: 100%;
         z-index: 0;
         box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
@@ -50,6 +50,16 @@
                         width: 100%;
                         input{
                             width: 100%;
+                        }
+                    }
+                }
+            }
+            @media screen and (min-width:993px) {
+                form{
+                    .searchBox{
+                        input{
+                            min-width: 300px;
+                            max-width: calc(100% - 570px );
                         }
                     }
                 }
@@ -286,7 +296,7 @@
     }
     .left-side {
         padding: 6px 0px 6px 16px;
-        min-width: 800px;
+        min-width: 650px;
         // box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
         // height: 100vh;
         // position: fixed;
@@ -342,8 +352,8 @@
                         h4 {
                             font-size: 16px;
                             color: #E2E31F;
-                            line-height: 0px;
-
+                            // line-height: 0px;
+                            margin-bottom: 0;
                         }
 
                         h6 {
@@ -606,7 +616,7 @@
 
     .right-side {
         padding: 6px 16px 6px 0;
-        max-width: calc(100% - 800px);
+        max-width: calc(100% - 650px);
         // position: absolute;
         // left: 800px;
         // height: 100vh;

@@ -420,16 +420,16 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                                     </span>
                                   </div>
                                   <div
-                                    className="timeLineJobItemDiv"
+                                    className={`timeLineJobItemDiv ${timeFrame === "monthly" && activeColumnsCount <= 2 ? 'hidden' : ''} ${timeFrame === "weekly" && activeColumnsCount <= 1 ? 'hidden' : ''}`}
                                     style={{
                                       width: `calc(${cellWidth}px * ${activeColumnsCount})`,
                                     }}
                                   >
-                                    <div className="d-flex gap-2 align-items-center justify-content-between h-100 p-3">
+                                    <div className="jobBox d-flex gap-2 align-items-center justify-content-between h-100 p-3">
                                       <div
                                         className="jobProgressBg"
                                         style={{
-                                          width: `${job.progress}%`,
+                                          minWidth: `${job.progress}%`,
                                         }}
                                       ></div>
                                       <div className="textDiv">
@@ -536,6 +536,137 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                       </div>
                     );
                   })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div className="customTimeline mobile">
+          <div className="timelineBody">
+            {jobs.map((job) => {
+              return (
+                <div key={job.id} className="jobRow m-0 d-block">
+                  <div className={`jobCell ${findNearestStage(job) + " active"}`}>
+                    <div className="timeLineJob">
+                      <div
+                        className="timeLineJobItem position-relative"
+                        onClick={() => {
+                            navigate("/jobs", { state: job })
+                          }}>
+                        <div className={`jobProgressDiv `}>
+                          <span className="text">
+                            Progress:{" "}
+                          </span>
+                          <span className="percentage">
+                            {job.progress % 1 !== 0
+                              ? job.progress.toFixed(2)
+                              : job.progress}
+                            %
+                          </span>
+                        </div>
+                        <div className={`timeLineJobItemDiv d-flex align-items-center`}  style={{minHeight:'140px'}}>
+                          <div className="d-flex gap-2 align-items-center justify-content-between w-100 p-3">
+                            <div
+                              className="jobProgressBg"
+                              style={{
+                                width: `${job.progress}%`,
+                              }}
+                            ></div>
+                            <div className="textDiv mobile">
+                              <span>
+                                |{job.id}|{job.title}
+                              </span>
+                              <p>{job.description}</p>
+                            </div>
+                            <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                              <div className=" d-flex align-items-center justify-content-end">
+                                {job.usersArray?.length > 0 ? (
+                                  <>
+                                    {job.usersArray?.length < 3 ? (
+                                      <>
+                                        {job.usersArray.map(
+                                          (user, index) => (
+                                            <div
+                                              key={index}
+                                              className={` UserImg addedUserImages `}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                              }}
+                                            >
+                                              {user.profile_pic !==
+                                              "" ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user.profile_pic
+                                                  }
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
+                                          )
+                                        )}
+                                      </>
+                                    ) : (
+                                      <>
+                                        {job.usersArray
+                                          .slice(0, 3)
+                                          .map((user, index) => (
+                                            <div
+                                              key={index}
+                                              className={` UserImg addedUserImages ${
+                                                index === 2
+                                                  ? "CountUsers"
+                                                  : ""
+                                              }`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                              }}
+                                            >
+                                              {index === 2 ? (
+                                                <>
+                                                  {job.usersArray
+                                                    .length - 2}
+                                                  +
+                                                </>
+                                              ) : (
+                                                <>
+                                                  {user.profile_pic !==
+                                                  "" ? (
+                                                    <img
+                                                      alt={user.name}
+                                                      src={
+                                                        process.env
+                                                          .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                        user.profile_pic
+                                                      }
+                                                    />
+                                                  ) : (
+                                                    <User />
+                                                  )}
+                                                </>
+                                              )}
+                                            </div>
+                                          ))}
+                                      </>
+                                    )}
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                    
                 </div>
               );
             })}

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import {
   AddIcon,
+  FilterIcon,
   NextIcon,
   PrevIcon,
   RedoIcon,
@@ -23,6 +24,7 @@ import { toast } from "react-toastify";
 import Complete from "../../Components/Popups/Complete";
 import filterIcon from "../../assets/icons/filterIcon.png";
 import Filter from "../../Components/Filter/Filter";
+import { useNavigate } from "react-router-dom";
 function TaskPage() {
   const [loading, setLoading] = useState(true);
   const [addTask, setAddTask] = useState(false);
@@ -49,8 +51,10 @@ function TaskPage() {
   const [selectedAssignee, setSelectedAssignee] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
-
-  const [showFIlter, setShowFilter] = useState(false);
+  const filterRef = useRef(null);
+  const [filteredJobs, setFilteredJobs] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
+  const navigate = useNavigate();
 
   const addTaskJobDropdownRef = useRef(null);
   const addTaskJobStageDropdownRef = useRef(null);
@@ -299,6 +303,20 @@ function TaskPage() {
       } 
     }
   };
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setShowFilter(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
 
   const handleAssigneeClick = (userId) => {
     setSelectedAssignee((prevUsers) => {
@@ -662,6 +680,43 @@ function TaskPage() {
     setShowPopup(false)
   }
 
+  const handleJob = async (job_id) => {
+    console.log(job_id,`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/job/${job_id}`);
+    try {
+      setLoading(true);
+      const authToken = localStorage.getItem("authToken");
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+      let response = await fetch(
+        `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/job/${job_id}`,
+        requestOptions
+      );
+      const isJson = response.headers
+        .get("content-type")
+        ?.includes("application/json");
+      const data = isJson && (await response.json());
+      setSearchJobStages(data);
+      if (response.status === 200) {
+        setLoading(false);
+        navigate("/jobs", { state: data })
+        return { res: data, error: null };
+
+      } else {
+        return { res: null, error: data };
+      }
+    } catch (error) {
+      console.error("Error fetching job:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {loading && (
@@ -728,26 +783,29 @@ function TaskPage() {
               />
             </div>
           )}
-          {/* <div
-            className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv "
-            style={{ cursor: "pointer" }} 
-            ref={selectFilterRef}
+
+          <div
+            className="d-flex  align-items-baseline pe-md-4 addNewTaskDiv "
+            style={{ cursor: "pointer",marginTop: "40px" }}
+            ref={filterRef}
           >
             <div
               className="d-flex align-items-center gap-2  "
-              onClick={() => setShowFilter(!showFIlter)}
+              onClick={() => setShowFilter(!showFilter)}
             >
-              <img
-                src={filterIcon}
-                style={{ width: "18px", height: "10px" }}
-                alt=""
-              />
+              <FilterIcon />
               <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
                 Filter
               </p>
             </div>
-            {showFIlter && <Filter tasks={true} />}
-          </div> */}
+            {showFilter && (
+              <Filter
+                setFilteredJobs={setFilteredJobs}
+                setLoading={setLoading}
+                closeFilter={() => setShowFilter(false)}
+              />
+            )}
+          </div>
         </div>
 
         <div className="DashboardHeading d-flex justify-content-start align-items-center position-relative">
@@ -1161,7 +1219,7 @@ function TaskPage() {
                         )}
                       </label>
                       <p>
-                        | {task.job_id}|<span>{task.title}</span>
+                        | {task.job_id} |<span>{task.title}</span>
                       </p>
                     </div>
                     <div className="listContent centerContent">
@@ -1340,6 +1398,7 @@ function TaskPage() {
                         )}
                       </div>
                     </div>
+                    <div className="taskToJob" onClick={() => handleJob(task.job_id)}></div>
                   </li>
                 ))}
             </ul>

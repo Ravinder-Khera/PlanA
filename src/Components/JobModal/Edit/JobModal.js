@@ -538,7 +538,7 @@ const JobModal = ({
                     style={{ position: "sticky", top: "0", zIndex: "9" }}
                   >
                     <div className="topsection-left">
-                      <div className="top-left-content">
+                      <div className="top-left-content align-baseline">
                         <div
                           onClick={handleClose}
                           style={{ cursor: "pointer" }}
@@ -812,7 +812,7 @@ const JobModal = ({
                                   </div>
                                 </div>
                                 <h1 className="card-head mt-2">Applicant</h1>
-                                <p className="card-para mt-2">
+                                <p className="card-para ">
                                   {stageMap.tasks[0]?.title}
                                 </p>
                                 <p className="card-days-text mt-2">
