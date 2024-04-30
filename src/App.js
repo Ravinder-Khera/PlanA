@@ -278,7 +278,7 @@ function DashboardMenuList() {
                     <Link className="d-flex" style={{textDecoration:'none'}} to="/settings" onClick={handleMenuClose}>
                       
                       <div className="UserImg m-0" style={{ minWidth: "40px" }}>
-                        {userImg ? (
+                        {userImg && userImg !== 'default-profile-pic.jpg' ? (
                           <img
                             className="img-fluid"
                             alt={userImg}

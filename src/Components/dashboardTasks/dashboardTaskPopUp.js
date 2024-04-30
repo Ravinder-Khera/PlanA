@@ -935,7 +935,7 @@ const DashboardTask = ({
                                                   toggleUserDropdown(index);
                                                 }}
                                               >
-                                                {user.profile_pic !== "" ? (
+                                                {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                   <img
                                                     alt={user.name}
                                                     src={
@@ -1268,7 +1268,7 @@ const DashboardTask = ({
                                               setShowAssignee(!showAssignee)
                                             }
                                           >
-                                            {user.profile_pic !== "" ? (
+                                            {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                               <img
                                                 alt={user.name}
                                                 src={
@@ -1435,7 +1435,7 @@ const DashboardTask = ({
                                                   className={` UserImg addedUserImages `}
                                                   style={{ minWidth: "40px" }}
                                                 >
-                                                  {user.profile_pic !== "" ? (
+                                                  {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                     <img
                                                       alt={user.name}
                                                       src={

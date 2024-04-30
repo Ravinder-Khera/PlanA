@@ -23,7 +23,6 @@ const JobModal = ({
   reloadTabs,
   scrollRef
 }) => {
-  console.log("data", data);
   const [tasks, setTasks] = useState({});
   const [filteredTasks, setFilteredTasks] = useState({});
   const [dueDate, setDueDate] = useState(null);
@@ -330,13 +329,17 @@ const JobModal = ({
   // for task list
   const handleTaskAssigneeClick = (userId) => {
     setTaskSelectedAssignee((prevUsers) => {
-      if (prevUsers.some((itemId) => itemId === userId)) {
-        return prevUsers.filter((itemId) => itemId !== userId);
+      if (prevUsers.some((selectedUser) => selectedUser.id === userId)) {
+        // If the user is already selected, remove them from the list
+        return prevUsers.filter((user) => user.id !== userId);
       } else {
-        return [...prevUsers, userId];
+        // If the user is not selected, add them to the list
+        const userToAdd = assignee.find((user) => user.id === userId);
+        return [...prevUsers, userToAdd];
       }
     });
   };
+  
 
   // for task list
   const handleTaskAddAssignee = async (task) => {
@@ -345,10 +348,10 @@ const JobModal = ({
       return;
     }
     setLoader(true);
+    const taskSelectedAssigneeIds = taskSelectedAssignee.map((user) => user.id);
     let reqBody = {
-      assignee_ids: taskSelectedAssignee,
+      assignee_ids: taskSelectedAssigneeIds,
     };
-    console.log("selected assignee", taskSelectedAssignee);
     try {
       const response = await updateTask(reqBody, task.id);
       if (response.res) {
@@ -616,7 +619,7 @@ const JobModal = ({
                                   {usersLists?.length > 0 && (
                                     <>
                                       {usersLists
-                                        ?.slice(0, 3)
+                                        ?.slice(0, 2)
                                         ?.map((user, index) => (
                                           <div
                                             key={index}
@@ -640,9 +643,8 @@ const JobModal = ({
                                             )}
                                           </div>
                                         ))}
-                                      {usersLists?.length > 3 && (
+                                      {usersLists?.length > 2 && (
                                         <div
-                                          key={4}
                                           className={`UserImg-count addedUserImages`}
                                           style={{
                                             minWidth: "40px",
@@ -650,7 +652,7 @@ const JobModal = ({
                                           }}
                                         >
                                           <div className="count-card">
-                                            {usersLists?.length - 3}+
+                                            {usersLists?.length - 2}+
                                           </div>
                                         </div>
                                       )}
@@ -787,7 +789,6 @@ const JobModal = ({
                                           ))}
                                         {stageMap?.users?.length > 3 && (
                                           <div
-                                            key={4}
                                             className={`UserImg-count addedUserImages`}
                                             style={{
                                               minWidth: "40px",
@@ -910,7 +911,7 @@ const JobModal = ({
                                 )}
                               </label>
                               
-                              <div className="w-100  d-flex align-items-center position-relative flex-wrap">
+                              <div className="w-100  d-flex align-items-center position-relative flex-wrap flex-md-nowrap">
                                 <div
                                   className="d-flex justify-content-between application-lodge mobile"
                                   // style={{ "min-width": "92%" }}
@@ -935,49 +936,46 @@ const JobModal = ({
                                     {task?.users?.length > 0 ? (
                                       <>
                                         {task?.users
-                                          ?.slice(0, 3)
+                                          ?.slice(0, 2)
                                           ?.map((user, i) => (
-                                            <>
-                                              <div
-                                                key={task.id}
-                                                className={` UserImg addedUserImages ${
-                                                  i === task?.users?.length - 1
-                                                    ? "withAddBtn"
-                                                    : ""
-                                                }`}
-                                                style={{
-                                                  minWidth: "40px",
-                                                  zIndex: i,
-                                                }}
-                                                onClick={() => {
-                                                  if (task.users) {
-                                                    setTaskSelectedAssignee(
-                                                      task.users
-                                                    );
-                                                  } else {
-                                                    setTaskSelectedAssignee([]);
+                                            <div
+                                              key={user.id}
+                                              className={` UserImg addedUserImages ${
+                                                i === task?.users?.length - 1
+                                                  ? "withAddBtn"
+                                                  : ""
+                                              }`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: i,
+                                              }}
+                                              onClick={() => {
+                                                if (task.users) {
+                                                  setTaskSelectedAssignee(
+                                                    task.users
+                                                  );
+                                                } else {
+                                                  setTaskSelectedAssignee([]);
+                                                }
+                                                toggleUserDropdown(index);
+                                              }}
+                                            >
+                                              {user.profile_pic !== "" ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user.profile_pic
                                                   }
-                                                  toggleUserDropdown(index);
-                                                }}
-                                              >
-                                                {user.profile_pic !== "" ? (
-                                                  <img
-                                                    alt={user.name}
-                                                    src={
-                                                      process.env
-                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                      user.profile_pic
-                                                    }
-                                                  />
-                                                ) : (
-                                                  <User />
-                                                )}
-                                              </div>
-                                            </>
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
                                           ))}
-                                        {task?.users?.length > 3 && (
+                                        {task?.users?.length > 2 && (
                                           <div
-                                            key={4}
                                             className={`UserImg-count addedUserImages withAddBtn`}
                                             style={{
                                               minWidth: "40px",
@@ -985,7 +983,7 @@ const JobModal = ({
                                             }}
                                           >
                                             <div className="count-card">
-                                              {task?.users?.length - 3}+
+                                              {task?.users?.length - 2}+
                                             </div>
                                           </div>
                                         )}
@@ -1009,69 +1007,53 @@ const JobModal = ({
                                     {userDropdownStates[index] && (
                                       <div className="addAssigneeDropdown " >
                                         <div className="addTaskJobListScroll" ref={addTaskAssigneeRef}>
-                                          <div className="addTaskJobListItems">
+                                          <div className="addTaskJobListItems text-start">
                                             <label className="addedAssignees">
                                               Assignees
                                             </label>
                                             <div className="addedAssigneeBorder">
                                               {assignee &&
                                                 assignee
-                                                  ?.filter((user) =>
-                                                    taskSelectedAssignee?.some(
-                                                      (itemId) =>
-                                                        itemId === user.id
+                                                  .filter((user) =>
+                                                    taskSelectedAssignee.some(
+                                                      (selectedUser) => selectedUser.id === user.id
                                                     )
                                                   )
-                                                  ?.map((user) => (
-                                                    <>
+                                                  .map((user) => (
+                                                    <div
+                                                      key={user.id}
+                                                      className={`addAssigneeDiv ${
+                                                        taskSelectedAssignee?.some((itemId) => itemId === user.id) &&
+                                                        "active"
+                                                      }`}
+                                                      onClick={() => handleTaskAssigneeClick(user.id)}
+                                                    >
                                                       <div
-                                                        key={user.id}
-                                                        className={`addAssigneeDiv  ${
-                                                          taskSelectedAssignee?.some(
-                                                            (itemId) =>
-                                                              itemId === user.id
-                                                          ) && "active"
-                                                        }`}
-                                                        onClick={() =>
-                                                          handleTaskAssigneeClick(
-                                                            user.id
-                                                          )
-                                                        }
+                                                        className={` UserImg addedUserImages `}
+                                                        style={{
+                                                          minWidth: "40px",
+                                                        }}
                                                       >
-                                                        <div
-                                                          className={` UserImg addedUserImages `}
-                                                          style={{
-                                                            minWidth: "40px",
-                                                          }}
-                                                        >
-                                                          {user.profile_pic !==
-                                                          "" ? (
-                                                            <img
-                                                              alt={user.name}
-                                                              src={
-                                                                process.env
-                                                                  .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                                user.profile_pic
-                                                              }
-                                                            />
-                                                          ) : (
-                                                            <User />
-                                                          )}
-                                                        </div>
-                                                        <div>
-                                                          <h4>{user.name}</h4>
-                                                          <p>{user.email}</p>
-                                                        </div>
-                                                        <div className="checkAddBtn">
-                                                          {taskSelectedAssignee?.some(
-                                                            (itemId) =>
-                                                              itemId === user.id
-                                                          )
-                                                            ? "-"
-                                                            : "+"}
-                                                        </div>
+                                                        {user.profile_pic !== "" ? (
+                                                          <img
+                                                            alt={user.name}
+                                                            src={
+                                                              process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                              user.profile_pic
+                                                            }
+                                                          />
+                                                        ) : (
+                                                          <User />
+                                                        )}
                                                       </div>
-                                                    </>
+                                                      <div>
+                                                        <h4>{user.name}</h4>
+                                                        <p>{user.email}</p>
+                                                      </div>
+                                                      <div className="checkAddBtn">
+                                                        -
+                                                      </div>
+                                                    </div>
                                                   ))}
                                             </div>
                                             <label className="">
@@ -1080,62 +1062,46 @@ const JobModal = ({
                                             {assignee
                                               ?.filter(
                                                 (user) =>
-                                                  !taskSelectedAssignee?.some(
-                                                    (itemId) =>
-                                                      itemId === user.id
-                                                  )
+                                                  !taskSelectedAssignee?.some((id) => id === user.id)
                                               )
                                               ?.map((user) => (
-                                                <>
+                                                <div
+                                                  key={user.id}
+                                                  className={`addAssigneeDiv ${
+                                                    taskSelectedAssignee?.some((itemId) => itemId === user.id) &&
+                                                    "active"
+                                                  }`}
+                                                  onClick={() => handleTaskAssigneeClick(user.id)}
+                                                >
                                                   <div
-                                                    key={user.id}
-                                                    className={`addAssigneeDiv ${
-                                                      taskSelectedAssignee?.some(
-                                                        (itemId) =>
-                                                          itemId === user.id
-                                                      ) && "active"
-                                                    }`}
-                                                    onClick={() =>
-                                                      handleTaskAssigneeClick(
-                                                        user.id
-                                                      )
-                                                    }
+                                                    className={` UserImg addedUserImages `}
+                                                    style={{
+                                                      minWidth: "40px",
+                                                    }}
                                                   >
-                                                    <div
-                                                      className={` UserImg addedUserImages `}
-                                                      style={{
-                                                        minWidth: "40px",
-                                                      }}
-                                                    >
-                                                      {user.profile_pic !==
-                                                      "" ? (
-                                                        <img
-                                                          alt={user.name}
-                                                          src={
-                                                            process.env
-                                                              .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                            user.profile_pic
-                                                          }
-                                                        />
-                                                      ) : (
-                                                        <User />
-                                                      )}
-                                                    </div>
-                                                    <div>
-                                                      <h4>{user.name}</h4>
-                                                      <p>{user.email}</p>
-                                                    </div>
-                                                    <div className="checkAddBtn">
-                                                      {taskSelectedAssignee?.some(
-                                                        (itemId) =>
-                                                          itemId === user.id
-                                                      )
-                                                        ? "-"
-                                                        : "+"}
-                                                    </div>
+                                                    {user.profile_pic !== "" ? (
+                                                      <img
+                                                        alt={user.name}
+                                                        src={
+                                                          process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                          user.profile_pic
+                                                        }
+                                                      />
+                                                    ) : (
+                                                      <User />
+                                                    )}
                                                   </div>
-                                                </>
-                                              ))}
+                                                  <div>
+                                                    <h4>{user.name}</h4>
+                                                    <p>{user.email}</p>
+                                                  </div>
+                                                  <div className="checkAddBtn">
+                                                    {taskSelectedAssignee?.some((itemId) => itemId === user.id)
+                                                      ? "-"
+                                                      : "+"}
+                                                  </div>
+                                                </div>
+                                            ))}
                                           </div>
                                           <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
                                             <button
@@ -1249,9 +1215,9 @@ const JobModal = ({
                                   <div className="stage-addTaskJobDropdown right" ref={showStagesRef}>
                                     <div className="addTaskJobListScroll ">
                                       <div className="addTaskJobListItems">
-                                        {Object.keys(StageList)?.map((key) => (
+                                        {Object.keys(StageList)?.map((key,i) => (
                                           <div
-                                            key={key}
+                                            key={i}
                                             className={`addTaskJobStageItem ${key}`}
                                             onClick={() => {
                                               console.log("keyyy", key);
@@ -1276,9 +1242,8 @@ const JobModal = ({
                                 {selectedAssignee?.length > 0 ? (
                                   <>
                                     {selectedAssignee
-                                      ?.slice(0, 3)
+                                      ?.slice(0, 2)
                                       ?.map((user, i) => (
-                                        <>
                                           <div
                                             key={user.id}
                                             className={` UserImg addedUserImages ${
@@ -1307,11 +1272,9 @@ const JobModal = ({
                                               <User />
                                             )}
                                           </div>
-                                        </>
                                       ))}
-                                    {selectedAssignee?.length > 3 && (
+                                    {selectedAssignee?.length > 2 && (
                                       <div
-                                        key={4}
                                         className={`UserImg-count addedUserImages withAddBtn`}
                                         style={{
                                           minWidth: "40px",
@@ -1319,41 +1282,10 @@ const JobModal = ({
                                         }}
                                       >
                                         <div className="count-card">
-                                          {selectedAssignee?.length - 3}+
+                                          {selectedAssignee?.length - 2}+
                                         </div>
                                       </div>
                                     )}
-                                    {/* {assignee
-                                      .filter((user) =>
-                                        selectedAssignee?.some(
-                                          (itemId) => itemId === user.id
-                                        )
-                                      )
-                                      .map((user, index) => (
-                                        <>
-                                          <div
-                                            key={index}
-                                            className={`UserImg addedUserImages ${index}`}
-                                            style={{
-                                              minWidth: "40px",
-                                              zIndex: index,
-                                            }}
-                                          >
-                                            {user.profile_pic !== "" ? (
-                                              <img
-                                                alt={user.name}
-                                                src={
-                                                  process.env
-                                                    .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                  user.profile_pic
-                                                }
-                                              />
-                                            ) : (
-                                              <User />
-                                            )}
-                                          </div>
-                                        </>
-                                      ))} */}
                                   </>
                                 ) : (
                                   <div
@@ -1382,7 +1314,6 @@ const JobModal = ({
                                                 )
                                               )
                                               ?.map((user) => (
-                                                <>
                                                   <div
                                                     key={user.id}
                                                     className={`addAssigneeDiv  ${
@@ -1430,7 +1361,6 @@ const JobModal = ({
                                                         : "+"}
                                                     </div>
                                                   </div>
-                                                </>
                                               ))}
                                         </div>
                                         <label className="">
@@ -1444,50 +1374,48 @@ const JobModal = ({
                                               )
                                           )
                                           ?.map((user) => (
-                                            <>
+                                            <div
+                                              key={user.id}
+                                              className={`addAssigneeDiv ${
+                                                selectedAssignee?.some(
+                                                  (itemId) =>
+                                                    itemId === user.id
+                                                ) && "active"
+                                              }`}
+                                              onClick={() =>
+                                                handleAssigneeClick(user.id)
+                                              }
+                                            >
                                               <div
-                                                key={user.id}
-                                                className={`addAssigneeDiv ${
-                                                  selectedAssignee?.some(
-                                                    (itemId) =>
-                                                      itemId === user.id
-                                                  ) && "active"
-                                                }`}
-                                                onClick={() =>
-                                                  handleAssigneeClick(user.id)
-                                                }
+                                                className={` UserImg addedUserImages `}
+                                                style={{ minWidth: "40px" }}
                                               >
-                                                <div
-                                                  className={` UserImg addedUserImages `}
-                                                  style={{ minWidth: "40px" }}
-                                                >
-                                                  {user.profile_pic !== "" ? (
-                                                    <img
-                                                      alt={user.name}
-                                                      src={
-                                                        process.env
-                                                          .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                        user.profile_pic
-                                                      }
-                                                    />
-                                                  ) : (
-                                                    <User />
-                                                  )}
-                                                </div>
-                                                <div>
-                                                  <h4>{user.name}</h4>
-                                                  <p>{user.email}</p>
-                                                </div>
-                                                <div className="checkAddBtn">
-                                                  {selectedAssignee?.some(
-                                                    (itemId) =>
-                                                      itemId === user.id
-                                                  )
-                                                    ? "-"
-                                                    : "+"}
-                                                </div>
+                                                {user.profile_pic !== "" ? (
+                                                  <img
+                                                    alt={user.name}
+                                                    src={
+                                                      process.env
+                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                      user.profile_pic
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <User />
+                                                )}
                                               </div>
-                                            </>
+                                              <div>
+                                                <h4>{user.name}</h4>
+                                                <p>{user.email}</p>
+                                              </div>
+                                              <div className="checkAddBtn">
+                                                {selectedAssignee?.some(
+                                                  (itemId) =>
+                                                    itemId === user.id
+                                                )
+                                                  ? "-"
+                                                  : "+"}
+                                              </div>
+                                            </div>
                                           ))}
                                       </div>
                                       <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
@@ -1584,7 +1512,7 @@ const JobModal = ({
                                             ?.map((user, i) => (
                                               <>
                                                 <div
-                                                  key={task.id}
+                                                  key={user.id}
                                                   className={` UserImg addedUserImages ${
                                                     i === task?.users?.length - 1
                                                       ? "withAddBtn"
@@ -1622,7 +1550,6 @@ const JobModal = ({
                                             ))}
                                           {task?.users?.length > 3 && (
                                             <div
-                                              key={4}
                                               className={`UserImg-count addedUserImages withAddBtn`}
                                               style={{
                                                 minWidth: "40px",
@@ -1668,55 +1595,53 @@ const JobModal = ({
                                                       )
                                                     )
                                                     ?.map((user) => (
-                                                      <>
+                                                      <div 
+                                                        key={user.id} 
+                                                        className={`addAssigneeDiv  ${ 
+                                                          taskSelectedAssignee?.some(
+                                                            (itemId) =>
+                                                              itemId === user.id
+                                                          ) && "active"
+                                                        }`}
+                                                        onClick={() =>
+                                                          handleTaskAssigneeClick(
+                                                            user.id
+                                                          )
+                                                        }
+                                                      >
                                                         <div
-                                                          key={user.id}
-                                                          className={`addAssigneeDiv  ${
-                                                            taskSelectedAssignee?.some(
-                                                              (itemId) =>
-                                                                itemId === user.id
-                                                            ) && "active"
-                                                          }`}
-                                                          onClick={() =>
-                                                            handleTaskAssigneeClick(
-                                                              user.id
-                                                            )
-                                                          }
+                                                          className={` UserImg addedUserImages `}
+                                                          style={{
+                                                            minWidth: "40px",
+                                                          }}
                                                         >
-                                                          <div
-                                                            className={` UserImg addedUserImages `}
-                                                            style={{
-                                                              minWidth: "40px",
-                                                            }}
-                                                          >
-                                                            {user.profile_pic !==
-                                                            "" ? (
-                                                              <img
-                                                                alt={user.name}
-                                                                src={
-                                                                  process.env
-                                                                    .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                                  user.profile_pic
-                                                                }
-                                                              />
-                                                            ) : (
-                                                              <User />
-                                                            )}
-                                                          </div>
-                                                          <div>
-                                                            <h4>{user.name}</h4>
-                                                            <p>{user.email}</p>
-                                                          </div>
-                                                          <div className="checkAddBtn">
-                                                            {taskSelectedAssignee?.some(
-                                                              (itemId) =>
-                                                                itemId === user.id
-                                                            )
-                                                              ? "-"
-                                                              : "+"}
-                                                          </div>
+                                                          {user.profile_pic !==
+                                                          "" ? (
+                                                            <img
+                                                              alt={user.name}
+                                                              src={
+                                                                process.env
+                                                                  .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                                user.profile_pic
+                                                              }
+                                                            />
+                                                          ) : (
+                                                            <User />
+                                                          )}
                                                         </div>
-                                                      </>
+                                                        <div>
+                                                          <h4>{user.name}</h4>
+                                                          <p>{user.email}</p>
+                                                        </div>
+                                                        <div className="checkAddBtn">
+                                                          {taskSelectedAssignee?.some(
+                                                            (itemId) =>
+                                                              itemId === user.id
+                                                          )
+                                                            ? "-"
+                                                            : "+"}
+                                                        </div>
+                                                      </div>
                                                     ))}
                                               </div>
                                               <label className="">
@@ -1731,7 +1656,6 @@ const JobModal = ({
                                                     )
                                                 )
                                                 ?.map((user) => (
-                                                  <>
                                                     <div
                                                       key={user.id}
                                                       className={`addAssigneeDiv ${
@@ -1779,7 +1703,6 @@ const JobModal = ({
                                                           : "+"}
                                                       </div>
                                                     </div>
-                                                  </>
                                                 ))}
                                             </div>
                                             <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
@@ -1859,9 +1782,9 @@ const JobModal = ({
                                   <div className="stage-addTaskJobDropdown right" ref={showStagesRef}>
                                     <div className="addTaskJobListScroll ">
                                       <div className="addTaskJobListItems">
-                                        {Object.keys(StageList)?.map((key) => (
+                                        {Object.keys(StageList)?.map((key,i) => (
                                           <div
-                                            key={key}
+                                            key={i}
                                             className={`addTaskJobStageItem ${key}`}
                                             onClick={() => {
                                               console.log("keyyy", key);
@@ -1889,9 +1812,8 @@ const JobModal = ({
                                 {selectedAssignee?.length > 0 ? (
                                   <>
                                     {selectedAssignee
-                                      ?.slice(0, 3)
+                                      ?.slice(0, 2)
                                       ?.map((user, i) => (
-                                        <>
                                           <div
                                             key={user.id}
                                             className={` UserImg addedUserImages ${
@@ -1920,11 +1842,9 @@ const JobModal = ({
                                               <User />
                                             )}
                                           </div>
-                                        </>
                                       ))}
-                                    {selectedAssignee?.length > 3 && (
+                                    {selectedAssignee?.length > 2 && (
                                       <div
-                                        key={4}
                                         className={`UserImg-count addedUserImages withAddBtn`}
                                         style={{
                                           minWidth: "40px",
@@ -1932,7 +1852,7 @@ const JobModal = ({
                                         }}
                                       >
                                         <div className="count-card">
-                                          {selectedAssignee?.length - 3}+
+                                          {selectedAssignee?.length - 2}+
                                         </div>
                                       </div>
                                     )}
@@ -1964,7 +1884,6 @@ const JobModal = ({
                                                 )
                                               )
                                               ?.map((user) => (
-                                                <>
                                                   <div
                                                     key={user.id}
                                                     className={`addAssigneeDiv  ${
@@ -2012,7 +1931,6 @@ const JobModal = ({
                                                         : "+"}
                                                     </div>
                                                   </div>
-                                                </>
                                               ))}
                                         </div>
                                         <label className="">
@@ -2026,7 +1944,6 @@ const JobModal = ({
                                               )
                                           )
                                           ?.map((user) => (
-                                            <>
                                               <div
                                                 key={user.id}
                                                 className={`addAssigneeDiv ${
@@ -2069,7 +1986,6 @@ const JobModal = ({
                                                     : "+"}
                                                 </div>
                                               </div>
-                                            </>
                                           ))}
                                       </div>
                                       <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">

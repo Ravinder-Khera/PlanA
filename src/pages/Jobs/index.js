@@ -528,260 +528,66 @@ const Jobs = () => {
             )}
           </div>
         </div>
-
-        <div className="JobsContainer desktop" ref={containerRef}>
-          <div className="left-side">
-            <div className="first-table">
-              <div className="job_table_outer_div  ">
-                <table className="table table-borderless text-light">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="text-center">
-                        <label htmlFor={`select_all`}>
-                          <input
-                            type="checkbox"
-                            checked={
-                              filteredJobs?.length &&
-                              selectedJobs?.length &&
-                              filteredJobs?.length === selectedJobs?.length
-                            }
-                            id={`select_all`}
-                            onChange={handleSelectAll}
-                            style={{ display: "none" }}
-                          />
-                          {filteredJobs?.length &&
-                          selectedJobs?.length &&
-                          filteredJobs?.length === selectedJobs?.length ? (
-                            <div className="svg-box-2 mx-2">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="15"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                              >
-                                <path
-                                  d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
-                                  fill="black"
-                                />
-                              </svg>
-                            </div>
-                          ) : (
-                            <div className="svg-box mx-2"></div>
-                          )}
-                        </label>
-                      </th>
-                      <th scope="col">
-                        <div className="headerDiv">Job No.</div>
-                      </th>
-                      <th scope="col">
-                        <div className="headerDiv">Job Name</div>
-                      </th>
-                      {/* <th scope="col">
-                        <div className="headerDiv">Due/FUP On</div>
-                      </th> */}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredJobs &&
-                      filteredJobs?.length > 0 ?
-                      filteredJobs?.map((job, index) => (
-                        <tr key={index}>
-                          <th scope="row" className="text-center">
-                            {" "}
-                            <label htmlFor={`select_${index}`}>
-                              <input
-                                type="checkbox"
-                                checked={selectedJobs.includes(job.id)}
-                                onChange={(e) =>
-                                  handleCheckBoxSelect(e, job.id)
-                                }
-                                id={`select_${index}`}
-                                style={{ display: "none" }}
-                              />
-                              {selectedJobs.includes(job.id) ? (
-                                <div className="svg-box-2 mx-2">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="15"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
-                                      fill="black"
-                                    />
-                                  </svg>
-                                </div>
-                              ) : (
-                                <div className="svg-box mx-2"></div>
-                              )}
-                            </label>
-                          </th>
-                          <td className="text-center">
-                            <span
-                              className={`stageBtn btn_${findNearestStage(
-                                job
-                              )}`}
-                            >
-                              {job.id}
-                            </span>
-                          </td>
-                          <td className="px-3">
-                            <div className="job-name">
-                              <h4
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => {
-                                  localStorage.setItem("jobId", job.id);
-                                  setShowJobModal(true);
-                                  setGetJob({
-                                    data: job,
-                                    stage: findNearestStage(job),
-                                  });
-                                }}
-                              >
-                                {job.title}
-                              </h4>
-                              <h6>{job.description}</h6>
-                            </div>
-                          </td>
-                          {/* <td className="text-center">
-                            {moment(job.due_date).local().format("L")}
-                          </td> */}
-                        </tr>
-                      )) :
-                      <tr>
-                        <td></td>
-                        <td className="text-center">
-                            <span
-                              className={`stageBtn btn_`}
-                            >
-                              No Results Found
-                            </span>
-                          </td>
-                        </tr>
-                      }
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div className="right-side">
-            <div className="first-table">
-              <div
-                className="table-responsive"
-                style={{ maxWidth: divWidth - 650 }}
-              >
-                <div className="job_table_outer_div">
+        <div className="pagination-container">
+          <div className="JobsContainer desktop" ref={containerRef}>
+            <div className="left-side">
+              <div className="first-table">
+                <div className="job_table_outer_div  ">
                   <table className="table table-borderless text-light">
                     <thead>
                       <tr>
+                        <th scope="col" className="text-center">
+                          <label htmlFor={`select_all`}>
+                            <input
+                              type="checkbox"
+                              checked={
+                                filteredJobs?.length &&
+                                selectedJobs?.length &&
+                                filteredJobs?.length === selectedJobs?.length
+                              }
+                              id={`select_all`}
+                              onChange={handleSelectAll}
+                              style={{ display: "none" }}
+                            />
+                            {filteredJobs?.length &&
+                            selectedJobs?.length &&
+                            filteredJobs?.length === selectedJobs?.length ? (
+                              <div className="svg-box-2 mx-2">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="15"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                    fill="black"
+                                  />
+                                </svg>
+                              </div>
+                            ) : (
+                              <div className="svg-box mx-2"></div>
+                            )}
+                          </label>
+                        </th>
                         <th scope="col">
+                          <div className="headerDiv">Job No.</div>
+                        </th>
+                        <th scope="col">
+                          <div className="headerDiv">Job Name</div>
+                        </th>
+                        {/* <th scope="col">
                           <div className="headerDiv">Due/FUP On</div>
-                        </th>
-                        <th scope="col">
-                          <div className="headerDiv">Job Manager</div>
-                        </th>
-                        <th scope="col">
-                          <div className="headerDiv">Latest Update</div>
-                        </th>
-                        <th scope="col">
-                          <div className="headerDiv">Status</div>
-                        </th>
+                        </th> */}
                       </tr>
                     </thead>
                     <tbody>
                       {filteredJobs &&
-                        filteredJobs?.length > 0 &&
-                        filteredJobs?.map((job) => (
-                          <tr key={job.id}>
-                            <td className="text-center">
-                              {moment(job.due_date).local().format("L")}
-                            </td>
-                            <td className="text-center">
-                              <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                                <div className=" d-flex align-items-center justify-content-center">
-                                  {job?.usersArray?.length > 0 && (
-                                    <>
-                                      {job?.usersArray
-                                        ?.slice(0, 1)
-                                        ?.map((user, index) => (
-                                            <div
-                                              key={index}
-                                              className={`UserImg addedUserImages`}
-                                              style={{
-                                                minWidth: "40px",
-                                                zIndex: index,
-                                              }}
-                                              // onClick={() =>
-                                              //   toggleUserDropdown(i)
-                                              // }
-                                            >
-                                              {user.profile_pic !== "" ? (
-                                                <img
-                                                  alt={user.name}
-                                                  src={
-                                                    process.env
-                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                    user.profile_pic
-                                                  }
-                                                />
-                                              ) : (
-                                                <User />
-                                              )}
-                                            </div>
-                                        ))}
-                                    </>
-                                  )}
-                                  {job.usersArray?.length === 0 && (
-                                    <div
-                                      className="UserImg"
-                                      // onClick={() => toggleUserDropdown(i)}
-                                      style={{ minWidth: "40px" }}
-                                    >
-                                      <User />
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-3">
-                              <div className="jobDescriptionTextDiv">
-                                {job.latest_update}
-                              </div>
-                            </td>
-                            <td className="text-center d-flex align-items-center">
-                              <span className={`statusBtn ${job.status}`}>
-                                {StatusList[job.status]}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="JobsContainer mobile">
-          <div className="left-side">
-            <div className="first-table">
-              <div className="job_table_outer_div  ">
-                <ul>
-                {filteredJobs &&
-                  filteredJobs?.length > 0 ?
-                    filteredJobs?.map((job, index) => (
-                      <li key={index}>
-                        <div className="jobBox">
-                          <div className="jobItem">
-                          <div className="jobHeading">Select </div>
-                            <div  className="text-center">
+                        filteredJobs?.length > 0 ?
+                        filteredJobs?.map((job, index) => (
+                          <tr key={index}>
+                            <th scope="row" className="text-center">
                               {" "}
                               <label htmlFor={`select_${index}`}>
                                 <input
@@ -812,11 +618,8 @@ const Jobs = () => {
                                   <div className="svg-box mx-2"></div>
                                 )}
                               </label>
-                            </div>
-                          </div>
-                          <div className="jobItem" style={{minHeight:'40px'}}>
-                            <div className="jobHeading">Job No.</div>
-                            <div className="text-center">
+                            </th>
+                            <td className="text-center">
                               <span
                                 className={`stageBtn btn_${findNearestStage(
                                   job
@@ -824,12 +627,9 @@ const Jobs = () => {
                               >
                                 {job.id}
                               </span>
-                            </div>
-                          </div>
-                          <div className="jobItem align-items-start">
-                            <div className="jobHeading">Job </div>
-                            <div className="ps-3 text-end w-100">
-                              <div className="job-name ms-auto">
+                            </td>
+                            <td className="px-3">
+                              <div className="job-name">
                                 <h4
                                   style={{
                                     cursor: "pointer",
@@ -847,57 +647,258 @@ const Jobs = () => {
                                 </h4>
                                 <h6>{job.description}</h6>
                               </div>
-                            </div>
-                          </div>
-                          <div className="jobItem">
-                            <div className="jobHeading">Due/FUP On</div>
-                            <div className="text-center">
+                            </td>
+                            {/* <td className="text-center">
                               {moment(job.due_date).local().format("L")}
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    )):
-                  <li className="text-center">
-                    <span
-                      className={`stageBtn btn_`}
-                    >
-                      No Results Found
-                    </span>
-                  </li>
-                }
-                </ul>
+                            </td> */}
+                          </tr>
+                        )) :
+                        <tr>
+                          <td></td>
+                          <td className="text-center">
+                              <span
+                                className={`stageBtn btn_`}
+                              >
+                                No Results Found
+                              </span>
+                            </td>
+                          </tr>
+                        }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="right-side">
+              <div className="first-table">
+                <div
+                  className="table-responsive"
+                  style={{ maxWidth: divWidth - 650 }}
+                >
+                  <div className="job_table_outer_div">
+                    <table className="table table-borderless text-light">
+                      <thead>
+                        <tr>
+                          <th scope="col">
+                            <div className="headerDiv">Due/FUP On</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Job Manager</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Latest Update</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Status</div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredJobs &&
+                          filteredJobs?.length > 0 &&
+                          filteredJobs?.map((job) => (
+                            <tr key={job.id}>
+                              <td className="text-center">
+                                {moment(job.due_date).local().format("L")}
+                              </td>
+                              <td className="text-center">
+                                <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                  <div className=" d-flex align-items-center justify-content-center">
+                                    {job?.usersArray?.length > 0 && (
+                                      <>
+                                        {job?.usersArray
+                                          ?.slice(0, 1)
+                                          ?.map((user, index) => (
+                                              <div
+                                                key={index}
+                                                className={`UserImg addedUserImages`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  zIndex: index,
+                                                }}
+                                                // onClick={() =>
+                                                //   toggleUserDropdown(i)
+                                                // }
+                                              >
+                                                {user.profile_pic !== ""  && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                  <img
+                                                    alt={user.name}
+                                                    src={
+                                                      process.env
+                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                      user.profile_pic
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <User />
+                                                )}
+                                              </div>
+                                          ))}
+                                      </>
+                                    )}
+                                    {job.usersArray?.length === 0 && (
+                                      <div
+                                        className="UserImg"
+                                        // onClick={() => toggleUserDropdown(i)}
+                                        style={{ minWidth: "40px" }}
+                                      >
+                                        <User />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-3">
+                                <div className="jobDescriptionTextDiv">
+                                  {job.latest_update}
+                                </div>
+                              </td>
+                              <td className="text-center d-flex align-items-center">
+                                <span className={`statusBtn ${job.status}`}>
+                                  {StatusList[job.status]}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="JobsHeading paginationDiv">
-          <div className="paginationSections">
-            <div className="btnDiv">
-              <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
-              <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
+          <div className="JobsContainer mobile">
+            <div className="left-side">
+              <div className="first-table">
+                <div className="job_table_outer_div  ">
+                  <ul>
+                  {filteredJobs &&
+                    filteredJobs?.length > 0 ?
+                      filteredJobs?.map((job, index) => (
+                        <li key={index}>
+                          <div className="jobBox">
+                            <div className="jobItem">
+                            <div className="jobHeading">Select </div>
+                              <div  className="text-center">
+                                {" "}
+                                <label htmlFor={`select_${index}`}>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedJobs.includes(job.id)}
+                                    onChange={(e) =>
+                                      handleCheckBoxSelect(e, job.id)
+                                    }
+                                    id={`select_${index}`}
+                                    style={{ display: "none" }}
+                                  />
+                                  {selectedJobs.includes(job.id) ? (
+                                    <div className="svg-box-2 mx-2">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="15"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                      >
+                                        <path
+                                          d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                          fill="black"
+                                        />
+                                      </svg>
+                                    </div>
+                                  ) : (
+                                    <div className="svg-box mx-2"></div>
+                                  )}
+                                </label>
+                              </div>
+                            </div>
+                            <div className="jobItem" style={{minHeight:'40px'}}>
+                              <div className="jobHeading">Job No.</div>
+                              <div className="text-center">
+                                <span
+                                  className={`stageBtn btn_${findNearestStage(
+                                    job
+                                  )}`}
+                                >
+                                  {job.id}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="jobItem align-items-start">
+                              <div className="jobHeading">Job </div>
+                              <div className="ps-3 text-end w-100">
+                                <div className="job-name ms-auto">
+                                  <h4
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() => {
+                                      localStorage.setItem("jobId", job.id);
+                                      setShowJobModal(true);
+                                      setGetJob({
+                                        data: job,
+                                        stage: findNearestStage(job),
+                                      });
+                                    }}
+                                  >
+                                    {job.title}
+                                  </h4>
+                                  <h6>{job.description}</h6>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="jobItem">
+                              <div className="jobHeading">Due/FUP On</div>
+                              <div className="text-center">
+                                {moment(job.due_date).local().format("L")}
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      )):
+                    <li className="text-center">
+                      <span
+                        className={`stageBtn btn_`}
+                      >
+                        No Results Found
+                      </span>
+                    </li>
+                  }
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div className="pageNoDiv">
-              {pageUrls && currentPage >= 4 &&
-                <button disabled className='pageBtn pageDots' >...</button>
-              }
-              {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
-                <button
-                  key={index}
-                  onClick={() => handlePageChange(link.url)}
-                  className={`${link.active && 'activePageBtn'} pageBtn`}
-                >
-                    {link.label}
-                </button>
-              ))}
-              {pageUrls && currentPage <= pageUrls.length - 3 &&
-                <button disabled className='pageBtn pageDots' >...</button>
-              }
-            </div>
-            <div className="btnDiv">
-              <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
-              <button className="nextBtn mobile" onClick={handleNextPage} disabled={currentPage === totalPages}>{'>'}</button>
+          </div>
+
+          <div className="JobsHeading paginationDiv">
+            <div className="paginationSections">
+              <div className="btnDiv">
+                <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+                <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
+              </div>
+              <div className="pageNoDiv">
+                {pageUrls && currentPage >= 4 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+                {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange(link.url)}
+                    className={`${link.active && 'activePageBtn'} pageBtn`}
+                  >
+                      {link.label}
+                  </button>
+                ))}
+                {pageUrls && currentPage <= pageUrls.length - 3 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+              </div>
+              <div className="btnDiv">
+                <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+                <button className="nextBtn mobile" onClick={handleNextPage} disabled={currentPage === totalPages}>{'>'}</button>
+              </div>
             </div>
           </div>
         </div>

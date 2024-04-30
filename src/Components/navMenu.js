@@ -9,6 +9,7 @@ function NavMenu() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState("");
   const [userImg, setUserImg] = useState("");
+  const [userDesignation, setUserDesignation] = useState("");
   const [selectedValue, setSelectedValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -139,6 +140,7 @@ function NavMenu() {
       if (response.res) {
         setUser(response.res.user.name);
         setUserImg(response.res.user.profile_pic);
+        setUserDesignation(response.res.user.designation)
         localStorage.setItem("user", response.res.user.name);
       } else {
         console.error("profile error:", response.error);
@@ -316,11 +318,11 @@ function NavMenu() {
                   >
                     <p>{[user]}</p>
                     <span style={{ fontSize: "12px", fontWeight: "300" }}>
-                    {[user?.job_title]}
+                    {[userDesignation]}
                     </span>
                   </div>
                   <div className="UserImg border-0" style={{ minWidth: "40px" }}>
-                    {userImg ? (
+                    {userImg && userImg !== 'default-profile-pic.jpg' ? (
                       <img
                         className="border-0"
                         alt={userImg}

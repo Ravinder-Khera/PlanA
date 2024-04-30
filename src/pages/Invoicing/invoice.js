@@ -241,115 +241,117 @@ function Invoice() {
             />
           </div>
         </div>
-        <div
-          className="table-responsive table_outer_div  "
-          style={{ marginTop: "37px" }}
-        >
-          <table className="table table-borderless text-light">
-            <tbody>
-              {data &&
-                data.map((item) => (
-                  <tr
-                    key={item.id}
-                    style={
-                      isChecked[`select_${item.id}`]
-                        ? tableActive
-                        : tableBorderBottom
-                    }
-                  >
-                    <th scope="row">
-                      <label htmlFor={`select_${item.id}`}>
-                        <input
-                          type="checkbox"
-                          checked={isChecked[`select_${item.id}`]}
-                          onChange={() => toggleCheckbox(`select_${item.id}`)}
-                          id={`select_${item.id}`}
-                          style={{ display: "none" }}
-                        />
-                        {isChecked[`select_${item.id}`] ? (
-                          <div className="svg-box-2 mx-2">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="15"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                            >
-                              <path
-                                d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
-                                fill="black"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          <div className="svg-box mx-2"></div>
-                        )}
-                      </label>
-                      <span className="checkMark"></span>{" "}
-                      <span
-                        style={{
-                          fontSize: "16px",
-                          fontWeight: "600",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => toggleCheckbox(`select_${item.id}`)}
-                      >
-                        {`INV-${String(item.id).padStart(4, "0")}`}
-                      </span>
-                    </th>
-                    <td className="text-end">
-                      <div className="d-flex align-items-center justify-content-end">
-                        <div
+        <div className="pagination-container">
+          <div
+            className="table-responsive table_outer_div  "
+            style={{ marginTop: "37px" }}
+          >
+            <table className="table table-borderless text-light">
+              <tbody>
+                {data &&
+                  data.map((item) => (
+                    <tr
+                      key={item.id}
+                      style={
+                        isChecked[`select_${item.id}`]
+                          ? tableActive
+                          : tableBorderBottom
+                      }
+                    >
+                      <th scope="row">
+                        <label htmlFor={`select_${item.id}`}>
+                          <input
+                            type="checkbox"
+                            checked={isChecked[`select_${item.id}`]}
+                            onChange={() => toggleCheckbox(`select_${item.id}`)}
+                            id={`select_${item.id}`}
+                            style={{ display: "none" }}
+                          />
+                          {isChecked[`select_${item.id}`] ? (
+                            <div className="svg-box-2 mx-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                              >
+                                <path
+                                  d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                  fill="black"
+                                />
+                              </svg>
+                            </div>
+                          ) : (
+                            <div className="svg-box mx-2"></div>
+                          )}
+                        </label>
+                        <span className="checkMark"></span>{" "}
+                        <span
                           style={{
                             fontSize: "16px",
                             fontWeight: "600",
-                            lineHeight: "1.1",
                             cursor: "pointer",
                           }}
-                          onClick={() => downloadPdf(item.id)}
+                          onClick={() => toggleCheckbox(`select_${item.id}`)}
                         >
-                          View
+                          {`INV-${String(item.id).padStart(4, "0")}`}
+                        </span>
+                      </th>
+                      <td className="text-end">
+                        <div className="d-flex align-items-center justify-content-end">
+                          <div
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: "600",
+                              lineHeight: "1.1",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => downloadPdf(item.id)}
+                          >
+                            View
+                          </div>
+                          <div
+                            className="IconBox"
+                            style={{ minWidth: "40px", cursor: "pointer" }}
+                            onClick={() => downloadPdf(item.id)}
+                          >
+                            <Print />
+                          </div>
                         </div>
-                        <div
-                          className="IconBox"
-                          style={{ minWidth: "40px", cursor: "pointer" }}
-                          onClick={() => downloadPdf(item.id)}
-                        >
-                          <Print />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="paginationDiv">
+            <div className="paginationSections">
+              <div className="btnDiv">
+                <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+                <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
+              </div>
+              <div className="pageNoDiv">
+                {pageUrls && currentPage >= 4 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+                {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange(link.url)}
+                    className={`${link.active && 'activePageBtn'} pageBtn`}
+                  >
+                      {link.label}
+                  </button>
                 ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="paginationDiv">
-          <div className="paginationSections">
-            <div className="btnDiv">
-              <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
-              <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
-            </div>
-            <div className="pageNoDiv">
-              {pageUrls && currentPage >= 4 &&
-                <button disabled className='pageBtn pageDots' >...</button>
-              }
-              {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
-                <button
-                  key={index}
-                  onClick={() => handlePageChange(link.url)}
-                  className={`${link.active && 'activePageBtn'} pageBtn`}
-                >
-                    {link.label}
-                </button>
-              ))}
-              {pageUrls && currentPage <= pageUrls.length - 3 &&
-                <button disabled className='pageBtn pageDots' >...</button>
-              }
-            </div>
-            <div className="btnDiv">
-              <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
-              <button className="nextBtn mobile" onClick={handleNextPage} disabled={currentPage === totalPages}>{'>'}</button>
+                {pageUrls && currentPage <= pageUrls.length - 3 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+              </div>
+              <div className="btnDiv">
+                <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+                <button className="nextBtn mobile" onClick={handleNextPage} disabled={currentPage === totalPages}>{'>'}</button>
+              </div>
             </div>
           </div>
         </div>

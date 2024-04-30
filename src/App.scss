@@ -1134,11 +1134,19 @@ body {
                     line-height: normal;
                     letter-spacing: -0.64px;
                     transition: all 0.5s ease;
-    
+                    
                     &:hover {
                         background: #e2e31f33;
                         border: 2px solid #e2e31f33;
                         color: #E2E31F;
+                    }
+                    &:disabled{
+                        opacity: 0.75;
+                        &:hover{
+                            border: 2px solid #E2E31F;
+                            background: transparent;
+                            color: #FFF;
+                        }
                     }
                 }
             }
@@ -2526,7 +2534,7 @@ body {
                                 }
                             }
                             .textDiv{
-                                min-width: max-content;
+                                // min-width: max-content;
                                 &.mobile{
                                     min-width: auto;
                                 }
@@ -3066,6 +3074,20 @@ body {
 .requiredSpan{
     color: red !important;
     font-weight: 600 !important;
+}
+.pagination-container {
+    display: flex; 
+    flex-direction: column;
+    min-height: 75vh; 
+    justify-content: space-between;
+    .table-container {
+        flex: 1;
+        overflow-y: auto; 
+    }
+    .JobsContainer{
+        flex: 1;
+        overflow-y: auto; 
+    }
 }
 .paginationDiv{
     padding: 15px 0;

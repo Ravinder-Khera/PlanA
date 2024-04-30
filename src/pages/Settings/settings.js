@@ -10,27 +10,46 @@ import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import eventEmitter from "../../Event";
 
-function ProfileDetails({ userFirstName, userLastName, fetchProfileData }) {
+function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchProfileData }) {
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [designation, setDesignation] = useState("");
   const [nameError, setNameError] = useState("");
+  const [jobError, setJobError] = useState("");
 
   const handleFirstNameChange = (e) => {
     const inputValue = e.target.value;
-    setFirstName(inputValue);
-    if (!inputValue) {
+    const isValid = /^[a-zA-Z\s]*$/.test(inputValue);
+    if(isValid) {
+      setFirstName(inputValue);
+      setNameError("");
+    } else if (!inputValue) {
       setNameError("Name can not be empty");
     } else {
       setNameError("");
     }
   };
 
+  const handleJobTitleChange = (e) => {
+    const inputValue = e.target.value;
+    const isValid = /^[a-zA-Z\s]*$/.test(inputValue); // Allow empty string
+    if (isValid) {
+      setDesignation(inputValue);
+      setJobError(""); 
+    } else {
+      setJobError("Please enter a valid job title.");
+    }
+  };  
+
   const handleUpdateProfile = async () => {
     if (firstName === "") {
       setNameError("Name can not be empty");
       return;
-    } else if (firstName === userFirstName && lastName === userLastName) {
+    } else if (designation === "") {
+      setJobError("Job Title can not be empty");
+      return;
+    } else if (firstName === userFirstName && lastName === userLastName && designation === userDesignation ) {
       return;
     }
     try {
@@ -39,6 +58,7 @@ function ProfileDetails({ userFirstName, userLastName, fetchProfileData }) {
       let response = await updateProfile(
         {
           name: firstName + " " + lastName,
+          designation: designation
         },
         authToken
       );
@@ -81,7 +101,8 @@ function ProfileDetails({ userFirstName, userLastName, fetchProfileData }) {
   useEffect(() => {
     setFirstName(userFirstName);
     setLastName(userLastName);
-  }, [userFirstName, userLastName]);
+    setDesignation(userDesignation)
+  }, [userFirstName, userLastName, userDesignation]);
   return (
     <>
       {loading && (
@@ -119,12 +140,14 @@ function ProfileDetails({ userFirstName, userLastName, fetchProfileData }) {
               />
             </div>
             <div className="my-5"></div>
-            <div className="customInput">
-              <input name="jobTitle" placeholder="Job Title" />
+            <div className={`customInput ${jobError !== "" && "errorClass"}`}>
+              <input name="jobTitle" placeholder="Job Title" 
+                value={designation}
+                onChange={handleJobTitleChange} />
             </div>
           </form>
           <div className="btnDiv">
-            <button className="signupButton" onClick={handleUpdateProfile}>
+            <button className="signupButton" disabled={firstName === userFirstName && lastName === userLastName && designation === userDesignation && true} onClick={handleUpdateProfile}>
               Save Changes
             </button>
           </div>
@@ -224,11 +247,9 @@ function ProfilePic({ userPicture, fetchProfileData }) {
     }
   };
 
-  const backgroundImageStyle = userPicture
+  const backgroundImageStyle = userPicture && userPicture !== 'default-profile-pic.jpg'
     ? {
-        backgroundImage: `url(${
-          process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userPicture
-        })`,
+        backgroundImage: `url(${process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userPicture})`,
         backgroundSize: "cover",
       }
     : {};
@@ -295,6 +316,7 @@ function SettingsPage() {
   const [user, setUser] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [designation, setDesignation] = useState("");
   const [userPicture, setUserPicture] = useState("");
 
   const fetchProfileData = async () => {
@@ -310,6 +332,7 @@ function SettingsPage() {
         setLastName(lastName);
         const userPic = response.res.user.profile_pic;
         setUserPicture(userPic);
+        setDesignation(response.res.user.designation)
       } else {
         setLoading(false);
         console.error("profile error:", response.error);
@@ -378,6 +401,7 @@ function SettingsPage() {
           <ProfileDetails
             userFirstName={firstName}
             userLastName={lastName}
+            userDesignation={designation}
             fetchProfileData={fetchProfileData}
           />
         )}

@@ -323,7 +323,7 @@ function MobileMenu() {
                     </span>
                   </div>
                   <div className="UserImg" style={{ minWidth: "40px" }}>
-                    {userImg ? (
+                    {userImg && userImg !== 'default-profile-pic.jpg' ? (
                       <img
                         alt={userImg}
                         src={

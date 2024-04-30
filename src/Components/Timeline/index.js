@@ -455,7 +455,7 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                                                         }}
                                                       >
                                                         {user.profile_pic !==
-                                                        "" ? (
+                                                        "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                           <img
                                                             alt={user.name}
                                                             src={
@@ -497,7 +497,7 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                                                         ) : (
                                                           <>
                                                             {user.profile_pic !==
-                                                            "" ? (
+                                                            "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                               <img
                                                                 alt={user.name}
                                                                 src={
@@ -595,7 +595,7 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                                               }}
                                             >
                                               {user.profile_pic !==
-                                              "" ? (
+                                              "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                 <img
                                                   alt={user.name}
                                                   src={
@@ -637,7 +637,7 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                                               ) : (
                                                 <>
                                                   {user.profile_pic !==
-                                                  "" ? (
+                                                  "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                     <img
                                                       alt={user.name}
                                                       src={
