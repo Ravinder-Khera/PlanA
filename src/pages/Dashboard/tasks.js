@@ -220,24 +220,11 @@ function TaskPage() {
 
   const handleSelect = (ranges) => {
     setSelectionRange(ranges.selection);
-    handleSubmit();
   };
 
   const handleSelectDueDate = (date) => {
     setSelectDueDate(false);
     setSelectedDueDate(date);
-  };
-
-  const handleSubmit = () => {
-    const apiUrl = `${
-      process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
-    }/tasks/by-status-and-date?status=to-do&start_date=${selectionRange.startDate
-      .toISOString()
-      .slice(0, 10)}&end_date=${selectionRange.endDate
-      .toISOString()
-      .slice(0, 10)}&perPage=4`;
-
-    console.log("date range", apiUrl);
   };
 
   const toggleCheckbox = async (taskId) => {

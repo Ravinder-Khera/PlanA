@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import moment from "moment";
 import { getJobs } from "../../services/auth";
-import { User } from "../../assets/svg";
+import { TaskIcon, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
+import { DateRangePicker } from "react-date-range";
 
 function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
   const navigate = useNavigate();
@@ -20,9 +21,11 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
     endDate: new Date(new Date().getDate() + excessCalendarDate),
     key: "selection",
   });
+  const [selectDate, setSelectDate] = useState(false);
 
   const [scrollPerformed, setScrollPerformed] = useState(false);
   const currentDayRef = useRef(null);
+  const selectDateRef = useRef(null);
 
   useEffect(() => {
     if (loadNo && !scrollPerformed) {
@@ -35,6 +38,20 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
       }
     }
   }, [loadNo, scrollPerformed]);
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (selectDateRef.current && !selectDateRef.current.contains(e.target)) {
+        setSelectDate(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
 
   function extractUsersFromStages(data) {
     if (!data) return;
@@ -90,14 +107,26 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
       });
 
       // Adjust startDate to one month less
-      const adjustedStartDate = new Date(minCreatedAt);
+      let adjustedStartDate = new Date(minCreatedAt);
       adjustedStartDate.setDate(
         adjustedStartDate.getDate() - excessCalendarDate
       );
 
       // Adjust endDate to one month more
-      const adjustedEndDate = new Date(maxDueDate);
+      let adjustedEndDate = new Date(maxDueDate);
       adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate);
+
+      const differenceInDays = (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
+
+      if(timeFrame !== undefined && timeFrame === "weekly"){
+        if (differenceInDays < 10) {
+          adjustedEndDate = new Date(adjustedEndDate.getTime() + (10 - differenceInDays) * 24 * 60 * 60 * 1000);
+        }
+      } else if(timeFrame !== undefined && timeFrame === "monthly") {
+        if (differenceInDays < 40) {
+          adjustedEndDate = new Date(adjustedEndDate.getTime() + (40 - differenceInDays) * 24 * 60 * 60 * 1000);
+        }
+      }
 
       // Set selectionRange
       setSelectionRange({
@@ -106,7 +135,7 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
         key: "selection",
       });
     },
-    [excessCalendarDate]
+    [excessCalendarDate, timeFrame]
   );
 
   useEffect(() => {
@@ -152,8 +181,20 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
       );
 
       // Adjust endDate to one month more
-      const adjustedEndDate = new Date(maxDueDate);
+      let adjustedEndDate = new Date(maxDueDate);
       adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate);
+
+      const differenceInDays = (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
+
+      if(timeFrame !== undefined && timeFrame === "weekly"){
+        if (differenceInDays < 10) {
+          adjustedEndDate = new Date(adjustedEndDate.getTime() + (10 - differenceInDays) * 24 * 60 * 60 * 1000);
+        }
+      } else if(timeFrame !== undefined && timeFrame === "monthly") {
+        if (differenceInDays < 40) {
+          adjustedEndDate = new Date(adjustedEndDate.getTime() + (40 - differenceInDays) * 24 * 60 * 60 * 1000);
+        }
+      }
 
       // Set selectionRange
       setSelectionRange({
@@ -280,6 +321,42 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
       ? 40
       : jobCellActive?.offsetWidth;
 
+    const formattedStartDate = selectionRange.startDate.toLocaleDateString(
+      "en-AU",
+      { day: "numeric", month: "short", year: "numeric" }
+    );
+    const formattedEndDate = selectionRange.endDate.toLocaleDateString("en-Au", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+    const handleSelect = (ranges) => {
+      setSelectionRange(ranges.selection);
+      const startDate = ranges.selection.startDate;
+      let endDate = ranges.selection.endDate;
+      
+      const differenceInMs = endDate.getTime() - startDate.getTime();
+      const differenceInDays = differenceInMs / (1000 * 3600 * 24);
+
+      const roundedDifference = Math.round(differenceInDays);
+      if(timeFrame !== undefined && timeFrame === "weekly"){
+        if (roundedDifference < 10) {
+          endDate = new Date(endDate.getTime() + (10 - roundedDifference) * 24 * 60 * 60 * 1000);
+        }
+      } else if(timeFrame !== undefined && timeFrame === "monthly") {
+        if (roundedDifference < 40) {
+          endDate = new Date(endDate.getTime() + (40 - roundedDifference) * 24 * 60 * 60 * 1000);
+        }
+      }
+      
+      setSelectionRange({
+        startDate: startDate,
+        endDate: endDate,
+        key: "selection",
+      });
+    };
+
   return (
     <>
       {loading && (
@@ -296,14 +373,33 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
         </div>
       )}
       <div className="mapContainerDiv">
+        <div className="DashboardHeading d-flex justify-content-between align-items-center position-relative">
+          <div className="datePickerText addNewTaskBtn d-flex align-items-center gap-0 justify-content-end navMenuDiv p-0 bg-transparent shadow-none">
+            <div onClick={() => setSelectDate(!selectDate)}>
+              <TaskIcon />
+              {formattedStartDate}-{formattedEndDate}
+            </div>
+          </div>
+          {selectDate && (
+            <div className="datePickerDiv" ref={selectDateRef}>
+              <DateRangePicker
+                moveRangeOnFirstSelection={false}
+                editableDateInputs={false}
+                ranges={[selectionRange]}
+                onChange={handleSelect}
+                rangeColors={["#E2E31F"]}
+              />
+            </div>
+          )}
+        </div>
         <div
           className="customTimeline"
           style={{
-            maxHeight: `calc(100vh - ${
+            height: `calc(100vh - ${
               timeFrame && timeFrame === "weekly"
-                ? "375px"
+                ? "410px"
                 : timeFrame === "monthly"
-                ? "210px"
+                ? "245px"
                 : ""
             })`,
           }}
