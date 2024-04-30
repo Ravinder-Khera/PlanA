@@ -54,7 +54,7 @@
                         max-width: 929px;
                         width: 100%;
                         background-color: #353535;
-                        height: 800px;
+                        height: calc(100vh - 100px);
                         overflow-y: auto;
                         border-radius: 12px;
 
@@ -1968,7 +1968,7 @@
 
     .tab-content {
         overflow-y: auto;
-        height: 666px;
+        height: calc(100vh - 255px);
 
         &::-webkit-scrollbar-track {
             border-radius: 2px;

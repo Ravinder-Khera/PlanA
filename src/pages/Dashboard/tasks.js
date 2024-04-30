@@ -730,7 +730,7 @@ function TaskPage() {
         <div className="DashboardHeading d-flex justify-content-between align-items-center">
           <h2>Tasks</h2>
           <div
-            className="addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none"
+            className={`addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none  ${taskTab === "completed" && "d-none"}`}
             onClick={() => setAddTask(!addTask)}
           >
             New Task{" "}
