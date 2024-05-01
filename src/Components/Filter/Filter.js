@@ -175,7 +175,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
     <>
       <div className="addTaskJobDiv">
         <div className="addTaskJobDropdown right">
-          <div className="addTaskJobSearchDiv addNewTaskDiv d-flex flex-wrap">
+          <div className="addTaskJobSearchDiv addNewTaskDiv d-flex flex-wrap flex-md-nowrap">
             <div className="addTaskJobDiv">
               <div
                 className="select-fliter h-100 "

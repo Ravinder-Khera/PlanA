@@ -493,12 +493,8 @@ const Jobs = () => {
           </div>
         </div>
         <div className="JobsHeading d-flex align-items-center justify-content-between">
-          <div className="delete-box">
-            <div
-              className="searchUserImg"
-              style={{ cursor: "pointer", zIndex: 2 }}
-              onClick={handleDelete}
-            >
+          <div className="delete-box" style={{ cursor: "pointer", zIndex: 2 }} onClick={handleDelete}>
+            <div className="searchUserImg">
               <DeleteIcon />
             </div>
             <div className="delete-item">

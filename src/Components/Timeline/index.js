@@ -106,11 +106,10 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
         }
       });
 
-      // Adjust startDate to one month less
-      let adjustedStartDate = new Date(minCreatedAt);
-      adjustedStartDate.setDate(
-        adjustedStartDate.getDate() - excessCalendarDate
-      );
+      const currentDate = new Date();
+      const adjustedStartDate = new Date(currentDate);
+      const minsDaysAre = timeFrame !== undefined && timeFrame === "weekly" ? 3 : timeFrame === "monthly" ? 7 : 3 ;
+      adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
 
       // Adjust endDate to one month more
       let adjustedEndDate = new Date(maxDueDate);
@@ -174,11 +173,10 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
         }
       });
 
-      // Adjust startDate to one month less
-      const adjustedStartDate = new Date(minCreatedAt);
-      adjustedStartDate.setDate(
-        adjustedStartDate.getDate() - excessCalendarDate
-      );
+    const currentDate = new Date();
+    const adjustedStartDate = new Date(currentDate);
+    const minsDaysAre = timeFrame !== undefined && timeFrame === "weekly" ? 3 : timeFrame === "monthly" ? 7 : 3 ;
+    adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
 
       // Adjust endDate to one month more
       let adjustedEndDate = new Date(maxDueDate);
@@ -215,7 +213,7 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
         });
       }
     }
-  }, [excessCalendarDate, setSelectionRangeFromJobs]);
+  }, [excessCalendarDate, setSelectionRangeFromJobs, timeFrame]);
 
   const formatDate = (date) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -330,6 +328,19 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
       month: "short",
       year: "numeric",
     });
+
+    const formatJobDate = (dateString) => {
+      const date = new Date(dateString);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear().toString().slice(-2);
+      return `${day}/${month}/${year}`;
+    };
+    
+    const formatJobDates = (date) => {
+      const formattedJobDAte = formatJobDate(date);
+      return formattedJobDAte;
+    };
 
     const handleSelect = (ranges) => {
       setSelectionRange(ranges.selection);
@@ -513,6 +524,11 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                                         ? job.progress.toFixed(2)
                                         : job.progress}
                                       %
+                                    </span>
+                                  </div>
+                                  <div className={`jobDateDiv ${timeFrame === "monthly" && activeColumnsCount <= 2 ? 'hidden' : ''}`}>
+                                    <span className="text">
+                                      {formatJobDates(new Date(job.created_at))} - {formatJobDates(new Date(job.due_date))}
                                     </span>
                                   </div>
                                   <div

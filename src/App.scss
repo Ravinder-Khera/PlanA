@@ -1155,7 +1155,8 @@ body {
                 max-width: 245px;
                 width: 100%;
                 margin: auto;
-                height: 325px;
+                // height: 325px;
+                height: 245px;
                 background: #353535;
                 background-image: url('./assets/icons/dummyImg.png');
                 background-position: center;
@@ -2457,7 +2458,7 @@ body {
             .jobRow{
                 display: flex;
                 width: 100%;
-                margin: 40px auto;
+                margin: 40px auto 50px auto;
                 
                 .jobCell{
                     // flex: 1 1 auto;
@@ -2482,6 +2483,7 @@ body {
                     .timeLineJob{
                         min-height: 104px ;
                         position: relative;
+                        z-index: 1;
                         .timeLineJobItem{
                             position: absolute;
                             top: 0;
@@ -2510,7 +2512,14 @@ body {
                                             display: contents;
                                         }
                                     }
-                                }                                
+                                }   
+                                .jobDateDiv{
+                                    &.hidden{
+                                        .text{
+                                            display: contents;
+                                        }
+                                    }
+                                }                             
                             }
                             .timeLineJobItemDiv{
                                 overflow: hidden;
@@ -2587,6 +2596,25 @@ body {
                             }
                             .percentage{
                                 font-weight: 600;
+                            }
+                        }
+                        .jobDateDiv {
+                            position: absolute;
+                            top: 100%;
+                            left: 6px;
+                            height: 17px;
+                            width: max-content;
+                            padding: 3px 3px 2px 5px;
+                            border-radius: 3px 3px 0px 0px;
+                            font-size: 12px;
+                            font-style: normal;
+                            font-weight: 400;
+                            line-height: normal;
+                            letter-spacing: -0.48px;
+                            &.hidden{
+                                .text{
+                                    display: none;
+                                }
                             }
                         }
                     }
