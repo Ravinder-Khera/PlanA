@@ -378,7 +378,7 @@ function Dashboard() {
             </div>
             <div className={`dashboard_task`}>
               <div className="taskDetails">
-                {chats &&
+                {chats && chats.length > 0 ?
                   chats.map((chat, index) => {
                     const trimmedTitle =
                       chat.body.length > 100
@@ -437,7 +437,12 @@ function Dashboard() {
                         </div>
                       </div>
                     );
-                  })}
+                  })
+                :
+                <div className="taskCount text-center">
+                  <p>No Comments</p>
+                </div>
+                }
               </div>
             </div>
           </div>

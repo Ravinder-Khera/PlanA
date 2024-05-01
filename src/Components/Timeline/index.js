@@ -676,6 +676,11 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                             %
                           </span>
                         </div>
+                        <div className={`jobDateDiv `}>
+                          <span className="text">
+                            {formatJobDates(new Date(job.created_at))} - {formatJobDates(new Date(job.due_date))}
+                          </span>
+                        </div>
                         <div className={`timeLineJobItemDiv d-flex align-items-center`}  style={{minHeight:'140px'}}>
                           <div className="d-flex gap-2 align-items-center justify-content-between w-100 p-3">
                             <div

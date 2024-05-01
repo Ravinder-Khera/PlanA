@@ -30,10 +30,14 @@ function TaskPage() {
   const [addTask, setAddTask] = useState(false);
   const [taskTab, setTaskTab] = useState("todo");
   const [addTaskJobDropdown, setAddTaskJobDropdown] = useState(false);
+  const [addTaskJobDropdownMobile, setAddTaskJobDropdownMobile] = useState(false);
   const [addTaskJobStageDropdown, setAddTaskJobStageDropdown] = useState(false);
+  const [addTaskJobStageDropdownMobile, setAddTaskJobStageDropdownMobile] = useState(false);
   const [addTaskJobUserDropdown, setAddTaskJobUserDropdown] = useState(false);
+  const [addTaskJobUserDropdownMobile, setAddTaskJobUserDropdownMobile] = useState(false);
   const [selectDate, setSelectDate] = useState(false);
   const [selectDueDate, setSelectDueDate] = useState(false);
+  const [selectDueDateMobile, setSelectDueDateMobile] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null);
   const [tasksToDo, setTasksToDo] = useState([]);
   const [tasksCompleted, setTasksCompleted] = useState([]);
@@ -57,10 +61,14 @@ function TaskPage() {
   const navigate = useNavigate();
 
   const addTaskJobDropdownRef = useRef(null);
+  const addTaskJobDropdownRefMobile = useRef(null);
   const addTaskJobStageDropdownRef = useRef(null);
+  const addTaskJobStageDropdownRefMobile = useRef(null);
   const selectDateRef = useRef(null);
   const selectDueDateRef = useRef(null);
+  const selectDueDateRefMobile = useRef(null);
   const selectUserRef = useRef(null);
+  const selectUserRefMobile = useRef(null);
   const selectAssigneeRef = useRef(null);
   const selectFilterRef = useRef(null);
   const taskMobileScrollRef = useRef(null);
@@ -162,10 +170,22 @@ function TaskPage() {
         setAddTaskJobDropdown(false);
       }
       if (
+        addTaskJobDropdownRefMobile.current &&
+        !addTaskJobDropdownRefMobile.current.contains(e.target)
+      ) {
+        setAddTaskJobDropdownMobile(false);
+      }
+      if (
         addTaskJobStageDropdownRef.current &&
         !addTaskJobStageDropdownRef.current.contains(e.target)
       ) {
         setAddTaskJobStageDropdown(false);
+      }
+      if (
+        addTaskJobStageDropdownRefMobile.current &&
+        !addTaskJobStageDropdownRefMobile.current.contains(e.target)
+      ) {
+        setAddTaskJobStageDropdownMobile(false);
       }
       if (selectDateRef.current && !selectDateRef.current.contains(e.target)) {
         setSelectDate(false);
@@ -176,8 +196,17 @@ function TaskPage() {
       ) {
         setSelectDueDate(false);
       }
+      if (
+        selectDueDateRefMobile.current &&
+        !selectDueDateRefMobile.current.contains(e.target)
+      ) {
+        setSelectDueDateMobile(false);
+      }
       if (selectUserRef.current && !selectUserRef.current.contains(e.target)) {
         setAddTaskJobUserDropdown(false);
+      }
+      if (selectUserRefMobile.current && !selectUserRefMobile.current.contains(e.target)) {
+        setAddTaskJobUserDropdownMobile(false);
       }
     };
 
@@ -847,10 +876,7 @@ function TaskPage() {
                           {selectedSearchJob && ` (${selectedSearchJob})`}
                         </div>
                         {addTaskJobDropdown && (
-                          <div
-                            className="addTaskJobDropdown"
-                            ref={addTaskJobDropdownRef}
-                          >
+                          <div className="addTaskJobDropdown" ref={addTaskJobDropdownRef} >
                             <div className="addTaskJobSearchDiv">
                               <div className="searchBox">
                                 <div className="IconBox">
@@ -949,10 +975,7 @@ function TaskPage() {
                       </div>
                       {addTaskJobStageDropdown &&
                         searchJobStages.length > 0 && (
-                          <div
-                            className="addTaskJobDropdown"
-                            ref={addTaskJobStageDropdownRef}
-                          >
+                          <div className="addTaskJobDropdown" ref={addTaskJobStageDropdownRef} >
                             <div className="addTaskJobListScroll">
                               <div className="addTaskJobListItems">
                                 {searchJobStages &&
@@ -1059,7 +1082,6 @@ function TaskPage() {
                                       selectedUsers.includes(user.id)
                                     )
                                     .map((user) => (
-                                      <>
                                         <div
                                           key={user.id}
                                           className={`addAssigneeDiv  ${
@@ -1097,7 +1119,6 @@ function TaskPage() {
                                               : "+"}
                                           </div>
                                         </div>
-                                      </>
                                     ))}
                               </div>
                               <label className="">Add Assignees</label>
@@ -1106,7 +1127,6 @@ function TaskPage() {
                                   (user) => !selectedUsers.includes(user.id)
                                 )
                                 .map((user) => (
-                                  <>
                                     <div
                                       key={user.id}
                                       className={`addAssigneeDiv ${
@@ -1142,7 +1162,6 @@ function TaskPage() {
                                           : "+"}
                                       </div>
                                     </div>
-                                  </>
                                 ))}
                             </div>
                           </div>
@@ -1405,17 +1424,17 @@ function TaskPage() {
                               <div
                                 className="addTaskJobBtn"
                                 onClick={() => {
-                                  setAddTaskJobDropdown(true);
+                                  setAddTaskJobDropdownMobile(true);
                                   setAddTaskJobStageDropdown(false);
                                 }}
                               >
                                 + Job No.
                                 {selectedSearchJob && ` (${selectedSearchJob})`}
                               </div>
-                              {addTaskJobDropdown && (
+                              {addTaskJobDropdownMobile && (
                                 <div
                                   className="addTaskJobDropdown"
-                                  ref={addTaskJobDropdownRef}
+                                  ref={addTaskJobDropdownRefMobile}
                                 >
                                   <div className="addTaskJobSearchDiv">
                                     <div className="searchBox">
@@ -1497,7 +1516,7 @@ function TaskPage() {
                                 className={`addTaskJobBtn ${selectedSearchJobStage}`}
                                 onClick={() => {
                                   setAddTaskJobDropdown(false);
-                                  setAddTaskJobStageDropdown(!addTaskJobStageDropdown);
+                                  setAddTaskJobStageDropdownMobile(!addTaskJobStageDropdownMobile);
                                   if (searchJobStages.length <= 0) {
                                     toast.error("Select a Job Id first", {
                                       position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
@@ -1516,11 +1535,11 @@ function TaskPage() {
                                   ? selectedSearchJobStage
                                   : "+ Add Stage"}
                               </div>
-                              {addTaskJobStageDropdown &&
+                              {addTaskJobStageDropdownMobile &&
                                 searchJobStages.length > 0 && (
                                   <div
                                     className="addTaskJobDropdown right"
-                                    ref={addTaskJobStageDropdownRef}
+                                    ref={addTaskJobStageDropdownRefMobile}
                                   >
                                     <div className="addTaskJobListScroll">
                                       <div className="addTaskJobListItems">
@@ -1551,13 +1570,13 @@ function TaskPage() {
                             <div className="centerText addTaskJobDiv">
                                 <div
                                   className="addTaskDueDateBtn"
-                                  onClick={() => setSelectDueDate(!selectDueDate)}
+                                  onClick={() => setSelectDueDateMobile(!selectDueDateMobile)}
                                 >
                                   <TaskIcon />{" "}
                                   {selectedDueDate ? formattedDueDate : "Due Date"}
                                 </div>
-                                {selectDueDate && (
-                                  <div className="datePickerDiv " style={{right:'0',left:'auto'}} ref={selectDueDateRef}>
+                                {selectDueDateMobile && (
+                                  <div className="datePickerDiv " style={{right:'0',left:'auto'}} ref={selectDueDateRefMobile}>
                                     <Calendar
                                       date={selectedDueDate}
                                       onChange={handleSelectDueDate}
@@ -1603,7 +1622,7 @@ function TaskPage() {
                                   <div
                                     className="UserImg withAddBtn m-0"
                                     onClick={() =>
-                                      setAddTaskJobUserDropdown(!addTaskJobUserDropdown)
+                                      setAddTaskJobUserDropdownMobile(!addTaskJobUserDropdownMobile)
                                     }
                                     style={{ minWidth: "40px", zIndex: "99" }}
                                   >
@@ -1614,17 +1633,17 @@ function TaskPage() {
                                 <div
                                   className="UserImg withAddBtn"
                                   onClick={() => {
-                                    setAddTaskJobUserDropdown(!addTaskJobUserDropdown);
+                                    setAddTaskJobUserDropdownMobile(!addTaskJobUserDropdownMobile);
                                   }}
                                   style={{ minWidth: "40px" }}
                                 >
                                   <User />
                                 </div>
                               )}
-                              {addTaskJobUserDropdown && (
+                              {addTaskJobUserDropdownMobile && (
                                 <div
                                   className="addTaskJobDropdown right"
-                                  ref={selectUserRef}
+                                  ref={selectUserRefMobile}
                                 >
                                   <div className="addTaskJobListScroll">
                                     <div className="addTaskJobListItems">
@@ -1731,25 +1750,25 @@ function TaskPage() {
                           </div>
                       </div>
                       <div className="taskItem">
-                      <div className="listContent d-flex align-items-center gap-2 justify-content-between navMenuDiv p-0 bg-transparent shadow-none">
-                          <div
-                              className="UserImg createTaskBtn m-0"
-                              style={{ minWidth: "40px" }}
-                              onClick={handleCreateTask}
-                            >
-                            <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
-                              <rect width="100%" height="100%" fill="none" />
-                              <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
-                            </svg>
-                          </div>
+                        <div className="listContent d-flex align-items-center gap-2 justify-content-between navMenuDiv p-0 bg-transparent shadow-none">
                             <div
-                              className="UserImg cancelTaskBtn m-0"
-                              style={{ minWidth: "40px" }}
-                              onClick={()=> setAddTask(false)}
-                            >
-                            <AddIcon />
-                          </div>
-                      </div>
+                                className="UserImg createTaskBtn m-0"
+                                style={{ minWidth: "40px" }}
+                                onClick={handleCreateTask}
+                              >
+                              <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                                <rect width="100%" height="100%" fill="none" />
+                                <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                              </svg>
+                            </div>
+                              <div
+                                className="UserImg cancelTaskBtn m-0"
+                                style={{ minWidth: "40px" }}
+                                onClick={()=> setAddTask(false)}
+                              >
+                              <AddIcon />
+                            </div>
+                        </div>
 
                       </div>
 

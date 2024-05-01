@@ -40,7 +40,9 @@ const JobModal = ({
   const [userDropdownStates, setUserDropdownStates] = useState();
   const [taskSelectedAssignee, setTaskSelectedAssignee] = useState([]);
   const [showAssignee, setShowAssignee] = useState(false);
+  const [showAssigneeMobile, setShowAssigneeMobile] = useState(false);
   const [showStages, setShowStages] = useState(false);
+  const [showStagesMobile, setShowStagesMobile] = useState(false);
   const [selectedAssignee, setSelectedAssignee] = useState([]);
 
   const addTaskRef = useRef(null);
@@ -48,6 +50,7 @@ const JobModal = ({
     title: "",
     stageTitle: "",
     status: "to-do",
+    stageId:''
   });
   const [stageIds, setStageIds] = useState({});
   const [state, setState] = useState({
@@ -64,7 +67,9 @@ const JobModal = ({
   const activeCardRef = useRef(null);
   const addTaskAssigneeRef = useRef(null);
   const showStagesRef = useRef(null);
+  const showStagesRefMobile = useRef(null);
   const showAssigneeRef = useRef(null);
+  const showAssigneeRefMobile = useRef(null);
   const settings = {
     className: "center",
     centerMode: true,
@@ -96,9 +101,19 @@ const JobModal = ({
       ) {
         setShowStages(false)
       }
+      if (
+        showStagesRefMobile.current &&
+        !showStagesRefMobile.current.contains(e.target)
+      ) {
+        setShowStages(false)
+      }
       if(showAssigneeRef.current &&
         !showAssigneeRef.current.contains(e.target)){
         setShowAssignee(false)
+      }
+      if(showAssigneeRefMobile.current &&
+        !showAssigneeRefMobile.current.contains(e.target)){
+          setShowAssigneeMobile(false)
       }
     };
 
@@ -449,6 +464,7 @@ const JobModal = ({
       return;
     }
     setLoader(true);
+    const taskSelectedAssigneeIds = selectedAssignee.map((user) => user.id);
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -459,7 +475,7 @@ const JobModal = ({
       stage_id: stageIds[newTask.stageTitle],
       title: newTask.title,
       due_date: formattedDueDate,
-      assignee_ids: selectedAssignee
+      assignee_ids: taskSelectedAssigneeIds
     };
     try {
       const response = await createTask(reqBody);
@@ -1135,312 +1151,341 @@ const JobModal = ({
                           ))}
 
                         <li>
-                          <label
-                            htmlFor={`task_select_${tasks?.length}`}
-                            className="align-self-center "
-                          >
-                            <input
-                              type="checkbox"
-                              id={`task_select_${tasks?.length}`}
-                              style={{ display: "none" }}
-                              checked={selectedTasks?.includes(tasks?.length)}
-                              // onChange={(e) =>
-                              //   handleTasksCheckBoxSelect(e, tasks?.length)
-                              // }
-                              ref={addTaskRef}
-                            />
-                            {selectedTasks?.includes(tasks?.length) ? (
-                              <div className="svg-box-2 mx-2">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="15"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                >
-                                  <path
-                                    d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
-                                    fill="black"
-                                  />
-                                </svg>
-                              </div>
-                            ) : (
-                              <div className="svg-box mx-2"></div>
-                            )}
-                          </label>
-                          <div className="w-100  d-flex align-items-center position-relative flex-wrap">
-                            <div
-                              className="d-flex justify-content-between application-lodge mobile"
-                              // style={{ "min-width": "92%" }}
+                            <label
+                              htmlFor={`task_select_${tasks?.length}`}
+                              className="align-self-center "
                             >
-                              <div className="d-flex gap-3 align-items-center ">
-                                <img
-                                  src="/assets/Group 87.png"
-                                  alt=""
-                                  style={{ width: "18px", height: "18px" }}
-                                />
-                                <p className={`text_${newTask.stageTitle}`}>
-                                  <input
-                                    type="text"
-                                    placeholder="Add description here..."
-                                    className="task-desc-input"
-                                    value={newTask.title}
-                                    onChange={(e) =>
-                                      setNewTask({
-                                        ...newTask,
-                                        title: e.target.value,
-                                      })
-                                    }
+                              <input
+                                type="checkbox"
+                                id={`task_select_${tasks?.length}`}
+                                style={{ display: "none" }}
+                                checked={selectedTasks?.includes(
+                                  tasks?.length 
+                                )}
+                                onChange={(e) =>
+                                  handleTasksCheckBoxSelect(
+                                    e,
+                                    tasks?.length
+                                  )
+                                }
+                                ref={addTaskRef}
+                              />
+                              {selectedTasks?.includes(
+                                tasks?.length 
+                              ) ? (
+                                <div className="svg-box-2 mx-2">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="15"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                      fill="black"
+                                    />
+                                  </svg>
+                                </div>
+                              ) : (
+                                <div className="svg-box mx-2"></div>
+                              )}
+                            </label>
+                            <div className="w-100  d-flex align-items-center position-relative">
+                              <div
+                                className="d-flex justify-content-between application-lodge"
+                                style={{ "min-width": "92%" }}
+                              >
+                                <div className="d-flex gap-3 align-items-center ">
+                                  <img
+                                    src="/assets/Group 87.png"
+                                    alt=""
+                                    style={{ width: "18px", height: "18px" }}
                                   />
-                                </p>
-                              </div>
+                                  <p className={`text_${newTask.stageTitle}`}>
+                                    <input
+                                      type="text"
+                                      placeholder="Add description here..."
+                                      className="task-desc-input"
+                                      value={newTask.title}
+                                      onChange={(e) =>
+                                        setNewTask({
+                                          ...newTask,
+                                          title: e.target.value,
+                                        })
+                                      }
+                                    />
+                                  </p>
+                                </div>
 
-                              <div className="stage-addTaskJobDiv">
-                                {newTask.stageTitle === "" ? (
-                                  <div
-                                    className="addStage-btn "
-                                    onClick={() => setShowStages(!showStages)}
-                                  >
-                                    + Add Stage
-                                  </div>
-                                ) : (
-                                  <button
-                                    onClick={() => setShowStages(!showStages)}
-                                    className={`btn_${newTask?.stageTitle}`}
-                                  >
-                                    {StageList[newTask?.stageTitle]}
-                                  </button>
-                                )}
-                                {showStages && (
-                                  <div className="stage-addTaskJobDropdown right" ref={showStagesRef}>
-                                    <div className="addTaskJobListScroll ">
-                                      <div className="addTaskJobListItems">
-                                        {Object.keys(StageList)?.map((key,i) => (
-                                          <div
-                                            key={i}
-                                            className={`addTaskJobStageItem ${key}`}
-                                            onClick={() => {
-                                              console.log("keyyy", key);
-                                              setNewTask({
-                                                ...newTask,
-                                                stageTitle: key,
-                                              });
-                                              setShowStages(false);
-                                            }}
-                                          >
-                                            {StageList[key]}
-                                          </div>
-                                        ))}
-                                      </div>
+                                <div className="stage-addTaskJobDiv">
+                                  {newTask.stageTitle === "" ? (
+                                    <div
+                                      className="addStage-btn "
+                                      onClick={() => setShowStages(!showStages)}
+                                    >
+                                      + Add Stage
                                     </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            <div className="listContent user-cards d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                              <div className=" d-flex align-items-center justify-content-end">
-                                {selectedAssignee?.length > 0 ? (
-                                  <>
-                                    {selectedAssignee
-                                      ?.slice(0, 2)
-                                      ?.map((user, i) => (
-                                          <div
-                                            key={user.id}
-                                            className={` UserImg addedUserImages ${
-                                              i === selectedAssignee?.length - 1
-                                                ? "withAddBtn"
-                                                : ""
-                                            }`}
-                                            style={{
-                                              minWidth: "40px",
-                                              zIndex: i,
-                                            }}
-                                            onClick={() =>
-                                              setShowAssignee(!showAssignee)
-                                            }
-                                          >
-                                            {user.profile_pic !== "" ? (
-                                              <img
-                                                alt={user.name}
-                                                src={
-                                                  process.env
-                                                    .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                  user.profile_pic
-                                                }
-                                              />
-                                            ) : (
-                                              <User />
-                                            )}
-                                          </div>
-                                      ))}
-                                    {selectedAssignee?.length > 2 && (
-                                      <div
-                                        className={`UserImg-count addedUserImages withAddBtn`}
-                                        style={{
-                                          minWidth: "40px",
-                                          zIndex: 4,
-                                        }}
-                                      >
-                                        <div className="count-card">
-                                          {selectedAssignee?.length - 2}+
-                                        </div>
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  <div
-                                    className="UserImg withAddBtn"
-                                    onClick={() =>
-                                      setShowAssignee(!showAssignee)
-                                    }
-                                    style={{ minWidth: "40px" }}
-                                  >
-                                    <User />
-                                  </div>
-                                )}
-                                {showAssignee && (
-                                  <div className="addAssigneeDropdown1" ref={showAssigneeRef}>
-                                    <div className="addTaskJobListScroll">
-                                      <div className="addTaskJobListItems">
-                                        <label className="addedAssignees">
-                                          Assignees
-                                        </label>
-                                        <div className="addedAssigneeBorder">
-                                          {assignee &&
-                                            assignee
-                                              ?.filter((user) =>
-                                                selectedAssignee?.some(
-                                                  (itemId) => itemId === user.id
-                                                )
-                                              )
-                                              ?.map((user) => (
-                                                  <div
-                                                    key={user.id}
-                                                    className={`addAssigneeDiv  ${
-                                                      selectedAssignee?.some(
-                                                        (itemId) =>
-                                                          itemId === user.id
-                                                      ) && "active"
-                                                    }`}
-                                                    onClick={() => {
-                                                      handleAssigneeClick(
-                                                        user.id
-                                                      );
-                                                    }}
-                                                  >
-                                                    <div
-                                                      className={` UserImg addedUserImages `}
-                                                      style={{
-                                                        minWidth: "40px",
-                                                      }}
-                                                    >
-                                                      {user.profile_pic !==
-                                                      "" ? (
-                                                        <img
-                                                          alt={user.name}
-                                                          src={
-                                                            process.env
-                                                              .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                            user.profile_pic
-                                                          }
-                                                        />
-                                                      ) : (
-                                                        <User />
-                                                      )}
-                                                    </div>
-                                                    <div>
-                                                      <h4>{user.name}</h4>
-                                                      <p>{user.email}</p>
-                                                    </div>
-                                                    <div className="checkAddBtn">
-                                                      {selectedAssignee?.some(
-                                                        (itemId) =>
-                                                          itemId === user.id
-                                                      )
-                                                        ? "-"
-                                                        : "+"}
-                                                    </div>
-                                                  </div>
-                                              ))}
-                                        </div>
-                                        <label className="">
-                                          Add Assignees
-                                        </label>
-                                        {assignee
-                                          ?.filter(
-                                            (user) =>
-                                              !selectedAssignee?.some(
-                                                (itemId) => itemId === user.id
-                                              )
-                                          )
-                                          ?.map((user) => (
+                                  ) : (
+                                    <button
+                                      onClick={() => setShowStages(!showStages)}
+                                      className={`btn_${newTask?.stageTitle}`}
+                                    >
+                                      {StageList[newTask?.stageTitle]}
+                                    </button>
+                                  )}
+                                  {showStages && (
+                                    <div className="stage-addTaskJobDropdown">
+                                      <div className="addTaskJobListScroll">
+                                        <div className="addTaskJobListItems">
+                                          {Object.keys(StageList)?.map((key,i) => (
                                             <div
-                                              key={user.id}
-                                              className={`addAssigneeDiv ${
-                                                selectedAssignee?.some(
-                                                  (itemId) =>
-                                                    itemId === user.id
-                                                ) && "active"
-                                              }`}
-                                              onClick={() =>
-                                                handleAssigneeClick(user.id)
-                                              }
+                                              key={i}
+                                              className={`addTaskJobStageItem ${key}`}
+                                              onClick={() => {
+                                                setNewTask({
+                                                  ...newTask,
+                                                  stageTitle: key,
+                                                  stageId: StageList[key]
+                                                });
+                                                setShowStages(false);
+                                              }}
                                             >
-                                              <div
-                                                className={` UserImg addedUserImages `}
-                                                style={{ minWidth: "40px" }}
-                                              >
-                                                {user.profile_pic !== "" ? (
-                                                  <img
-                                                    alt={user.name}
-                                                    src={
-                                                      process.env
-                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                      user.profile_pic
-                                                    }
-                                                  />
-                                                ) : (
-                                                  <User />
-                                                )}
-                                              </div>
-                                              <div>
-                                                <h4>{user.name}</h4>
-                                                <p>{user.email}</p>
-                                              </div>
-                                              <div className="checkAddBtn">
-                                                {selectedAssignee?.some(
-                                                  (itemId) =>
-                                                    itemId === user.id
-                                                )
-                                                  ? "-"
-                                                  : "+"}
-                                              </div>
+                                              {StageList[key]}
                                             </div>
                                           ))}
-                                      </div>
-                                      <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
-                                        <button
-                                          className="colorOutlineBtn"
-                                          onClick={handleAddAssignee}
-                                        >
-                                          Add Assignee
-                                        </button>
-                                        <button
-                                          className="colorOutlineBtn"
-                                          onClick={() =>
-                                            handleCloseAddAssignee()
-                                          }
-                                        >
-                                          Cancel
-                                        </button>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                )}
+                                  )}
+                                </div>
+                              </div>
+                              <div className="card-image user-cards listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                <div className=" d-flex align-items-center justify-content-end">
+                                  {newTask.users?.length > 0 ? (
+                                    <>
+                                      {newTask.users
+                                        ?.slice(0, 2)
+                                        .map((user, i) => (
+                                          <>
+                                            <div
+                                              key={user.id}
+                                              className={` UserImg addedUserImages ${
+                                                i === newTask.users.length - 1
+                                                  ? "withAddBtn"
+                                                  : ""
+                                              }`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: i,
+                                              }}
+                                              onClick={() => {
+                                                if (newTask.users) {
+                                                  setSelectedAssignee(
+                                                    newTask.users
+                                                  );
+                                                } else {
+                                                  setSelectedAssignee([]);
+                                                }
+                                              }}
+                                            >
+                                              {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user.profile_pic
+                                                  }
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
+                                          </>
+                                        ))}
+                                      {newTask.users?.length > 2 && (
+                                        <div
+                                          key={3}
+                                          className={`UserImg-count addedUserImages withAddBtn`}
+                                          style={{
+                                            minWidth: "40px",
+                                            zIndex: 4,
+                                          }}
+                                          
+                                        >
+                                          <div className="count-card">
+                                            {newTask.users?.length - 2}+
+                                          </div>
+                                        </div>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <div
+                                      className="UserImg withAddBtn"
+                                      onClick={() => {
+                                        if (newTask.users) {
+                                          setSelectedAssignee(newTask.users);
+                                        } else {
+                                          setSelectedAssignee([]);
+                                        }
+                                        setShowAssignee(!showAssignee)
+                                      }}
+                                      style={{ minWidth: "40px" }}
+                                    >
+                                      <User />
+                                    </div>
+                                  )}
+                                  {showAssignee && (
+                                    <div className="addAssigneeDropdown1" ref={showAssigneeRef}>
+                                      <div className="addTaskJobListScroll">
+                                        <div className="addTaskJobListItems">
+                                          <label className="addedAssignees">
+                                            Assignees
+                                          </label>
+                                          <div className="addedAssigneeBorder">
+                                            {assignee &&
+                                              assignee
+                                                .filter((user) =>
+                                                  selectedAssignee?.some(
+                                                    (item) =>
+                                                      item.id === user.id
+                                                  )
+                                                )
+                                                .map((user) => (
+                                                  <>
+                                                    <div
+                                                      key={user.id}
+                                                      className={`addAssigneeDiv  ${
+                                                        selectedAssignee?.some(
+                                                          (item) =>
+                                                            item.id === user.id
+                                                        ) && "active"
+                                                      }`}
+                                                      onClick={() => {
+                                                        handleAssigneeClick(
+                                                          user
+                                                        );
+                                                      }}
+                                                    >
+                                                      <div
+                                                        className={` UserImg addedUserImages `}
+                                                        style={{
+                                                          minWidth: "40px",
+                                                        }}
+                                                      >
+                                                        {user.profile_pic !==
+                                                        "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                          <img
+                                                            alt={user.name}
+                                                            src={
+                                                              process.env
+                                                                .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                              user.profile_pic
+                                                            }
+                                                          />
+                                                        ) : (
+                                                          <User />
+                                                        )}
+                                                      </div>
+                                                      <div>
+                                                        <h4>{user.name}</h4>
+                                                        <p>{user.email}</p>
+                                                      </div>
+                                                      <div className="checkAddBtn">
+                                                        {selectedAssignee?.some(
+                                                          (item) =>
+                                                            item.id === user.id
+                                                        )
+                                                          ? "-"
+                                                          : "+"}
+                                                      </div>
+                                                    </div>
+                                                  </>
+                                                ))}
+                                          </div>
+                                          <label className="">
+                                            Add Assignees
+                                          </label>
+                                          {assignee
+                                            .filter(
+                                              (user) =>
+                                                !selectedAssignee?.some(
+                                                  (item) => item.id === user.id
+                                                )
+                                            )
+                                            .map((user) => (
+                                              <>
+                                                <div
+                                                  key={user.id}
+                                                  className={`addAssigneeDiv ${
+                                                    selectedAssignee?.some(
+                                                      (item) =>
+                                                        item.id === user.id
+                                                    ) && "active"
+                                                  }`}
+                                                  onClick={() =>
+                                                    handleAssigneeClick(user)
+                                                  }
+                                                >
+                                                  <div
+                                                    className={` UserImg addedUserImages `}
+                                                    style={{ minWidth: "40px" }}
+                                                  >
+                                                    {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                      <img
+                                                        alt={user.name}
+                                                        src={
+                                                          process.env
+                                                            .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                          user.profile_pic
+                                                        }
+                                                      />
+                                                    ) : (
+                                                      <User />
+                                                    )}
+                                                  </div>
+                                                  <div>
+                                                    <h4>{user.name}</h4>
+                                                    <p>{user.email}</p>
+                                                  </div>
+                                                  <div className="checkAddBtn">
+                                                    {selectedAssignee?.some(
+                                                      (item) =>
+                                                        item.id === user.id
+                                                    )
+                                                      ? "-"
+                                                      : "+"}
+                                                  </div>
+                                                </div>
+                                              </>
+                                            ))}
+                                        </div>
+                                        <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
+                                          <button
+                                            className="colorOutlineBtn"
+                                            onClick={() =>
+                                              handleAddAssignee(newTask)
+                                            }
+                                          >
+                                            Add Assignee
+                                          </button>
+                                          <button
+                                            className="colorOutlineBtn"
+                                            onClick={() =>
+                                              handleCloseAddAssignee()
+                                            }
+                                          >
+                                            Cancel
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </li>
+                          </li>
                       </ul>
                     </div>
                     <div className="table-main-section mobile mt-4 ">
@@ -1766,20 +1811,20 @@ const JobModal = ({
                                 {newTask.stageTitle === "" ? (
                                   <div
                                     className="addStage-btn "
-                                    onClick={() => setShowStages(!showStages)}
+                                    onClick={() => setShowStagesMobile(!showStagesMobile)}
                                   >
                                     + Add Stage
                                   </div>
                                 ) : (
                                   <button
-                                    onClick={() => setShowStages(!showStages)}
+                                    onClick={() => setShowStagesMobile(!showStagesMobile)}
                                     className={`btn_${newTask?.stageTitle}`}
                                   >
                                     {StageList[newTask?.stageTitle]}
                                   </button>
                                 )}
-                                {showStages && (
-                                  <div className="stage-addTaskJobDropdown right" ref={showStagesRef}>
+                                {showStagesMobile && (
+                                  <div className="stage-addTaskJobDropdown right" ref={showStagesRefMobile}>
                                     <div className="addTaskJobListScroll ">
                                       <div className="addTaskJobListItems">
                                         {Object.keys(StageList)?.map((key,i) => (
@@ -1826,7 +1871,7 @@ const JobModal = ({
                                               zIndex: i,
                                             }}
                                             onClick={() =>
-                                              setShowAssignee(!showAssignee)
+                                              setShowAssigneeMobile(!showAssigneeMobile)
                                             }
                                           >
                                             {user.profile_pic !== "" ? (
@@ -1861,15 +1906,15 @@ const JobModal = ({
                                   <div
                                     className="UserImg withAddBtn"
                                     onClick={() =>
-                                      setShowAssignee(!showAssignee)
+                                      setShowAssigneeMobile(!showAssigneeMobile)
                                     }
                                     style={{ minWidth: "40px" }}
                                   >
                                     <User />
                                   </div>
                                 )}
-                                {showAssignee && (
-                                  <div className="addAssigneeDropdown1" ref={showAssigneeRef}>
+                                {showAssigneeMobile && (
+                                  <div className="addAssigneeDropdown1" ref={showAssigneeRefMobile}>
                                     <div className="addTaskJobListScroll">
                                       <div className="addTaskJobListItems">
                                         <label className="addedAssignees">
