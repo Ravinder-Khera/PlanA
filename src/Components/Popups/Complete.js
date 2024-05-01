@@ -226,7 +226,7 @@ const Complete = ({ data, handleClose,scrollRef }) => {
           <CrossIcon />
         </div>
         <h2>Return To Tasks</h2>
-        <p>
+        <p style={{marginBottom:'25px'}}>
           Do you need to make any changes to <br /> your task before returning?
         </p>
 

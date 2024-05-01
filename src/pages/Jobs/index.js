@@ -502,7 +502,7 @@ const Jobs = () => {
               <DeleteIcon />
             </div>
             <div className="delete-item">
-              Delete {selectedJobs.length} Item(s)
+              Mark {selectedJobs.length} Item(s) complete
             </div>
           </div>
           <div
@@ -673,8 +673,7 @@ const Jobs = () => {
             <div className="right-side">
               <div className="first-table">
                 <div
-                  className="table-responsive"
-                  style={{ maxWidth: divWidth - 650 }}
+                  className="table-responsive right-side-table"
                 >
                   <div className="job_table_outer_div">
                     <table className="table table-borderless text-light">

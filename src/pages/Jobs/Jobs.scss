@@ -11,6 +11,9 @@
         height: 100%;
         z-index: 0;
         box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
+        @media screen and (max-width:1599px) {
+            width: 575px;
+        }
         @media screen and (max-width:992px) {
             width: auto;
         }
@@ -302,7 +305,9 @@
         // position: fixed;
         // z-index: 1000;
         // background: #252525;
-
+        @media screen and (max-width:1599px) {
+            min-width: 575px;
+        }
 
         .first-table {
             margin-top: 20px;
@@ -620,6 +625,12 @@
         // position: absolute;
         // left: 800px;
         // height: 100vh;
+        @media screen and (max-width:1599px) {
+            max-width: calc(100% - 575px);
+        }
+        .right-side-table{
+            max-width: 100%;            
+        }
         .JobsHeading {
             h2 {
                 color: #fff;

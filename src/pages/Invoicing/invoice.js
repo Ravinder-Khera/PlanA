@@ -127,6 +127,9 @@ function Invoice() {
     .map((key) => parseInt(key.replace("select_", "")));
 
   const handleDeleteInvoices = async () => {
+    if(selectedIds.length < 1){
+      return
+    }
     try {
       setLoading(true);
       let response = await deleteInvoices({
@@ -207,18 +210,6 @@ function Invoice() {
         <div className="DashboardHeading d-flex justify-content-between align-items-center gap-3 flex-wrap">
           <div className="d-flex justify-content-start align-items-center gap-3 flex-wrap">
             <h2>Invoicing</h2>
-            {Object.keys(isChecked).length > 0 &&
-              Object.values(isChecked).some((value) => value === true) && (
-                <div
-                  className="invoiceDeleteDiv"
-                  onClick={handleDeleteInvoices}
-                >
-                  <div className="iconBox">
-                    <DeleteIcon />
-                  </div>
-                  <p>Delete {selectedCount} Item(s)</p>
-                </div>
-              )}
           </div>
           <div className="add-invoice">
             <span>Add Invoice</span>
@@ -239,6 +230,14 @@ function Invoice() {
               className="d-none"
               onChange={handleInvoiceUpload}
             />
+          </div>
+        </div>
+        <div className="DashboardHeading mt-2 d-flex justify-content-start align-items-center gap-3 flex-wrap">
+          <div className={`invoiceDeleteDiv ${selectedIds.length < 1 && 'disabled'}`} onClick={handleDeleteInvoices} >
+            <div className="iconBox">
+              <DeleteIcon />
+            </div>
+            <p>Delete {selectedCount} Item(s)</p>
           </div>
         </div>
         <div className="pagination-container">

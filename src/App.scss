@@ -1336,7 +1336,9 @@ body {
     gap: 8px;
     cursor: pointer;
     max-width: max-content;
-
+    &.disabled{
+        cursor: auto;
+    }
     .iconBox {
         width: 36px;
         height: 36px;
