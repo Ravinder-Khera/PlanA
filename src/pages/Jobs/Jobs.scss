@@ -819,10 +819,13 @@
                     }
 
                     .statusBtn {
-                        padding: 8px 14px;
+                        padding: 0px 14px;
                         border-radius: 5px;
+                        min-height: 30px;
                         text-transform: capitalize;
-
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                         &.pending {
                             background: #1FB4E366;
                             border: 1px solid #1FB4E3;
@@ -864,18 +867,22 @@
                         border-bottom: none;
                     }
                     .checkBtn{
-                        padding: 8px 14px;
-                        min-width: 45px;
+                        display: flex;
+                        margin: auto;
+                        justify-content: center;
+                        align-items: center;
+                        width: 30px;
+                        height: 30px;
                         border-radius: 5px;
                         color: transparent;
                         text-transform: capitalize;
                         font-size: 14px;
                         font-weight: 700;
-                        border: 1px solid #E2E31F;
-                        background: rgb(226, 227, 31,0.60);
+                        border: 1px solid #3B9239;
+                        background: rgb(59, 146, 57,0.60) ;
                         svg{
                             path{
-                                stroke: #fff;
+                                stroke: #71E26E;
                             }
                         }
                         

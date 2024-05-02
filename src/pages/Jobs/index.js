@@ -780,7 +780,7 @@ const Jobs = () => {
                                   {job.latest_update}
                                 </div>
                               </td>
-                              <td className="text-center d-flex align-items-center">
+                              <td className="text-center">
                                 <span className={`statusBtn ${job.status}`}>
                                   {StatusList[job.status]}
                                 </span>
@@ -793,7 +793,7 @@ const Jobs = () => {
                                   >
                                     <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
                                       <rect width="100%" height="100%" fill="none" />
-                                      <path fill="none" stroke="#fff" d="M4 7.5L7 10l4-5" />
+                                      <path fill="none" stroke="#71E26E" d="M4 7.5L7 10l4-5" />
                                     </svg>
                                   </button>
                                 }
@@ -860,7 +860,7 @@ const Jobs = () => {
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
                                     <rect width="100%" height="100%" fill="none" />
-                                    <path fill="none" stroke="#fff" d="M4 7.5L7 10l4-5" />
+                                    <path fill="none" stroke="#71E26E" d="M4 7.5L7 10l4-5" />
                                   </svg>
                                 </button>
                               }
@@ -873,7 +873,7 @@ const Jobs = () => {
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
                                     <rect width="100%" height="100%" fill="none" />
-                                    <path fill="none" stroke="#fff" d="M4 7.5L7 10l4-5" />
+                                    <path fill="none" stroke="#71E26E" d="M4 7.5L7 10l4-5" />
                                   </svg>
                                 </button>
                               }

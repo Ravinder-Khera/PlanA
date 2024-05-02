@@ -1,12 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import "./style.scss";
 import downArr from "../../assets/icons/Vector (1).svg";
-import swapImg from "../../assets/icons/Vector (2).svg";
 import assignImg from "../../assets/icons/Group 13.svg";
-import { DateRangePicker, Calendar } from "react-date-range";
 import { Search, User } from "../../assets/svg";
 import { TaskStatusList } from "../../helper";
-import { getJobIds, getJobsByFilter, getTasksByFilter, getUserByRole } from "../../services/auth";
+import { getJobIds, getTasksByFilter, getUserByRole } from "../../services/auth";
 import { toast } from "react-toastify";
 
 const FilterTask = ({ setFilteredTasks, setLoading, closeFilter }) => {
@@ -25,8 +23,6 @@ const FilterTask = ({ setFilteredTasks, setLoading, closeFilter }) => {
   const [showAssignee, setShowAssignee] = useState(false);
   const [usersList, setUsersList] = useState([]);
   const [jobList, setJobList] = useState([]);
-
-  const selectDueDateRef = useRef(null);
   const filterJobDropdownRef = useRef(null);
   const SelectFilterData = [
     {
@@ -87,25 +83,6 @@ const FilterTask = ({ setFilteredTasks, setLoading, closeFilter }) => {
     setSelectedFilter(data.data);
     setSelectedField(data.field);
     setSelectShowFilter(false);
-  };
-
-  const handleSelect = (ranges) => {
-    setSelectionRange(ranges.selection);
-    const { startDate, endDate } = ranges.selection;
-    const year = startDate.getFullYear();
-    const month = String(startDate.getMonth() + 1).padStart(2, "0");
-    const day = String(startDate.getDate()).padStart(2, "0");
-    let formattedDueDate = `${year}-${month}-${day}`;
-    setStartDate(formattedDueDate);
-    const end_year = endDate.getFullYear();
-    const end_month = String(endDate.getMonth() + 1).padStart(2, "0");
-    const end_day = String(endDate.getDate()).padStart(2, "0");
-    let end_formattedDueDate = `${end_year}-${end_month}-${end_day}`;
-    setEndDate(end_formattedDueDate);
-  };
-
-  const handleShowDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
   };
 
   const handleResetFields = () => {
