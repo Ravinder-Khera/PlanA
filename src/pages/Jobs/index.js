@@ -344,6 +344,15 @@ const Jobs = () => {
     };
   }, [showJobModal]);
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(2);
+  
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <>
       {loading && (
@@ -687,6 +696,28 @@ const Jobs = () => {
                           <th scope="col">
                             <div className="headerDiv">Status</div>
                           </th>
+                          <th scope="col">
+                            <div className="headerDiv">Archive</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Assessment Manager</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Latest Comment</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Operative</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Created</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">EOFY</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">LinkedIn Post</div>
+                          </th>
+                          
                         </tr>
                       </thead>
                       <tbody>
@@ -753,6 +784,99 @@ const Jobs = () => {
                                 <span className={`statusBtn ${job.status}`}>
                                   {StatusList[job.status]}
                                 </span>
+                              </td>
+                              <td className="text-center">
+                                {job.is_archive !== '0' &&
+                                  <button
+                                    className={`checkBtn h-100`}
+                                    onClick={(e) => e.preventDefault}
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                                      <rect width="100%" height="100%" fill="none" />
+                                      <path fill="none" stroke="#fff" d="M4 7.5L7 10l4-5" />
+                                    </svg>
+                                  </button>
+                                }
+                              </td>
+
+                              <td className="text-center ">
+                                {job.assessment_manager}
+                              </td>
+                              <td className="text-center ">
+                              {formatDate(job.latest_comment)}
+                              </td>
+                              <td className="text-center ">
+                                {job.operative_id && 
+                                  <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                  <div className=" d-flex align-items-center justify-content-center">
+                                    {job?.usersArray?.length > 0 && (
+                                      <>
+                                        {job?.usersArray.filter((selectedId) => selectedId !== job.operative_id)
+                                          ?.map((user, index) => (
+                                              <div
+                                                key={index}
+                                                className={`UserImg addedUserImages`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  zIndex: index,
+                                                }}
+                                              >
+                                                {user.profile_pic !== ""  && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                  <img
+                                                    alt={user.name}
+                                                    src={
+                                                      process.env
+                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                      user.profile_pic
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <User />
+                                                )}
+                                              </div>
+                                          ))}
+                                      </>
+                                    )}
+                                    {job.usersArray?.length === 0 && (
+                                      <div
+                                        className="UserImg m-0"
+                                        style={{ minWidth: "40px" }}
+                                      >
+                                        <User />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                }
+                              </td>
+                              <td className="text-center ">
+                                {formatDate(job.created_at)}
+                              </td>
+                              <td className="text-center ">
+                              {job.eofy !== '0' && 
+                                <button
+                                  className={`checkBtn h-100`}
+                                  onClick={(e) => e.preventDefault}
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                                    <rect width="100%" height="100%" fill="none" />
+                                    <path fill="none" stroke="#fff" d="M4 7.5L7 10l4-5" />
+                                  </svg>
+                                </button>
+                              }
+                              </td>
+                              <td className="text-center ">
+                              {job.linkedin_post !== '0' && 
+                                <button
+                                  className={`checkBtn h-100`}
+                                  onClick={(e) => e.preventDefault}
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                                    <rect width="100%" height="100%" fill="none" />
+                                    <path fill="none" stroke="#fff" d="M4 7.5L7 10l4-5" />
+                                  </svg>
+                                </button>
+                              }
                               </td>
                             </tr>
                           ))}

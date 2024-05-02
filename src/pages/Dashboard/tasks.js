@@ -1177,7 +1177,7 @@ function TaskPage() {
                           style={{ minWidth: "40px" }}
                           onClick={handleCreateTask}
                         >
-                        <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="35" height="35" viewBox="0 0 15 15">
                           <rect width="100%" height="100%" fill="none" />
                           <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
                         </svg>

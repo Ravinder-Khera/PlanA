@@ -27,13 +27,18 @@ const JobModal = ({
   const [filteredTasks, setFilteredTasks] = useState({});
   const [dueDate, setDueDate] = useState(null);
   const [latestUpdate, setLatestUpdate] = useState("");
+  const [AssessmentManager, setAssessmentManager] = useState("");
   const [selectedTab, setSelectedTab] = useState("to-do");
   const [selectedStage, setSelectedStage] = useState();
   const [selectedTasks, setSelectedTasks] = useState();
   const [progress, setProgress] = useState(0);
   const [selectDueDate, setSelectDueDate] = useState(false);
+  const [selectOperative, setSelectOperative] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null);
   const [showStatuses, setShowStatuses] = useState(false);
+  const [isArchive, setIsArchive] = useState(false);
+  const [isEOFY, setIsEOFY] = useState(false);
+  const [isLinkedIn, setIsLinkedIn] = useState(false);
   const [assignee, setAssignee] = useState([]);
   const [loader, setLoader] = useState(false);
   const [status, setStatus] = useState("");
@@ -44,6 +49,8 @@ const JobModal = ({
   const [showStages, setShowStages] = useState(false);
   const [showStagesMobile, setShowStagesMobile] = useState(false);
   const [selectedAssignee, setSelectedAssignee] = useState([]);
+  const [selectedOperative, setSelectedOperative] = useState(null);
+  const [operative, setOperative] = useState(null);
 
   const addTaskRef = useRef(null);
   const [newTask, setNewTask] = useState({
@@ -147,6 +154,17 @@ const JobModal = ({
     setLatestUpdate(data?.latest_update);
     setDueDate(data?.due_date);
     setStatus(data?.status);
+    setAssessmentManager(data?.assessment_manager);
+    setOperative(data.operative_id)
+    if(data?.is_archive !== "0"){
+      setIsArchive(true)
+    }
+    if(data?.eofy !== "0"){
+      setIsEOFY(true)
+    }
+    if(data?.linkedin_post !== "0"){
+      setIsLinkedIn(true)
+    }
     setState({
       title: data?.title,
       location: data?.location,
@@ -420,6 +438,11 @@ const JobModal = ({
           location: state.location,
           latest_update: latestUpdate,
           status,
+          is_archive: isArchive ? "1" : "0",
+          linkedin_post: isLinkedIn ? "1" : "0",
+          eofy: isEOFY ? "1" : "0",
+          operative_id: operative?.id,
+          assessment_manager: AssessmentManager
         },
       };
       console.log("reqBody", reqBody);
@@ -547,6 +570,21 @@ const JobModal = ({
     } finally {
       setLoader(false);
     }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(2);
+  
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleOperative = (userId) => {
+    setSelectedOperative(userId);
+    setSelectOperative(false)
+    setOperative(assignee.find(user => user.id === userId))
   };
 
   return (
@@ -747,6 +785,8 @@ const JobModal = ({
                     </div>
 
                     <div className="slider-container">
+                    {data?.stages.length > 2 ? 
+                    <>
                       <Slider {...settings} ref={sliderRef}>
                         {data?.stages?.map((stageMap, index) => (
                           <div>
@@ -880,6 +920,104 @@ const JobModal = ({
                           <RedoIcon />
                         </div>
                       </div>
+                    </>
+                    :<>
+                      <div className="slick-center d-flex">
+                        {data?.stages?.map((stageMap, index) => (
+                            <div className="slider-box">
+                              <div
+                                className={`card-slider card_${stageMap.title} `}
+                                ref={
+                                  stageMap.title === stage
+                                    ? activeCardRef
+                                    : cardRef
+                                }
+                              >
+                                <div
+                                  className={`card-image listContent d-flex align-items-center gap-2 ${
+                                    stageMap?.users?.length <= 1
+                                      ? ""
+                                      : "justify-content-center"
+                                  } navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv`}
+                                >
+                                  <div className=" d-flex align-items-center justify-content-center">
+                                    {stageMap?.users?.length > 0 && (
+                                      <>
+                                        {stageMap?.users
+                                          ?.slice(0, 3)
+                                          ?.map((user, index) => (
+                                            <div
+                                              key={index}
+                                              className={`UserImg addedUserImages`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                              }}
+                                            >
+                                              {user?.profile_pic !== "" ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user?.profile_pic
+                                                  }
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
+                                          ))}
+                                        {stageMap?.users?.length > 3 && (
+                                          <div
+                                            className={`UserImg-count addedUserImages`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: 4,
+                                            }}
+                                          >
+                                            <div className="count-card">
+                                              {stageMap?.users?.length - 3}+
+                                            </div>
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                    {stageMap?.users?.length === 0 && (
+                                      <div
+                                        className="UserImg"
+                                        style={{ minWidth: "40px" }}
+                                      >
+                                        <User />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                <h1 className="card-head mt-2">Applicant</h1>
+                                <p className="card-para ">
+                                  {stageMap.tasks[0]?.title}
+                                </p>
+                                <p className="card-days-text mt-2">
+                                  {stageMap.daysLeftForNearestTask} Days Left
+                                </p>
+                                <button
+                                  className={`card-btn mt-2 btnn_${stageMap.title}`}
+                                >
+                                  <p className="btn-text">Jane Doe</p>
+                                  <p
+                                    className="btn-text"
+                                    style={{ fontWeight: "300" }}
+                                  >
+                                    Assessment Manager
+                                  </p>
+                                </button>
+                              </div>
+                            </div>
+                        ))}
+                      </div>
+                    </>}
+                      
+                      
                     </div>
                   </div>
 
@@ -966,7 +1104,7 @@ const JobModal = ({
                                     </p>
                                   </div>
 
-                                  <button className={`btn_${task.stageTitle}`}>
+                                  <button className={`application-lodge-btn btn_${task.stageTitle}`}>
                                     {StageList[task?.stageTitle]}
                                   </button>
                                 </div>
@@ -1044,7 +1182,7 @@ const JobModal = ({
                                       </div>
                                     )}
                                     {userDropdownStates[index] && (
-                                      <div className="addAssigneeDropdown 123">
+                                      <div className="addAssigneeDropdown ">
                                         <div
                                           className="addTaskJobListScroll"
                                           ref={addTaskAssigneeRef}
@@ -1234,7 +1372,7 @@ const JobModal = ({
                           </label>
                           <div className="w-100  d-flex align-items-center position-relative">
                             <div
-                              className="d-flex justify-content-between application-lodge 123"
+                              className="d-flex justify-content-between application-lodge "
                               style={{ "min-width": "92%" }}
                             >
                               <div className="d-flex gap-3 align-items-center">
@@ -1306,7 +1444,7 @@ const JobModal = ({
                                 ) : (
                                   <button
                                     onClick={() => setShowStages(!showStages)}
-                                    className={`btn_${newTask?.stageTitle}`}
+                                    className={`application-lodge-btn btn_${newTask?.stageTitle}`}
                                   >
                                     {StageList[newTask?.stageTitle]}
                                   </button>
@@ -1346,7 +1484,6 @@ const JobModal = ({
                                     {newTask.users
                                       ?.slice(0, 2)
                                       .map((user, i) => (
-                                        <>
                                           <div
                                             key={user.id}
                                             className={` UserImg addedUserImages ${
@@ -1383,7 +1520,6 @@ const JobModal = ({
                                               <User />
                                             )}
                                           </div>
-                                        </>
                                       ))}
                                     {newTask.users?.length > 2 && (
                                       <div
@@ -1435,7 +1571,6 @@ const JobModal = ({
                                                 )
                                               )
                                               .map((user) => (
-                                                <>
                                                   <div
                                                     key={user.id}
                                                     className={`addAssigneeDiv  ${
@@ -1483,7 +1618,6 @@ const JobModal = ({
                                                         : "+"}
                                                     </div>
                                                   </div>
-                                                </>
                                               ))}
                                         </div>
                                         <label className="">
@@ -1497,7 +1631,6 @@ const JobModal = ({
                                               )
                                           )
                                           .map((user) => (
-                                            <>
                                               <div
                                                 key={user.id}
                                                 className={`addAssigneeDiv ${
@@ -1542,7 +1675,6 @@ const JobModal = ({
                                                     : "+"}
                                                 </div>
                                               </div>
-                                            </>
                                           ))}
                                       </div>
                                       <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
@@ -1627,7 +1759,7 @@ const JobModal = ({
                                   <div className="taskHeading">
                                     <p>Stage:</p>
                                   </div>
-                                  <button className={`btn_${task.stageTitle}`}>
+                                  <button className={`application-lodge-btn btn_${task.stageTitle}`}>
                                     {StageList[task?.stageTitle]}
                                   </button>
                                 </div>
@@ -1914,7 +2046,7 @@ const JobModal = ({
                                     onClick={() =>
                                       setShowStagesMobile(!showStagesMobile)
                                     }
-                                    className={`btn_${newTask?.stageTitle}`}
+                                    className={`application-lodge-btn btn_${newTask?.stageTitle}`}
                                   >
                                     {StageList[newTask?.stageTitle]}
                                   </button>
@@ -2182,11 +2314,11 @@ const JobModal = ({
                     >
                       <p>Due/FUPOn</p>
                       <div
-                        className="input-box position-relative"
+                        className="input-box position-relative d-flex align-items-center"
                         style={{ textAlign: "left", cursor: "pointer" }}
                       >
                         <div
-                          className="addTaskDueDateBtn my-2 "
+                          className="addTaskDueDateBtn "
                           onClick={() => setSelectDueDate(!selectDueDate)}
                         >
                           {dueDate}
@@ -2252,6 +2384,198 @@ const JobModal = ({
                             </div>
                           </div>
                         )}
+                      </div>
+                    </div>
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>Archive</p>
+                      <div className="status-addTaskJobDiv">
+                        <button
+                          className={`checkBtn ${isArchive && 'active'} h-100`}
+                          onClick={() => setIsArchive(!isArchive)}
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                          <rect width="100%" height="100%" fill="none" />
+                          <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                        </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>Assessment Manager</p>
+                      <input
+                        type="text"
+                        name="latest-update"
+                        id="latest-update"
+                        placeholder="First Name Last Name"
+                        value={AssessmentManager}
+                        onChange={(e) => setAssessmentManager(e.target.value)}
+                        className="text-white"
+                      />
+                    </div>
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>Latest Comment</p>
+                      <div
+                        className="input-box position-relative d-flex align-items-center"
+                        style={{ textAlign: "left", cursor: "auto" }}
+                      >
+                        <div className="addTaskDueDateBtn " >
+                          {formatDate(data?.latest_comment)}
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className="d-flex gap-3 navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv position-relative"
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>Operative</p>
+                      <div className="status-addTaskJobDiv ">
+                        <button
+                          className={`checkBtn user h-100`}
+                          onClick={() => setSelectOperative(!selectOperative)}
+                        > 
+                          { selectedOperative ? 
+                          <> 
+                                { operative.profile_pic !== "" ? (
+                                  <img
+                                    alt={operative.name}
+                                    src={
+                                      process.env
+                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                        operative.profile_pic
+                                    }
+                                  />
+                                ):
+                                  <User />
+                                }
+                          </>
+                          :
+                            <User />
+                          }
+                        </button>
+                      </div>
+                        {selectOperative && (
+                          <div className="addAssigneeDropdown1 " style={{top:'50%',height:'auto'}}>
+                            <div
+                              className="addTaskJobListScroll"
+                            >
+                              <div className="addTaskJobListItems text-start">
+                                <label className="">
+                                  Add Operative
+                                </label>
+                                {assignee
+                                  ?.filter(
+                                    (user) =>
+                                      !taskSelectedAssignee?.some(
+                                        (selectedUser) => selectedUser.id === user.id
+                                      )
+                                  )
+                                  ?.map((user) => (
+                                    <div
+                                      key={user.id}
+                                      className={`addAssigneeDiv ${
+                                        taskSelectedAssignee?.some(
+                                          (itemId) =>
+                                            itemId === user.id
+                                        ) && "active"
+                                      }`}
+                                      onClick={() =>
+                                        handleOperative(user.id)
+                                      }
+                                    >
+                                      <div
+                                        className={` UserImg addedUserImages `}
+                                        style={{
+                                          minWidth: "40px",
+                                        }}
+                                      >
+                                        {user.profile_pic !== "" ? (
+                                          <img
+                                            alt={user.name}
+                                            src={
+                                              process.env
+                                                .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                              user.profile_pic
+                                            }
+                                          />
+                                        ) : (
+                                          <User />
+                                        )}
+                                      </div>
+                                      <div>
+                                        <h4>{user.name}</h4>
+                                        <p className="h-auto bg-transparent">{user.email}</p>
+                                      </div>
+                                      <div className="checkAddBtn">
+                                        {taskSelectedAssignee?.some(
+                                          (itemId) =>
+                                            itemId === user.id
+                                        )
+                                          ? "-"
+                                          : "+"}
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>Created</p>
+                      <div
+                        className="input-box position-relative d-flex align-items-center"
+                        style={{ textAlign: "left", cursor: "auto" }}
+                      >
+                        <div className="addTaskDueDateBtn " >
+                          {formatDate(data?.created_at)}
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>EOFY</p>
+                      <div className="status-addTaskJobDiv">
+                        <button
+                          className={`checkBtn ${isEOFY && 'active'} h-100`}
+                          onClick={() => setIsEOFY(!isEOFY)}
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                          <rect width="100%" height="100%" fill="none" />
+                          <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                        </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>LinkedIn Post</p>
+                      <div className="status-addTaskJobDiv">
+                        <button
+                          className={`checkBtn ${isLinkedIn && 'active'} h-100`}
+                          onClick={() => setIsLinkedIn(!isLinkedIn)}
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                          <rect width="100%" height="100%" fill="none" />
+                          <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                        </svg>
+                        </button>
                       </div>
                     </div>
 

@@ -17,12 +17,20 @@ const Add = ({ handleClose, fetchJobs }) => {
     due_date: "",
     latest_update: "",
     status: "",
+    assessment_manager:"",
+    is_archive: "0",
+    linkedin_post: "0",
+    eofy: "0",
+    operative_id: 84,
   });
   const [isEdit, setIsEdit] = useState(false);
   const [activeCardId, setActiveCardId] = useState(1);
   const [selectDueDate, setSelectDueDate] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null);
   const [showStatuses, setShowStatuses] = useState(false);
+
+  const [selectedOperative, setSelectedOperative] = useState(null);
+  const [operative, setOperative] = useState(null);
   const [newTask, setNewTask] = useState([
     {
       title: "",
@@ -37,6 +45,11 @@ const Add = ({ handleClose, fetchJobs }) => {
   const [loader, setLoader] = useState(false);
   const addTaskRef = useRef(null);
   const [usersList, setUsersList] = useState([]);
+  const [isArchive, setIsArchive] = useState(false);
+  const [isEOFY, setIsEOFY] = useState(false);
+  const [isLinkedIn, setIsLinkedIn] = useState(false);
+  const [selectOperative, setSelectOperative] = useState(false);
+  const [AssessmentManager, setAssessmentManager] = useState("");
   const [selectedAssignee, setSelectedAssignee] = useState([]);
   const [userDropdownStates, setUserDropdownStates] = useState(
     Array(19).fill(false)
@@ -70,6 +83,12 @@ const Add = ({ handleClose, fetchJobs }) => {
 
   const handleCardChange = (index) => {
     setActiveCardId(index + 1);
+  };
+
+  const handleOperative = (userId) => {
+    setSelectedOperative(userId);
+    setSelectOperative(false)
+    setOperative(usersList.find(user => user.id === userId))
   };
 
   const settings = {
@@ -1443,6 +1462,192 @@ const Add = ({ handleClose, fetchJobs }) => {
                             </div>
                           </div>
                         )}
+                      </div>
+                    </div>
+
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>Archive</p>
+                      <div className="status-addTaskJobDiv">
+                        <button
+                          className={`checkBtn ${isArchive && 'active'} h-100`}
+                          onClick={() => {
+                            const updatedIsArchive = isArchive ? "1" : "0";
+                            setIsArchive(!isArchive);
+                            setState(prevState => ({
+                              ...prevState,
+                              is_archive: updatedIsArchive,
+                            }));
+                          }}
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                          <rect width="100%" height="100%" fill="none" />
+                          <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                        </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>Assessment Manager</p>
+                      <input
+                        type="text"
+                        name="latest-update"
+                        id="latest-update"
+                        placeholder="First Name Last Name"
+                        value={state.assessment_manager}
+                        onChange={handleOnChange}
+                        className="text-white"
+                      />
+                    </div>
+                    <div
+                      className="d-flex gap-3 navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv position-relative"
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>Operative</p>
+                      <div className="status-addTaskJobDiv ">
+                        <button
+                          className={`checkBtn user h-100`}
+                          onClick={() => setSelectOperative(!selectOperative)}
+                        > 
+                          { selectedOperative ? 
+                          <> 
+                                { operative.profile_pic !== "" ? (
+                                  <img
+                                    alt={operative.name}
+                                    src={
+                                      process.env
+                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                        operative.profile_pic
+                                    }
+                                  />
+                                ):
+                                  <User />
+                                }
+                          </>
+                          :
+                            <User />
+                          }
+                        </button>
+                      </div>
+                        {selectOperative && (
+                          <div className="addAssigneeDropdown1 " style={{top:'50%',height:'auto'}}>
+                            <div
+                              className="addTaskJobListScroll"
+                            >
+                              <div className="addTaskJobListItems text-start">
+                                <label className="">
+                                  Add Operative
+                                </label>
+                                {usersList
+                                  ?.filter(
+                                    (user) =>
+                                      !taskSelectedAssignee?.some(
+                                        (selectedUser) => selectedUser.id === user.id
+                                      )
+                                  )
+                                  ?.map((user) => (
+                                    <div
+                                      key={user.id}
+                                      className={`addAssigneeDiv ${
+                                        taskSelectedAssignee?.some(
+                                          (itemId) =>
+                                            itemId === user.id
+                                        ) && "active"
+                                      }`}
+                                      onClick={() =>
+                                        handleOperative(user.id)
+                                      }
+                                    >
+                                      <div
+                                        className={` UserImg addedUserImages `}
+                                        style={{
+                                          minWidth: "40px",
+                                        }}
+                                      >
+                                        {user.profile_pic !== "" ? (
+                                          <img
+                                            alt={user.name}
+                                            src={
+                                              process.env
+                                                .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                              user.profile_pic
+                                            }
+                                          />
+                                        ) : (
+                                          <User />
+                                        )}
+                                      </div>
+                                      <div>
+                                        <h4>{user.name}</h4>
+                                        <p className="h-auto bg-transparent">{user.email}</p>
+                                      </div>
+                                      <div className="checkAddBtn">
+                                        {taskSelectedAssignee?.some(
+                                          (itemId) =>
+                                            itemId === user.id
+                                        )
+                                          ? "-"
+                                          : "+"}
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>EOFY</p>
+                      <div className="status-addTaskJobDiv">
+                        <button
+                          className={`checkBtn ${isEOFY && 'active'} h-100`}
+                          onClick={() => {
+                            const updatedIsEOFY = isEOFY ? "1" : "0";
+                            setIsEOFY(!isEOFY);
+                            setState(prevState => ({
+                              ...prevState,
+                              eofy: updatedIsEOFY,
+                            }));
+                          }}
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                          <rect width="100%" height="100%" fill="none" />
+                          <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                        </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      className="d-flex gap-3 "
+                      style={{ marginBottom: "6px" }}
+                    >
+                      <p>LinkedIn Post</p>
+                      <div className="status-addTaskJobDiv">
+                        <button
+                          className={`checkBtn ${isLinkedIn && 'active'} h-100`}
+                          onClick={() => {
+                            const updatedIsLinkedIn = isLinkedIn ? "1" : "0";
+                            setIsLinkedIn(!isLinkedIn);
+                            setState(prevState => ({
+                              ...prevState,
+                              linkedin_post: updatedIsLinkedIn,
+                            }));
+                          }}
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                          <rect width="100%" height="100%" fill="none" />
+                          <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                        </svg>
+                        </button>
                       </div>
                     </div>
 

@@ -863,6 +863,23 @@
                     &:last-child {
                         border-bottom: none;
                     }
+                    .checkBtn{
+                        padding: 8px 14px;
+                        min-width: 45px;
+                        border-radius: 5px;
+                        color: transparent;
+                        text-transform: capitalize;
+                        font-size: 14px;
+                        font-weight: 700;
+                        border: 1px solid #E2E31F;
+                        background: rgb(226, 227, 31,0.60);
+                        svg{
+                            path{
+                                stroke: #fff;
+                            }
+                        }
+                        
+                    }
                 }
 
 
