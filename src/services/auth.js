@@ -365,7 +365,7 @@ export const getDashboardSummary = async (data) => {
     }
 };
 
-export const getJobs = async () => {
+export const getJobs = async (page) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
         method: "GET",
@@ -374,11 +374,9 @@ export const getJobs = async () => {
           "Accept": "application/json",
           "Authorization": `Bearer ${authToken}`,
         }
-        
-
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs`, requestOptions);;
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs?page=${page}`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response,data);
@@ -405,6 +403,32 @@ export const getJobsByFilter = async (filter) => {
     };
     try {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/filter?${filter}`, requestOptions);;
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const getTasksByFilter = async (filter) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+        },
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks/filterbyfields?${filter}`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response,data);

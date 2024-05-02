@@ -5,11 +5,11 @@ import swapImg from "../../assets/icons/Vector (2).svg";
 import assignImg from "../../assets/icons/Group 13.svg";
 import { DateRangePicker, Calendar } from "react-date-range";
 import { Search, User } from "../../assets/svg";
-import { StatusList } from "../../helper";
-import { getJobsByFilter, getUserByRole } from "../../services/auth";
+import { TaskStatusList } from "../../helper";
+import { getJobIds, getJobsByFilter, getTasksByFilter, getUserByRole } from "../../services/auth";
 import { toast } from "react-toastify";
 
-const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
+const FilterTask = ({ setFilteredTasks, setLoading, closeFilter }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -24,6 +24,7 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
   const [selectedField, setSelectedField] = useState("");
   const [showAssignee, setShowAssignee] = useState(false);
   const [usersList, setUsersList] = useState([]);
+  const [jobList, setJobList] = useState([]);
 
   const selectDueDateRef = useRef(null);
   const filterJobDropdownRef = useRef(null);
@@ -31,18 +32,6 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
     {
       data: "Title",
       field: "title",
-    },
-    {
-      data: "Location",
-      field: "location",
-    },
-    {
-      data: "Latest Update",
-      field: "latest_update",
-    },
-    {
-      data: "Description",
-      field: "description",
     },
     {
       data: "Stage",
@@ -53,12 +42,8 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
       field: "assignee",
     },
     {
-      data: "Date",
-      field: "due_date",
-    },
-    {
-      data: "Status",
-      field: "status",
+      data: "Job Id",
+      field: "job_id",
     },
   ];
 
@@ -144,8 +129,8 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
     if (selectedField === "due_date") {
       filterString = `start_date=${startDate}&end_date=${endDate}`;
     } else if (selectedField === "status") {
-      const value = Object.keys(StatusList).find(
-        (key) => StatusList[key] === searchedInput
+      const value = Object.keys(TaskStatusList).find(
+        (key) => TaskStatusList[key] === searchedInput
       );
       filterString = `${selectedField}=${value}`;
     } else {
@@ -153,9 +138,9 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
     }
     setLoading(true);
     try {
-      const response = await getJobsByFilter(filterString);
+      const response = await getTasksByFilter(filterString);
       if (!response.error) {
-        setFilteredJobs(response?.res?.data);
+        setFilteredTasks(response?.res?.data);
         handleResetFields();
         closeFilter();
       }
@@ -170,6 +155,47 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
     setSearchedInput(user.name);
     setShowAssignee(false);
   };
+
+  useEffect(() => {
+    const fetchJobIds = async () => {
+      try {
+        const authToken = localStorage.getItem("authToken");
+        const response = await getJobIds(authToken);
+        if (response.res) {
+          setJobList(response.res);
+          console.log("jobs-", response.res);
+        } else {
+          console.error("Failed to fetch tasks:", response.error);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchJobUsers = async () => {
+      try {
+        setLoading(true);
+        const authToken = localStorage.getItem("authToken");
+        let response = await getUserByRole(authToken);
+        if (response.res) {
+          setUsersList(response.res);
+        } else {
+          console.error("Failed to fetch Users:", response.error);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobUsers();
+    fetchJobIds();
+  }, [selectionRange.endDate, selectionRange.startDate]);
 
   return (
     <>
@@ -211,10 +237,6 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
             <div className="divider" />
             {(selectedFilter === "" ||
               selectedFilter === "Stage" ||
-              selectedFilter === "Status" ||
-              selectedFilter === "Location" ||
-              selectedFilter === "Description" ||
-              selectedFilter === "Latest Update" ||
               selectedFilter === "Title") && (
               <div className="searchBox w-100">
                 <div className="IconBox">
@@ -222,44 +244,61 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                 </div>
                 <input
                   name="search"
-                  placeholder="Search “Title” or  “Description”"
+                  placeholder="Search Title"
                   value={searchedInput}
                   onChange={(e) => setSearchedInput(e.target.value)}
                   disabled={selectedFilter === "Stage"}
                 />
               </div>
             )}
-            {selectedFilter === "Date" && (
+
+            {selectedFilter === "Job Id" && (
               <div
-                className="searchBox"
+                className="searchBox navMenuDiv d-flex align-items-center"
                 style={{ background: "transparent", padding: "0" }}
               >
-                <div className="date d-flex gap-3 align-items-center flex-wrap flex-md-nowrap">
-                  <p className="m-0" onClick={handleShowDatePicker}>
-                    {startDate}
-                  </p>
-                  {showDatePicker && (
-                    <div
-                      className="datePickerDiv"
-                      style={{ left: "auto" }}
-                      ref={selectDueDateRef}
-                    >
-                      <DateRangePicker
-                        moveRangeOnFirstSelection={false}
-                        editableDateInputs={false}
-                        ranges={[selectionRange]}
-                        onChange={handleSelect}
-                        rangeColors={["#E2E31F"]}
-                      />
+                <input
+                  style={{ background: "#252525", padding: "14px 30px" }}
+                  name="search"
+                  placeholder="Search Job Id"
+                  value={searchedInput}
+                  onChange={(e) => setSearchedInput(e.target.value)}
+                  // disabled={selectedFilter === "Assignee"}
+                />
+                <div
+                  className={`addTaskJobDropdown ${
+                    selectedFilter === "Job Id" ? "d-block" : " d-none"
+                  }`}
+                  ref={filterJobDropdownRef}
+                  style={{ minWidth: "100%", zIndex: "100" }}
+                >
+                  <div className="addTaskJobListScroll">
+                    <div className="addTaskJobListItems">
+                      {jobList &&
+                        jobList
+                          .filter((job) =>
+                            searchedInput
+                              ? job.id.toString() ===
+                              searchedInput.toString()
+                              : true
+                          )
+                          .map((job) => (
+                            <div
+                              key={job.id}
+                              className={`addTaskJobListItem ${
+                                searchedInput === job.id && "active"
+                              }`}
+                              onClick={() => setSearchedInput(job.id)}
+                            >
+                              {job.id}
+                            </div>
+                          ))}
                     </div>
-                  )}
-                  <img src={swapImg} alt="" />
-                  <p className="m-0 " onClick={handleShowDatePicker}>
-                    {endDate}
-                  </p>
+                  </div>
                 </div>
               </div>
             )}
+
 
             {selectedFilter === "Assignee" && (
               <div
@@ -366,24 +405,10 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
           </div>
         )}
 
-        {!showSelectFIlter && selectedFilter === "Status" && (
-          <div className="stage-buttonContainer">
-            {Object.keys(StatusList).map((key,i) => (
-              <button
-              key={i}
-                className={`filter-statusBtn ${key} h-100`}
-                onClick={() => setSearchedInput(StatusList[key])}
-              >
-                {StatusList[key]}
-              </button>
-            ))}
-          </div>
-        )}
-
         
       </div>
     </>
   );
 };
 
-export default Filter;
+export default FilterTask;

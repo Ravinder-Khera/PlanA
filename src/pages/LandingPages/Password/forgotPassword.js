@@ -48,7 +48,7 @@ export function ForgotPassword() {
           </div>
           <p>We've sent you an email with instructions to reset your password.</p>
         </>, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -66,7 +66,7 @@ export function ForgotPassword() {
             </div>
             <p>{Object.values(response.error.errors)[0][0]}</p>
           </>,{
-            position: "top-center",
+            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,

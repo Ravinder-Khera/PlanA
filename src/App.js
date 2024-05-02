@@ -12,6 +12,7 @@ import {
   SettingsIcon,
   TaskIcon,
   TimelineIcon,
+  User,
 } from "./assets/svg";
 import {
   BrowserRouter as Router,
@@ -26,7 +27,7 @@ import SignUp from "./pages/LandingPages/SignUp/signUp";
 import { ForgotPassword } from "./pages/LandingPages/Password/forgotPassword";
 import PasswordReset from "./pages/LandingPages/Password/passwordReset";
 import Dashboard from "./pages/Dashboard/dashboard";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NavMenu from "./Components/navMenu";
 import SettingsPage from "./pages/Settings/settings";
 import "react-toastify/dist/ReactToastify.css";
@@ -37,10 +38,87 @@ import TimelinePage from "./pages/Dashboard/timeline";
 import Jobs from "./pages/Jobs";
 import Pusher from "pusher-js";
 import eventEmitter from "./Event";
+import { getProfile } from "./services/auth";
+import { Bars } from "react-loader-spinner";
 
 function DashboardMenuList() {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState("");
+  const [userImg, setUserImg] = useState("");
+  const [loading, setLoading] = useState(false);
+  const menuRef = useRef(null);
+  const menuRefLoggedIn = useRef(null);
+  
+  const handleMenuOpen = () => {
+    if(isMenuOpen){
+      setIsMenuOpen(false)
+    } else if (menuRef && menuRef.current) {
+      const menu = menuRef.current;
+      if (typeof menu.classList !== 'undefined') {
+        menu.classList.add('show');
+        setIsMenuOpen(true)
+      } else {
+        console.error("menuRef.current doesn't have classList property");
+      }
+    } else if (menuRefLoggedIn && menuRefLoggedIn.current) {
+      const menu = menuRefLoggedIn.current;
+      if (typeof menu.classList !== 'undefined') {
+        menu.classList.add('show');
+        setIsMenuOpen(true)
+      } else {
+        console.error("menuRef.current doesn't have classList property");
+      }
+    } else {
+      console.error("menuRef or menuRef.current is undefined");
+    }
+  };
+
+  const handleMenuClose = () => {
+    if (menuRef && menuRef.current) {
+      const menu = menuRef.current;
+      if (typeof menu.classList !== 'undefined') {
+        menu.classList.remove('show');
+        setIsMenuOpen(true)
+      } else {
+        console.error("menuRef.current doesn't have classList property");
+      }
+    } else if (menuRefLoggedIn && menuRefLoggedIn.current) {
+      const menu = menuRefLoggedIn.current;
+      if (typeof menu.classList !== 'undefined') {
+        menu.classList.remove('show');
+        setIsMenuOpen(true)
+      } else {
+        console.error("menuRef.current doesn't have classList property");
+      }
+    } else {
+      console.error("menuRef or menuRef.current is undefined");
+    }
+  };
+
+  useEffect(() => {
+    let handler = (e) => {
+        if (isMenuOpen &&
+          menuRef.current &&
+          !menuRef.current.contains(e.target)
+        ) {
+          console.log('clicked');
+            menuRef.current.classList.remove('show');
+        }else if ( isMenuOpen &&
+          menuRefLoggedIn.current &&
+          !menuRefLoggedIn.current.contains(e.target)
+        ) {
+            menuRefLoggedIn.current.classList.remove('show');
+        }
+    };
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const checkAuthToken = () => {
@@ -54,111 +132,253 @@ function DashboardMenuList() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("jobId")
-    setIsLoggedIn(false);
+    try {
+      setLoading(true)
+      setIsLoggedIn(false);
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("jobId")
+    } catch (error) {
+      console.error("There was an error:", error);
+    } finally {
+      setLoading(false);
+      handleMenuClose();
+    }
   };
+
+  const fetchProfileData = async (isLoggedIn) => {
+    if(isLoggedIn){
+      try {
+        setLoading(true);
+        const authToken = localStorage.getItem("authToken");
+        let response = await getProfile(authToken);
+        if (response.res) {
+          setUser(response.res.user.name);
+          setUserImg(response.res.user.profile_pic);
+          localStorage.setItem("user", response.res.user.name);
+        } else {
+          console.error("profile error:", response.error);
+        }
+      } catch (error) {
+        console.error("There was an error:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileData(isLoggedIn);
+  }, [isLoggedIn]);
 
   return (
     <>
-      <div
-        className={`loginScreenItems container ${
-          isLoggedIn ? "d-none" : "d-flex"
-        } align-items-center flex-column`}
-      >
-        <a href="/" className="mx-auto siteLogo">
-          <img src={logo} className="img-fluid" alt="Plan a" />
-        </a>
-        <ul className=" mx-auto px-1 menuList">
-          <li className={location.pathname.includes("/login") ? "active" : ""}>
-            <Link to="/login">
-              <div className="iconBox">
-                <Key />
+    {loading && (
+        <div className="loaderDiv">
+          <Bars
+            height="80"
+            width="80"
+            color="#E2E31F"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      )}
+      
+      {isLoggedIn ?
+      <>
+        <div
+          className={`loginScreenItems container-md ${
+            isLoggedIn ? "d-flex" : "d-none"
+          } align-items-center flex-column`}
+        >
+
+          <nav className="navbar navbar-expand-lg bg-transparent w-100">
+            <div className="container-fluid navContainer  p-0">
+              <a href="/" className=" siteLogo">
+                <img src={logo} className="img-fluid" alt="Plan a" />
+              </a>
+              <button className="navbar-toggler" type="button" onClick={handleMenuOpen}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                  <rect width="24" height="24" fill="none" />
+                  <path fill="none" stroke="#E2E31F" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 17h14M5 12h14M5 7h14" />
+                </svg>
+              </button>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent1" ref={menuRefLoggedIn}>
+                <ul className=" dashboardMenuList">
+                  <li className="backBtn">
+                    <div onClick={handleMenuClose}>
+                      <p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 1024 1024">
+                          <rect width="1024" height="1024" fill="none" />
+                          <path fill="#E2E31F" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64" />
+                          <path fill="#E2E31F" d="m237.248 512l265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312z" />
+                        </svg> Back
+                      </p>
+                    </div>
+                  </li>
+                  <li
+                    className={location.pathname.includes("/dashboard") ? "active" : ""}
+                  >
+                    <Link to="/dashboard" onClick={handleMenuClose}>
+                      <DashboardIcon />
+                      <p>Dashboard</p>
+                    </Link>
+                  </li>
+                  {location.pathname.includes("/dashboard") && (
+                    <div className="dropDownMenu">
+                      <li
+                        className={
+                          location.pathname.includes("/timeline") ? "active" : ""
+                        }
+                      >
+                        <Link to="/dashboard/timeline" onClick={handleMenuClose}>
+                          <TimelineIcon />
+                          <p>Timeline</p>
+                        </Link>
+                      </li>
+                      <li
+                        className={location.pathname.includes("/tasks") ? "active" : ""}
+                      >
+                        <Link to="/dashboard/tasks" onClick={handleMenuClose}>
+                          <TaskIcon />
+                          <p>Tasks</p>
+                        </Link>
+                      </li>
+                    </div>
+                  )}
+                  <li className={location.pathname.includes("/Jobs") ? "active" : ""}>
+                    <Link to="/Jobs" onClick={handleMenuClose}>
+                      <JobsIcon />
+                      <p>Jobs</p>
+                    </Link>
+                  </li>
+                  <li
+                    className={location.pathname.includes("/invoice") ? "active" : ""}
+                  >
+                    <Link to="/invoice" onClick={handleMenuClose}>
+                      <InvoiceIcon /> <p>Invoicing</p>
+                    </Link>
+                  </li>
+                  <li
+                    className={location.pathname.includes("/settings") ? "active" : ""}
+                  >
+                    <Link to="/settings" onClick={handleMenuClose}>
+                      <SettingsIcon /> <p>Settings</p>
+                    </Link>
+                  </li>
+                </ul>
+                <div className={`forgotPasswordMenu mobile ${isLoggedIn ? "" : "d-none"}`}>
+                <div
+                  className="d-flex align-items-center navMenuDiv justify-content-between"
+                >
+
+                  {isLoggedIn && 
+                    <Link className="d-flex" style={{textDecoration:'none'}} to="/settings" onClick={handleMenuClose}>
+                      
+                      <div className="UserImg m-0" style={{ minWidth: "40px" }}>
+                        {userImg && userImg !== 'default-profile-pic.jpg' ? (
+                          <img
+                            className="img-fluid"
+                            alt={userImg}
+                            src={
+                              process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userImg
+                            }
+                          />
+                        ) : (
+                          <User />
+                        )}
+                      </div>
+                      <div
+                        className="d-flex flex-column justify-content-center ms-1"
+                      >
+                        <p>{[user]}</p>
+                        <span style={{ fontSize: "12px", fontWeight: "300" }}>
+                        {[user?.job_title]}
+                        </span>
+                      </div>
+                    </Link>
+                  }
+                  <a href="/login" onClick={handleLogout}>
+                    <LogoutIcon />
+                  </a>
+                </div>
+                </div>
               </div>
-              <p>Login</p>
-            </Link>
-          </li>
-          <li className={location.pathname.includes("/signup") ? "active" : ""}>
-            <Link to="/signup">
-              <div className="iconBox">
-                <Lock />{" "}
-              </div>
-              <p>Sign Up</p>
-            </Link>
-          </li>
-        </ul>
-      </div>
-      <div className={`forgotPasswordMenu ${isLoggedIn ? "d-none" : ""}`}>
-        <Link to="/forgot-password">
-          <ForgotPswd /> Forgot Password?
-        </Link>
-      </div>
-      <div
-        className={`loginScreenItems container ${
-          isLoggedIn ? "d-flex" : "d-none"
-        } align-items-center flex-column`}
-      >
-        <a href="/" className="mx-auto siteLogo">
-          <img src={logo} className="img-fluid" alt="Plan a" />
-        </a>
-        <ul className=" dashboardMenuList">
-          <li
-            className={location.pathname.includes("/dashboard") ? "active" : ""}
-          >
-            <Link to="/dashboard">
-              <DashboardIcon />
-              <p>Dashboard</p>
-            </Link>
-          </li>
-          {location.pathname.includes("/dashboard") && (
-            <div className="dropDownMenu">
-              <li
-                className={
-                  location.pathname.includes("/timeline") ? "active" : ""
-                }
-              >
-                <Link to="/dashboard/timeline">
-                  <TimelineIcon />
-                  <p>Timeline</p>
-                </Link>
-              </li>
-              <li
-                className={location.pathname.includes("/tasks") ? "active" : ""}
-              >
-                <Link to="/dashboard/tasks">
-                  <TaskIcon />
-                  <p>Tasks</p>
-                </Link>
-              </li>
             </div>
-          )}
-          <li className={location.pathname.includes("/Jobs") ? "active" : ""}>
-            <Link to="/Jobs">
-              <JobsIcon />
-              <p>Jobs</p>
-            </Link>
-          </li>
-          <li
-            className={location.pathname.includes("/invoice") ? "active" : ""}
-          >
-            <Link to="/invoice">
-              <InvoiceIcon /> <p>Invoicing</p>
-            </Link>
-          </li>
-          <li
-            className={location.pathname.includes("/settings") ? "active" : ""}
-          >
-            <Link to="/settings">
-              <SettingsIcon /> <p>Settings</p>
-            </Link>
-          </li>
-        </ul>
-      </div>
-      <div className={`forgotPasswordMenu ${isLoggedIn ? "" : "d-none"}`}>
-        <a href="/login" onClick={handleLogout}>
-          <LogoutIcon /> Log Out
-        </a>
-      </div>
+          </nav>
+
+        </div>
+        <div className={`forgotPasswordMenu ${isLoggedIn ? "" : "d-none"}`}>
+          <a href="/login" onClick={handleLogout}>
+            <LogoutIcon /> Log Out
+          </a>
+        </div>
+      </>:<>
+        <div
+          className={`loginScreenItems container-md ${
+            isLoggedIn ? "d-none" : "d-flex"
+          } align-items-center flex-column`}
+        >
+
+          <nav className="navbar navbar-expand-lg bg-transparent w-100">
+            <div className="container-fluid navContainer p-0">
+              <a href="/" className="siteLogo">
+                <img src={logo} className="img-fluid" alt="Plan a" />
+              </a>
+              <button className="navbar-toggler" type="button" onClick={handleMenuOpen}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                  <rect width="24" height="24" fill="none" />
+                  <path fill="none" stroke="#E2E31F" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 17h14M5 12h14M5 7h14" />
+                </svg>
+              </button>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent" ref={menuRef}>
+                <ul className=" mx-auto px-1 menuList">
+                  <li className="backBtn">
+                    <div onClick={handleMenuClose}>
+                      <p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 1024 1024">
+                          <rect width="1024" height="1024" fill="none" />
+                          <path fill="#E2E31F" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64" />
+                          <path fill="#E2E31F" d="m237.248 512l265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312z" />
+                        </svg> Back
+                      </p>
+                    </div>
+                  </li>
+                  <li className={location.pathname.includes("/login") ? "active" : ""}>
+                    <Link to="/login" onClick={handleMenuClose}>
+                      <div className="iconBox">
+                        <Key />
+                      </div>
+                      <p>Login</p>
+                    </Link>
+                  </li>
+                  <li className={location.pathname.includes("/signup") ? "active" : ""}>
+                    <Link to="/signup" onClick={handleMenuClose}>
+                      <div className="iconBox">
+                        <Lock />{" "}
+                      </div>
+                      <p>Sign Up</p>
+                    </Link>
+                  </li>
+                </ul>
+                <div className={`forgotPasswordMenu mobile ${isLoggedIn ? "d-none" : ""}`}>
+                  <Link to="/forgot-password" onClick={handleMenuClose}>
+                    <ForgotPswd /> Forgot Password?
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+        </div>
+        <div className={`forgotPasswordMenu `}>
+          <Link to="/forgot-password">
+            <ForgotPswd /> Forgot Password?
+          </Link>
+        </div>
+      </>}
     </>
   );
 }
@@ -182,9 +402,9 @@ function RightSide() {
     <div className="RightSide " id="rightSCroll">
       {isLoggedIn ? (
         <>
-          {pathname !== "/Jobs" && <NavMenu />}
+          {pathname.toLowerCase() !== "/jobs" && <NavMenu />}
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard"  />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/timeline" element={<TimelinePage />} />
             <Route path="/dashboard/tasks" element={<TaskPage />} />

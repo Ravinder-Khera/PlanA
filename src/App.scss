@@ -8,6 +8,9 @@
 
 body {
     overflow-y: hidden;
+    @media screen and (max-width:992px) {
+        overflow-y: auto;
+    }
 }
 
 .App {
@@ -16,7 +19,6 @@ body {
     min-height: 100vh;
     display: flex;
     font-family: 'Archivo', sans-serif;
-
     .LeftSide {
         width: 30%;
         max-width: 325px;
@@ -25,9 +27,15 @@ body {
         position: relative;
         z-index: 99;
         .loginScreenItems {
+            padding-top: 10px;
             .siteLogo {
                 max-width: 119px;
                 margin-top: 35px;
+                margin: auto;
+                @media screen and (max-width:992px) {
+                    margin: 0px 0 0 0;
+                    max-width: 97px;
+                }
             }
         }
 
@@ -38,7 +46,9 @@ body {
             width: 100%;
             margin-bottom: 0;
             list-style: none;
-
+            @media screen and (max-width:992px) {
+                margin-top: 21px;
+            }
             li {
                 border-radius: 2px;
                 border: 1px solid #E2E31F;
@@ -46,7 +56,23 @@ body {
                 padding: 15px 21px;
                 transition: all 0.5s ease;
                 cursor: pointer;
-
+                &.backBtn{
+                    margin-bottom: 0;
+                    border: none;
+                    padding: 0;
+                    p{
+                        color: #FFF;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        margin: 0
+                    }
+                    @media screen and (min-width:993px) {
+                        display: none;
+                    }
+                }
                 a {
                     display: flex;
                     align-items: center;
@@ -89,14 +115,30 @@ body {
             width: 100%;
             margin-bottom: 0;
             list-style: none;
-
+            @media screen and (max-width:992px) {
+                margin-top: 21px;
+            }
             li {
                 margin: 10px auto;
                 padding: 2px;
                 border: 1px solid transparent;
                 transition: all 0.5s ease;
                 cursor: pointer;
-
+                &.backBtn{
+                    margin-bottom: 0;
+                    p{
+                        color: #FFF;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        margin: 0
+                    }
+                    @media screen and (min-width:993px) {
+                        display: none;
+                    }
+                }
                 a {
                     display: flex;
                     align-items: center;
@@ -251,17 +293,91 @@ body {
 
         color: #fff;
     }
+    @media screen and (max-width:992px) {
+        flex-direction: column;
+        .LeftSide{
+            width: 100%;
+            max-width: 100%;
+            min-height: 84px;
+            padding-left: 20px;
+            // display: none;
+            .navbar-toggler{
+                outline: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            .navbar-collapse{
+                position: absolute;
+                width: 100%;
+                top: 50%;
+                left: calc(0% - 20px);
+                max-width: calc(100% - 57px);
+                min-height: calc(100vh - 76px);
+                background: #353535;
+                padding: 21px;
+                border-radius: 0px 40px 40px 0px;
+                box-shadow: 0px 8px 8px 8px rgba(0, 0, 0, 0.30);
+                transition: all 0.75s ease;
+                &.collapse:not(.show) {
+                    display: block;
+                    transform: translateX(-200%);
+                }
+            }
+            .forgotPasswordMenu{
+                display: none;
+                &.mobile{
+                    display: block;
+                    bottom: 21px;
+                    // right: 0;
+                    left: 0;
+                    width: calc(100% - 21px);
+                    background: #353535;
+                    .navMenuDiv{
+                        background: #353535;
+                        box-shadow: none;
+                        padding: 0;
+                    }
+                }
+            }
+        }
+        .RightSide {
+            width: 100%;
+            max-width: calc(100% - 20px);
+            margin: auto;
+        }
+    }
+    @media screen and (min-width:993px) {
+        .LeftSide{
+            .forgotPasswordMenu{
+                &.mobile{
+                    display: none;
+                }
+            }
+            .navContainer{
+                flex-direction: column !important;
+                margin: 0 !important;
+                width: 100% !important;
+                padding: 0 !important;
+                .navbar-collapse{
+                    width: 100%;
+                }
+            }
+        }
+    }
 }
 
 .navMenuDiv {
     background: #252525;
     box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.30);
     padding: 17px;
-
+    @media screen and (max-width:992px) {
+        padding: 10px;
+    }
     form {
         width: max-content;
         display: flex;
-
+        // flex-wrap: wrap;
+        gap: 10px;
         .searchBox {
             border-radius: 2px;
             padding: 4px 14px;
@@ -295,7 +411,9 @@ body {
         .selectBox {
             margin-left: 10px;
             position: relative;
-
+            @media screen and (max-width:575px) {
+                margin: 0;
+            }
             &::after {
                 position: absolute;
                 content: '';
@@ -320,9 +438,27 @@ body {
                 line-height: 22.914px;
                 background-size: 10px 5.8px;
                 background-image: url('./assets/icons/arrowDown.png');
-
+                padding: 4px 2.25rem 4px 0.25rem;
                 &:focus {
                     box-shadow: none;
+                }
+            }
+        }
+        @media screen and (max-width: 767px) {
+            max-width: calc(100% - 60px);
+            .searchBox{
+                max-width: 185px;
+                input {
+                    max-width: 115px;
+                }
+            }
+            .selectBox{
+                max-width: 105px;
+                &::after {
+                    right: 1.85rem;
+                }
+                select{
+                    min-width: 100px;
                 }
             }
         }
@@ -356,14 +492,15 @@ body {
         justify-content: center;
         align-items: center;
         margin-left: 10px;
-        box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
-
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
         img {
             object-fit: cover;
             max-width: 100%;
+            width: 100%;
             height: 100%;
             border-radius: 5px;
             border: 1px solid #000;
+            box-sizing: content-box;
         }
 
         &.withAddBtn {
@@ -407,6 +544,12 @@ body {
             &.CountUsers{
                 background: #fff;
                 color: #000;
+                text-align: center;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: normal;
+                letter-spacing: -0.56px;
             }
         }
 
@@ -469,6 +612,12 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+    .mobileProfile{
+        display: flex;
+        @media screen and (max-width:992px) {
+            display: none;
+        }
     }
 }
 
@@ -821,242 +970,265 @@ body {
         background: #E2E31F;
     }
 }
-
-.settingsPageSection {
-    width: 42%;
-    max-width: 600px;
-    background: #252525;
-    box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
-    min-height: 90vh;
-    padding: 32px;
-    position: relative;
-    z-index: 1;
-
-    .settingsHeading {
-        color: #FFF;
-        font-size: 36px;
-        font-style: normal;
-        font-weight: 900;
-        line-height: normal;
-        letter-spacing: -1.44px;
-        padding: 40px 0;
-    }
-
-    .settingsList {
-        list-style: none;
-
-        li {
-            border-radius: 2px;
-            border: 1px solid #E2E31F;
-            padding: 28px 30px;
-            margin: 10px auto;
-            transition: all 0.5s ease;
-            cursor: pointer;
-
-            &.active {
-                cursor: auto;
-                border: 1px solid transparent;
-                background: rgba(226, 227, 31, 0.20);
-
-                a {
-                    color: #E2E31F;
-                }
-
-                button {
-                    color: #E2E31F;
-                }
-            }
-
-            button {
-                display: flex;
-                align-items: center;
-                color: #fff;
-                border: none;
-                background: transparent;
-                outline: none;
-                text-decoration: none;
-                gap: 20px;
-                width: 100%;
-                justify-content: flex-start;
-
-                .iconBox {
-                    width: 40px;
-                    height: 40px;
-                    background: #E2E31F;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                }
-
-                h6 {
-                    font-size: 16px;
-                    font-style: normal;
-                    font-weight: 600;
-                    line-height: normal;
-                    letter-spacing: -0.64px;
-                    margin-bottom: 20px;
-                }
-
-                p {
-                    font-size: 12px;
-                    font-style: normal;
-                    font-weight: 300;
-                    line-height: normal;
-                    letter-spacing: -0.48px;
-                    margin-bottom: 0;
-                }
-            }
-        }
-    }
-}
-
-.ProfileDetailsSection {
+.settingPageFlex{
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 58%;
-    position: relative;
-    z-index: 1;
-
-    &::before {
-        content: '';
-        position: absolute;
-        left: 35%;
-        top: 0;
-        height: 100%;
-        width: 1px;
-        opacity: 0.15;
-        background: #E2E31F;
-    }
-
-    &::after {
-        content: '';
-        position: absolute;
-        right: 35%;
-        top: 0;
-        height: 100%;
-        width: 1px;
-        opacity: 0.15;
-        background: #E2E31F;
-    }
-
-    .contentDiv {
-        width: 100%;
-        text-align: center;
+    .settingsPageSection {
+        width: 42%;
+        max-width: 600px;
+        background: #252525;
+        box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
+        min-height: 90vh;
+        padding: 32px;
         position: relative;
         z-index: 1;
-
+    
         .settingsHeading {
-            text-align: center;
-            font-size: 50px;
+            color: #FFF;
+            font-size: 36px;
             font-style: normal;
             font-weight: 900;
             line-height: normal;
+            letter-spacing: -1.44px;
+            padding: 40px 0;
         }
-
-        p {
-            text-align: center;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 300;
-            line-height: 40px;
-        }
-
-        .customInput {
-            width: 100%;
-        }
-
-        .btnDiv {
-            display: flex;
-            justify-content: center;
-            margin-top: 50px;
-
-            button {
-                border-radius: 1px;
-                border: 2px solid #E2E31F;
-                padding: 10px 27px;
-                background: transparent;
-                color: #FFF;
-                text-align: center;
-                font-size: 16px;
-                font-style: normal;
-                font-weight: 500;
-                line-height: normal;
-                letter-spacing: -0.64px;
+    
+        .settingsList {
+            list-style: none;
+    
+            li {
+                border-radius: 2px;
+                border: 1px solid #E2E31F;
+                padding: 28px 30px;
+                margin: 10px auto;
                 transition: all 0.5s ease;
-
-                &:hover {
-                    background: #e2e31f33;
-                    border: 2px solid #e2e31f33;
-                    color: #E2E31F;
-                }
-            }
-        }
-
-        .imgUploadArea {
-            max-width: 245px;
-            width: 100%;
-            margin: auto;
-            height: 325px;
-            background: #353535;
-            background-image: url('./assets/icons/dummyImg.png');
-            background-position: center;
-            background-repeat: no-repeat;
-            cursor: pointer;
-            background-size: 40%;
-            box-shadow: 0px 6.53333px 6.53333px 0px rgba(0, 0, 0, 0.30);
-
-            .uploadedImg {
-                width: 100%;
-                height: 100%;
-                position: relative;
-
-                img {
-                    object-fit: cover;
-                    height: 100%;
-                }
-
-                button {
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                }
-            }
-        }
-
-        .imgUploadTextArea {
-            max-width: 345px;
-            width: 100%;
-            margin: auto;
-            background: #353535;
-            margin-top: 60px;
-            padding: 10px 30px;
-            box-shadow: 0px 6.53333px 6.53333px 0px rgba(0, 0, 0, 0.30);
-
-            img {
-                margin-top: -40px;
                 cursor: pointer;
+    
+                &.active {
+                    cursor: auto;
+                    border: 1px solid transparent;
+                    background: rgba(226, 227, 31, 0.20);
+    
+                    a {
+                        color: #E2E31F;
+                    }
+    
+                    button {
+                        color: #E2E31F;
+                    }
+                }
+    
+                button {
+                    display: flex;
+                    align-items: center;
+                    color: #fff;
+                    border: none;
+                    background: transparent;
+                    outline: none;
+                    text-decoration: none;
+                    gap: 20px;
+                    width: 100%;
+                    justify-content: flex-start;
+    
+                    .iconBox {
+                        width: 40px;
+                        height: 40px;
+                        background: #E2E31F;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+    
+                    h6 {
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        margin-bottom: 20px;
+                    }
+    
+                    p {
+                        font-size: 12px;
+                        font-style: normal;
+                        font-weight: 300;
+                        line-height: normal;
+                        letter-spacing: -0.48px;
+                        margin-bottom: 0;
+                    }
+                }
             }
-
+        }
+    }
+    
+    .ProfileDetailsSection {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 58%;
+        position: relative;
+        z-index: 1;
+    
+        &::before {
+            content: '';
+            position: absolute;
+            left: 35%;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            opacity: 0.15;
+            background: #E2E31F;
+        }
+    
+        &::after {
+            content: '';
+            position: absolute;
+            right: 35%;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            opacity: 0.15;
+            background: #E2E31F;
+        }
+    
+        .contentDiv {
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+    
+            .settingsHeading {
+                text-align: center;
+                font-size: 50px;
+                font-style: normal;
+                font-weight: 900;
+                line-height: normal;
+            }
+    
             p {
                 text-align: center;
                 font-size: 14px;
                 font-style: normal;
-                font-weight: 400;
-                line-height: 121.3%;
-                letter-spacing: -0.56px;
-
-                span {
-                    color: #E2E31F;
+                font-weight: 300;
+                line-height: 40px;
+            }
+    
+            .customInput {
+                width: 100%;
+            }
+    
+            .btnDiv {
+                display: flex;
+                justify-content: center;
+                margin-top: 50px;
+    
+                button {
+                    border-radius: 1px;
+                    border: 2px solid #E2E31F;
+                    padding: 10px 27px;
+                    background: transparent;
+                    color: #FFF;
+                    text-align: center;
                     font-size: 16px;
-                    cursor: pointer;
                     font-style: normal;
-                    font-weight: 800;
+                    font-weight: 500;
                     line-height: normal;
                     letter-spacing: -0.64px;
-                    text-decoration-line: underline;
+                    transition: all 0.5s ease;
+                    
+                    &:hover {
+                        background: #e2e31f33;
+                        border: 2px solid #e2e31f33;
+                        color: #E2E31F;
+                    }
+                    &:disabled{
+                        opacity: 0.75;
+                        &:hover{
+                            border: 2px solid #E2E31F;
+                            background: transparent;
+                            color: #FFF;
+                        }
+                    }
                 }
             }
+    
+            .imgUploadArea {
+                max-width: 245px;
+                width: 100%;
+                margin: auto;
+                // height: 325px;
+                height: 245px;
+                background: #353535;
+                background-image: url('./assets/icons/dummyImg.png');
+                background-position: center;
+                background-repeat: no-repeat;
+                cursor: pointer;
+                background-size: 40%;
+                box-shadow: 0px 6.53333px 6.53333px 0px rgba(0, 0, 0, 0.30);
+    
+                .uploadedImg {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+    
+                    img {
+                        object-fit: cover;
+                        height: 100%;
+                    }
+    
+                    button {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                    }
+                }
+            }
+    
+            .imgUploadTextArea {
+                max-width: 345px;
+                width: 100%;
+                margin: auto;
+                background: #353535;
+                margin-top: 60px;
+                padding: 10px 30px;
+                box-shadow: 0px 6.53333px 6.53333px 0px rgba(0, 0, 0, 0.30);
+    
+                img {
+                    margin-top: -40px;
+                    cursor: pointer;
+                }
+    
+                p {
+                    text-align: center;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 121.3%;
+                    letter-spacing: -0.56px;
+    
+                    span {
+                        color: #E2E31F;
+                        font-size: 16px;
+                        cursor: pointer;
+                        font-style: normal;
+                        font-weight: 800;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        text-decoration-line: underline;
+                    }
+                }
+            }
+        }
+    }
+    @media screen and (max-width: 992px) {
+        flex-direction: column;
+        .settingsPageSection {
+            width: 100%;
+            max-width: 100%;
+            min-height: auto;
+        }
+        .ProfileDetailsSection{
+            width: 100%;
+            padding-bottom:40px;
         }
     }
 }
@@ -1081,6 +1253,12 @@ body {
         background-size: 155px 20px;
         background-image:  repeating-linear-gradient(to left, rgb(227, 227, 31, 0.15), rgb(227, 227, 31, 0.15) 1px, #252525 1px, #252525);
     }
+    @media screen and (max-width:992px) {
+        padding: 16px 0;
+        .DashboardHeading{
+            padding: 10px;
+        }
+    }
     .DashboardHeading {
         h2 {
             color: #fff;
@@ -1093,7 +1271,13 @@ body {
             text-transform: capitalize;
             margin-bottom: 0;
         }
-
+        &.DashboardJobHeading{
+            h2 {
+                font-size: 24px;
+                font-weight: 800;
+                letter-spacing: -0.96px;
+            }
+        }
 
         .add-invoice {
             display: flex;
@@ -1112,9 +1296,6 @@ body {
                 margin-left: 10px;
                 box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
             }
-
-            
-
         }
     }
 
@@ -1123,14 +1304,19 @@ body {
         flex-wrap: wrap;
         gap: 28px;
         margin-top: 27px;
-
+        @media screen and (max-width:992px) {
+            gap: 10px;
+        }
         .custom_box {
             background: #353535;
             padding: 35px;
             flex: 1 1 auto;
             text-align: center;
             font-family: 'Archivo', sans-serif;
-
+            @media screen and (max-width:992px) {
+                flex: 0.5 1 auto;
+                width: calc(50% - 5px);
+            }
             h3 {
                 color: #E2E31F;
                 font-weight: 900;
@@ -1151,7 +1337,9 @@ body {
     gap: 8px;
     cursor: pointer;
     max-width: max-content;
-
+    &.disabled{
+        cursor: auto;
+    }
     .iconBox {
         width: 36px;
         height: 36px;
@@ -1260,7 +1448,10 @@ body {
                 &.listTitle {
                     display: flex;
                     align-items: center;
-
+                    @media screen and (max-width:992px) {
+                        max-width: calc(100% - 60px);
+                        min-width: auto;
+                    }
                     .svg-box-not-selected {
                         border-radius: 1px;
                         border: 1px solid #FFF;
@@ -1290,7 +1481,12 @@ body {
                         line-height: normal;
                         letter-spacing: -0.64px;
                         margin-bottom: 0;
-
+                        @media screen and (max-width:992px) {
+                            max-width: calc(100% - 60px);
+                            word-wrap: break-word;
+                            word-break: break-all;
+                            text-align: end;
+                        }
                         span {
                             font-weight: 300;
                         }
@@ -1381,6 +1577,52 @@ body {
                 .btn_Unknown {
                     border: 1px solid #FFF;
                     background: rgba(255, 255, 255, 0.25);
+                }
+            }
+            position: relative;
+            .taskToJob{
+                position: absolute;
+                cursor: pointer;
+                left: 55px;
+                top: 0;
+                height: 100%;
+                width: calc(100% - 130px);
+            }
+        }
+    }
+    @media screen and (max-width:992px) {
+        display: none;
+    }
+    &.mobile{
+        display: none;   
+        @media screen and (max-width:992px) {
+            display: block;
+            .taskBox{
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+                .taskItem{
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    .taskHeading{
+                        color: #FFF;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;                        
+                    }
+                    .listContent{
+                        &.listTitle{
+                            justify-content: end;
+                        }
+                    }
+                    .centerContent{
+                        justify-content: end;
+                    }
                 }
             }
         }
@@ -1575,6 +1817,12 @@ body {
                 right: 0;
                 left: auto;
             }
+            &.mobileLeft{
+                @media screen and (max-width:992px) {
+                    right: auto;
+                    left: 0;
+                }
+            }
 
             .addTaskJobSearchDiv {
                 border-radius: 2px;
@@ -1591,7 +1839,9 @@ body {
                     display: flex;
                     gap: 8px;
                     align-items: center;
-
+                    @media screen and (max-width:992px) {
+                        max-width: 264px;
+                    }
                     input {
                         background: transparent;
                         border: none;
@@ -1611,6 +1861,9 @@ body {
                             color: #E2E31F;
                             opacity: 1;
                         }
+                        @media screen and (max-width:992px) {
+                            max-width: calc(100% - 120px);
+                        }
                     }
                 }
 
@@ -1618,6 +1871,9 @@ body {
                     width: 1px;
                     background: #fff;
                     border-radius: 2px;
+                    @media screen and (max-width:992px) {
+                        display: none;
+                    }
                 }
             }
 
@@ -1995,7 +2251,8 @@ body {
     display: flex;
     margin-top: 27px;
     margin-bottom: 10px;
-
+    width: 100%;
+    border-bottom: 1px solid rgb(226, 227, 31 , 0.15);
     .taskTab {
         background: #353535;
         min-width: 144px;
@@ -2050,10 +2307,18 @@ body {
     width: 4px;
     height: 4px;
 }
+*:not(.Right):hover::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
 
 :-moz-scrollbar {
     width: 4px;
     height: 4px;
+}
+*:hover:-moz-scrollbar {
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -2073,9 +2338,6 @@ body {
     cursor: grab;
     border-radius: 4px;
     opacity: 1;
-    &:hover{
-       transform: scale(1.1);
-    }
 }
 
 :-moz-scrollbar-thumb {
@@ -2084,9 +2346,6 @@ body {
     opacity: 1;
     cursor: pointer;
     pointer-events: auto;
-    &:hover{
-        transform: scale(1.1);
-     }
 }
 
 .mapContainerDiv{
@@ -2095,10 +2354,31 @@ body {
     max-width: 100%;
     position: relative;
     margin-bottom: 20px;
+    @media screen and (max-width:992px) {
+        margin-top: 0px;
+    }
     .customTimeline {
         overflow-y: auto;
         max-height: calc(100vh - 210px);
         position: relative;
+        @media screen and (max-width:992px) {
+            display: none;
+        }
+        &.mobile{
+            display: none;
+            @media screen and (max-width:992px) {
+                display: block;
+                max-height: none;
+                overflow-y: hidden;
+                padding-bottom: 50px;
+                .timelineBody{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 40px;
+                    padding: 0 10px;
+                }
+            }
+        }
         .timeLineFixedTop{
             position: sticky;
             top: 0;
@@ -2184,7 +2464,7 @@ body {
             .jobRow{
                 display: flex;
                 width: 100%;
-                margin: 40px auto;
+                margin: 40px auto 50px auto;
                 
                 .jobCell{
                     // flex: 1 1 auto;
@@ -2209,13 +2489,28 @@ body {
                     .timeLineJob{
                         min-height: 104px ;
                         position: relative;
+                        z-index: 1;
                         .timeLineJobItem{
                             position: absolute;
                             top: 0;
                             right: 1px;
+                            height: 100%;
                             &:hover{
                                 .timeLineJobItemDiv{
                                     min-width: max-content !important;
+                                    &.hidden{
+                                        .jobBox{
+                                            .jobProgressBg{
+                                                width: auto;
+                                            }
+                                            .textDiv{
+                                                opacity: 1;
+                                            }
+                                            .listContent{
+                                                opacity: 1;
+                                            }
+                                        }
+                                    }
                                 }
                                 .jobProgressDiv{
                                     &.hidden{
@@ -2223,7 +2518,14 @@ body {
                                             display: contents;
                                         }
                                     }
-                                }                                
+                                }   
+                                .jobDateDiv{
+                                    &.hidden{
+                                        .text{
+                                            display: contents;
+                                        }
+                                    }
+                                }                             
                             }
                             .timeLineJobItemDiv{
                                 overflow: hidden;
@@ -2234,9 +2536,25 @@ body {
                                 min-width: 10px;
                                 cursor: pointer;
                                 transition: all 0.55s ease;
+                                &.hidden{
+                                    .jobBox{
+                                        .jobProgressBg{
+                                            width: 100%;
+                                        }
+                                        .textDiv{
+                                            opacity: 0;
+                                        }
+                                        .listContent{
+                                            opacity: 0;
+                                        }
+                                    }
+                                }
                             }
                             .textDiv{
-                                min-width: max-content;
+                                // min-width: max-content;
+                                &.mobile{
+                                    min-width: auto;
+                                }
                                 span{
                                     color: #FFF;
                                     font-size: 12px;
@@ -2251,7 +2569,8 @@ body {
                                     font-style: normal;
                                     font-weight: 600;
                                     line-height: normal;
-                                    letter-spacing: -0.64px;                                    
+                                    letter-spacing: -0.64px;       
+                                    margin-bottom: 0;                             
                                 }
                             }
                         }
@@ -2285,6 +2604,44 @@ body {
                                 font-weight: 600;
                             }
                         }
+                        .jobDateDiv {
+                            position: absolute;
+                            top: 100%;
+                            left: 6px;
+                            height: 17px;
+                            width: max-content;
+                            padding: 3px 3px 2px 5px;
+                            border-radius: 3px 3px 0px 0px;
+                            font-size: 14px;
+                            font-style: normal;
+                            font-weight: 500;
+                            line-height: normal;
+                            letter-spacing: -0.48px;
+                            &.hidden{
+                                .text{
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+
+                    &.default {
+                        background: transparent;
+                        .timeLineJobItemDiv{
+                            border: 1px solid #fff;
+                        }
+                        .jobProgressBg{
+                            background: rgba(255, 255, 255, 0.20);
+                        }
+                        .jobProgressDiv{
+                            background: rgba(255, 255, 255, 0.20);
+                            color: #fff;
+                        }
+                        .jobDateDiv{
+                            .text{
+                                color: #fff;
+                            }
+                        }
                     }
                     &.Application {
                         background: transparent;
@@ -2297,6 +2654,11 @@ body {
                         .jobProgressDiv{
                             background: #3b9239;
                             color: #015504;
+                        }
+                        .jobDateDiv{
+                            .text{
+                                color: #3b9239;
+                            }
                         }
                     }
                     &.Referral {
@@ -2311,6 +2673,11 @@ body {
                             background:#1FB4E3;
                             color: #0E546A;
                         }
+                        .jobDateDiv{
+                            .text{
+                                color: #1FB4E3;
+                            }
+                        }
                     }
                     &.Information {
                         background: transparent;
@@ -2323,6 +2690,11 @@ body {
                         .jobProgressDiv{
                             background:#8A50C5;
                             color: rgba(138, 80, 197, 0.49);
+                        }
+                        .jobDateDiv{
+                            .text{
+                                color: #8A50C5;
+                            }
                         }
                     }
                     &.Public {
@@ -2337,6 +2709,11 @@ body {
                             background:#FF5C00;
                             color: rgba(255, 92, 0, 0.55) ;
                         }
+                        .jobDateDiv{
+                            .text{
+                                color: #FF5C00;
+                            }
+                        }
                     }
                     &.Decision {
                         background: transparent;
@@ -2349,6 +2726,11 @@ body {
                         .jobProgressDiv{
                             background:#FF40BE;
                             color: rgba(255, 64, 190, 0.40);
+                        }
+                        .jobDateDiv{
+                            .text{
+                                color: #FF40BE;
+                            }
                         }
                     }
                 }
@@ -2386,6 +2768,7 @@ body {
     color:#E2E31F;
     justify-content: space-between;
     align-items: center;
+    padding: 11px 14px;
    p{
     margin-bottom: 0;
    }
@@ -2545,6 +2928,10 @@ body {
         padding: 10px 15px;
         gap: 15px;
         margin-right: 10px;
+        &.empty{
+            box-shadow: none;
+            justify-content: center;
+        }
         .notificationIcon{
             width: 40px;
             height: 40px;
@@ -2577,6 +2964,54 @@ body {
             }
         }
     }
+    @media screen and (max-width: 992px) {
+        gap: 12px;
+        align-items: center;
+        min-width: auto;
+        justify-content: center;
+        .notificationTime{
+            display: none;       
+        }
+        .notificationContent{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 276px;
+            min-height: 65px;
+            border-radius: 2px;
+            background: #353535;
+            box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.30);
+            padding: 10px 15px;
+            gap: 15px;
+            margin-right: 10px;
+            &.empty{
+                box-shadow: none;
+                justify-content: center;
+            }
+            .notificationIcon{
+                margin-left: 0px;
+            }
+            .notificationText{
+                margin-left: -28px;
+                color: #fff;
+                h3{
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                    margin: 0;
+                }
+                span{
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 300;
+                    line-height: normal;
+                    letter-spacing: -0.48px;                
+                }
+            }
+        }
+    }
 }
 
 .invoiceItemUl{
@@ -2588,6 +3023,35 @@ body {
         padding-left: 10px;
         margin-bottom: 8px !important;
         border-radius: 2px;
+        .editDeleteDiv{
+            position: absolute;
+            top: 0;
+            left: 100%;
+            display: none;
+            .boxes{
+                display: flex;
+                justify-content: center;
+                gap: 5px;
+                img{
+                    width: 40px;
+                    height: 40px;
+                    cursor: pointer;
+                }
+                .delete{
+                    cursor: pointer;
+                    svg{
+                        path{
+                            fill: #fff;
+                        }
+                    }
+                }
+            }
+        }
+        &:hover{
+            .editDeleteDiv{
+                display: block;
+            }
+        }
         input{
             padding: 10px 0;
             flex: 1 1 auto;
@@ -2691,6 +3155,20 @@ body {
     color: red !important;
     font-weight: 600 !important;
 }
+.pagination-container {
+    display: flex; 
+    flex-direction: column;
+    min-height: 75vh; 
+    justify-content: space-between;
+    .table-container {
+        flex: 1;
+        overflow-y: auto; 
+    }
+    .JobsContainer{
+        flex: 1;
+        overflow-y: auto; 
+    }
+}
 .paginationDiv{
     padding: 15px 0;
     .paginationSections{
@@ -2725,6 +3203,16 @@ body {
                         color: #fff;
                     }
                 }
+                &.mobile{
+                    display: none;
+                }
+                @media screen and (max-width:992px) {
+                    display: none;
+                    &.mobile{
+                        display: block;
+                        min-width: auto;
+                    }
+                }
             }
         }
         .pageNoDiv{
@@ -2741,7 +3229,7 @@ body {
                 font-weight: 400;
                 line-height: 18px; 
                 letter-spacing: 0.375px;            
-                transition: all 0.5s ease;
+                // transition: all 0.5s ease;
                 &.activePageBtn{
                     border-bottom: 1px solid #E2E31F;
                     cursor: auto;
@@ -2859,6 +3347,161 @@ body {
                 &:hover{
                     background: transparent;
                     color: #fff;
+                }
+            }
+        }
+    }
+}
+
+.slideOverflow{
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.jobTaskPopUp{
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: calc(100vh - 84px);
+    min-width: 500px;
+    background: #252525;
+    box-shadow: 0px 8px 8px 8px rgba(0, 0, 0, 0.3);
+    z-index: 90;
+    padding: 32px;
+    overflow-y: auto;
+    transition: all 0.5s ease;
+    transform: translateX(100%);
+    &.slideIn{
+        transform: translateX(0%);
+    }
+    .dashboard_task{
+        margin-top: 28px;
+        .taskCount{
+            margin-bottom: 11px;
+            color: #E2E31F;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: normal;
+            letter-spacing: -0.48px; 
+            p{
+                cursor: pointer;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                max-width: max-content;
+                margin: auto;
+            }           
+        }
+        .taskDetails{
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            .chatDiv{
+                border-radius: 2px;
+                background: #353535;
+                box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.35);
+                padding: 20px;      
+                .chatHeading{
+                    color: #E2E31F;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.64px;                    
+                }       
+                .chatTime{
+                    color: #FFF;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 300;
+                    line-height: normal;
+                    letter-spacing: -0.48px;                    
+                }  
+                .chatMsg{
+                    color: #FFF;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: normal;
+                    letter-spacing: -0.56px;                    
+                } 
+                .chatBtnDiv{
+                    display: flex;
+                    width: 100%;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding-top: 27px;
+                    p{
+                        color: #FFF;
+                        font-size: 12px;
+                        font-style: normal;
+                        font-weight: 300;
+                        line-height: normal;
+                        letter-spacing: -0.48px;
+                        margin: 0;
+                    }
+                    button{
+                        border-radius: 1px;
+                        border: 2px solid #E2E31F;
+                        background: transparent;
+                        padding: 11px 27px;
+                        color: #FFF;
+                        text-align: center;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: normal;
+                        letter-spacing: -0.64px;                        
+                    }
+                }
+            }
+            .tasksDiv{
+                border-radius: 2px;
+                padding: 20px 27px;
+                .taskHeading{
+                    color: #FFF;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                }
+                .taskDate{
+                    margin-top: 11px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    color: #FFF;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 300;
+                    line-height: normal;
+                    letter-spacing: -0.48px;                    
+                }
+                &.Application {
+                    border: 1px solid #3B9239;
+                    background: rgba(59, 146, 57, 0.60);
+                }
+        
+                &.Referral {
+                    border: 1px solid #1FB4E3;
+                    background: rgba(31, 180, 227, 0.40);
+                }
+        
+                &.Information {
+                    border: 1px solid #8A50C5;
+                    background: rgba(138, 80, 197, 0.49);
+                }
+        
+                &.Public {
+                    border: 1px solid #FF5C00;
+                    background: rgba(255, 92, 0, 0.55);
+                }
+        
+                &.Decision {
+                    border: 1px solid #FF40BE;
+                    background: rgba(255, 64, 190, 0.40);
                 }
             }
         }

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import {
   AddIcon,
+  FilterIcon,
   NextIcon,
   PrevIcon,
   RedoIcon,
@@ -12,6 +13,7 @@ import {
 import {
   createTask,
   getJobIds,
+  getTasksByFilter,
   getUserByRole,
   updateTask,
 } from "../../services/auth";
@@ -22,16 +24,21 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { toast } from "react-toastify";
 import Complete from "../../Components/Popups/Complete";
 import filterIcon from "../../assets/icons/filterIcon.png";
-import Filter from "../../Components/Filter/Filter";
+import { useNavigate } from "react-router-dom";
+import FilterTask from "../../Components/Filter/FilterTask";
 function TaskPage() {
   const [loading, setLoading] = useState(true);
   const [addTask, setAddTask] = useState(false);
   const [taskTab, setTaskTab] = useState("todo");
   const [addTaskJobDropdown, setAddTaskJobDropdown] = useState(false);
+  const [addTaskJobDropdownMobile, setAddTaskJobDropdownMobile] = useState(false);
   const [addTaskJobStageDropdown, setAddTaskJobStageDropdown] = useState(false);
+  const [addTaskJobStageDropdownMobile, setAddTaskJobStageDropdownMobile] = useState(false);
   const [addTaskJobUserDropdown, setAddTaskJobUserDropdown] = useState(false);
+  const [addTaskJobUserDropdownMobile, setAddTaskJobUserDropdownMobile] = useState(false);
   const [selectDate, setSelectDate] = useState(false);
   const [selectDueDate, setSelectDueDate] = useState(false);
+  const [selectDueDateMobile, setSelectDueDateMobile] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null);
   const [tasksToDo, setTasksToDo] = useState([]);
   const [tasksCompleted, setTasksCompleted] = useState([]);
@@ -49,16 +56,23 @@ function TaskPage() {
   const [selectedAssignee, setSelectedAssignee] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
-
-  const [showFIlter, setShowFilter] = useState(false);
+  const filterRef = useRef(null);
+  const [filteredTasks, setFilteredTasks] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
+  const navigate = useNavigate();
 
   const addTaskJobDropdownRef = useRef(null);
+  const addTaskJobDropdownRefMobile = useRef(null);
   const addTaskJobStageDropdownRef = useRef(null);
+  const addTaskJobStageDropdownRefMobile = useRef(null);
   const selectDateRef = useRef(null);
   const selectDueDateRef = useRef(null);
+  const selectDueDateRefMobile = useRef(null);
   const selectUserRef = useRef(null);
+  const selectUserRefMobile = useRef(null);
   const selectAssigneeRef = useRef(null);
   const selectFilterRef = useRef(null);
+  const taskMobileScrollRef = useRef(null);
 
   const fetchTasksToDo = async () => {
     try {
@@ -87,6 +101,7 @@ function TaskPage() {
         ?.includes("application/json");
       const data = isJson && (await response.json());
       setTasksToDo(data.data);
+      setFilteredTasks(data.data)
       if (response.status === 200) {
         setLoading(false);
         return { res: data, error: null };
@@ -128,6 +143,7 @@ function TaskPage() {
       const data = isJson && (await response.json());
 
       setTasksCompleted(data.data);
+      setFilteredTasks(data.data)
       if (response.status === 200) {
         setLoading(false);
         return { res: data, error: null };
@@ -157,10 +173,22 @@ function TaskPage() {
         setAddTaskJobDropdown(false);
       }
       if (
+        addTaskJobDropdownRefMobile.current &&
+        !addTaskJobDropdownRefMobile.current.contains(e.target)
+      ) {
+        setAddTaskJobDropdownMobile(false);
+      }
+      if (
         addTaskJobStageDropdownRef.current &&
         !addTaskJobStageDropdownRef.current.contains(e.target)
       ) {
         setAddTaskJobStageDropdown(false);
+      }
+      if (
+        addTaskJobStageDropdownRefMobile.current &&
+        !addTaskJobStageDropdownRefMobile.current.contains(e.target)
+      ) {
+        setAddTaskJobStageDropdownMobile(false);
       }
       if (selectDateRef.current && !selectDateRef.current.contains(e.target)) {
         setSelectDate(false);
@@ -171,8 +199,17 @@ function TaskPage() {
       ) {
         setSelectDueDate(false);
       }
+      if (
+        selectDueDateRefMobile.current &&
+        !selectDueDateRefMobile.current.contains(e.target)
+      ) {
+        setSelectDueDateMobile(false);
+      }
       if (selectUserRef.current && !selectUserRef.current.contains(e.target)) {
         setAddTaskJobUserDropdown(false);
+      }
+      if (selectUserRefMobile.current && !selectUserRefMobile.current.contains(e.target)) {
+        setAddTaskJobUserDropdownMobile(false);
       }
     };
 
@@ -183,7 +220,25 @@ function TaskPage() {
     };
   }, []);
 
-  
+  useEffect(() => {
+    if (showPopup && taskMobileScrollRef.current) {
+      handleTScroll();
+    }
+  }, [showPopup]);
+
+  const handleTScroll = () => {
+    if (taskMobileScrollRef.current) {
+      taskMobileScrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  };
+
+  const handleTaskRedo = (task) => {
+    setSelectedTask(task);
+    setShowPopup(true);
+  };
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: new Date(
@@ -197,24 +252,11 @@ function TaskPage() {
 
   const handleSelect = (ranges) => {
     setSelectionRange(ranges.selection);
-    handleSubmit();
   };
 
   const handleSelectDueDate = (date) => {
     setSelectDueDate(false);
     setSelectedDueDate(date);
-  };
-
-  const handleSubmit = () => {
-    const apiUrl = `${
-      process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
-    }/tasks/by-status-and-date?status=to-do&start_date=${selectionRange.startDate
-      .toISOString()
-      .slice(0, 10)}&end_date=${selectionRange.endDate
-      .toISOString()
-      .slice(0, 10)}&perPage=4`;
-
-    console.log("date range", apiUrl);
   };
 
   const toggleCheckbox = async (taskId) => {
@@ -245,7 +287,7 @@ function TaskPage() {
           }));
         }, 1000);
         toast.success("Task moved to Completed", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -258,7 +300,7 @@ function TaskPage() {
         console.error("Task update failed:", response.error);
 
         toast.error(`${response.error.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -272,8 +314,28 @@ function TaskPage() {
       console.error("There was an error:", error);
     } finally {
       setLoading(false);
+      if (window.innerWidth < 992) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } 
     }
   };
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setShowFilter(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
 
   const handleAssigneeClick = (userId) => {
     setSelectedAssignee((prevUsers) => {
@@ -300,7 +362,7 @@ function TaskPage() {
         setSelectedAssignee([]);
         setUserDropdownStates([]);
         toast.success("Assignee added to Task", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -316,7 +378,7 @@ function TaskPage() {
         setSelectedAssignee([]);
         setUserDropdownStates([]);
         toast.error(`${response.error.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -396,7 +458,7 @@ function TaskPage() {
   const handleCreateTask = async () => {
     if (createTaskTitle === "") {
       toast.error(`Task title can not be empty`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -408,7 +470,7 @@ function TaskPage() {
       return;
     } else if (!selectedDueDate) {
       toast.error(`Select Task Due Date`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -420,7 +482,7 @@ function TaskPage() {
       return;
     } else if (selectedSearchJob === "") {
       toast.error(`Select Job Id`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -432,7 +494,7 @@ function TaskPage() {
       return;
     } else if (selectedSearchJobStage === "") {
       toast.error(`Select Stage `, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -444,7 +506,7 @@ function TaskPage() {
       return;
     } else if (selectedUsers.length <= 0) {
       toast.error(`Add Assignee to Task`, {
-        position: "top-center",
+        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
         autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -470,7 +532,7 @@ function TaskPage() {
       if (response.res) {
         console.log("create Task successful", response);
         toast.success("Task created successful", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -492,7 +554,7 @@ function TaskPage() {
         console.error("Task creation failed:", response.error);
 
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -637,6 +699,44 @@ function TaskPage() {
     setShowPopup(false)
   }
 
+  const handleJob = async (job_id) => {
+    console.log(job_id,`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/job/${job_id}`);
+    try {
+      setLoading(true);
+      const authToken = localStorage.getItem("authToken");
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+      let response = await fetch(
+        `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/job/${job_id}`,
+        requestOptions
+      );
+      const isJson = response.headers
+        .get("content-type")
+        ?.includes("application/json");
+      const data = isJson && (await response.json());
+      setSearchJobStages(data);
+      if (response.status === 200) {
+        setLoading(false);
+        navigate("/jobs", { state: data })
+        return { res: data, error: null };
+
+      } else {
+        return { res: null, error: data };
+      }
+    } catch (error) {
+      console.error("Error fetching job:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return (
     <>
       {loading && (
@@ -657,12 +757,13 @@ function TaskPage() {
           <Complete
             data={selectedTask}
             handleClose={() => handleClose()}
+            scrollRef={taskMobileScrollRef}
           />
         )}
         <div className="DashboardHeading d-flex justify-content-between align-items-center">
           <h2>Tasks</h2>
           <div
-            className="addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none"
+            className={`addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none  ${taskTab === "completed" && "d-none"}`}
             onClick={() => setAddTask(!addTask)}
           >
             New Task{" "}
@@ -702,26 +803,29 @@ function TaskPage() {
               />
             </div>
           )}
-          {/* <div
-            className="d-flex gap-2 align-items-baseline pe-4 addNewTaskDiv "
-            style={{ cursor: "pointer" }} 
-            ref={selectFilterRef}
+
+          <div
+            className="d-flex  align-items-baseline pe-md-4 addNewTaskDiv "
+            style={{ cursor: "pointer",marginTop: "40px" }}
+            ref={filterRef}
           >
             <div
               className="d-flex align-items-center gap-2  "
-              onClick={() => setShowFilter(!showFIlter)}
+              onClick={() => setShowFilter(!showFilter)}
             >
-              <img
-                src={filterIcon}
-                style={{ width: "18px", height: "10px" }}
-                alt=""
-              />
+              <FilterIcon />
               <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
                 Filter
               </p>
             </div>
-            {showFIlter && <Filter tasks={true} />}
-          </div> */}
+            {showFilter && (
+              <FilterTask
+                setFilteredTasks={setFilteredTasks}
+                setLoading={setLoading}
+                closeFilter={() => setShowFilter(false)}
+              />
+            )}
+          </div>
         </div>
 
         <div className="DashboardHeading d-flex justify-content-start align-items-center position-relative">
@@ -776,10 +880,7 @@ function TaskPage() {
                           {selectedSearchJob && ` (${selectedSearchJob})`}
                         </div>
                         {addTaskJobDropdown && (
-                          <div
-                            className="addTaskJobDropdown"
-                            ref={addTaskJobDropdownRef}
-                          >
+                          <div className="addTaskJobDropdown" ref={addTaskJobDropdownRef} >
                             <div className="addTaskJobSearchDiv">
                               <div className="searchBox">
                                 <div className="IconBox">
@@ -800,7 +901,7 @@ function TaskPage() {
                                 onClick={() => {
                                   if (searchJobList === "") {
                                     toast.error("Select a Job Id to search", {
-                                      position: "top-center",
+                                      position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
                                       autoClose: 5000,
                                       hideProgressBar: true,
                                       closeOnClick: true,
@@ -860,7 +961,7 @@ function TaskPage() {
                           setAddTaskJobStageDropdown(!addTaskJobStageDropdown);
                           if (searchJobStages.length <= 0) {
                             toast.error("Select a Job Id first", {
-                              position: "top-center",
+                              position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
                               autoClose: 5000,
                               hideProgressBar: true,
                               closeOnClick: true,
@@ -878,10 +979,7 @@ function TaskPage() {
                       </div>
                       {addTaskJobStageDropdown &&
                         searchJobStages.length > 0 && (
-                          <div
-                            className="addTaskJobDropdown"
-                            ref={addTaskJobStageDropdownRef}
-                          >
+                          <div className="addTaskJobDropdown" ref={addTaskJobStageDropdownRef} >
                             <div className="addTaskJobListScroll">
                               <div className="addTaskJobListItems">
                                 {searchJobStages &&
@@ -988,7 +1086,6 @@ function TaskPage() {
                                       selectedUsers.includes(user.id)
                                     )
                                     .map((user) => (
-                                      <>
                                         <div
                                           key={user.id}
                                           className={`addAssigneeDiv  ${
@@ -1026,7 +1123,6 @@ function TaskPage() {
                                               : "+"}
                                           </div>
                                         </div>
-                                      </>
                                     ))}
                               </div>
                               <label className="">Add Assignees</label>
@@ -1035,7 +1131,6 @@ function TaskPage() {
                                   (user) => !selectedUsers.includes(user.id)
                                 )
                                 .map((user) => (
-                                  <>
                                     <div
                                       key={user.id}
                                       className={`addAssigneeDiv ${
@@ -1071,7 +1166,6 @@ function TaskPage() {
                                           : "+"}
                                       </div>
                                     </div>
-                                  </>
                                 ))}
                             </div>
                           </div>
@@ -1135,7 +1229,7 @@ function TaskPage() {
                         )}
                       </label>
                       <p>
-                        | {task.job_id}|<span>{task.title}</span>
+                        | {task.job_id} |<span>{task.title}</span>
                       </p>
                     </div>
                     <div className="listContent centerContent">
@@ -1314,6 +1408,608 @@ function TaskPage() {
                         )}
                       </div>
                     </div>
+                    <div className="taskToJob" onClick={() => handleJob(task.job_id)}></div>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+        {taskTab === "todo" && (
+          <div className="taskContainer mobile">
+            <ul>
+              {addTask && (
+                <li className="heading addNewTaskDiv">
+                  <div className="taskBox">
+                      <div className="taskItem">
+                        <div className="listContent">
+                          <div className="addNewTaskBtn d-flex align-items-center gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none">
+                            
+                            <div className="addTaskJobDiv">
+                              <div
+                                className="addTaskJobBtn"
+                                onClick={() => {
+                                  setAddTaskJobDropdownMobile(true);
+                                  setAddTaskJobStageDropdown(false);
+                                }}
+                              >
+                                + Job No.
+                                {selectedSearchJob && ` (${selectedSearchJob})`}
+                              </div>
+                              {addTaskJobDropdownMobile && (
+                                <div
+                                  className="addTaskJobDropdown"
+                                  ref={addTaskJobDropdownRefMobile}
+                                >
+                                  <div className="addTaskJobSearchDiv">
+                                    <div className="searchBox">
+                                      <div className="IconBox">
+                                        <Search />
+                                      </div>
+                                      <input
+                                        name="search"
+                                        placeholder="Search Job Id"
+                                        value={searchJobList}
+                                        onChange={(e) =>
+                                          setSearchJobList(e.target.value)
+                                        }
+                                      />
+                                    </div>
+                                    <div className="divider" />
+                                    <button
+                                      className="colorOutlineBtn"
+                                      onClick={() => {
+                                        if (searchJobList === "") {
+                                          toast.error("Select a Job Id to search", {
+                                            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+                                            autoClose: 5000,
+                                            hideProgressBar: true,
+                                            closeOnClick: true,
+                                            pauseOnHover: true,
+                                            draggable: true,
+                                            progress: undefined,
+                                            theme: "colored",
+                                          });
+                                        } else {
+                                          fetchJobStages(searchJobList);
+                                        }
+                                      }}
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                  <div className="addTaskJobListScroll">
+                                    <div className="addTaskJobListItems">
+                                      {jobList &&
+                                        jobList
+                                          .filter((job) =>
+                                            searchJobList
+                                              ? job.id.toString() ===
+                                                searchJobList.toString()
+                                              : true
+                                          )
+                                          .map((job) => (
+                                            <div
+                                              key={job.id}
+                                              className={`addTaskJobListItem ${
+                                                searchJobList === job.id && "active"
+                                              }`}
+                                              onClick={() => setSearchJobList(job.id)}
+                                            >
+                                              {job.id}
+                                            </div>
+                                          ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <input
+                              className="addTaskTitleBtn"
+                              value={createTaskTitle}
+                              onChange={(e) => setCreateTaskTitle(e.target.value)}
+                              placeholder="Task Title"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Stage</div>
+                          <div className="listContent centerContent">
+                            <div className="centerText addTaskJobDiv ">
+                              <div
+                                className={`addTaskJobBtn ${selectedSearchJobStage}`}
+                                onClick={() => {
+                                  setAddTaskJobDropdown(false);
+                                  setAddTaskJobStageDropdownMobile(!addTaskJobStageDropdownMobile);
+                                  if (searchJobStages.length <= 0) {
+                                    toast.error("Select a Job Id first", {
+                                      position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+                                      autoClose: 5000,
+                                      hideProgressBar: true,
+                                      closeOnClick: true,
+                                      pauseOnHover: true,
+                                      draggable: true,
+                                      progress: undefined,
+                                      theme: "colored",
+                                    });
+                                  }
+                                }}
+                              >
+                                {selectedSearchJobStage
+                                  ? selectedSearchJobStage
+                                  : "+ Add Stage"}
+                              </div>
+                              {addTaskJobStageDropdownMobile &&
+                                searchJobStages.length > 0 && (
+                                  <div
+                                    className="addTaskJobDropdown right"
+                                    ref={addTaskJobStageDropdownRefMobile}
+                                  >
+                                    <div className="addTaskJobListScroll">
+                                      <div className="addTaskJobListItems">
+                                        {searchJobStages &&
+                                          searchJobStages.map((stage) => (
+                                            <div
+                                              key={stage.id}
+                                              className={`addTaskJobStageItem ${stage.title}`}
+                                              onClick={() => {
+                                                setSelectedSearchJobStage(stage.title);
+                                                setSelectedSearchJobStageId(stage.id);
+                                                setAddTaskJobStageDropdown(false);
+                                              }}
+                                            >
+                                              {stage.title}
+                                            </div>
+                                          ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Due Date</div>
+                          <div className="listContent centerContent">
+                            <div className="centerText addTaskJobDiv">
+                                <div
+                                  className="addTaskDueDateBtn"
+                                  onClick={() => setSelectDueDateMobile(!selectDueDateMobile)}
+                                >
+                                  <TaskIcon />{" "}
+                                  {selectedDueDate ? formattedDueDate : "Due Date"}
+                                </div>
+                                {selectDueDateMobile && (
+                                  <div className="datePickerDiv " style={{right:'0',left:'auto'}} ref={selectDueDateRefMobile}>
+                                    <Calendar
+                                      date={selectedDueDate}
+                                      onChange={handleSelectDueDate}
+                                      value={selectedDueDate}
+                                      calendarType="ISO 8601"
+                                      rangeColors={["#E2E31F"]}
+                                    />
+                                  </div>
+                                )}
+                            </div>
+
+                          </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Assignee</div>
+
+                          <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none">
+                            <div className="addTaskJobDiv d-flex align-items-center justify-content-end">
+                              {selectedUsers.length > 0 ? (
+                                <>
+                                  {usersList
+                                    .filter((user) => selectedUsers.includes(user.id))
+                                    .map((user, index) => (
+                                      <div
+                                        key={index}
+                                        className={`UserImg addedUserImages ${index}`}
+                                        style={{ minWidth: "40px", zIndex: index }}
+                                      >
+                                        {user.profile_pic !== "" ? (
+                                          <img
+                                            alt={user.name}
+                                            src={
+                                              process.env
+                                                .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                              user.profile_pic
+                                            }
+                                          />
+                                        ) : (
+                                          <User />
+                                        )}
+                                      </div>
+                                    ))}
+                                  <div
+                                    className="UserImg withAddBtn m-0"
+                                    onClick={() =>
+                                      setAddTaskJobUserDropdownMobile(!addTaskJobUserDropdownMobile)
+                                    }
+                                    style={{ minWidth: "40px", zIndex: "99" }}
+                                  >
+                                    <User />
+                                  </div>
+                                </>
+                              ) : (
+                                <div
+                                  className="UserImg withAddBtn"
+                                  onClick={() => {
+                                    setAddTaskJobUserDropdownMobile(!addTaskJobUserDropdownMobile);
+                                  }}
+                                  style={{ minWidth: "40px" }}
+                                >
+                                  <User />
+                                </div>
+                              )}
+                              {addTaskJobUserDropdownMobile && (
+                                <div
+                                  className="addTaskJobDropdown right"
+                                  ref={selectUserRefMobile}
+                                >
+                                  <div className="addTaskJobListScroll">
+                                    <div className="addTaskJobListItems">
+                                      <label className="addedAssignees">
+                                        Assignees
+                                      </label>
+                                      <div className="addedAssigneeBorder">
+                                        {usersList &&
+                                          usersList
+                                            .filter((user) =>
+                                              selectedUsers.includes(user.id)
+                                            )
+                                            .map((user) => (
+                                              <>
+                                                <div
+                                                  key={user.id}
+                                                  className={`addAssigneeDiv  ${
+                                                    selectedUsers.includes(user.id) &&
+                                                    "active"
+                                                  }`}
+                                                  onClick={() =>
+                                                    handleUserClick(user.id)
+                                                  }
+                                                >
+                                                  <div
+                                                    className={` UserImg addedUserImages `}
+                                                    style={{ minWidth: "40px" }}
+                                                  >
+                                                    {user.profile_pic !== "" ? (
+                                                      <img
+                                                        alt={user.name}
+                                                        src={
+                                                          process.env
+                                                            .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                          user.profile_pic
+                                                        }
+                                                      />
+                                                    ) : (
+                                                      <User />
+                                                    )}
+                                                  </div>
+                                                  <div>
+                                                    <h4>{user.name}</h4>
+                                                    <p>{user.email}</p>
+                                                  </div>
+                                                  <div className="checkAddBtn">
+                                                    {selectedUsers.includes(user.id)
+                                                      ? "-"
+                                                      : "+"}
+                                                  </div>
+                                                </div>
+                                              </>
+                                            ))}
+                                      </div>
+                                      <label className="">Add Assignees</label>
+                                      {usersList
+                                        .filter(
+                                          (user) => !selectedUsers.includes(user.id)
+                                        )
+                                        .map((user) => (
+                                          <>
+                                            <div
+                                              key={user.id}
+                                              className={`addAssigneeDiv ${
+                                                selectedUsers.includes(user.id) &&
+                                                "active"
+                                              }`}
+                                              onClick={() => handleUserClick(user.id)}
+                                            >
+                                              <div
+                                                className={` UserImg addedUserImages `}
+                                                style={{ minWidth: "40px" }}
+                                              >
+                                                {user.profile_pic !== "" ? (
+                                                  <img
+                                                    alt={user.name}
+                                                    src={
+                                                      process.env
+                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                      user.profile_pic
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <User />
+                                                )}
+                                              </div>
+                                              <div>
+                                                <h4>{user.name}</h4>
+                                                <p>{user.email}</p>
+                                              </div>
+                                              <div className="checkAddBtn">
+                                                {selectedUsers.includes(user.id)
+                                                  ? "-"
+                                                  : "+"}
+                                              </div>
+                                            </div>
+                                          </>
+                                        ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="listContent d-flex align-items-center gap-2 justify-content-between navMenuDiv p-0 bg-transparent shadow-none">
+                            <div
+                                className="UserImg createTaskBtn m-0"
+                                style={{ minWidth: "40px" }}
+                                onClick={handleCreateTask}
+                              >
+                              <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
+                                <rect width="100%" height="100%" fill="none" />
+                                <path fill="none" stroke="inherit" d="M4 7.5L7 10l4-5" />
+                              </svg>
+                            </div>
+                              <div
+                                className="UserImg cancelTaskBtn m-0"
+                                style={{ minWidth: "40px" }}
+                                onClick={()=> setAddTask(false)}
+                              >
+                              <AddIcon />
+                            </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+                </li>
+              )}
+              {tasksToDo &&
+                tasksToDo.map((task, i) => (
+                  <li
+                    key={task.id}
+                    id={`stage_` + task.id}
+                    className={`  stage_` + task.stage.title}
+                  > 
+                    <div className="taskBox">
+                      <div className="taskItem">
+                        <div className="taskHeading">Title</div>
+                        <div className={`listContent listTitle `}>
+                          <label htmlFor={`select_${task.id}`}>
+                            <input
+                              type="checkbox"
+                              checked={isChecked[task.id] || false}
+                              onChange={() => toggleCheckbox(`select_${task.id}`)}
+                              id={`select_${task.id}`}
+                              style={{ display: "none" }}
+                            />
+                            {isChecked[`select_${task.id}`] ? (
+                              <div className="svg-box-selected mx-2">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="15"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                    fill="black"
+                                  />
+                                </svg>
+                              </div>
+                            ) : (
+                              <div className="svg-box-not-selected mx-2"></div>
+                            )}
+                          </label>
+                          <p className="text-end">
+                            | {task.job_id}|<span>{task.title}</span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Stage</div>
+                        <div className="listContent centerContent">
+                          <div
+                            className={`centerText stageBtn btn_${task.stage.title}`}
+                          >
+                            {task.stage.title}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Due Date</div>
+                        <div className="listContent centerContent">
+                          <div className="">
+                            {handleFormatedDate(task.due_date)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Assignee</div>
+                        <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                          <div className=" d-flex align-items-center justify-content-end">
+                            {task.users.length > 0 ? (
+                              <>
+                                {task.users.map((user, index) => (
+                                  <div
+                                    key={index}
+                                    className={` UserImg addedUserImages ${index === task.users.length - 1
+                                      ? "withAddBtn"
+                                      : ""
+                                      }`}
+                                    style={{ minWidth: "40px", zIndex: index }}
+                                    onClick={() => toggleUserDropdown(i)}
+                                  >
+                                    {user.profile_pic !== "" ? (
+                                      <img
+                                        alt={user.name}
+                                        src={
+                                          process.env
+                                            .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                          user.profile_pic
+                                        }
+                                      />
+                                    ) : (
+                                      <User />
+                                    )}
+                                  </div>
+                                ))}
+                              </>
+                            ) : (
+                              <div
+                                className="UserImg withAddBtn"
+                                onClick={() => toggleUserDropdown(i)}
+                                style={{ minWidth: "40px" }}
+                              >
+                                <User />
+                              </div>
+                            )}
+                            {userDropdownStates[i] && (
+                              <div className="addAssigneeDropdown ">
+                                <div
+                                  className="addTaskJobListScroll"
+                                  ref={selectAssigneeRef}
+                                >
+                                  <div className="addTaskJobListItems">
+                                    <label className="addedAssignees">
+                                      Assignees
+                                    </label>
+                                    <div className="addedAssigneeBorder">
+                                      {usersList &&
+                                        usersList
+                                          .filter((user) =>
+                                            selectedAssignee.includes(user.id)
+                                          )
+                                          .map((user) => (
+                                            <>
+                                              <div
+                                                key={user.id}
+                                                className={`addAssigneeDiv  ${
+                                                  selectedAssignee.includes(
+                                                    user.id
+                                                  ) && "active"
+                                                }`}
+                                                onClick={() =>
+                                                  handleAssigneeClick(user.id)
+                                                }
+                                              >
+                                                <div
+                                                  className={` UserImg addedUserImages `}
+                                                  style={{ minWidth: "40px" }}
+                                                >
+                                                  {user.profile_pic !== "" ? (
+                                                    <img
+                                                      alt={user.name}
+                                                      src={
+                                                        process.env
+                                                          .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                        user.profile_pic
+                                                      }
+                                                    />
+                                                  ) : (
+                                                    <User />
+                                                  )}
+                                                </div>
+                                                <div>
+                                                  <h4>{user.name}</h4>
+                                                  <p>{user.email}</p>
+                                                </div>
+                                                <div className="checkAddBtn">
+                                                  {selectedAssignee.includes(
+                                                    user.id
+                                                  )
+                                                    ? "-"
+                                                    : "+"}
+                                                </div>
+                                              </div>
+                                            </>
+                                          ))}
+                                    </div>
+                                    <label className="">Add Assignees</label>
+                                    {usersList
+                                      .filter(
+                                        (user) =>
+                                          !selectedAssignee.includes(user.id)
+                                      )
+                                      .map((user) => (
+                                        <>
+                                          <div
+                                            key={user.id}
+                                            className={`addAssigneeDiv ${
+                                              selectedAssignee.includes(user.id) &&
+                                              "active"
+                                            }`}
+                                            onClick={() =>
+                                              handleAssigneeClick(user.id)
+                                            }
+                                          >
+                                            <div
+                                              className={` UserImg addedUserImages `}
+                                              style={{ minWidth: "40px" }}
+                                            >
+                                              {user.profile_pic !== "" ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user.profile_pic
+                                                  }
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
+                                            <div>
+                                              <h4>{user.name}</h4>
+                                              <p>{user.email}</p>
+                                            </div>
+                                            <div className="checkAddBtn">
+                                              {selectedAssignee.includes(user.id)
+                                                ? "-"
+                                                : "+"}
+                                            </div>
+                                          </div>
+                                        </>
+                                      ))}
+                                  </div>
+                                  <div className="d-flex flex-wrap gap-3 align-content-center justify-content-between mt-3">
+                                    <button
+                                      className="colorOutlineBtn"
+                                      onClick={() => handleAddAssignee(task.id)}
+                                    >
+                                      Add Assignee
+                                    </button>
+                                    <button
+                                      className="colorOutlineBtn"
+                                      onClick={() => handleCloseAddAssignee()}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </li>
                 ))}
             </ul>
@@ -1330,9 +2026,6 @@ function TaskPage() {
                     className={`heading completeStage`}
                   >
                     <div className={`listContent listTitle `}>
-                      {/* <div className='me-2 revertToDo' onClick={() => handleRevert(`select_${task.id}`)}>
-                                    <RedoIcon/>
-                                </div> */}
                       <div
                         className="me-2 revertToDo"
                         onClick={() => {
@@ -1388,6 +2081,99 @@ function TaskPage() {
                             <User />
                           </div>
                         )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+
+        {taskTab === "completed" && (
+          <div className="taskContainer mobile">
+            <ul>
+              {tasksCompleted &&
+                tasksCompleted.map((task) => (
+                  <li
+                    key={task.id}
+                    id={`stage_` + task.id}
+                    className={`heading completeStage`}
+                  >
+                    <div className="taskBox">
+                      <div className="taskItem">
+                        <div className="taskHeading">Title</div>
+                        <div className={`listContent listTitle `}>
+                          <div
+                            className="me-2 revertToDo"
+                            onClick={() => {
+                              // setSelectedTask(task);
+                              // setShowPopup(true);
+                              handleTaskRedo(task);
+                            }}
+                          >
+                            <RedoIcon />
+                          </div>
+                          <p>
+                            | {task.job_id}|<span>{task.title}</span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Stage</div>
+                        <div className="listContent centerContent">
+                          <div
+                            className={`centerText stageBtn btn_${task.stage.title}`}
+                          >
+                            {task.stage.title}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Due Date</div>
+                        <div className="listContent centerContent">
+                          <div className="">
+                            {handleFormatedDate(task.due_date)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="taskItem">
+                        <div className="taskHeading">Assignee</div>
+                        <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none">
+                          <div className=" d-flex align-items-center justify-content-end">
+
+                            {task.users.length > 0 ? (
+                                <>
+                                  {task.users.map((user, index) => (
+                                      <div
+                                        key={index}
+                                        className={` UserImg addedUserImages `}
+                                        style={{ minWidth: "40px", zIndex: index }}
+                                      >
+                                        {user.profile_pic !== "" ? (
+                                          <img
+                                            alt={user.name}
+                                            src={
+                                              process.env
+                                                .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                              user.profile_pic
+                                            }
+                                          />
+                                        ) : (
+                                          <User />
+                                        )}
+                                      </div>
+                                  ))}
+                                </>
+                            ):(
+                              <div
+                                className="UserImg "
+                                style={{ minWidth: "40px" }}
+                              >
+                                <User />
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </li>

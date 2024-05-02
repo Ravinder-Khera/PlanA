@@ -19,6 +19,10 @@
     right: 0;
     left: auto;
     z-index: 99;
+    @media screen and (max-width: 992px) {
+        min-width: auto;
+        width: auto;
+    }
     button{
         min-width: 173px;
         // width: 100%;

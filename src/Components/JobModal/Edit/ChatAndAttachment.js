@@ -36,6 +36,7 @@ const ChatAndAttachment = ({ JobId }) => {
     type: "",
     data: "",
   });
+  const chatScroll = useRef()
   const [userDetails, setUserDetails] = useState();
 
   const fetchProfileData = async () => {
@@ -56,6 +57,12 @@ const ChatAndAttachment = ({ JobId }) => {
   useEffect(() => {
     fetchProfileData();
   }, []);
+
+  useEffect(() => {
+    if (chatScroll.current) {
+      chatScroll.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chats]);
 
   useEffect(() => {
     fetchChats();
@@ -84,7 +91,7 @@ const ChatAndAttachment = ({ JobId }) => {
     return () => {
       pusher.unsubscribe(`job.${id}`);
     };
-  }, []);
+  }, [chats]);
 
   eventEmitter.removeAllListeners("newMessage");
   eventEmitter.on("newMessage", (data) => {
@@ -98,6 +105,7 @@ const ChatAndAttachment = ({ JobId }) => {
   const fetchChats = async () => {
     try {
       setLoading(true);
+      console.log("chats", chats);
       const response1 = await getMessages(JobId);
       const response2 = await getAttachments(JobId);
       // Combine both arrays
@@ -148,6 +156,9 @@ const ChatAndAttachment = ({ JobId }) => {
       console.log("error in sending messages", error);
     } finally {
       setLoading(false);
+      if (chatScroll.current) {
+        chatScroll.current.scrollIntoView({ behavior: "smooth" });
+      }
       setNewMsg({
         type: "",
         data: "",
@@ -287,7 +298,7 @@ const ChatAndAttachment = ({ JobId }) => {
                   {msg.body && (
                     <>
                       {msg.user.name !== localStorage.getItem("user") && (
-                        <div className="chats-content-reciever my-3 ">
+                        <div className="chats-content-reciever ">
                           <div className="d-flex justify-content-between gap-3 align-items-center">
                             <div className="reciver-chats">
                               <div
@@ -299,8 +310,7 @@ const ChatAndAttachment = ({ JobId }) => {
                                 </p>
                               </div>
                               <div
-                                className="position-absolute"
-                                style={{ top: "31px", right: "-14px" }}
+                                className="position-absolute receiverImg "
                               >
                                 {msg.user?.profile_pic !== "" ? (
                                   <img
@@ -335,7 +345,7 @@ const ChatAndAttachment = ({ JobId }) => {
                       )}
 
                       {msg.user.name === localStorage.getItem("user") && (
-                        <div className="chats-content-sender my-3">
+                        <div className="chats-content-sender ">
                           <div className="d-flex justify-content-between gap-3 align-items-center">
                             <div className="msg-timing">
                               <p>sent</p>
@@ -350,8 +360,7 @@ const ChatAndAttachment = ({ JobId }) => {
                                 <p className="text-name p-0 ">You</p>
                               </div>
                               <div
-                                className="position-absolute"
-                                style={{ top: "31px", left: "-14px" }}
+                                className="position-absolute receiverImg"
                               >
                                 {msg.user?.profile_pic !== "" ? (
                                   <img
@@ -474,7 +483,7 @@ const ChatAndAttachment = ({ JobId }) => {
                 </>
               ))}
             {loading && newMsg.type === "msg" && (
-              <div className="chats-content-sender my-3">
+              <div className="chats-content-sender my-3" ref={chatScroll}>
                 <div className="d-flex justify-content-between gap-3 align-items-center">
                   <div className="msg-timing">
                     <p>sending</p>
@@ -538,8 +547,8 @@ const ChatAndAttachment = ({ JobId }) => {
                 </div>
               </div>
             )}
-            {!chats && <p className="loading">Loading Chats...</p>}
-            {chats?.length === 0 && <p className="no-chats">No Chats yet</p>}
+            {!chats && <p className="loading">Loading Messages...</p>}
+            {chats?.length === 0 && <p className="no-chats">No Messages yet</p>}
           </div>
           <div
             className="tab-pane fade"
@@ -550,8 +559,8 @@ const ChatAndAttachment = ({ JobId }) => {
             <div className="sender-attachments">
               <div className="sender d-flex flex-wrap justify-content-start gap-3  mt-3">
                 {attachments?.length > 0 &&
-                  attachments?.map((msg) => (
-                    <div>
+                  attachments?.map((msg,i) => (
+                    <div key={i}>
                       <div
                         className={`attachments-box d-flex  flex-column align-items-center ${
                           msg.user.name !== localStorage.getItem("user")
@@ -628,46 +637,32 @@ const ChatAndAttachment = ({ JobId }) => {
                       value={body}
                     />
                   </form>
-                  {!loading ? (
-                    <div className="d-flex gap-3 ">
-                      <img
-                        src={file}
-                        className="cursor"
-                        alt=""
-                        onClick={() => {
-                          if (attachmentRef.current) {
-                            attachmentRef.current.click();
-                          }
-                        }}
-                      />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        ref={attachmentRef}
-                        className="d-none"
-                        onChange={handleFileUpload}
-                      />
-                      <img
-                        src={message}
-                        className="cursor"
-                        alt=""
-                        onClick={handleSendMessage}
-                      />
-                    </div>
-                  ) : (
-                    <ColorRing
-                      visible={true}
-                      height="30"
-                      width="30"
-                      colors={[
-                        "#E2E31F",
-                        "#E2E31F",
-                        "#E2E31F",
-                        "#E2E31F",
-                        "#E2E31F",
-                      ]}
+                  <div className="d-flex gap-3 ">
+                    <img
+                      src={file}
+                      className="cursor"
+                      alt=""
+                      onClick={() => {
+                        if (attachmentRef.current) {
+                          attachmentRef.current.click();
+                          
+                        }
+                      }}
                     />
-                  )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={attachmentRef}
+                      className="d-none"
+                      onChange={handleFileUpload}
+                    />
+                    <img
+                      src={message}
+                      className="cursor"
+                      alt=""
+                      onClick={handleSendMessage}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

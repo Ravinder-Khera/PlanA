@@ -9,9 +9,14 @@
     justify-content: center;
     align-items: center;
     z-index: 99;
+    &.taskContainerMobile{
+        @media screen and (max-width:992px) {
+            align-items: baseline;
+        }
+    }
     .popup-body {
         background: #353535;
-        padding: 15px 30px;
+        padding: 25px 30px 15px 30px;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         color: white;
@@ -147,7 +152,7 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            margin-top: 20px;
+            margin-top: 25px;
 
             .cancel {
                 color: #fff;

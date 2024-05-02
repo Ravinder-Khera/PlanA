@@ -5,11 +5,10 @@ import { Bars } from "react-loader-spinner";
 import eventEmitter from "../Event";
 import { Link, useNavigate } from "react-router-dom";
 
-function NavMenu() {
+function MobileMenu() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState("");
   const [userImg, setUserImg] = useState("");
-  const [userDesignation, setUserDesignation] = useState("");
   const [selectedValue, setSelectedValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -140,7 +139,6 @@ function NavMenu() {
       if (response.res) {
         setUser(response.res.user.name);
         setUserImg(response.res.user.profile_pic);
-        setUserDesignation(response.res.user.designation)
         localStorage.setItem("user", response.res.user.name);
       } else {
         console.error("profile error:", response.error);
@@ -277,7 +275,7 @@ function NavMenu() {
       )}
       <div className="position-relative" ref={searchPopUpRef}>
         <nav className="container-fluid navMenuDiv position-relative" style={{zIndex:'91'}}>
-          <div className="d-flex  gap-2 justify-content-between">
+          <div className="d-flex flex-wrap gap-2 justify-content-between">
             <form>
               <div className="searchBox">
                 <div className="IconBox">
@@ -306,8 +304,11 @@ function NavMenu() {
               </div>
             </form>
             <div>
-              <div className="d-flex align-items-center justify-content-end justify-content-md-end">
-                <Link className=" mobileProfile" style={{textDecoration:'none'}} 
+              <div
+                className="d-flex align-items-center justify-content-start justify-content-md-end"
+                style={{ minWidth: "250px" }}
+              >
+                <Link className="d-flex" style={{textDecoration:'none'}} 
                 onClick={()=> { 
                   setIsPopupOpen(false);
                   setSearchValue('');
@@ -318,13 +319,12 @@ function NavMenu() {
                   >
                     <p>{[user]}</p>
                     <span style={{ fontSize: "12px", fontWeight: "300" }}>
-                    {[userDesignation]}
+                    {[user?.job_title]}
                     </span>
                   </div>
-                  <div className="UserImg border-0" style={{ minWidth: "40px" }}>
+                  <div className="UserImg" style={{ minWidth: "40px" }}>
                     {userImg && userImg !== 'default-profile-pic.jpg' ? (
                       <img
-                        className="border-0"
                         alt={userImg}
                         src={
                           process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userImg
@@ -458,4 +458,4 @@ export async function getServerSideProps() {
   }
 }
 
-export default NavMenu;
+export default MobileMenu;

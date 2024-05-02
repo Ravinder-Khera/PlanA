@@ -6,7 +6,7 @@ import { getUserByRole, updateTask } from "../../services/auth";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 
-const Complete = ({ data, handleClose }) => {
+const Complete = ({ data, handleClose,scrollRef }) => {
 
   const [loading, setLoading] = useState(false);
   const [selectDueDate, setSelectDueDate] = useState(false);
@@ -31,8 +31,17 @@ const Complete = ({ data, handleClose }) => {
     const day = String(selectedDueDate.getDate()).padStart(2, "0");
     formattedDueDate = `${year}-${month}-${day}`;
   } else {
-    formattedDueDate = data.due_date;
+    formattedDueDate = data?.due_date;
   }
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [scrollRef]);
 
   useEffect(() => {
     let handler = (e) => {
@@ -136,7 +145,7 @@ const Complete = ({ data, handleClose }) => {
           }
         }, 1000);
         toast.success("Task Moved to To Do", {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -148,7 +157,7 @@ const Complete = ({ data, handleClose }) => {
       } else {
         console.error("Task update failed:", response.error);
         toast.error(`${response.error.message}`, {
-          position: "top-center",
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -198,7 +207,7 @@ const Complete = ({ data, handleClose }) => {
 };
 
   return (
-    <div className="popup-container">
+    <div className="popup-container taskContainerMobile">
       {loading && (
         <div className="loaderDiv">
           <Bars
@@ -212,17 +221,17 @@ const Complete = ({ data, handleClose }) => {
           />
         </div>
       )}
-      <div className="popup-body">
+      <div className="popup-body" id="taskMobileScroll" ref={scrollRef}>
         <div className="close-icon" onClick={handleClose}>
           <CrossIcon />
         </div>
         <h2>Return To Tasks</h2>
-        <p>
+        <p style={{marginBottom:'25px'}}>
           Do you need to make any changes to <br /> your task before returning?
         </p>
 
         <div className="content">
-          <div className="top  d-flex justify-content-between align-items-center ">
+          <div className="top flex-wrap gap-2 d-flex justify-content-between align-items-center ">
             <div className="left d-flex flex-column justify-content-center align-items-start">
               <h1>{data.job_id}</h1>
               <input className="taskTitleInput" value={selectTitle} onChange={(e)=> setSelectTitle(e.target.value)} />

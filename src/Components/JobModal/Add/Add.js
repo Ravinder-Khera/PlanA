@@ -489,7 +489,7 @@ const Add = ({ handleClose, fetchJobs }) => {
           />
         </div>
       )}
-      <div className="loaderDiv3">
+      <div className="loaderDiv3 loaderDiv2">
         <div className="pop-wrapper">
           <div className="wrapper">
             <div className="container pop-container" ref={popUpRef}>
@@ -605,7 +605,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                     <div className="Addslider-container">
                       <Slider {...settings}>
                         {sliderData.map((item, index) => (
-                          <div>
+                          <div key={index}>
                             <div
                               key={index}
                               className={` slider-box ${
@@ -651,7 +651,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                       </div>
                     </div>
                     <div className="table-main-section mt-4">
-                      <ul>
+                      <ul className="task-list">
                         {tasks?.length > 0 &&
                           tasks?.map((task, index) => (
                             <li key={index}>
@@ -711,49 +711,61 @@ const Add = ({ handleClose, fetchJobs }) => {
                                   <div className=" d-flex align-items-center justify-content-center">
                                     {task?.users?.length > 0 ? (
                                       <>
-                                        {task.users?.map((user, i) => (
-                                          <>
-                                            <div
-                                              key={i}
-                                              className={` UserImg addedUserImages ${
-                                                i === task.users.length - 1
-                                                  ? "withAddBtn"
-                                                  : ""
-                                              }`}
-                                              style={{
-                                                minWidth: "40px",
-                                                zIndex: i,
-                                              }}
-                                              onClick={() => {
-                                                console.log(
-                                                  "task users",
-                                                  task.users
-                                                );
-                                                if (task.users) {
-                                                  setTaskSelectedAssignee(
-                                                    task.users
-                                                  );
-                                                } else {
-                                                  setTaskSelectedAssignee([]);
-                                                }
-                                                toggleUserDropdown(index);
-                                              }}
-                                            >
-                                              {user.profile_pic !== "" ? (
-                                                <img
-                                                  alt={user.name}
-                                                  src={
-                                                    process.env
-                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                    user.profile_pic
+                                        {task?.users
+                                          ?.slice(0, 2)
+                                          ?.map((user, i) => (
+                                            <>
+                                              <div
+                                                key={task.id}
+                                                className={` UserImg addedUserImages ${
+                                                  i === task?.users?.length - 1
+                                                    ? "withAddBtn"
+                                                    : ""
+                                                }`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  zIndex: i,
+                                                }}
+                                                onClick={() => {
+                                                  if (task.users) {
+                                                    setTaskSelectedAssignee(
+                                                      task.users
+                                                    );
+                                                  } else {
+                                                    setTaskSelectedAssignee([]);
                                                   }
-                                                />
-                                              ) : (
-                                                <User />
-                                              )}
+                                                  toggleUserDropdown(index);
+                                                }}
+                                              >
+                                                {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                  <img
+                                                    alt={user.name}
+                                                    src={
+                                                      process.env
+                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                      user.profile_pic
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <User />
+                                                )}
+                                              </div>
+                                            </>
+                                          ))}
+                                        {task?.users?.length > 2 && (
+                                          <div
+                                            key={3}
+                                            className={`UserImg-count addedUserImages withAddBtn`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: 4,
+                                            }}
+                                          >
+                                            <div className="count-card">
+                                              {task?.users?.length - 2}+
                                             </div>
-                                          </>
-                                        ))}
+                                          </div>
+                                        )}
                                       </>
                                     ) : (
                                       <div
@@ -810,8 +822,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                             minWidth: "40px",
                                                           }}
                                                         >
-                                                          {user.profile_pic !==
-                                                          "" ? (
+                                                          {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                             <img
                                                               alt={user.name}
                                                               src={
@@ -875,7 +886,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                       }}
                                                     >
                                                       {user.profile_pic !==
-                                                      "" ? (
+                                                      "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                         <img
                                                           alt={user.name}
                                                           src={
@@ -1101,7 +1112,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                 );
                                               }}
                                             >
-                                              {user.profile_pic !== "" ? (
+                                              {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                 <img
                                                   alt={user.name}
                                                   src={
@@ -1186,7 +1197,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                         }}
                                                       >
                                                         {user.profile_pic !==
-                                                        "" ? (
+                                                        "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                           <img
                                                             alt={user.name}
                                                             src={
@@ -1243,7 +1254,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                     className={` UserImg addedUserImages `}
                                                     style={{ minWidth: "40px" }}
                                                   >
-                                                    {user.profile_pic !== "" ? (
+                                                    {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
                                                       <img
                                                         alt={user.name}
                                                         src={
