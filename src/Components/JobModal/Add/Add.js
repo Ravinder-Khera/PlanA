@@ -17,7 +17,7 @@ const Add = ({ handleClose, fetchJobs }) => {
     due_date: "",
     latest_update: "",
     status: "",
-    assessment_manager:"",
+    assessment_manager: "",
     is_archive: "0",
     linkedin_post: "0",
     eofy: "0",
@@ -49,7 +49,6 @@ const Add = ({ handleClose, fetchJobs }) => {
   const [isEOFY, setIsEOFY] = useState(false);
   const [isLinkedIn, setIsLinkedIn] = useState(false);
   const [selectOperative, setSelectOperative] = useState(false);
-  const [AssessmentManager, setAssessmentManager] = useState("");
   const [selectedAssignee, setSelectedAssignee] = useState([]);
   const [userDropdownStates, setUserDropdownStates] = useState(
     Array(19).fill(false)
@@ -719,7 +718,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                                     </p>
                                   </div>
 
-                                  <button className={`btn_${task.stageTitle}`}>
+                                  <button className={`application-lodge-btn btn_${task.stageTitle}`}>
                                     {StageList[task.stageTitle]}
                                   </button>
                                 </div>
@@ -1107,7 +1106,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                                           return newState;
                                         })
                                       }
-                                      className={`btn_${task?.stageTitle}`}
+                                      className={`application-lodge-btn btn_${task?.stageTitle}`}
                                     >
                                       {StageList[task?.stageTitle]}
                                     </button>
@@ -1503,8 +1502,8 @@ const Add = ({ handleClose, fetchJobs }) => {
                       <p>Assessment Manager</p>
                       <input
                         type="text"
-                        name="latest-update"
-                        id="latest-update"
+                        name="assessment_manager"
+                        id="assessment_manager"
                         placeholder="First Name Last Name"
                         value={state.assessment_manager}
                         onChange={handleOnChange}
