@@ -3,7 +3,7 @@ import "./style.scss";
 import Slider from "react-slick";
 import { AllStages, StageList, StatusList } from "../../../helper";
 import { Calendar } from "react-date-range";
-import { AddIcon, User } from "../../../assets/svg";
+import { AddIcon, User, TaskIcon } from "../../../assets/svg";
 import { createJobs, getUserByRole } from "../../../services/auth";
 import { Bars } from "react-loader-spinner";
 import { toast } from "react-toastify";
@@ -29,6 +29,7 @@ const Add = ({ handleClose, fetchJobs }) => {
       stageTitle: "",
       status: "to-do",
       users: [],
+      due_date: "",
     },
   ]);
   const [tasks, setTasks] = useState([]);
@@ -47,16 +48,16 @@ const Add = ({ handleClose, fetchJobs }) => {
     Array(1).fill(false)
   );
   const [taskSelectedAssignee, setTaskSelectedAssignee] = useState([]);
+  const [calendarVisibility, setCalendarVisibility] = useState(
+    Array(newTask.length).fill(false)
+  );
 
   const popUpRef = useRef(null);
 
   useEffect(() => {
     let handler = (e) => {
-      if (
-        popUpRef.current &&
-        !popUpRef.current.contains(e.target)
-      ) {
-        handleClose()
+      if (popUpRef.current && !popUpRef.current.contains(e.target)) {
+        handleClose();
       }
     };
 
@@ -216,11 +217,12 @@ const Add = ({ handleClose, fetchJobs }) => {
   const handleAddNewTaskList = () => {
     const newList = [
       ...newTask,
-      { title: "", status: "to-do", stageTitle: "", users: [] },
+      { title: "", status: "to-do", stageTitle: "", users: [], due_date:"" },
     ];
     setNewTask(newList);
     setShowAssigneeDropdown(Array(newList.length).fill(false));
     setShowStagesDropdown(Array(newList.length).fill(false));
+    setCalendarVisibility(Array(newList.length).fill(false))
   };
 
   const handleAssigneeClick = (user) => {
@@ -281,7 +283,10 @@ const Add = ({ handleClose, fetchJobs }) => {
       );
       return;
     }
-    if (!tasks.length && (newTask[0].title === "" || newTask[0].stageTitle === "")) {
+    if (
+      !tasks.length &&
+      (newTask[0].title === "" || newTask[0].stageTitle === "" || newTask[0].due_date === "")
+    ) {
       toast.error(
         <>
           <div>
@@ -345,112 +350,90 @@ const Add = ({ handleClose, fetchJobs }) => {
           title,
           due_date,
           status,
-          users: users ? users.map(user => user.id) : [],
+          users: users ? users.map((user) => user.id) : [],
         })),
       }));
     }
 
     if (!tasks.length) {
-      // Get the current date
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      let month = currentDate.getMonth() + 1;
-      let day = currentDate.getDate();
-  
-      // Ensure month and day are two digits
-      month = month < 10 ? "0" + month : month;
-      day = day < 10 ? "0" + day : day;
-  
-      // Format the current date as YYYY-MM-DD
-      const formattedDate = `${year}-${month}-${day}`;
-  
       // Iterate over each newTask object
-      newTask.forEach(task => {
-          // Check if the task object has the required fields
-          if (
-              task.title !== "" &&
-              task.stageTitle !== "" &&
-              task.users && task.users.length > 0
-          ) {
-              // Find the index of the stage with the same title
-              const existingStageIndex = stages.findIndex(stage => stage.title === task.stageTitle);
-  
-              // If the stage already exists, push the task to its tasks array
-              if (existingStageIndex !== -1) {
-                  stages[existingStageIndex].tasks.push({
-                      title: task.title,
-                      due_date: formattedDate,
-                      status: task.status,
-                      users: task.users ? task.users.map(user => user.id) : [],
-                  });
-              } else {
-                  // If the stage doesn't exist, create a new stage object and push it to stages
-                  stages.push({
-                      title: task.stageTitle,
-                      tasks: [
-                          {
-                              title: task.title,
-                              due_date: formattedDate,
-                              status: task.status,
-                              users: task.users ? task.users.map(user => user.id) : [],
-                          },
-                      ],
-                  });
-              }
-          }
-      });
-  }
-
-    if (tasks.length) {
-      
-      // Get the current date
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      let month = currentDate.getMonth() + 1;
-      let day = currentDate.getDate();
-
-      // Ensure month and day are two digits
-      month = month < 10 ? "0" + month : month;
-      day = day < 10 ? "0" + day : day;
-
-      // Format the current date as YYYY-MM-DD
-      const formattedDate = `${year}-${month}-${day}`;
-
-      newTask.forEach(task => {
+      newTask.forEach((task) => {
         // Check if the task object has the required fields
         if (
-            task.title !== "" &&
-            task.stageTitle !== "" &&
-            task.users && task.users.length > 0
+          task.title !== "" &&
+          task.stageTitle !== "" && task.due_date !== "" &&
+          task.users &&
+          task.users.length > 0
         ) {
-            // Find the index of the stage with the same title
-            const existingStageIndex = stages.findIndex(stage => stage.title === task.stageTitle);
+          // Find the index of the stage with the same title
+          const existingStageIndex = stages.findIndex(
+            (stage) => stage.title === task.stageTitle
+          );
 
-            // If the stage already exists, push the task to its tasks array
-            if (existingStageIndex !== -1) {
-                stages[existingStageIndex].tasks.push({
-                    title: task.title,
-                    due_date: formattedDate,
-                    status: task.status,
-                    users: task.users ? task.users.map(user => user.id) : [],
-                });
-            } else {
-                // If the stage doesn't exist, create a new stage object and push it to stages
-                stages.push({
-                    title: task.stageTitle,
-                    tasks: [
-                        {
-                            title: task.title,
-                            due_date: formattedDate,
-                            status: task.status,
-                            users: task.users ? task.users.map(user => user.id) : [],
-                        },
-                    ],
-                });
-            }
+          // If the stage already exists, push the task to its tasks array
+          if (existingStageIndex !== -1) {
+            stages[existingStageIndex].tasks.push({
+              title: task.title,
+              due_date: task.due_date,
+              status: task.status,
+              users: task.users ? task.users.map((user) => user.id) : [],
+            });
+          } else {
+            // If the stage doesn't exist, create a new stage object and push it to stages
+            stages.push({
+              title: task.stageTitle,
+              tasks: [
+                {
+                  title: task.title,
+                  due_date: task.due_date,
+                  status: task.status,
+                  users: task.users ? task.users.map((user) => user.id) : [],
+                },
+              ],
+            });
+          }
         }
-    });
-      
+      });
+    }
+
+    if (tasks.length) {
+      newTask.forEach((task) => {
+        // Check if the task object has the required fields
+        if (
+          task.title !== "" &&
+          task.stageTitle !== "" && task.due_date !== "" &&
+          task.users &&
+          task.users.length > 0
+        ) {
+          // Find the index of the stage with the same title
+          const existingStageIndex = stages.findIndex(
+            (stage) => stage.title === task.stageTitle
+          );
+
+          // If the stage already exists, push the task to its tasks array
+          if (existingStageIndex !== -1) {
+            stages[existingStageIndex].tasks.push({
+              title: task.title,
+              due_date: task.due_date,
+              status: task.status,
+              users: task.users ? task.users.map((user) => user.id) : [],
+            });
+          } else {
+            // If the stage doesn't exist, create a new stage object and push it to stages
+            stages.push({
+              title: task.stageTitle,
+              tasks: [
+                {
+                  title: task.title,
+                  due_date: task.due_date,
+                  status: task.status,
+                  users: task.users ? task.users.map((user) => user.id) : [],
+                },
+              ],
+            });
+          }
+        }
+      });
     }
 
     try {
@@ -471,7 +454,16 @@ const Add = ({ handleClose, fetchJobs }) => {
       setLoader(false);
       fetchJobs();
       handleClose();
+      setCalendarVisibility(Array(newTask.length).fill(false))
     }
+  };
+
+  const toggleCalendar = (index) => {
+    setCalendarVisibility((prevVisibility) => {
+      const updatedVisibility = [...prevVisibility];
+      updatedVisibility[index] = !updatedVisibility[index];
+      return updatedVisibility;
+    });
   };
 
   return (
@@ -737,7 +729,9 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                   toggleUserDropdown(index);
                                                 }}
                                               >
-                                                {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                {user.profile_pic !== "" &&
+                                                user.profile_pic !==
+                                                  "default-profile-pic.jpg" ? (
                                                   <img
                                                     alt={user.name}
                                                     src={
@@ -822,7 +816,10 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                             minWidth: "40px",
                                                           }}
                                                         >
-                                                          {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                          {user.profile_pic !==
+                                                            "" &&
+                                                          user.profile_pic !==
+                                                            "default-profile-pic.jpg" ? (
                                                             <img
                                                               alt={user.name}
                                                               src={
@@ -886,7 +883,9 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                       }}
                                                     >
                                                       {user.profile_pic !==
-                                                      "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                        "" &&
+                                                      user.profile_pic !==
+                                                        "default-profile-pic.jpg" ? (
                                                         <img
                                                           alt={user.name}
                                                           src={
@@ -993,11 +992,46 @@ const Add = ({ handleClose, fetchJobs }) => {
                                 style={{ "min-width": "92%" }}
                               >
                                 <div className="d-flex gap-3 align-items-center ">
+                                  {task.due_date !== "" ? 
                                   <img
                                     src="/assets/Group 87.png"
                                     alt=""
                                     style={{ width: "18px", height: "18px" }}
-                                  />
+                                  /> :
+                                  <div className="centerText addTaskJobDiv">
+                                    
+                                    <div
+                                      className="addTaskDueDateBtn"
+                                      onClick={() => toggleCalendar(index)}
+                                    >
+                                      <TaskIcon />{" "}
+                                    </div>
+                                    {calendarVisibility[index] && (
+                                      <div className="datePickerDiv">
+                                        <Calendar
+                                          date={selectedDueDate}
+                                          onChange={(date) => {
+                                            const year = date.getFullYear();
+                                            const month = String(
+                                              date.getMonth() + 1
+                                            ).padStart(2, "0");
+                                            const day = String(
+                                              date.getDate()
+                                            ).padStart(2, "0");
+                                            let formattedDueDate = `${year}-${month}-${day}`;
+                                            const list = [...newTask];
+                                            list[index]["due_date"] =
+                                              formattedDueDate;
+                                            setNewTask(list);
+                                            setCalendarVisibility(Array(list.length).fill(false))
+                                          }}
+                                          value={selectedDueDate}
+                                          calendarType="ISO 8601"
+                                          rangeColors={["#E2E31F"]}
+                                        />
+                                      </div>
+                                    )}
+                                  </div>}
                                   <p className={`text_${task.stageTitle}`}>
                                     <input
                                       type="text"
@@ -1112,7 +1146,9 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                 );
                                               }}
                                             >
-                                              {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                              {user.profile_pic !== "" &&
+                                              user.profile_pic !==
+                                                "default-profile-pic.jpg" ? (
                                                 <img
                                                   alt={user.name}
                                                   src={
@@ -1197,7 +1233,9 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                         }}
                                                       >
                                                         {user.profile_pic !==
-                                                        "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                          "" &&
+                                                        user.profile_pic !==
+                                                          "default-profile-pic.jpg" ? (
                                                           <img
                                                             alt={user.name}
                                                             src={
@@ -1254,7 +1292,9 @@ const Add = ({ handleClose, fetchJobs }) => {
                                                     className={` UserImg addedUserImages `}
                                                     style={{ minWidth: "40px" }}
                                                   >
-                                                    {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                    {user.profile_pic !== "" &&
+                                                    user.profile_pic !==
+                                                      "default-profile-pic.jpg" ? (
                                                       <img
                                                         alt={user.name}
                                                         src={

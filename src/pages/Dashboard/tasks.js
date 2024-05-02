@@ -1580,7 +1580,7 @@ function TaskPage() {
                                   {selectedDueDate ? formattedDueDate : "Due Date"}
                                 </div>
                                 {selectDueDateMobile && (
-                                  <div className="datePickerDiv " style={{right:'0',left:'auto'}} ref={selectDueDateRefMobile}>
+                                  <div className="datePickerDiv" style={{right:'0',left:'auto'}} ref={selectDueDateRefMobile}>
                                     <Calendar
                                       date={selectedDueDate}
                                       onChange={handleSelectDueDate}
