@@ -355,6 +355,19 @@ const Add = ({ handleClose, fetchJobs }) => {
       return;
     }
 
+    if ( state.assessment_manager === "" ||  state.assessment_manager?.trim() === "") {
+      toast.error(
+        <>
+          <div>
+            <h3>Trouble Creating Job?</h3>
+          </div>
+          <p>Please Enter the Assessment Manager.</p>
+        </>
+      );
+      return;
+    }
+   
+
     let stages = [];
     // Group tasks by stageTitle
     if (tasks.length > 0) {
