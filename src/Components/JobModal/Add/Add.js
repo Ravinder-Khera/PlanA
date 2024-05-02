@@ -66,11 +66,16 @@ const Add = ({ handleClose, fetchJobs }) => {
   );
 
   const popUpRef = useRef(null);
+  const selectTaskDueDateRef = useRef(null);
 
   useEffect(() => {
     let handler = (e) => {
       if (popUpRef.current && !popUpRef.current.contains(e.target)) {
         handleClose();
+      }
+
+      if (selectTaskDueDateRef.current && !selectTaskDueDateRef.current.contains(e.target)) {
+        setCalendarVisibility(Array(newTask.length).fill(false))
       }
     };
 
@@ -1021,12 +1026,13 @@ const Add = ({ handleClose, fetchJobs }) => {
                                     
                                     <div
                                       className="addTaskDueDateBtn"
+                                      style={{cursor:'pointer'}}
                                       onClick={() => toggleCalendar(index)}
                                     >
                                       <TaskIcon />{" "}
                                     </div>
                                     {calendarVisibility[index] && (
-                                      <div className="datePickerDiv">
+                                      <div className="datePickerDiv" ref={selectTaskDueDateRef}>
                                         <Calendar
                                           date={selectedDueDate}
                                           onChange={(date) => {

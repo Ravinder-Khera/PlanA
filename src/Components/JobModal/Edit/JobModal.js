@@ -69,6 +69,7 @@ const JobModal = ({
   const [isEdit, setIsEdit] = useState(false);
   const [showTask, setShowTask] = useState(false);
   const selectDueDateRef = useRef(null);
+  const selectTaskDueDateRef = useRef(null);
   const popUpRef = useRef(null);
   const cardRef = useRef(null);
   const sliderRef = useRef(null);
@@ -111,6 +112,12 @@ const JobModal = ({
         !showStagesRefMobile.current.contains(e.target)
       ) {
         setShowStages(false);
+      }
+      if (
+        selectTaskDueDateRef.current &&
+        !selectTaskDueDateRef.current.contains(e.target)
+      ) {
+        setCalendarVisibility(false);
       }
       if (
         showAssigneeRef.current &&
@@ -610,7 +617,7 @@ const JobModal = ({
                 <div className="popup-section-left">
                   <div
                     className="top-section"
-                    style={{ position: "sticky", top: "0", zIndex: "9" }}
+                    style={{ position: "sticky", top: "0", zIndex: "10" }}
                   >
                     <div className="topsection-left">
                       <div className="top-left-content align-baseline">
@@ -1386,12 +1393,13 @@ const JobModal = ({
                                   <div className="centerText addTaskJobDiv">
                                     <div
                                       className="addTaskDueDateBtn"
+                                      style={{cursor:'pointer'}}
                                       onClick={() => setCalendarVisibility(!calendarVisibility)}
                                     >
                                       <TaskIcon />{" "}
                                     </div>
                                     {calendarVisibility && (
-                                      <div className="datePickerDiv">
+                                      <div className="datePickerDiv" ref={selectTaskDueDateRef}>
                                         <Calendar
                                           date={selectedDueDate}
                                           onChange={(date) => {
