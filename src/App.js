@@ -21,6 +21,7 @@ import {
   useLocation,
   Navigate,
   Link,
+  useNavigate,
 } from "react-router-dom";
 import Login from "./pages/LandingPages/LoginPage/login";
 import SignUp from "./pages/LandingPages/SignUp/signUp";
@@ -43,6 +44,7 @@ import { Bars } from "react-loader-spinner";
 
 function DashboardMenuList() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState("");
@@ -133,17 +135,21 @@ function DashboardMenuList() {
 
   const handleLogout = () => {
     try {
-      setLoading(true)
-      setIsLoggedIn(false);
+      setLoading(true);
       localStorage.removeItem("authToken");
-      localStorage.removeItem("jobId")
+      localStorage.removeItem("jobId");
+      const authToken = localStorage.getItem("authToken");
+      if(!authToken){
+        setIsLoggedIn(false);
+      }
     } catch (error) {
       console.error("There was an error:", error);
     } finally {
-      setLoading(false);
-      handleMenuClose();
+      setLoading(false); 
+      handleMenuClose(); 
+      navigate('/login')
     }
-  };
+  };  
 
   const fetchProfileData = async (isLoggedIn) => {
     if(isLoggedIn){
