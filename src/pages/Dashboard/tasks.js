@@ -13,6 +13,7 @@ import {
 import {
   createTask,
   getJobIds,
+  getTasksByFilter,
   getUserByRole,
   updateTask,
 } from "../../services/auth";
@@ -23,8 +24,8 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { toast } from "react-toastify";
 import Complete from "../../Components/Popups/Complete";
 import filterIcon from "../../assets/icons/filterIcon.png";
-import Filter from "../../Components/Filter/Filter";
 import { useNavigate } from "react-router-dom";
+import FilterTask from "../../Components/Filter/FilterTask";
 function TaskPage() {
   const [loading, setLoading] = useState(true);
   const [addTask, setAddTask] = useState(false);
@@ -56,7 +57,7 @@ function TaskPage() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
   const filterRef = useRef(null);
-  const [filteredJobs, setFilteredJobs] = useState("");
+  const [filteredTasks, setFilteredTasks] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
 
@@ -100,6 +101,7 @@ function TaskPage() {
         ?.includes("application/json");
       const data = isJson && (await response.json());
       setTasksToDo(data.data);
+      setFilteredTasks(data.data)
       if (response.status === 200) {
         setLoading(false);
         return { res: data, error: null };
@@ -141,6 +143,7 @@ function TaskPage() {
       const data = isJson && (await response.json());
 
       setTasksCompleted(data.data);
+      setFilteredTasks(data.data)
       if (response.status === 200) {
         setLoading(false);
         return { res: data, error: null };
@@ -733,6 +736,7 @@ function TaskPage() {
     }
   };
 
+
   return (
     <>
       {loading && (
@@ -815,8 +819,8 @@ function TaskPage() {
               </p>
             </div>
             {showFilter && (
-              <Filter
-                setFilteredJobs={setFilteredJobs}
+              <FilterTask
+                setFilteredTasks={setFilteredTasks}
                 setLoading={setLoading}
                 closeFilter={() => setShowFilter(false)}
               />
@@ -1443,7 +1447,7 @@ function TaskPage() {
                                       </div>
                                       <input
                                         name="search"
-                                        placeholder="Search “Job No.” or  “Name”"
+                                        placeholder="Search Job Id"
                                         value={searchJobList}
                                         onChange={(e) =>
                                           setSearchJobList(e.target.value)

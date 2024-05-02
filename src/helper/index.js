@@ -1,9 +1,14 @@
 export const StatusList = {
   "in-progress": "In Progress",
-  completed: "Completed",
+  "completed": "Completed",
   "not-started": "Not Started",
   "on-hold": "On Hold",
-  pending: "Pending",
+  "pending": "Pending",
+};
+
+export const TaskStatusList = {
+  "to-do": "to-do",
+  "completed": "completed"
 };
 
 export const AllStages = [

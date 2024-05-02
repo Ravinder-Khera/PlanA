@@ -1839,7 +1839,9 @@ body {
                     display: flex;
                     gap: 8px;
                     align-items: center;
-
+                    @media screen and (max-width:992px) {
+                        max-width: 264px;
+                    }
                     input {
                         background: transparent;
                         border: none;
@@ -1858,6 +1860,9 @@ body {
                         &::-moz-placeholder {
                             color: #E2E31F;
                             opacity: 1;
+                        }
+                        @media screen and (max-width:992px) {
+                            max-width: calc(100% - 120px);
                         }
                     }
                 }

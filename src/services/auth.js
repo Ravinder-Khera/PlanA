@@ -417,6 +417,32 @@ export const getJobsByFilter = async (filter) => {
     }
 };
 
+export const getTasksByFilter = async (filter) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+        },
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks/filterbyfields?${filter}`, requestOptions);
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
 
 export const deleteJobs = async (data) => {
     const authToken = localStorage.getItem('authToken');
