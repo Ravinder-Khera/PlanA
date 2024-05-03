@@ -60,6 +60,12 @@ function TaskPage() {
   const [filteredTasks, setFilteredTasks] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageUrls, setPageUrls] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage2, setCurrentPage2] = useState(1);
+  const [pageUrls2, setPageUrls2] = useState([]);
+  const [totalPages2, setTotalPages2] = useState(1);
 
   const addTaskJobDropdownRef = useRef(null);
   const addTaskJobDropdownRefMobile = useRef(null);
@@ -74,7 +80,7 @@ function TaskPage() {
   const selectFilterRef = useRef(null);
   const taskMobileScrollRef = useRef(null);
 
-  const fetchTasksToDo = async () => {
+  const fetchTasksToDo = async (page) => {
     try {
       setLoading(true);
       const authToken = localStorage.getItem("authToken");
@@ -93,7 +99,7 @@ function TaskPage() {
           .toISOString()
           .slice(0, 10)}&end_date=${selectionRange.endDate
           .toISOString()
-          .slice(0, 10)}&perPage=10`,
+          .slice(0, 10)}&page=${page}`,
         requestOptions
       );
       const isJson = response.headers
@@ -102,6 +108,8 @@ function TaskPage() {
       const data = isJson && (await response.json());
       setTasksToDo(data.data);
       setFilteredTasks(data.data)
+      setTotalPages(data.last_page)
+      setPageUrls(data.links.slice(1, -1))
       if (response.status === 200) {
         setLoading(false);
         return { res: data, error: null };
@@ -115,7 +123,7 @@ function TaskPage() {
     }
   };
 
-  const fetchTasksCompleted = async () => {
+  const fetchTasksCompleted = async (page) => {
     try {
       setLoading(true);
       const authToken = localStorage.getItem("authToken");
@@ -134,7 +142,7 @@ function TaskPage() {
           .toISOString()
           .slice(0, 10)}&end_date=${selectionRange.endDate
           .toISOString()
-          .slice(0, 10)}&perPage=10`,
+          .slice(0, 10)}&page=${page}`,
         requestOptions
       );
       const isJson = response.headers
@@ -144,6 +152,8 @@ function TaskPage() {
 
       setTasksCompleted(data.data);
       setFilteredTasks(data.data)
+      setTotalPages2(data.last_page)
+      setPageUrls2(data.links.slice(1, -1))
       if (response.status === 200) {
         setLoading(false);
         return { res: data, error: null };
@@ -240,13 +250,13 @@ function TaskPage() {
     setShowPopup(true);
   };
 
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  
   const [selectionRange, setSelectionRange] = useState({
-    startDate: new Date(
-      new Date().getFullYear(),
-      new Date().getMonth() - 1,
-      new Date().getDate()
-    ),
-    endDate: new Date(),
+    startDate: firstDayOfMonth,
+    endDate: lastDayOfMonth,
     key: "selection",
   });
 
@@ -279,8 +289,8 @@ function TaskPage() {
           listItem.classList.add("addCompleted");
         }
         setTimeout(() => {
-          fetchTasksToDo();
-          fetchTasksCompleted();
+          fetchTasksToDo(currentPage);
+          fetchTasksCompleted(currentPage2);
           setIsChecked((prevState) => ({
             ...prevState,
             [taskId]: false,
@@ -357,8 +367,8 @@ function TaskPage() {
       );
       console.log("update Task --", response);
       if (response.res) {
-        fetchTasksToDo();
-        fetchTasksCompleted();
+        fetchTasksToDo(currentPage);
+        fetchTasksCompleted(currentPage2);
         setSelectedAssignee([]);
         setUserDropdownStates([]);
         toast.success("Assignee added to Task", {
@@ -373,8 +383,8 @@ function TaskPage() {
         });
       } else {
         console.error("Task update failed:", response.error);
-        fetchTasksToDo();
-        fetchTasksCompleted();
+        fetchTasksToDo(currentPage);
+        fetchTasksCompleted(currentPage2);
         setSelectedAssignee([]);
         setUserDropdownStates([]);
         toast.error(`${response.error.message}`, {
@@ -647,11 +657,11 @@ function TaskPage() {
       }
     };
 
-    fetchTasksToDo();
-    fetchTasksCompleted();
+    fetchTasksToDo(currentPage);
+    fetchTasksCompleted(currentPage2);
     fetchJobUsers();
     fetchJobIds();
-  }, [selectionRange.endDate, selectionRange.startDate]);
+  }, [selectionRange.endDate, selectionRange.startDate,currentPage,currentPage2]);
 
   const handleNextMonth = () => {
     setSelectionRange((prevState) => {
@@ -736,6 +746,43 @@ function TaskPage() {
     }
   };
 
+  const handlePrevPage = (e) => {
+    e.preventDefault();
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handlePageChange = (url) => {
+    const pageNumber = parseInt(url.match(/page=(\d+)/)[1]);
+    setCurrentPage(pageNumber)
+  };
+
+  const handleNextPage = (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handleNextPage2 = (e) => {
+    e.preventDefault();
+    if (currentPage2 < totalPages2) {
+      setCurrentPage2(currentPage2 + 1);
+    }
+  };
+
+  const handlePrevPage2 = (e) => {
+    e.preventDefault();
+    if (currentPage2 > 1) {
+      setCurrentPage2(currentPage2 - 1);
+    }
+  };
+
+  const handlePageChange2 = (url) => {
+    const pageNumber = parseInt(url.match(/page=(\d+)/)[1]);
+    setCurrentPage2(pageNumber)
+  };
 
   return (
     <>
@@ -752,7 +799,9 @@ function TaskPage() {
           />
         </div>
       )}
-      <div className="DashboardTopMenu">
+    <div className="DashboardTopMenu">
+
+      <div className="pagination-container">
         {showPopup && (
           <Complete
             data={selectedTask}
@@ -2181,7 +2230,69 @@ function TaskPage() {
             </ul>
           </div>
         )}
+        {taskTab === "completed" ? 
+          <div className="paginationDiv">
+            <div className="paginationSections">
+              <div className="btnDiv">
+                <button className="prevBtn" onClick={handlePrevPage2} disabled={currentPage2 === 1}>Previous</button>
+                <button className="prevBtn mobile" onClick={handlePrevPage2} disabled={currentPage2 === 1}>{'<'}</button>
+              </div>
+              <div className="pageNoDiv">
+                {pageUrls2 && currentPage2 >= 4 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+                {pageUrls2 && pageUrls2.filter((item, index) => Math.abs(index - currentPage2 + 1) <= (currentPage2 < 3 ? 3 : currentPage2 > pageUrls2.length - 2 ? 3 : 2)).map((link, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange2(link.url)}
+                    className={`${link.active && 'activePageBtn'} pageBtn`}
+                  >
+                      {link.label}
+                  </button>
+                ))}
+                {pageUrls2 && currentPage2 <= pageUrls2.length - 3 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+              </div>
+              <div className="btnDiv">
+                <button className="nextBtn" onClick={handleNextPage2} disabled={currentPage2 === totalPages2}>Next</button>
+                <button className="nextBtn mobile" onClick={handleNextPage2} disabled={currentPage2 === totalPages2}>{'>'}</button>
+              </div>
+            </div>
+          </div>
+        :
+          <div className="paginationDiv">
+            <div className="paginationSections">
+              <div className="btnDiv">
+                <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+                <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
+              </div>
+              <div className="pageNoDiv">
+                {pageUrls && currentPage >= 4 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+                {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange(link.url)}
+                    className={`${link.active && 'activePageBtn'} pageBtn`}
+                  >
+                      {link.label}
+                  </button>
+                ))}
+                {pageUrls && currentPage <= pageUrls.length - 3 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+              </div>
+              <div className="btnDiv">
+                <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+                <button className="nextBtn mobile" onClick={handleNextPage} disabled={currentPage === totalPages}>{'>'}</button>
+              </div>
+            </div>
+          </div>
+        }
       </div>
+    </div>
     </>
   );
 }
