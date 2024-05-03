@@ -629,6 +629,8 @@ function TaskPage() {
     formattedDueDate = "";
   }
 
+  console.log('--------------',filteredTasks);
+
   useEffect(() => {
     const fetchJobIds = async () => {
       try {

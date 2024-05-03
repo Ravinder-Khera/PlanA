@@ -117,7 +117,7 @@ const FilterTask = ({ setFilteredTasks, setLoading, closeFilter }) => {
     try {
       const response = await getTasksByFilter(filterString);
       if (!response.error) {
-        setFilteredTasks(response?.res?.data);
+        setFilteredTasks(response?.res);
         handleResetFields();
         closeFilter();
       }
