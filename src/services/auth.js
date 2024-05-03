@@ -87,6 +87,28 @@ export const resetPassword = async (data) => {
     }
 };
 
+export const changePassword = async (data) => {
+    const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/user/change-password`, requestOptions);
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
 export const getProfile = async (data) => {
     const requestOptions = {
         method: "GET",

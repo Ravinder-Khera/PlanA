@@ -7,7 +7,7 @@ import { TaskStatusList } from "../../helper";
 import { getJobIds, getTasksByFilter, getUserByRole } from "../../services/auth";
 import { toast } from "react-toastify";
 
-const FilterTask = ({ setFilteredTasks, setLoading, closeFilter }) => {
+const FilterTask = ({ setFilteredTasks, setTotalPages, setPageUrls, setLoading, closeFilter }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -117,7 +117,9 @@ const FilterTask = ({ setFilteredTasks, setLoading, closeFilter }) => {
     try {
       const response = await getTasksByFilter(filterString);
       if (!response.error) {
-        setFilteredTasks(response?.res);
+        setFilteredTasks(response?.res.data);
+        setTotalPages(response?.res.last_page)
+        setPageUrls(response?.res.links.slice(1, -1))
         handleResetFields();
         closeFilter();
       }

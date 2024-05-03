@@ -240,7 +240,7 @@ function TaskPage() {
     } else if (taskTab === "completed") {
       setFilteredTasks(tasksCompleted);
     } else {
-      setFilteredTasks([]);
+      setFilteredTasks(tasksToDo);
     }
   }, [taskTab, tasksCompleted, tasksToDo]);
   
@@ -629,8 +629,6 @@ function TaskPage() {
     formattedDueDate = "";
   }
 
-  console.log('--------------',filteredTasks);
-
   useEffect(() => {
     const fetchJobIds = async () => {
       try {
@@ -881,6 +879,8 @@ function TaskPage() {
             {showFilter && (
               <FilterTask
                 setFilteredTasks={setFilteredTasks}
+                setTotalPages={setTotalPages}
+                setPageUrls={setPageUrls}
                 setLoading={setLoading}
                 closeFilter={() => setShowFilter(false)}
               />

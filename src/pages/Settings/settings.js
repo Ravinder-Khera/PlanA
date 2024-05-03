@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AaIcon, User } from "../../assets/svg";
+import { AaIcon, ClosedEye, Key, OpenedEye, User } from "../../assets/svg";
 import upload from "../../assets/icons/uploadImg.png";
 import {
+  changePassword,
   getProfile,
+  resetPassword,
   updateProfile,
   updateProfilePicture,
 } from "../../services/auth";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import eventEmitter from "../../Event";
+import PasswordStrengthMeter from "../../Components/PasswordStrengthMeter";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchProfileData }) {
   const [loading, setLoading] = useState(false);
@@ -310,6 +314,222 @@ function ProfilePic({ userPicture, fetchProfileData }) {
   );
 }
 
+function PasswordReset({fetchProfileData}) {
+  const [oldPassword, setOldPassword] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [oldPasswordError, setOldPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleToggleOldPassword = () => {
+    setShowOldPassword(!showOldPassword);
+  };
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+};
+
+  const validatePassword = (inputPassword) => {
+    const capitalRegex = /[A-Z]/;
+    const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    const numberRegex = /[0-9]/;
+
+    return (
+      inputPassword.length >= 8 &&
+      capitalRegex.test(inputPassword) &&
+      specialCharRegex.test(inputPassword) &&
+      numberRegex.test(inputPassword)
+    );
+  };
+
+  const handleOldPasswordChange = (e) => {
+    const inputValue = e.target.value;
+    setOldPassword(inputValue);
+
+    if (!inputValue) {
+      setOldPasswordError('');
+    } 
+  };
+
+  const handlePasswordChange = (e) => {
+    const inputValue = e.target.value;
+    setPassword(inputValue);
+
+    if (!inputValue) {
+      setPasswordError('');
+    } else if (validatePassword(inputValue)){
+      setPasswordError('');
+    }
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const inputValue = e.target.value;
+    setConfirmPassword(inputValue);
+  };
+
+  const handlePasswordReset = async () => {
+    if (!validatePassword(password)) {
+      setPasswordError('Please enter a valid password');
+      setTimeout(function() {
+        setPasswordError('');
+      }, 500);
+      return
+    } 
+    if (confirmPassword !== password) {
+      setConfirmPasswordError('Password does not match');
+      return
+    } else if (!confirmPassword){
+      setConfirmPasswordError('Password can not be empty');
+      return
+    } else {
+      setConfirmPasswordError('')
+    }
+    try {
+    const authToken = localStorage.getItem("authToken");
+    setLoading(true);
+    let response = await changePassword(
+        {
+          current_password : oldPassword,
+          new_password : password,
+          new_password_confirmation : confirmPassword,
+        },authToken
+      );
+  
+      if (response.res) {
+        console.log('Password reset successful',response.res);
+        toast.success(<>
+          <div >
+            <h3>Password Reset Successfully</h3>
+          </div>
+          <p>Your password has been updated. You can now log in with your new password.</p>
+        </>, {
+          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        fetchProfileData()
+        } else {
+          console.error('Password reset failed:', response.error);
+          toast.error(<>
+            <div >
+              <h3>Reset Unsuccessful</h3>
+            </div>
+            <p>There was an issue resetting your password. Please try again or contact support.</p>
+          </>, {
+            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+      }
+      } catch (error) {
+        console.error('There was an error:', error);
+      }finally {
+      setLoading(false); 
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handlePasswordReset();
+    }
+  };
+  return (<>
+    {loading &&  <div className='loaderDiv'>
+      <Bars
+        height="80"
+        width="80"
+        color="#E2E31F"
+        ariaLabel="bars-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+        visible={true}
+      />
+    </div>}
+
+    <div className="ProfileDetailsSection">
+      <div className="contentDiv">
+        <div className='SignUpSection'>
+          <div>
+            <h2>Change Password</h2>
+            <p>Set a new password to continue your login process.</p>
+            <form>
+              <div className={`customInput ${oldPasswordError !== '' && 'errorClass'}`}>
+                  <div className='IconBox'><Key /></div>
+                  <input 
+                      type={showOldPassword ? 'text' : 'password'}
+                      id="oldPassword"
+                      name="oldPassword"
+                      value={oldPassword}
+                      onChange={handleOldPasswordChange}
+                      placeholder='Old Password'
+                      autoComplete="old-password"
+                      className='passwordInput'
+                      onKeyDown={handleKeyDown}
+                  />
+                  <span className={`toggle-eye-icon ${showOldPassword ? 'show' : ''}`} onClick={handleToggleOldPassword} > 
+                      {showOldPassword ? <OpenedEye /> : <ClosedEye /> }
+                  </span>
+              </div>
+              <div className={`customInput ${passwordError !== '' && 'errorClass'}`}>
+                  <div className='IconBox'><Key /></div>
+                  <input 
+                      type={showPassword ? 'text' : 'password'}
+                      id="resetPassword"
+                      name="resetPassword"
+                      value={password}
+                      onChange={handlePasswordChange}
+                      placeholder='Password'
+                      autoComplete="new-password"
+                      className='passwordInput'
+                      onKeyDown={handleKeyDown}
+                  />
+                  <span className={`toggle-eye-icon ${showPassword ? 'show' : ''}`} onClick={handleTogglePassword} > 
+                      {showPassword ? <OpenedEye /> : <ClosedEye /> }
+                  </span>
+              </div>
+              <div className={`customInput ${confirmPasswordError !== '' && 'errorClass'}`}>
+                  <div className='IconBox'><Key /></div>
+                  <input 
+                      type={showPassword ? 'text' : 'password'}
+                      id="confirmResetPassword"
+                      name="confirmResetPassword"
+                      value={confirmPassword}
+                      onChange={handleConfirmPasswordChange}
+                      placeholder='Confirm Password'
+                      className='passwordInput'
+                      autoComplete="new-password"
+                      onKeyDown={handleKeyDown}
+                  />
+                  <span className={`toggle-eye-icon ${showPassword ? 'show' : ''}`} onClick={handleTogglePassword} > {showPassword ? <OpenedEye /> : <ClosedEye /> }</span>
+              </div>
+          </form>
+            <PasswordStrengthMeter password={password}/>
+            <div className='btnDiv'>
+              <button className='signupButton' onClick={handlePasswordReset}>
+                  Reset Password
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </>)
+}
+
 function SettingsPage() {
   const [settingsPage, setSettingsPage] = useState("ProfileDetails");
   const [loading, setLoading] = useState(false);
@@ -395,6 +615,20 @@ function SettingsPage() {
                 </div>
               </button>
             </li>
+            <li
+              className={`${settingsPage === "PasswordReset" && "active"}`}
+              onClick={() => setSettingsPage("PasswordReset")}
+            >
+              <button>
+                <div className="iconBox">
+                  <Key />{" "}
+                </div>
+                <div className="text-start">
+                  <h6>Change Password</h6>
+                  <p>Create a new password here.</p>
+                </div>
+              </button>
+            </li>
           </ul>
         </div>
         {settingsPage === "ProfileDetails" && (
@@ -408,6 +642,12 @@ function SettingsPage() {
         {settingsPage === "ProfilePic" && (
           <ProfilePic
             userPicture={userPicture}
+            fetchProfileData={fetchProfileData}
+          />
+        )}
+
+        {settingsPage === "PasswordReset" && (
+          <PasswordReset
             fetchProfileData={fetchProfileData}
           />
         )}
