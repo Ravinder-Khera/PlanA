@@ -57,7 +57,7 @@ function TaskPage() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
   const filterRef = useRef(null);
-  const [filteredTasks, setFilteredTasks] = useState("");
+  const [filteredTasks, setFilteredTasks] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,7 +107,6 @@ function TaskPage() {
         ?.includes("application/json");
       const data = isJson && (await response.json());
       setTasksToDo(data.data);
-      setFilteredTasks(data.data)
       setTotalPages(data.last_page)
       setPageUrls(data.links.slice(1, -1))
       if (response.status === 200) {
@@ -151,7 +150,6 @@ function TaskPage() {
       const data = isJson && (await response.json());
 
       setTasksCompleted(data.data);
-      setFilteredTasks(data.data)
       setTotalPages2(data.last_page)
       setPageUrls2(data.links.slice(1, -1))
       if (response.status === 200) {
@@ -235,6 +233,17 @@ function TaskPage() {
       handleTScroll();
     }
   }, [showPopup]);
+
+  useEffect(() => {
+    if (taskTab === "todo") {
+      setFilteredTasks(tasksToDo);
+    } else if (taskTab === "completed") {
+      setFilteredTasks(tasksCompleted);
+    } else {
+      setFilteredTasks([]);
+    }
+  }, [taskTab, tasksCompleted, tasksToDo]);
+  
 
   const handleTScroll = () => {
     if (taskMobileScrollRef.current) {
@@ -1242,8 +1251,8 @@ function TaskPage() {
                   </div>
                 </li>
               )}
-              {tasksToDo &&
-                tasksToDo.map((task, i) => (
+              {tasksToDo && filteredTasks &&
+                filteredTasks.map((task, i) => (
                   <li
                     key={task.id}
                     id={`stage_` + task.id}
@@ -1828,8 +1837,8 @@ function TaskPage() {
                     </div>
                 </li>
               )}
-              {tasksToDo &&
-                tasksToDo.map((task, i) => (
+              {tasksToDo && filteredTasks &&
+                filteredTasks.map((task, i) => (
                   <li
                     key={task.id}
                     id={`stage_` + task.id}
@@ -2067,8 +2076,8 @@ function TaskPage() {
         {taskTab === "completed" && (
           <div className="taskContainer">
             <ul>
-              {tasksCompleted &&
-                tasksCompleted.map((task) => (
+              {tasksCompleted && filteredTasks &&
+                filteredTasks.map((task) => (
                   <li
                     key={task.id}
                     id={`stage_` + task.id}
@@ -2141,8 +2150,8 @@ function TaskPage() {
         {taskTab === "completed" && (
           <div className="taskContainer mobile">
             <ul>
-              {tasksCompleted &&
-                tasksCompleted.map((task) => (
+              {tasksCompleted && filteredTasks &&
+                filteredTasks.map((task) => (
                   <li
                     key={task.id}
                     id={`stage_` + task.id}
