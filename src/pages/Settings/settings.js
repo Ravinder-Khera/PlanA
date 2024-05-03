@@ -396,7 +396,8 @@ function PasswordReset({fetchProfileData}) {
           current_password : oldPassword,
           new_password : password,
           new_password_confirmation : confirmPassword,
-        },authToken
+          authToken: authToken,
+        }
       );
   
       if (response.res) {

@@ -90,7 +90,7 @@ export const resetPassword = async (data) => {
 export const changePassword = async (data) => {
     const requestOptions = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json","Authorization": `Bearer ${data.authToken}` },
         body: JSON.stringify(data),
     };
     try {
