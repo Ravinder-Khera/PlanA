@@ -69,6 +69,19 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
 
       if (response.res) {
         console.log("update successful", response);
+        const notificationData = {
+          class: "success",
+          message: 'Profile updated successfully'
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         toast.success("Profile updated successfully", {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -84,6 +97,20 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
         eventEmitter.emit("updateProfile");
       } else {
         console.error("profile update failed:", response.error);
+
+        const notificationData = {
+          class: "error",
+          message: response.error.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         toast.error(`${response.error.message}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -191,6 +218,20 @@ function ProfilePic({ userPicture, fetchProfileData }) {
         let response = await updateProfilePicture(formData, authToken);
         if (response.res) {
           console.log(response);
+          
+          const notificationData = {
+            class: "success",
+            message: response.res.message
+          };
+          const existingNotificationsJSON = localStorage.getItem('notifications');
+          let existingNotifications = [];
+          if (existingNotificationsJSON) {
+            existingNotifications = JSON.parse(existingNotificationsJSON);
+          }
+          existingNotifications.push(notificationData);
+      
+          localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
           toast.success(`${response.res.message}`, {
             position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
@@ -204,6 +245,19 @@ function ProfilePic({ userPicture, fetchProfileData }) {
           fetchProfileData();
           eventEmitter.emit("updateProfile");
         } else {
+          const notificationData = {
+            class: "error",
+            message: response.error.message
+          };
+          const existingNotificationsJSON = localStorage.getItem('notifications');
+          let existingNotifications = [];
+          if (existingNotificationsJSON) {
+            existingNotifications = JSON.parse(existingNotificationsJSON);
+          }
+          existingNotifications.push(notificationData);
+      
+          localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
           toast.error(`${response.error.message}`, {
             position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
             autoClose: 5000,
@@ -402,6 +456,18 @@ function PasswordReset({fetchProfileData}) {
   
       if (response.res) {
         console.log('Password reset successful',response.res);
+        const notificationData = {
+          class: "success",
+          message: 'Password Reset Successfully'
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.success(<>
           <div >
             <h3>Password Reset Successfully</h3>
@@ -420,6 +486,18 @@ function PasswordReset({fetchProfileData}) {
         fetchProfileData()
         } else {
           console.error('Password reset failed:', response.error);
+          const notificationData = {
+            class: "error",
+            message: 'There was an issue resetting your password'
+          };
+          const existingNotificationsJSON = localStorage.getItem('notifications');
+          let existingNotifications = [];
+          if (existingNotificationsJSON) {
+            existingNotifications = JSON.parse(existingNotificationsJSON);
+          }
+          existingNotifications.push(notificationData);
+      
+          localStorage.setItem('notifications', JSON.stringify(existingNotifications));
           toast.error(<>
             <div >
               <h3>Reset Unsuccessful</h3>

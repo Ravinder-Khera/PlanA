@@ -5,6 +5,21 @@ import { Bars } from "react-loader-spinner";
 import eventEmitter from "../Event";
 import { Link, useNavigate } from "react-router-dom";
 
+export function NotificationComponent({ notificationData, onRemove }) {
+  const handleRemove = () => {
+    onRemove(notificationData);
+  };
+  return (
+    <div className={`notificationClass ${notificationData.class}-class`}>
+      <div className="notificationMsg">
+        <div className="notificationIcon"></div>
+        <div className="notificationText">{notificationData.message}</div>
+      </div>
+      <div className="notificationCloseBtn" onClick={handleRemove}></div>
+    </div>
+  );
+}
+
 function NavMenu() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState("");
@@ -22,37 +37,43 @@ function NavMenu() {
 
   const searchPopUpRef = useRef(null);
 
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      time: '1 min',
-      icon: 'user',
-      type: 'fullColor',
-      heading: 'Notification Heading',
-      description: 'Notification Description goes here',
-    },
-    {
-      id: 2,
-      time: '1 hour ',
-      icon: 'info',
-      type: 'password',
-      heading: 'Notification Heading',
-      description: 'Notification Description goes here',
-    },
-    {
-      id: 3,
-      time: '2 hours',
-      icon: 'fail',
-      type: 'failed',
-      heading: 'Notification Heading',
-      description: 'Notification Description goes here',
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [storageUpdated, setStorageUpdated] = useState(false);
 
-  const removeNotification = (id) => {
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'notifications') {
+        const updatedNotifications = JSON.parse(event.newValue);
+        setNotifications(updatedNotifications);
+        console.log(updatedNotifications, 'updatedNotifications');
+        setStorageUpdated(true);
+      }
+    };
+  
+    window.addEventListener('storage', handleStorageChange);
+
+    const checkNotifications = () => {
+      const existingNotificationsJSON = localStorage.getItem('notifications');
+      if (existingNotificationsJSON) {
+        setNotifications(JSON.parse(existingNotificationsJSON));
+      }
+    };
+
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 1000);
+  
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [storageUpdated]); 
+
+  const handleRemoveNotification = (notificationToRemove) => {
     setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
+      prevNotifications.filter((notification) => notification !== notificationToRemove)
     );
+    const updatedNotifications = notifications.filter(notification => notification !== notificationToRemove);
+    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
   };
 
   const handleChange = (event) => {
@@ -141,6 +162,20 @@ function NavMenu() {
         setUser(response.res.user.name);
         setUserImg(response.res.user.profile_pic);
         setUserDesignation(response.res.user.designation)
+        if(response.res.user.designation === '' || response.res.user.designation === null){
+          const notificationData = {
+            class: "user",
+            message: 'Finish Creating Your Profile!'
+          };
+          const existingNotificationsJSON = localStorage.getItem('notifications');
+          let existingNotifications = [];
+          if (existingNotificationsJSON) {
+            existingNotifications = JSON.parse(existingNotificationsJSON);
+          }
+          existingNotifications.push(notificationData);
+      
+          localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+        }
         localStorage.setItem("user", response.res.user.name);
       } else {
         console.error("profile error:", response.error);
@@ -347,29 +382,21 @@ function NavMenu() {
                       >
                         <div className="addTaskJobListScroll">
                           <div className="addTaskJobListItems">
-                            {notifications.length > 0 ? notifications.map((notification) => (
-                                <div key={notification.id} className={`notificationItems ${notification.type}`}>
-                                  <div className="notificationTime">{notification.time}<br/>Ago</div>
-                                  <div className="notificationContent">
-                                    <div className={`notificationIcon ${notification.icon}`}>{notification.icon === 'user' ? <User /> : '!'}</div>
-                                    <div className="notificationText">
-                                      <h3>{notification.heading}</h3>
-                                      <span>{notification.description}</span>
-                                    </div>
-                                    <div className="notificationCrossIcon" onClick={() => removeNotification(notification.id)}>
-                                      <CrossIcon />
-                                    </div>
-                                  </div>
-                                </div>
+                            {notifications.length > 0 ? (
+                              notifications.map((notification, index) => (
+                                <NotificationComponent
+                                  key={index}
+                                  notificationData={notification}
+                                  onRemove={handleRemoveNotification}
+                                />
                               ))
-                            : 
-                              <div className={`notificationItems `}>
-                                <div className="notificationContent empty w-100">
-                                  <div className="notificationTime"></div>
-                                  <div className="notificationText">
-                                    <h3>No Notification</h3>
-                                  </div>
+                            ):
+                              <div className="notificationClass info-class">
+                                <div className="notificationMsg">
+                                  <div className="notificationIcon"></div>
+                                  <div className="notificationText">No Notifications</div>
                                 </div>
+                                <div className="notificationCloseBtn" onClick={()=>setNotificationDropDown(false)}></div>
                               </div>
                             }
                           </div>

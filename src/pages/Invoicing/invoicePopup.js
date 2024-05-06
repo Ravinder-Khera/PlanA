@@ -287,6 +287,20 @@ const InvoicePopup = ({ handleClose }) => {
       console.log("create Invoice --", response);
       if (response.res) {
         console.log("create Task successful", response);
+
+        const notificationData = {
+          class: "success",
+          message: response.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         toast.success(response.message, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -300,7 +314,18 @@ const InvoicePopup = ({ handleClose }) => {
         handleClose()
       } else {
         console.error("Invoice creation failed:", response.error);
-
+        const notificationData = {
+          class: "error",
+          message: Object.values(response.error.errors)[0][0]
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,

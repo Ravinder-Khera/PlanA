@@ -15,7 +15,7 @@ import { Bars } from "react-loader-spinner";
 import ChatAndAttachment from "./ChatAndAttachment";
 
 const JobModal = ({
-  data,
+  job,
   handleClose,
   stage,
   usersLists,
@@ -24,6 +24,7 @@ const JobModal = ({
   scrollRef,
 }) => {
   const [tasks, setTasks] = useState({});
+  const [data, setData] = useState(job);
   const [filteredTasks, setFilteredTasks] = useState({});
   const [dueDate, setDueDate] = useState(null);
   const [latestUpdate, setLatestUpdate] = useState("");
@@ -162,7 +163,7 @@ const JobModal = ({
     setDueDate(data?.due_date);
     setStatus(data?.status);
     setAssessmentManager(data?.assessment_manager);
-    setOperative(data.operative_id)
+    setOperative(data?.operative_id)
     if(data?.is_archive !== "0"){
       setIsArchive(true)
     }
@@ -413,9 +414,34 @@ const JobModal = ({
         }
         setFilteredTasks(updatedTasks);
         fetchJobs();
-        toast.success("Task Updated Successfully.");
+        const notificationData = {
+          class: "success",
+          message: 'Task Updated Successfully!'
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+        toast.success("Task Updated Successfully!");
       } else {
-        toast.error("Failed to Update Task.");
+        const notificationData = {
+          class: "error",
+          message: 'Failed to Update Task!'
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+        
+        toast.error("Failed to Update Task!");
       }
     } catch (error) {
       console.log("error while updating task", error);
@@ -455,9 +481,34 @@ const JobModal = ({
       console.log("reqBody", reqBody);
       const response = await updateJobs(reqBody);
       if (response.res) {
+        const notificationData = {
+          class: "success",
+          message: response.res.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         toast.success(`${response.res.message}`);
       } else {
         console.error("jobs update failed:", response.error);
+        const notificationData = {
+          class: "error",
+          message: response.error.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.error(`${response.error.message}`);
       }
     } catch (error) {
@@ -526,9 +577,35 @@ const JobModal = ({
           users: selectedAssignee,
         });
         fetchJobs();
-        toast.success("Task Created Successfully.");
+        const notificationData = {
+          class: "success",
+          message: 'Task Created Successfully!'
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
+        toast.success("Task Created Successfully!");
       } else {
-        toast.error("Failed to Create Task.");
+        const notificationData = {
+          class: "error",
+          message: 'Failed to Create Task!'
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
+        toast.error("Failed to Create Task!");
         setNewTask({
           title: "",
           stageTitle: "",

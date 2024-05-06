@@ -506,9 +506,35 @@ const Add = ({ handleClose, fetchJobs }) => {
       const response = await createJobs(reqBody);
       console.log("request body for create job", response);
       if (response.res) {
+        const notificationData = {
+          class: "success",
+          message: response.res.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         toast.success(`${response.res.message}`);
       } else {
         console.error("jobs update failed:", response.error);
+
+        const notificationData = {
+          class: "error",
+          message: response.error.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.error(`${response.error.message}`);
       }
     } catch (error) {

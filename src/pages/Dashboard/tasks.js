@@ -381,6 +381,19 @@ function TaskPage() {
           fetchTasksCompleted(currentPage2);
         }setSelectedAssignee([]);
         setUserDropdownStates([]);
+        const notificationData = {
+          class: "success",
+          message: "Task updated successfully"
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+        
         toast.success("Assignee added to Task", {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -402,6 +415,20 @@ function TaskPage() {
         }
         setSelectedAssignee([]);
         setUserDropdownStates([]);
+
+        const notificationData = {
+          class: "error",
+          message: response.error.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         toast.error(`${response.error.message}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -529,19 +556,7 @@ function TaskPage() {
         theme: "colored",
       });
       return;
-    } else if (selectedUsers.length <= 0) {
-      toast.error(`Add Assignee to Task`, {
-        position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-      return;
-    }
+    } 
     try {
       setLoading(true);
       let response = await createTask(
@@ -556,7 +571,19 @@ function TaskPage() {
       console.log("create Task --", response);
       if (response.res) {
         console.log("create Task successful", response);
-        toast.success("Task created successful", {
+        const notificationData = {
+          class: "success",
+          message: "Task created successfully"
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+        toast.success("Task created successfully", {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
           hideProgressBar: true,
@@ -577,7 +604,18 @@ function TaskPage() {
         setCreateTaskTitle("");
       } else {
         console.error("Task creation failed:", response.error);
-
+        const notificationData = {
+          class: "error",
+          message: Object.values(response.error.errors)[0][0]
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -826,8 +864,8 @@ function TaskPage() {
     setLoading(true);
     const filterString = localStorage.getItem('filterString');
     try {
-      const response = await getTasksByFilter(filterString+`&page=${page}`);
-      // const response = await getTasksByFilter(filterString+`&status=${taskTab}&start_date=${selectionRange.startDate.toISOString().slice(0, 10)}&end_date=${selectionRange.endDate.toISOString().slice(0, 10)}&page=${page}`);
+      // const response = await getTasksByFilter(filterString+`&page=${page}`);
+      const response = await getTasksByFilter(filterString+`&status=${taskTab}&start_date=${selectionRange.startDate.toISOString().slice(0, 10)}&end_date=${selectionRange.endDate.toISOString().slice(0, 10)}&page=${page}`);
       if (!response.error) {
         let filterTab = response?.res.data.filter(item => item.status === taskTab);
         console.log(filterTab,taskTab);
@@ -1421,7 +1459,6 @@ function TaskPage() {
                           <div className="addAssigneeDropdown ">
                             <div
                               className="addTaskJobListScroll"
-                              ref={selectAssigneeRef}
                             >
                               <div className="addTaskJobListItems">
                                 <label className="addedAssignees">
@@ -2240,7 +2277,6 @@ function TaskPage() {
                               <div className="addAssigneeDropdown ">
                                 <div
                                   className="addTaskJobListScroll"
-                                  ref={selectAssigneeRef}
                                 >
                                   <div className="addTaskJobListItems">
                                     <label className="addedAssignees">
@@ -2473,7 +2509,6 @@ function TaskPage() {
                                 <div className="addAssigneeDropdown ">
                                   <div
                                     className="addTaskJobListScroll"
-                                    ref={selectAssigneeRef}
                                   >
                                     <div className="addTaskJobListItems">
                                       <label className="addedAssignees">

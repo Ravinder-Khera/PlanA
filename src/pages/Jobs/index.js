@@ -11,6 +11,7 @@ import JobModal from "../../Components/JobModal/Edit/JobModal";
 import { StatusList } from "../../helper";
 import Add from "../../Components/JobModal/Add/Add";
 import { useLocation } from "react-router-dom";
+import { NotificationComponent } from "../../Components/navMenu";
 
 const Jobs = () => {
   const containerRef = useRef(null);
@@ -40,38 +41,45 @@ const Jobs = () => {
   const taskMobileScrollRef = useRef(null);
   const [searchedInput, setSearchedInput] = useState("");
 
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      time: '1 min',
-      icon: 'user',
-      type: 'fullColor',
-      heading: 'Notification Heading',
-      description: 'Notification Description goes here',
-    },
-    {
-      id: 2,
-      time: '1 hour ',
-      icon: 'info',
-      type: 'password',
-      heading: 'Notification Heading',
-      description: 'Notification Description goes here',
-    },
-    {
-      id: 3,
-      time: '2 hours',
-      icon: 'fail',
-      type: 'failed',
-      heading: 'Notification Heading',
-      description: 'Notification Description goes here',
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [storageUpdated, setStorageUpdated] = useState(false);
 
-  const removeNotification = (id) => {
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'notifications') {
+        const updatedNotifications = JSON.parse(event.newValue);
+        setNotifications(updatedNotifications);
+        console.log(updatedNotifications, 'updatedNotifications');
+        setStorageUpdated(true);
+      }
+    };
+  
+    window.addEventListener('storage', handleStorageChange);
+
+    const checkNotifications = () => {
+      const existingNotificationsJSON = localStorage.getItem('notifications');
+      if (existingNotificationsJSON) {
+        setNotifications(JSON.parse(existingNotificationsJSON));
+      }
+    };
+
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 1000);
+  
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [storageUpdated]); 
+
+  const handleRemoveNotification = (notificationToRemove) => {
     setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
+      prevNotifications.filter((notification) => notification !== notificationToRemove)
     );
+    const updatedNotifications = notifications.filter(notification => notification !== notificationToRemove);
+    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
   };
+
 
   useEffect(() => {
     if (showJobModal && taskMobileScrollRef.current) {
@@ -303,9 +311,35 @@ const Jobs = () => {
       });
       console.log("jobs delete successful", response);
       if (response.res) {
+        const notificationData = {
+          class: "success",
+          message: response.res.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         toast.success(`${response.res.message}`);
       } else {
         console.error("jobs delete failed:", response.error);
+        const notificationData = {
+          class: "error",
+          message: response.error.message
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         toast.error(`${response.error.message}`);
       }
     } catch (error) {
@@ -371,7 +405,7 @@ const Jobs = () => {
 
       {showJobModal && (
         <JobModal
-          data={getJob.data}
+          job={getJob.data}
           stage={getJob.stage}
           handleClose={() => {
             setGetJob();
@@ -466,31 +500,23 @@ const Jobs = () => {
                       >
                         <div className="addTaskJobListScroll">
                           <div className="addTaskJobListItems">
-                            {notifications.length > 0 ? notifications.map((notification) => (
-                                <div key={notification.id} className={`notificationItems ${notification.type}`}>
-                                  <div className="notificationTime">{notification.time}<br/>Ago</div>
-                                  <div className="notificationContent">
-                                    <div className={`notificationIcon ${notification.icon}`}>{notification.icon === 'user' ? <User /> : '!'}</div>
-                                    <div className="notificationText">
-                                      <h3>{notification.heading}</h3>
-                                      <span>{notification.description}</span>
-                                    </div>
-                                    <div className="notificationCrossIcon" onClick={() => removeNotification(notification.id)}>
-                                      <CrossIcon />
-                                    </div>
-                                  </div>
-                                </div>
+                          {notifications.length > 0 ? (
+                              notifications.map((notification, index) => (
+                                <NotificationComponent
+                                  key={index}
+                                  notificationData={notification}
+                                  onRemove={handleRemoveNotification}
+                                />
                               ))
-                            : 
-                                <div className={`notificationItems `}>
-                                  <div className="notificationContent empty w-100">
-                                    <div className="notificationTime"></div>
-                                    <div className="notificationText">
-                                      <h3>No Notification</h3>
-                                    </div>
-                                  </div>
-                                </div>}
-
+                            ):
+                              <div className="notificationClass info-class">
+                                <div className="notificationMsg">
+                                  <div className="notificationIcon"></div>
+                                  <div className="notificationText">No Notifications</div>
+                                </div>
+                                <div className="notificationCloseBtn" onClick={()=>setNotificationDropDown(false)}></div>
+                              </div>
+                            }
                           </div>
                         </div>
                       </div>
@@ -806,12 +832,12 @@ const Jobs = () => {
                               {formatDate(job.latest_comment)}
                               </td>
                               <td className="text-center ">
-                                {job.operative_id && 
+                                {job?.operative_id && 
                                   <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                   <div className=" d-flex align-items-center justify-content-center">
                                     {job?.usersArray?.length > 0 && (
                                       <>
-                                        {job?.usersArray.filter((selectedId) => selectedId !== job.operative_id)
+                                        {job?.usersArray.filter((selectedId) => selectedId !== job?.operative_id)
                                           ?.map((user, index) => (
                                               <div
                                                 key={index}
