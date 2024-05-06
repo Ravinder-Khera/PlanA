@@ -176,6 +176,18 @@ function DashboardMenuList() {
     fetchProfileData(isLoggedIn);
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    if (location.pathname !== '/task') {
+      localStorage.removeItem('filterString');
+    }
+
+    const unListen = () => {};
+
+    return () => {
+      unListen();
+    };
+  }, [location]);
+
   return (
     <>
     {loading && (
@@ -455,7 +467,7 @@ function App() {
       pusher.unsubscribe(`job.${id}`);
     };
   }, []);
-
+  
   return (
     <div className="App">
       <ToastContainer
