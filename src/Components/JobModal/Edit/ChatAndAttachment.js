@@ -150,6 +150,18 @@ const ChatAndAttachment = ({ JobId }) => {
       const response = await sendMessage(JobId, { body });
       if (!response.error) {
         fetchChats();
+        const notificationData = {
+          class: "user",
+          message: 'New Comment:'+ userDetails.name
+        };
+        const existingNotificationsJSON = localStorage.getItem('notifications');
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+    
+        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         setBody("");
       }
     } catch (error) {
@@ -231,6 +243,18 @@ const ChatAndAttachment = ({ JobId }) => {
     link.download = docName;
     link.target = "_blank";
     link.click();
+    const notificationData = {
+      class: "success",
+      message: 'File Successfully Downloaded!'
+    };
+    const existingNotificationsJSON = localStorage.getItem('notifications');
+    let existingNotifications = [];
+    if (existingNotificationsJSON) {
+      existingNotifications = JSON.parse(existingNotificationsJSON);
+    }
+    existingNotifications.push(notificationData);
+
+    localStorage.setItem('notifications', JSON.stringify(existingNotifications));
   };
 
   const handleDeleteAttachment = async (id) => {

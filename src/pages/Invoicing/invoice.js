@@ -104,6 +104,7 @@ function Invoice() {
         existingNotifications.push(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
         throw new Error("Failed to download PDF");
       }
       const pdfBlob = await response.blob();
@@ -126,6 +127,7 @@ function Invoice() {
       existingNotifications.push(notificationData);
   
       localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+      
       setLoading(false);
     } catch (error) {
       setLoading(false);
