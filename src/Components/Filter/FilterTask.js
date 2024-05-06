@@ -113,6 +113,7 @@ const FilterTask = ({ setFilteredTasks, setFilteredTotalPages, setFilteredPageUr
     } else {
       filterString = `${selectedField}=${searchedInput}`;
     }
+    localStorage.setItem('filterString',filterString);
     setLoading(true);
     try {
       const response = await getTasksByFilter(filterString+`&page=${currentFilteredPage}`);
@@ -174,8 +175,7 @@ const FilterTask = ({ setFilteredTasks, setFilteredTotalPages, setFilteredPageUr
 
     fetchJobUsers();
     fetchJobIds();
-    handleApply();
-  }, [selectionRange.endDate, selectionRange.startDate,currentFilteredPage]);
+  }, [selectionRange.endDate, selectionRange.startDate]);
 
   return (
     <>

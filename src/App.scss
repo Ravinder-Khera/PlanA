@@ -1397,7 +1397,7 @@ body {
 
             &.completeStage {
                 .listContent {
-                    min-width: max-content;
+                    min-width: 150px;
                     width: 50%;
 
                     &:first-child {

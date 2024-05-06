@@ -238,7 +238,6 @@ function TaskPage() {
   }, [showPopup]);
 
   useEffect(() => {
-    console.log('filteredTasks--', filteredTasks);
     if (taskTab === "todo") {
       setFilteredTasks(tasksToDo);
 
@@ -302,9 +301,14 @@ function TaskPage() {
         if (listItem) {
           listItem.classList.add("addCompleted");
         }
+        const filterString = localStorage.getItem('filterString');
         setTimeout(() => {
-          fetchTasksToDo(currentPage);
-          fetchTasksCompleted(currentPage2);
+          if(filterString){
+            handleStoredApply(currentFilteredPage)
+          }else{
+            fetchTasksToDo(currentPage);
+            fetchTasksCompleted(currentPage2);
+          }
           setIsChecked((prevState) => ({
             ...prevState,
             [taskId]: false,
@@ -380,10 +384,14 @@ function TaskPage() {
         taskId
       );
       console.log("update Task --", response);
+      const filterString = localStorage.getItem('filterString');
       if (response.res) {
-        fetchTasksToDo(currentPage);
-        fetchTasksCompleted(currentPage2);
-        setSelectedAssignee([]);
+        if(filterString){
+          handleStoredApply(currentFilteredPage)
+        }else{
+          fetchTasksToDo(currentPage);
+          fetchTasksCompleted(currentPage2);
+        }setSelectedAssignee([]);
         setUserDropdownStates([]);
         toast.success("Assignee added to Task", {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
@@ -397,8 +405,13 @@ function TaskPage() {
         });
       } else {
         console.error("Task update failed:", response.error);
-        fetchTasksToDo(currentPage);
-        fetchTasksCompleted(currentPage2);
+        const filterString = localStorage.getItem('filterString');
+        if(filterString){
+          handleStoredApply(currentFilteredPage)
+        }else{
+          fetchTasksToDo(currentPage);
+          fetchTasksCompleted(currentPage2);
+        }
         setSelectedAssignee([]);
         setUserDropdownStates([]);
         toast.error(`${response.error.message}`, {
@@ -670,12 +683,16 @@ function TaskPage() {
         setLoading(false);
       }
     };
-
-    fetchTasksToDo(currentPage);
-    fetchTasksCompleted(currentPage2);
+    const filterString = localStorage.getItem('filterString');
+    if(filterString){
+      handleStoredApply(currentFilteredPage)
+    }else{
+      fetchTasksToDo(currentPage);
+      fetchTasksCompleted(currentPage2);
+    }
     fetchJobUsers();
     fetchJobIds();
-  }, [selectionRange.endDate, selectionRange.startDate,currentPage,currentPage2]);
+  }, [selectionRange.endDate, selectionRange.startDate,currentPage,currentPage2,currentFilteredPage]);
 
   const handleNextMonth = () => {
     setSelectionRange((prevState) => {
@@ -816,6 +833,30 @@ function TaskPage() {
     const pageNumber = parseInt(url.match(/page=(\d+)/)[1]);
     setCurrentPage2(pageNumber)
   };
+
+  const handleStoredApply = async (page) => {
+    setLoading(true);
+    const filterString = localStorage.getItem('filterString');
+    try {
+      const response = await getTasksByFilter(filterString+`&page=${page}`);
+      if (!response.error) {
+        setFilteredTasks(response?.res.data);
+        setFilteredTotalPages(response?.res.last_page)
+        setFilteredPageUrls(response?.res.links.slice(1, -1))
+      }
+    } catch (error) {
+      console.log("error in applying filter", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(()=>{
+    const filterString = localStorage.getItem('filterString');
+    if(filterString){
+      handleStoredApply(currentFilteredPage);
+    }
+  },[currentFilteredPage])
 
   return (
     <>
@@ -2297,7 +2338,7 @@ function TaskPage() {
             </div>
           </div>
         : (taskTab === "completed" ? 
-          <div className="paginationDiv">
+          <div className={`paginationDiv ${taskTab}`}>
             <div className="paginationSections">
               <div className="btnDiv">
                 <button className="prevBtn" onClick={handlePrevPage2} disabled={currentPage2 === 1}>Previous</button>
