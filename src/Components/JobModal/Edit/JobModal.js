@@ -869,7 +869,7 @@ const JobModal = ({
                     </div>
 
                     <div className="slider-container">
-                    {data?.stages.length > 2 ? 
+                    {data?.stages?.length > 2 ? 
                     <>
                       <Slider {...settings} ref={sliderRef}>
                         {data?.stages?.map((stageMap, index) => (

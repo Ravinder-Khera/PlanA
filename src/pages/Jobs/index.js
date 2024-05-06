@@ -88,7 +88,7 @@ const Jobs = () => {
   }, [showJobModal]);
 
   useEffect(() => {
-    if (location.state === true) {
+    if (location.state === 1) {
       setShowAddModal(true);
     }
   }, [location]);

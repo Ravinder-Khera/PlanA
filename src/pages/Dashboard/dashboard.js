@@ -144,7 +144,7 @@ function Dashboard() {
   };
 
   const handleAddJob = () => {
-    navigate("/jobs",  { state: true });
+    navigate("/jobs", { state: 1 });
   };
 
   const formatDate = (dateString) => {
