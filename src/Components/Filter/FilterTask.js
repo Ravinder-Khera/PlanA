@@ -7,7 +7,7 @@ import { TaskStatusList } from "../../helper";
 import { getJobIds, getTasksByFilter, getUserByRole } from "../../services/auth";
 import { toast } from "react-toastify";
 
-const FilterTask = ({ setFilteredTasks, setTotalPages, setPageUrls, setLoading, closeFilter }) => {
+const FilterTask = ({ setFilteredTasks, setFilteredTotalPages, setFilteredPageUrls,currentFilteredPage, setLoading, closeFilter }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -104,7 +104,7 @@ const FilterTask = ({ setFilteredTasks, setTotalPages, setPageUrls, setLoading, 
     }
     let filterString = "";
     if (selectedField === "due_date") {
-      filterString = `start_date=${startDate}&end_date=${endDate}`;
+      filterString = `start_date=${startDate}&end_date=${endDate}&page=${currentFilteredPage}`;
     } else if (selectedField === "status") {
       const value = Object.keys(TaskStatusList).find(
         (key) => TaskStatusList[key] === searchedInput
@@ -115,11 +115,11 @@ const FilterTask = ({ setFilteredTasks, setTotalPages, setPageUrls, setLoading, 
     }
     setLoading(true);
     try {
-      const response = await getTasksByFilter(filterString);
+      const response = await getTasksByFilter(filterString+`&page=${currentFilteredPage}`);
       if (!response.error) {
         setFilteredTasks(response?.res.data);
-        setTotalPages(response?.res.last_page)
-        setPageUrls(response?.res.links.slice(1, -1))
+        setFilteredTotalPages(response?.res.last_page)
+        setFilteredPageUrls(response?.res.links.slice(1, -1))
         handleResetFields();
         closeFilter();
       }
@@ -174,7 +174,8 @@ const FilterTask = ({ setFilteredTasks, setTotalPages, setPageUrls, setLoading, 
 
     fetchJobUsers();
     fetchJobIds();
-  }, [selectionRange.endDate, selectionRange.startDate]);
+    handleApply();
+  }, [selectionRange.endDate, selectionRange.startDate,currentFilteredPage]);
 
   return (
     <>

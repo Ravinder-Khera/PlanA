@@ -61,8 +61,11 @@ function TaskPage() {
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentFilteredPage, setCurrentFilteredPage] = useState(1);
   const [pageUrls, setPageUrls] = useState([]);
+  const [filteredPageUrls, setFilteredPageUrls] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
+  const [filteredTotalPages, setFilteredTotalPages] = useState(1);
   const [currentPage2, setCurrentPage2] = useState(1);
   const [pageUrls2, setPageUrls2] = useState([]);
   const [totalPages2, setTotalPages2] = useState(1);
@@ -235,8 +238,10 @@ function TaskPage() {
   }, [showPopup]);
 
   useEffect(() => {
+    console.log('filteredTasks--', filteredTasks);
     if (taskTab === "todo") {
       setFilteredTasks(tasksToDo);
+
     } else if (taskTab === "completed") {
       setFilteredTasks(tasksCompleted);
     } else {
@@ -781,6 +786,25 @@ function TaskPage() {
     }
   };
 
+  const handleFilteredNextPage = (e) => {
+    e.preventDefault();
+    if(filteredPageUrls.length > 0 && currentFilteredPage < filteredTotalPages) {
+      setCurrentFilteredPage(currentFilteredPage + 1);
+    }
+  };
+
+  const handleFilteredPrevPage = (e) => {
+    e.preventDefault();
+    if(filteredPageUrls.length > 0 && currentFilteredPage > filteredTotalPages) {
+      setCurrentFilteredPage(currentFilteredPage - 1);
+    }
+  };
+
+  const handleFilteredPageChange = (url) => {
+    const pageNumber = parseInt(url.match(/page=(\d+)/)[1]);
+    setCurrentFilteredPage(pageNumber)
+  };
+
   const handlePrevPage2 = (e) => {
     e.preventDefault();
     if (currentPage2 > 1) {
@@ -879,8 +903,9 @@ function TaskPage() {
             {showFilter && (
               <FilterTask
                 setFilteredTasks={setFilteredTasks}
-                setTotalPages={setTotalPages}
-                setPageUrls={setPageUrls}
+                setFilteredTotalPages={setFilteredTotalPages}
+                currentFilteredPage={currentFilteredPage}
+                setFilteredPageUrls={setFilteredPageUrls}
                 setLoading={setLoading}
                 closeFilter={() => setShowFilter(false)}
               />
@@ -2241,7 +2266,37 @@ function TaskPage() {
             </ul>
           </div>
         )}
-        {taskTab === "completed" ? 
+
+        {filteredPageUrls.length > 0 ?
+          <div className="paginationDiv">
+            <div className="paginationSections">
+              <div className="btnDiv">
+                <button className="prevBtn" onClick={handleFilteredPrevPage} disabled={currentFilteredPage === 1}>Previous</button>
+                <button className="prevBtn mobile" onClick={handleFilteredPrevPage} disabled={currentFilteredPage === 1}>{'<'}</button>
+              </div>
+              <div className="pageNoDiv">
+                {filteredPageUrls.length > 0 && currentFilteredPage >= 4 &&
+                  <button disabled className='pageBtn pageDots' >...</button>}
+                {filteredPageUrls.length > 0 && filteredPageUrls.filter((item, index) => Math.abs(index - currentFilteredPage + 1) <= (currentFilteredPage < 3 ? 3 : currentFilteredPage > filteredPageUrls.length - 2 ? 3 : 2)).map((link, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleFilteredPageChange(link.url)}
+                    className={`${link.active && 'activePageBtn'} pageBtn`}
+                  >
+                      {link.label}
+                  </button>
+                ))}
+                {filteredPageUrls.length > 0 && currentFilteredPage <= filteredPageUrls.length - 3 &&
+                  <button disabled className='pageBtn pageDots' >...</button>
+                }
+              </div>
+              <div className="btnDiv">
+                <button className="nextBtn" onClick={handleFilteredNextPage} disabled={currentFilteredPage === filteredTotalPages}>Next</button>
+                <button className="nextBtn mobile" onClick={handleFilteredNextPage} disabled={currentFilteredPage === filteredTotalPages}>{'>'}</button>
+              </div>
+            </div>
+          </div>
+        : (taskTab === "completed" ? 
           <div className="paginationDiv">
             <div className="paginationSections">
               <div className="btnDiv">
@@ -2279,9 +2334,8 @@ function TaskPage() {
                 <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
               </div>
               <div className="pageNoDiv">
-                {pageUrls && currentPage >= 4 &&
-                  <button disabled className='pageBtn pageDots' >...</button>
-                }
+                 {pageUrls && currentPage >= 4 &&
+                  <button disabled className='pageBtn pageDots' >...</button>}
                 {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
                   <button
                     key={index}
@@ -2301,7 +2355,7 @@ function TaskPage() {
               </div>
             </div>
           </div>
-        }
+        )}
       </div>
     </div>
     </>
