@@ -406,7 +406,7 @@ function PasswordReset({fetchProfileData}) {
           <div >
             <h3>Password Reset Successfully</h3>
           </div>
-          <p>Your password has been updated. You can now log in with your new password.</p>
+          <p>Your password has been updated.</p>
         </>, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -517,8 +517,10 @@ function PasswordReset({fetchProfileData}) {
                   />
                   <span className={`toggle-eye-icon ${showPassword ? 'show' : ''}`} onClick={handleTogglePassword} > {showPassword ? <OpenedEye /> : <ClosedEye /> }</span>
               </div>
+            {password !== '' &&
+              <PasswordStrengthMeter password={password}/>
+            }
           </form>
-            <PasswordStrengthMeter password={password}/>
             <div className='btnDiv'>
               <button className='signupButton' onClick={handlePasswordReset}>
                   Reset Password
