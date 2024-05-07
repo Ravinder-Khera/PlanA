@@ -13,7 +13,10 @@ export function NotificationComponent({ notificationData, onRemove }) {
     <div className={`notificationClass ${notificationData.class}-class`}>
       <div className="notificationMsg">
         <div className="notificationIcon"></div>
-        <div className="notificationText">{notificationData.message}</div>
+        <div className="notificationText">
+          {notificationData.message}
+          {notificationData?.span && <span>{notificationData.span}</span>}
+        </div>
       </div>
       <div className="notificationCloseBtn" onClick={handleRemove}></div>
     </div>

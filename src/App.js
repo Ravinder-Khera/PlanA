@@ -161,6 +161,63 @@ function DashboardMenuList() {
           setUser(response.res.user.name);
           setUserImg(response.res.user.profile_pic);
           localStorage.setItem("user", response.res.user.name);
+          const passwordLastChangedDate = new Date(response.res.user.password_last_changed);
+          // Calculate the target dates
+          const currentDate = new Date();
+          const sixMonthsAgoPlusThirtyDays = new Date(passwordLastChangedDate);
+          sixMonthsAgoPlusThirtyDays.setMonth(sixMonthsAgoPlusThirtyDays.getMonth() + 6);
+          sixMonthsAgoPlusThirtyDays.setDate(sixMonthsAgoPlusThirtyDays.getDate() - 30);
+
+          const fiveDaysBeforeSixMonths = new Date(passwordLastChangedDate);
+          fiveDaysBeforeSixMonths.setMonth(fiveDaysBeforeSixMonths.getMonth() + 6);
+          fiveDaysBeforeSixMonths.setDate(fiveDaysBeforeSixMonths.getDate() - 5);
+
+          const OneDayBeforeSixMonths = new Date(passwordLastChangedDate);
+          OneDayBeforeSixMonths.setMonth(OneDayBeforeSixMonths.getMonth() + 6);
+          OneDayBeforeSixMonths.setDate(OneDayBeforeSixMonths.getDate() - 1);
+          if(currentDate.toDateString() === OneDayBeforeSixMonths.toDateString()){
+            const notificationData = {
+              class: "info",
+              message: 'Your Password Is About To Expire!',
+              span: 'You have 1 Day left to change your password.'
+            };
+            const existingNotificationsJSON = localStorage.getItem('notifications');
+            let existingNotifications = [];
+            if (existingNotificationsJSON) {
+              existingNotifications = JSON.parse(existingNotificationsJSON);
+            }
+            existingNotifications.push(notificationData);
+        
+            localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+          } else if(currentDate.toDateString() === fiveDaysBeforeSixMonths.toDateString()){
+            const notificationData = {
+              class: "info",
+              message: 'Your Password Is About To Expire!',
+              span: 'You have 5 Days left to change your password.'
+            };
+            const existingNotificationsJSON = localStorage.getItem('notifications');
+            let existingNotifications = [];
+            if (existingNotificationsJSON) {
+              existingNotifications = JSON.parse(existingNotificationsJSON);
+            }
+            existingNotifications.push(notificationData);
+        
+            localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+          } else if(currentDate.toDateString() === sixMonthsAgoPlusThirtyDays.toDateString()){
+            const notificationData = {
+              class: "info",
+              message: 'Your Password Is About To Expire!',
+              span: 'You have 30 Days left to change your password.'
+            };
+            const existingNotificationsJSON = localStorage.getItem('notifications');
+            let existingNotifications = [];
+            if (existingNotificationsJSON) {
+              existingNotifications = JSON.parse(existingNotificationsJSON);
+            }
+            existingNotifications.push(notificationData);
+        
+            localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+          }
         } else {
           console.error("profile error:", response.error);
         }
