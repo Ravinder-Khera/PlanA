@@ -21,17 +21,23 @@ const InvoicePopup = ({ handleClose }) => {
   });
   const [selectedDueDate, setSelectedDueDate] = useState(null);
   const [selectDueDate, setSelectDueDate] = useState(false);
+  const [selectDueDate2, setSelectDueDate2] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [dropDownStatus, setDropDownStatus] = useState(false);
+  const [dropDownStatus2, setDropDownStatus2] = useState(false);
   const [selectUser, setSelectUser] = useState(false);
+  const [selectUser2, setSelectUser2] = useState(false);
   const [loader, setLoading] = useState(false);
 
   const popUpRef = useRef(null);
   const billingToRef = useRef(null);
   const payToRef = useRef(null);
   const selectDueDateRef = useRef(null);
+  const selectDueDateRef2 = useRef(null);
   const selectStatusRef = useRef(null);
+  const selectStatusRef2 = useRef(null);
   const selectUserRef = useRef(null);
+  const selectUserRef2 = useRef(null);
 
   useEffect(() => {
     let handler = (e) => {
@@ -47,11 +53,24 @@ const InvoicePopup = ({ handleClose }) => {
       ) {
         setDropDownStatus(false)
       }
+
+      if (
+        selectStatusRef2.current &&
+        !selectStatusRef2.current.contains(e.target)
+      ) {
+        setDropDownStatus2(false)
+      }
       if (
         selectUserRef.current &&
         !selectUserRef.current.contains(e.target)
       ) {
         setSelectUser(false)
+      }
+      if (
+        selectUserRef2.current &&
+        !selectUserRef2.current.contains(e.target)
+      ) {
+        setSelectUser2(false)
       }
 
       if (
@@ -59,6 +78,12 @@ const InvoicePopup = ({ handleClose }) => {
         !selectDueDateRef.current.contains(e.target)
       ) {
         setSelectDueDate(false)
+      }
+      if (
+        selectDueDateRef2.current &&
+        !selectDueDateRef2.current.contains(e.target)
+      ) {
+        setSelectDueDate2(false)
       }
     };
 
@@ -774,13 +799,13 @@ const InvoicePopup = ({ handleClose }) => {
                                 className={`stageBtn ${selectedStatus}`}
                                 style={{ cursor: "pointer" }}
                                 onClick={() => {
-                                  setDropDownStatus(true);
+                                  setDropDownStatus2(true);
                                 }}
                               >
                                 {selectedStatus ? selectedStatus : 'Select'}
                               </button>
-                              {dropDownStatus && 
-                                <div className="addTaskJobDropdown right" ref={selectStatusRef}>
+                              {dropDownStatus2 && 
+                                <div className="addTaskJobDropdown right" ref={selectStatusRef2}>
                                   <div className="addInvoiceCContactDetails">
                                   <button
                                     className={`stageBtn paid`}
@@ -809,7 +834,7 @@ const InvoicePopup = ({ handleClose }) => {
                               <div
                                 className="UserImg withAddBtn "
                                 onClick={() => {
-                                  setSelectUser(true);
+                                  setSelectUser2(true);
                                 }}
                                 style={{ minWidth: "40px" }}
                               > 
@@ -817,8 +842,8 @@ const InvoicePopup = ({ handleClose }) => {
                                     {!user.name ? <User /> : getInitials(user.name)}
                                 </div>
                               </div>
-                              {selectUser && 
-                                <div className="addTaskJobDropdown w-100 right" ref={selectUserRef}>
+                              {selectUser2 && 
+                                <div className="addTaskJobDropdown w-100 right" ref={selectUserRef2}>
                                   <div className="addInvoiceCContactDetails">
                                     <div className="userDetails">
                                       <div className="userProfile">
@@ -868,12 +893,12 @@ const InvoicePopup = ({ handleClose }) => {
                           <div className="centerText mb-3 addTaskJobDiv float-none text-start" style={{transform:'translateY(0)'}}>
                             <div
                               className="addTaskDueDateBtn"
-                              onClick={() => setSelectDueDate(!selectDueDate)}
+                              onClick={() => setSelectDueDate2(!selectDueDate2)}
                             >
                               <span className="requiredSpan">*</span><TaskIcon /> {selectedDueDate ? formattedDueDate : 'Due Date'}
                             </div>
-                            {selectDueDate && (
-                              <div className="datePickerDiv" style={{right:'10px',left:'auto'}} ref={selectDueDateRef}>
+                            {selectDueDate2 && (
+                              <div className="datePickerDiv" style={{right:'10px',left:'auto'}} ref={selectDueDateRef2}>
                                 <Calendar
                                   date={selectedDueDate}
                                   onChange={handleSelectDueDate}

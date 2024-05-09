@@ -163,7 +163,8 @@ const JobModal = ({
     setDueDate(data?.due_date);
     setStatus(data?.status);
     setAssessmentManager(data?.assessment_manager);
-    setOperative(data?.operative_id)
+    setSelectedOperative(data?.operative_id)
+    setOperative(data?.operative)
     if(data?.is_archive !== "0"){
       setIsArchive(true)
     }

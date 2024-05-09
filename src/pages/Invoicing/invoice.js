@@ -160,7 +160,7 @@ function Invoice() {
       setLoading(true);
       let response = await deleteInvoices({
         ids: selectedIds,
-      });
+      },authToken);
       if (response.res) {
         console.log("invoice delete successful", response);
         const notificationData = {

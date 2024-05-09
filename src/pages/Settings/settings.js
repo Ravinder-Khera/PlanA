@@ -456,6 +456,9 @@ function PasswordReset({fetchProfileData}) {
   
       if (response.res) {
         console.log('Password reset successful',response.res);
+        setConfirmPassword('');
+        setPassword('');
+        setOldPassword('');
         const notificationData = {
           class: "success",
           message: 'Password Reset Successfully'

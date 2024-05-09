@@ -444,7 +444,9 @@
                                 gap: 20px;
                                 // background: #353535;
                                 position: relative;
-
+                                @media screen and (max-width:992px) {
+                                    flex-wrap: wrap;
+                                }
                                 // height: calc(100% - 28px);
                                 &.invoice{
                                     &::before {
