@@ -21,7 +21,7 @@ const Add = ({ handleClose, fetchJobs }) => {
     is_archive: "0",
     linkedin_post: "0",
     eofy: "0",
-    operative_id: 84,
+    operative_id: null,
   });
   const [isEdit, setIsEdit] = useState(false);
   const [activeCardId, setActiveCardId] = useState(1);
@@ -96,6 +96,10 @@ const Add = ({ handleClose, fetchJobs }) => {
     setSelectedOperative(userId);
     setSelectOperative(false);
     setOperative(usersList.find((user) => user.id === userId));
+    setState({
+      ...state,
+      operative_id: userId,
+    });
   };
 
   const settings = {
