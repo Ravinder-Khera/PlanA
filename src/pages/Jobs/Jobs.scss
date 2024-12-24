@@ -7,12 +7,12 @@
         content: '';
         top: 0;
         left: 0;
-        width: 650px;
+        width: 690px;
         height: 100%;
         z-index: 0;
         box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
         @media screen and (max-width:1599px) {
-            width: 575px;
+            width: 690px;
         }
         @media screen and (max-width:992px) {
             width: auto;
@@ -251,6 +251,14 @@
             align-items: center;
             margin-left: 10px;
             box-shadow: (0px 4px 4px rgba(0, 0, 0, 0.25));
+            &.notificationWhite{
+                background: #e2e31f;
+                svg{
+                    path{
+                        fill: #000;
+                    }
+                }
+            }
         }
 
     }
@@ -299,14 +307,14 @@
     }
     .left-side {
         padding: 6px 0px 6px 16px;
-        min-width: 650px;
+        min-width: 690px;
         // box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
         // height: 100vh;
         // position: fixed;
         // z-index: 1000;
         // background: #252525;
         @media screen and (max-width:1599px) {
-            min-width: 575px;
+            min-width: 690px;
         }
 
         .first-table {
@@ -353,11 +361,15 @@
                     }
 
                     .job-name {
-                        max-width: 350px;
+                        max-width: 300px;
                         h4 {
                             font-size: 16px;
-                            color: #E2E31F;
                             // line-height: 0px;
+                            color: #E2E31F;
+                            font-style: normal;
+                            font-weight: 600;
+                            line-height: normal;
+                            letter-spacing: -0.64px;
                             margin-bottom: 0;
                         }
 
@@ -412,6 +424,19 @@
                         }
                     }
 
+                    .jobNoBtn{
+                        padding: 7.5px 27px;
+                        border-radius: 4px;
+                        border: 1px solid #7F7F7F;
+                        background: #353535;
+                        color: #FFF;
+                        text-align: center;
+                        font-size: 12px;
+                        font-style: normal;
+                        font-weight: 700;
+                        line-height: normal;
+                        letter-spacing: -0.48px;                        
+                    }
                     td:not(:last-child),
                     th:not(:last-child) {
                         border-right: 1px solid rgba(226, 227, 31, 0.15);
@@ -619,14 +644,52 @@
         }
     }
 
+    .collaboratorsBox{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 165px;
+        .collaboratorsBoxUser{
+            color: #FFF;
+            text-align: center;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            letter-spacing: -0.48px;            
+            border-radius: 4px;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);        
+            background: #353535;
+            padding: 8px 10px;
+            &:first-child{
+                border: 1px solid #F068FF;
+            }
+            &:nth-child(2){
+                transform: translateX(-6px);
+                border: 1px solid #68FFF0;
+            }
+            &:nth-child(3){
+                transform: translateX(-12px);
+                border: 1px solid #687CFF;
+            }
+            &:nth-child(4){
+                transform: translateX(-18px);
+                border: 1px solid #7F7F7F;
+            }
+            &.disabled{
+                border: 1px solid #7F7F7F;
+            }
+        }
+    }
+
     .right-side {
         padding: 6px 16px 6px 0;
-        max-width: calc(100% - 650px);
+        max-width: calc(100% - 690px);
         // position: absolute;
         // left: 800px;
         // height: 100vh;
         @media screen and (max-width:1599px) {
-            max-width: calc(100% - 575px);
+            max-width: calc(100% - 690px);
         }
         .right-side-table{
             max-width: 100%;            
@@ -826,36 +889,72 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        font-size: 12px;
+                        font-style: normal;
+                        font-weight: 700;
+                        line-height: normal;
+                        letter-spacing: -0.48px;
+                        margin: 0 20px;                        
                         &.pending {
                             background: #1FB4E366;
                             border: 1px solid #1FB4E3;
                             color: #1FB4E3;
+                            .bar{
+                                background: #1FB4E3;
+                            }
                         }
 
                         &.in-progress {
-                            background: #c5b9507d;
-                            border: 1px solid #c5b450;
-                            color: #c5b450;
+                            background: #E3881F99;
+                            border: 1px solid #E3881F;
+                            color: #E3881F;
+                            .bar{
+                                background: #E3881F;
+                            }
                         }
 
                         &.completed {
                             background: #3B923999;
                             border: 1px solid #3B9239;
                             color: #3B9239;
+                            .bar{
+                                background: #3a923900;
+                            }
                         }
 
                         &.not-started {
-                            background: #ff000066;
-                            border: 1px solid #ff0000;
-                            color: #ff0000;
+                            background: #E31F1F80;
+                            border: 1px solid #E31F1F;
+                            color: #E31F1F;
                         }
 
-                        &.on-hold {
-                            background: #29232366;
-                            border: 1px solid #332929;
-                            color: #3c3e3f
+                        &.on-hold { 
+                            background: #BABABA99;
+                            border: 1px solid #DDD;
+                            color: #DDD;
+                            .bar{
+                                background: #DDD;
+                            }
                         }
 
+                        &.progressBtn{
+                            min-width: 152px;
+                            justify-content: start;
+                            padding: 0;
+                            overflow: hidden;
+                            .bar{
+                                height: 30px;
+                                display: flex;
+                                justify-content: end;
+                                align-items: center;
+                                .text{
+                                    margin-right: 7px;
+                                }
+                            }
+                            .text{
+                                margin-left: 7px;
+                            }
+                        }
                     }
 
                     td:not(:last-child),

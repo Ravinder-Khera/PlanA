@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AddIcon, BellIcon, CrossIcon, FilterIcon, Search, User } from "../../assets/svg";
+import {
+  AddIcon,
+  BellIcon,
+  CrossIcon,
+  FilterIcon,
+  Search,
+  User,
+} from "../../assets/svg";
 import "./Jobs.scss";
 import { DeleteIcon } from "../../assets/svg";
 import { deleteJobs, getJobs, getJobsByFilter } from "../../services/auth";
@@ -46,18 +53,18 @@ const Jobs = () => {
 
   useEffect(() => {
     const handleStorageChange = (event) => {
-      if (event.key === 'notifications') {
+      if (event.key === "notifications") {
         const updatedNotifications = JSON.parse(event.newValue);
         setNotifications(updatedNotifications);
-        console.log(updatedNotifications, 'updatedNotifications');
+        console.log(updatedNotifications, "updatedNotifications");
         setStorageUpdated(true);
       }
     };
-  
-    window.addEventListener('storage', handleStorageChange);
+
+    window.addEventListener("storage", handleStorageChange);
 
     const checkNotifications = () => {
-      const existingNotificationsJSON = localStorage.getItem('notifications');
+      const existingNotificationsJSON = localStorage.getItem("notifications");
       if (existingNotificationsJSON) {
         setNotifications(JSON.parse(existingNotificationsJSON));
       }
@@ -65,21 +72,24 @@ const Jobs = () => {
 
     checkNotifications();
     const interval = setInterval(checkNotifications, 1000);
-  
+
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
     };
-  }, [storageUpdated]); 
+  }, [storageUpdated]);
 
   const handleRemoveNotification = (notificationToRemove) => {
     setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification !== notificationToRemove)
+      prevNotifications.filter(
+        (notification) => notification !== notificationToRemove
+      )
     );
-    const updatedNotifications = notifications.filter(notification => notification !== notificationToRemove);
-    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+    const updatedNotifications = notifications.filter(
+      (notification) => notification !== notificationToRemove
+    );
+    localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
   };
-
 
   useEffect(() => {
     if (showJobModal && taskMobileScrollRef.current) {
@@ -116,14 +126,14 @@ const Jobs = () => {
   }, [location]);
 
   const handleApply = async () => {
-    
     let filterString = `title=${searchedInput}`;
-    
+
     setLoading(true);
     try {
       const response = await getJobsByFilter(filterString);
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
+        console.log(response?.res?.data);
       }
     } catch (error) {
       console.log("error in applying filter", error);
@@ -138,7 +148,7 @@ const Jobs = () => {
       setCurrentPage(currentPage + 1);
     }
   };
-  
+
   const handlePrevPage = (e) => {
     e.preventDefault();
     if (currentPage > 1) {
@@ -148,7 +158,7 @@ const Jobs = () => {
 
   const handlePageChange = (url) => {
     const pageNumber = parseInt(url.match(/page=(\d+)/)[1]);
-    setCurrentPage(pageNumber)
+    setCurrentPage(pageNumber);
   };
 
   useEffect(() => {
@@ -175,7 +185,6 @@ const Jobs = () => {
       ) {
         setNotificationDropDown(false);
       }
-
     };
 
     document.addEventListener("mousedown", handler);
@@ -237,8 +246,8 @@ const Jobs = () => {
         extractUsersFromStages(data);
         // Print the users array
         // setUsersList(users);
-        setTotalPages(res?.res.last_page)
-        setPageUrls(res?.res.links.slice(1, -1))
+        setTotalPages(res?.res.last_page);
+        setPageUrls(res?.res.links.slice(1, -1));
         setReloadTabs(!reloadTabs);
       }
     } catch (error) {
@@ -313,32 +322,38 @@ const Jobs = () => {
       if (response.res) {
         const notificationData = {
           class: "success",
-          message: response.res.message
+          message: response.res.message,
         };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
+        const existingNotificationsJSON = localStorage.getItem("notifications");
         let existingNotifications = [];
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
         existingNotifications.push(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
+        localStorage.setItem(
+          "notifications",
+          JSON.stringify(existingNotifications)
+        );
 
         toast.success(`${response.res.message}`);
       } else {
         console.error("jobs delete failed:", response.error);
         const notificationData = {
           class: "error",
-          message: response.error.message
+          message: response.error.message,
         };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
+        const existingNotificationsJSON = localStorage.getItem("notifications");
         let existingNotifications = [];
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
         existingNotifications.push(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
+        localStorage.setItem(
+          "notifications",
+          JSON.stringify(existingNotifications)
+        );
 
         toast.error(`${response.error.message}`);
       }
@@ -366,11 +381,11 @@ const Jobs = () => {
   };
 
   useEffect(() => {
-    const bodyScroll = document.getElementById('rightSCroll')
+    const bodyScroll = document.getElementById("rightSCroll");
     if (showJobModal) {
       bodyScroll.style.overflow = "hidden";
     } else {
-      bodyScroll.style.overflow = "auto"; 
+      bodyScroll.style.overflow = "auto";
     }
 
     return () => {
@@ -380,10 +395,10 @@ const Jobs = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear().toString().slice(2);
-  
+
     return `${day}/${month}/${year}`;
   };
 
@@ -428,7 +443,10 @@ const Jobs = () => {
       )}
 
       <div className="jobsBg">
-        <div className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap" style={{zIndex:'2'}}>
+        <div
+          className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap"
+          style={{ zIndex: "2" }}
+        >
           <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
             <h2>Jobs</h2>
             <div className="navSearchDiv jobSearchDiv jobSearchBar">
@@ -443,7 +461,7 @@ const Jobs = () => {
                     value={searchedInput}
                     onChange={(e) => setSearchedInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         handleApply();
                       }
@@ -454,7 +472,7 @@ const Jobs = () => {
             </div>
           </div>
           <div className="d-flex gap-3 flex-wrap align-items-center">
-            <div className="navSearchTab">
+            {/* <div className="navSearchTab">
               <div className="jobsTaskTabsDiv">
                 <div
                   className={`jobtaskTab ${
@@ -481,54 +499,73 @@ const Jobs = () => {
                   Completed
                 </div>
               </div>
-            </div>
-            <div className="addjobs addJobsMobile">
-              <span>Add Job</span>
-              <div className="addJobIcon" onClick={() => setShowAddModal(true)}>
-                <AddIcon />
+            </div> */}
+            <div className="addjobs addJobsMobile" style={{gap:'16px'}}>
+              <div className="d-flex align-items-center" style={{gap:'8px',cursor: "pointer"}} onClick={() => setShowAddModal(true)}>
+                <div className="addJobIcon" >
+                  <AddIcon />
+                </div>
+                <span>Add Job</span>
               </div>
-              <div className="notifyIcon">
-                <div className="addNewTaskDiv">
-                  <div className="bellIcon addTaskJobDiv" style={{cursor:'pointer'}}>
-                    <div onClick={()=>setNotificationDropDown(!notificationDropDown)}>
-                      <BellIcon />
-                    </div>
-                    {notificationDropDown && (
-                      <div
-                        className="addTaskJobDropdown notificationDropdown right"
-                        ref={notificationRef}
-                      >
-                        <div className="addTaskJobListScroll">
-                          <div className="addTaskJobListItems">
-                          {notifications.length > 0 ? (
-                              notifications.map((notification, index) => (
-                                <NotificationComponent
-                                  key={index}
-                                  notificationData={notification}
-                                  onRemove={handleRemoveNotification}
-                                />
-                              ))
-                            ):
-                              <div className="notificationClass info-class">
-                                <div className="notificationMsg">
-                                  <div className="notificationIcon"></div>
-                                  <div className="notificationText">No Notifications</div>
+              <div className="d-flex align-items-center" style={{gap:'8px', cursor: "pointer"}} onClick={() =>
+                          setNotificationDropDown(!notificationDropDown)
+                        }>
+                <div className="notifyIcon notificationWhite mx-0">
+                  <div className="addNewTaskDiv">
+                    <div
+                      className="bellIcon addTaskJobDiv"
+                      // style={{ cursor: "pointer" }}
+                    >
+                      <div>
+                        <BellIcon />
+                      </div>
+                      {notificationDropDown && (
+                        <div
+                          className="addTaskJobDropdown notificationDropdown right"
+                          ref={notificationRef}
+                        >
+                          <div className="addTaskJobListScroll">
+                            <div className="addTaskJobListItems">
+                              {notifications.length > 0 ? (
+                                notifications.map((notification, index) => (
+                                  <NotificationComponent
+                                    key={index}
+                                    notificationData={notification}
+                                    onRemove={handleRemoveNotification}
+                                  />
+                                ))
+                              ) : (
+                                <div className="notificationClass info-class">
+                                  <div className="notificationMsg">
+                                    <div className="notificationIcon"></div>
+                                    <div className="notificationText">
+                                      No Notifications
+                                    </div>
+                                  </div>
+                                  <div
+                                    className="notificationCloseBtn"
+                                    onClick={() => setNotificationDropDown(false)}
+                                  ></div>
                                 </div>
-                                <div className="notificationCloseBtn" onClick={()=>setNotificationDropDown(false)}></div>
-                              </div>
-                            }
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
+                <span>Notifications</span>
               </div>
             </div>
           </div>
         </div>
         <div className="JobsHeading d-flex align-items-center justify-content-between">
-          <div className="delete-box" style={{ cursor: "pointer", zIndex: 2 }} onClick={handleDelete}>
+          <div
+            className="delete-box"
+            style={{ cursor: "pointer", zIndex: 2 }}
+            onClick={handleDelete}
+          >
             <div className="searchUserImg">
               <DeleteIcon />
             </div>
@@ -608,14 +645,13 @@ const Jobs = () => {
                         <th scope="col">
                           <div className="headerDiv">Job Name</div>
                         </th>
-                        {/* <th scope="col">
-                          <div className="headerDiv">Due/FUP On</div>
-                        </th> */}
+                        <th scope="col">
+                          <div className="headerDiv">Collaborators</div>
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredJobs &&
-                        filteredJobs?.length > 0 ?
+                      {filteredJobs && filteredJobs?.length > 0 ? (
                         filteredJobs?.map((job, index) => (
                           <tr key={index}>
                             <th scope="row" className="text-center">
@@ -652,7 +688,7 @@ const Jobs = () => {
                             </th>
                             <td className="text-center">
                               <span
-                                className={`stageBtn btn_${findNearestStage(
+                                className={`jobNoBtn btn_${findNearestStage(
                                   job
                                 )}`}
                               >
@@ -676,25 +712,84 @@ const Jobs = () => {
                                 >
                                   {job.title}
                                 </h4>
-                                <h6>{job.description}</h6>
+                                {/* <h6>{job.description}</h6> */}
                               </div>
                             </td>
-                            {/* <td className="text-center">
-                              {moment(job.due_date).local().format("L")}
-                            </td> */}
+                            <td className="text-center">
+                              {job?.operative_id && (
+                                <div className="collaboratorsBox">
+                                  <div className=" d-flex align-items-center justify-content-center">
+                                    {job?.usersArray?.length > 0 && (
+                                      <>
+                                        {job?.usersArray
+                                          .filter(
+                                            (selectedId) =>
+                                              selectedId !== job?.operative_id
+                                          )
+                                          .slice(0, 3)
+                                          .map((user, index) => {
+                                            const initials = user.name
+                                              .split(" ")
+                                              .map((part) =>
+                                                part.charAt(0).toUpperCase()
+                                              )
+                                              .join("");
+
+                                            return (
+                                              <div
+                                                key={index}
+                                                className={`collaboratorsBoxUser`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  zIndex: index,
+                                                }}
+                                              >
+                                                {initials}
+                                              </div>
+                                            );
+                                          })}
+
+                                        {job?.usersArray?.length > 3 && (
+                                          <div
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: index,
+                                            }}
+                                          >
+                                            +
+                                            {job?.usersArray.filter(
+                                              (selectedId) =>
+                                                selectedId !== job?.operative_id
+                                            ).length - 3}
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                    {job.usersArray?.length === 0 && (
+                                      <div
+                                        className="collaboratorsBoxUser disabled m-0"
+                                        style={{ minWidth: "40px" }}
+                                      >
+                                        N/A
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </td>
                           </tr>
-                        )) :
+                        ))
+                      ) : (
                         <tr>
                           <td></td>
                           <td className="text-center">
-                              <span
-                                className={`stageBtn btn_`}
-                              >
-                                No Results Found
-                              </span>
-                            </td>
-                          </tr>
-                        }
+                            <span className={`jobNoBtn btn_`}>
+                              No Results Found
+                            </span>
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -703,24 +798,37 @@ const Jobs = () => {
 
             <div className="right-side">
               <div className="first-table">
-                <div
-                  className="table-responsive right-side-table"
-                >
+                <div className="table-responsive right-side-table">
                   <div className="job_table_outer_div">
                     <table className="table table-borderless text-light">
                       <thead>
                         <tr>
                           <th scope="col">
-                            <div className="headerDiv">Due/FUP On</div>
+                            <div className="headerDiv">Status</div>
                           </th>
                           <th scope="col">
+                            <div className="headerDiv">Progress</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Due Date</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Days Left</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Subtasks</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Client Last Contacted</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Comments</div>
+                          </th>
+                          {/* <th scope="col">
                             <div className="headerDiv">Job Manager</div>
                           </th>
                           <th scope="col">
                             <div className="headerDiv">Latest Update</div>
-                          </th>
-                          <th scope="col">
-                            <div className="headerDiv">Status</div>
                           </th>
                           <th scope="col">
                             <div className="headerDiv">Archive</div>
@@ -742,8 +850,7 @@ const Jobs = () => {
                           </th>
                           <th scope="col">
                             <div className="headerDiv">LinkedIn Post</div>
-                          </th>
-                          
+                          </th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -752,9 +859,75 @@ const Jobs = () => {
                           filteredJobs?.map((job) => (
                             <tr key={job.id}>
                               <td className="text-center">
+                                <span className={`statusBtn ${job.status}`}>
+                                  {StatusList[job.status]}
+                                </span>
+                              </td>
+                              <td className="text-center">
+                                <span
+                                  className={`statusBtn progressBtn ${job.status}`}
+                                >
+                                  <bar
+                                    className="bar"
+                                    style={{ width: `${job.progress}%` }}
+                                  >
+                                    <text
+                                      className="text"
+                                      style={{ color: "#ffffff99" }}
+                                    >
+                                      {job.progress >= 51 &&
+                                        (job.progress % 1 !== 0
+                                          ? job.progress.toFixed(1)
+                                          : job.progress) + "%"}
+                                    </text>
+                                  </bar>
+                                  {job.progress <= 50 && (
+                                    <text className="text">
+                                      {job.progress % 1 !== 0
+                                        ? job.progress.toFixed(1)
+                                        : job.progress}
+                                      %
+                                    </text>
+                                  )}
+                                </span>
+                              </td>
+                              <td className="text-center">
                                 {moment(job.due_date).local().format("L")}
                               </td>
                               <td className="text-center">
+                                {
+                                  moment(job.due_date)
+                                    .local()
+                                    .isBefore(moment(), "day")
+                                    ? 0 
+                                    : moment(job.due_date)
+                                        .local()
+                                        .diff(moment(), "days") 
+                                } days
+                              </td>
+                              <td className="text-center">
+                                <div className="d-flex align-items-center justify-content-center flex-wrap" style={{gap:'8px'}}>
+                                  <span className={`statusBtn mx-0 pending`}>
+                                  Lodge Application
+                                  </span>
+                                  <span className={`statusBtn mx-0 in-progress`}>
+                                  Action Notice
+                                  </span>
+                                  <span className={`statusBtn mx-0 on-hold`}>
+                                  Action Notice
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="text-center ">
+                                {formatDate(job.latest_comment)}
+                              </td>
+                              <td className="px-3">
+                                <div className="jobDescriptionTextDiv">
+                                  {job.latest_update}
+                                </div>
+                              </td>
+
+                              {/* <td className="text-center">
                                 <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                   <div className=" d-flex align-items-center justify-content-center">
                                     {job?.usersArray?.length > 0 && (
@@ -762,30 +935,32 @@ const Jobs = () => {
                                         {job?.usersArray
                                           ?.slice(0, 1)
                                           ?.map((user, index) => (
-                                              <div
-                                                key={index}
-                                                className={`UserImg addedUserImages`}
-                                                style={{
-                                                  minWidth: "40px",
-                                                  zIndex: index,
-                                                }}
-                                                // onClick={() =>
-                                                //   toggleUserDropdown(i)
-                                                // }
-                                              >
-                                                {user.profile_pic !== ""  && user.profile_pic !== 'default-profile-pic.jpg' ? (
-                                                  <img
-                                                    alt={user.name}
-                                                    src={
-                                                      process.env
-                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                      user.profile_pic
-                                                    }
-                                                  />
-                                                ) : (
-                                                  <User />
-                                                )}
-                                              </div>
+                                            <div
+                                              key={index}
+                                              className={`UserImg addedUserImages`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                              }}
+                                              // onClick={() =>
+                                              //   toggleUserDropdown(i)
+                                              // }
+                                            >
+                                              {user.profile_pic !== "" &&
+                                              user.profile_pic !==
+                                                "default-profile-pic.jpg" ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user.profile_pic
+                                                  }
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
                                           ))}
                                       </>
                                     )}
@@ -807,38 +982,50 @@ const Jobs = () => {
                                 </div>
                               </td>
                               <td className="text-center">
-                                <span className={`statusBtn ${job.status}`}>
-                                  {StatusList[job.status]}
-                                </span>
-                              </td>
-                              <td className="text-center">
-                                {job.is_archive !== '0' &&
+                                {job.is_archive !== "0" && (
                                   <button
                                     className={`checkBtn h-100`}
                                     onClick={(e) => e.preventDefault}
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
-                                      <rect width="100%" height="100%" fill="none" />
-                                      <path fill="none" stroke="#71E26E" d="M4 7.5L7 10l4-5" />
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="25"
+                                      height="25"
+                                      viewBox="0 0 15 15"
+                                    >
+                                      <rect
+                                        width="100%"
+                                        height="100%"
+                                        fill="none"
+                                      />
+                                      <path
+                                        fill="none"
+                                        stroke="#71E26E"
+                                        d="M4 7.5L7 10l4-5"
+                                      />
                                     </svg>
                                   </button>
-                                }
+                                )}
                               </td>
 
                               <td className="text-center ">
                                 {job.assessment_manager}
                               </td>
                               <td className="text-center ">
-                              {formatDate(job.latest_comment)}
+                                {formatDate(job.latest_comment)}
                               </td>
                               <td className="text-center ">
-                                {job?.operative_id && 
+                                {job?.operative_id && (
                                   <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                                  <div className=" d-flex align-items-center justify-content-center">
-                                    {job?.usersArray?.length > 0 && (
-                                      <>
-                                        {job?.usersArray.filter((selectedId) => selectedId !== job?.operative_id)
-                                          ?.map((user, index) => (
+                                    <div className=" d-flex align-items-center justify-content-center">
+                                      {job?.usersArray?.length > 0 && (
+                                        <>
+                                          {job?.usersArray
+                                            .filter(
+                                              (selectedId) =>
+                                                selectedId !== job?.operative_id
+                                            )
+                                            ?.map((user, index) => (
                                               <div
                                                 key={index}
                                                 className={`UserImg addedUserImages`}
@@ -847,7 +1034,9 @@ const Jobs = () => {
                                                   zIndex: index,
                                                 }}
                                               >
-                                                {user.profile_pic !== ""  && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                {user.profile_pic !== "" &&
+                                                user.profile_pic !==
+                                                  "default-profile-pic.jpg" ? (
                                                   <img
                                                     alt={user.name}
                                                     src={
@@ -860,50 +1049,76 @@ const Jobs = () => {
                                                   <User />
                                                 )}
                                               </div>
-                                          ))}
-                                      </>
-                                    )}
-                                    {job.usersArray?.length === 0 && (
-                                      <div
-                                        className="UserImg m-0"
-                                        style={{ minWidth: "40px" }}
-                                      >
-                                        <User />
-                                      </div>
-                                    )}
+                                            ))}
+                                        </>
+                                      )}
+                                      {job.usersArray?.length === 0 && (
+                                        <div
+                                          className="UserImg m-0"
+                                          style={{ minWidth: "40px" }}
+                                        >
+                                          <User />
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                                }
+                                )}
                               </td>
                               <td className="text-center ">
                                 {formatDate(job.created_at)}
                               </td>
                               <td className="text-center ">
-                              {job.eofy !== '0' && 
-                                <button
-                                  className={`checkBtn h-100`}
-                                  onClick={(e) => e.preventDefault}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
-                                    <rect width="100%" height="100%" fill="none" />
-                                    <path fill="none" stroke="#71E26E" d="M4 7.5L7 10l4-5" />
-                                  </svg>
-                                </button>
-                              }
+                                {job.eofy !== "0" && (
+                                  <button
+                                    className={`checkBtn h-100`}
+                                    onClick={(e) => e.preventDefault}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="25"
+                                      height="25"
+                                      viewBox="0 0 15 15"
+                                    >
+                                      <rect
+                                        width="100%"
+                                        height="100%"
+                                        fill="none"
+                                      />
+                                      <path
+                                        fill="none"
+                                        stroke="#71E26E"
+                                        d="M4 7.5L7 10l4-5"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
                               </td>
                               <td className="text-center ">
-                              {job.linkedin_post !== '0' && 
-                                <button
-                                  className={`checkBtn h-100`}
-                                  onClick={(e) => e.preventDefault}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg"  width="25" height="25" viewBox="0 0 15 15">
-                                    <rect width="100%" height="100%" fill="none" />
-                                    <path fill="none" stroke="#71E26E" d="M4 7.5L7 10l4-5" />
-                                  </svg>
-                                </button>
-                              }
-                              </td>
+                                {job.linkedin_post !== "0" && (
+                                  <button
+                                    className={`checkBtn h-100`}
+                                    onClick={(e) => e.preventDefault}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="25"
+                                      height="25"
+                                      viewBox="0 0 15 15"
+                                    >
+                                      <rect
+                                        width="100%"
+                                        height="100%"
+                                        fill="none"
+                                      />
+                                      <path
+                                        fill="none"
+                                        stroke="#71E26E"
+                                        d="M4 7.5L7 10l4-5"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+                              </td> */}
                             </tr>
                           ))}
                       </tbody>
@@ -919,14 +1134,13 @@ const Jobs = () => {
               <div className="first-table">
                 <div className="job_table_outer_div  ">
                   <ul>
-                  {filteredJobs &&
-                    filteredJobs?.length > 0 ?
+                    {filteredJobs && filteredJobs?.length > 0 ? (
                       filteredJobs?.map((job, index) => (
                         <li key={index}>
                           <div className="jobBox">
                             <div className="jobItem">
-                            <div className="jobHeading">Select </div>
-                              <div  className="text-center">
+                              <div className="jobHeading">Select </div>
+                              <div className="text-center">
                                 {" "}
                                 <label htmlFor={`select_${index}`}>
                                   <input
@@ -959,11 +1173,14 @@ const Jobs = () => {
                                 </label>
                               </div>
                             </div>
-                            <div className="jobItem" style={{minHeight:'40px'}}>
+                            <div
+                              className="jobItem"
+                              style={{ minHeight: "40px" }}
+                            >
                               <div className="jobHeading">Job No.</div>
                               <div className="text-center">
                                 <span
-                                  className={`stageBtn btn_${findNearestStage(
+                                  className={`jobNoBtn btn_${findNearestStage(
                                     job
                                   )}`}
                                 >
@@ -1002,15 +1219,14 @@ const Jobs = () => {
                             </div>
                           </div>
                         </li>
-                      )):
-                    <li className="text-center">
-                      <span
-                        className={`stageBtn btn_`}
-                      >
-                        No Results Found
-                      </span>
-                    </li>
-                  }
+                      ))
+                    ) : (
+                      <li className="text-center">
+                        <span className={`stageBtn btn_`}>
+                          No Results Found
+                        </span>
+                      </li>
+                    )}
                   </ul>
                 </div>
               </div>
@@ -1020,34 +1236,72 @@ const Jobs = () => {
           <div className="JobsHeading paginationDiv">
             <div className="paginationSections">
               <div className="btnDiv">
-                <button className="prevBtn" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
-                <button className="prevBtn mobile" onClick={handlePrevPage} disabled={currentPage === 1}>{'<'}</button>
+                <button
+                  className="prevBtn"
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <button
+                  className="prevBtn mobile"
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                >
+                  {"<"}
+                </button>
               </div>
               <div className="pageNoDiv">
-                {pageUrls && currentPage >= 4 &&
-                  <button disabled className='pageBtn pageDots' >...</button>
-                }
-                {pageUrls && pageUrls.filter((item, index) => Math.abs(index - currentPage + 1) <= (currentPage < 3 ? 3 : currentPage > pageUrls.length - 2 ? 3 : 2)).map((link, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handlePageChange(link.url)}
-                    className={`${link.active && 'activePageBtn'} pageBtn`}
-                  >
-                      {link.label}
+                {pageUrls && currentPage >= 4 && (
+                  <button disabled className="pageBtn pageDots">
+                    ...
                   </button>
-                ))}
-                {pageUrls && currentPage <= pageUrls.length - 3 &&
-                  <button disabled className='pageBtn pageDots' >...</button>
-                }
+                )}
+                {pageUrls &&
+                  pageUrls
+                    .filter(
+                      (item, index) =>
+                        Math.abs(index - currentPage + 1) <=
+                        (currentPage < 3
+                          ? 3
+                          : currentPage > pageUrls.length - 2
+                          ? 3
+                          : 2)
+                    )
+                    .map((link, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handlePageChange(link.url)}
+                        className={`${link.active && "activePageBtn"} pageBtn`}
+                      >
+                        {link.label}
+                      </button>
+                    ))}
+                {pageUrls && currentPage <= pageUrls.length - 3 && (
+                  <button disabled className="pageBtn pageDots">
+                    ...
+                  </button>
+                )}
               </div>
               <div className="btnDiv">
-                <button className="nextBtn" onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
-                <button className="nextBtn mobile" onClick={handleNextPage} disabled={currentPage === totalPages}>{'>'}</button>
+                <button
+                  className="nextBtn"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+                <button
+                  className="nextBtn mobile"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  {">"}
+                </button>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </>
   );
