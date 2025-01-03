@@ -86,7 +86,7 @@ const Add = ({ handleClose, fetchJobs }) => {
     return () => {
       document.removeEventListener("mousedown", handler);
     };
-  }, []);
+  }, [handleClose, newTask.length]);
 
   const handleCardChange = (index) => {
     setActiveCardId(index + 1);

@@ -2,23 +2,35 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   AddIcon,
   BellIcon,
+  CloseIcon,
   CrossIcon,
   FilterIcon,
+  NewFilterIcon,
+  NextIcon,
+  OpenCloseIcon,
   Search,
+  TickIcon,
   User,
 } from "../../assets/svg";
 import "./Jobs.scss";
 import { DeleteIcon } from "../../assets/svg";
-import { deleteJobs, getJobs, getJobsByFilter } from "../../services/auth";
+import {
+  createJobs,
+  deleteJobs,
+  getJobs,
+  getJobsByFilter,
+  getUserByRole,
+} from "../../services/auth";
 import { Bars } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import moment from "moment";
 import Filter from "../../Components/Filter/Filter";
-import JobModal from "../../Components/JobModal/Edit/JobModal";
+import JobModal, { NewJobModal } from "../../Components/JobModal/Edit/JobModal";
 import { StatusList } from "../../helper";
 import Add from "../../Components/JobModal/Add/Add";
 import { useLocation } from "react-router-dom";
 import { NotificationComponent } from "../../Components/navMenu";
+import { Calendar } from "react-date-range";
 
 const Jobs = () => {
   const containerRef = useRef(null);
@@ -41,6 +53,7 @@ const Jobs = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [showJobModal, setShowJobModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddJoRow, setShowAddJobRow] = useState(false);
   const filterRef = useRef(null);
   const [notificationDropDown, setNotificationDropDown] = useState(false);
   const [reloadTabs, setReloadTabs] = useState(false);
@@ -50,6 +63,19 @@ const Jobs = () => {
 
   const [notifications, setNotifications] = useState([]);
   const [storageUpdated, setStorageUpdated] = useState(false);
+  const [newJobActiveBoxLeft, setNewJobActiveBoxLeft] = useState("");
+  const [newJobActiveBoxRight, setNewJobActiveBoxRight] = useState("");
+  const [addJobNameBoxAdded, setAddJobNameAdded] = useState(false);
+  const [addJobName, setAddJobName] = useState("");
+  const [usersList, setUsersList] = useState([]);
+  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
+  const [selectNewJobStatus, setSelectNewJobStatus] = useState("");
+  const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
+  const [newJobId, setNewJobId] = useState(["", "", "", "", ""]);
+  const [newJobIdFilled, setNewJobIdFilled] = useState(false);
+  const [newJobIdExist, setNewJobIdExist] = useState(false);
+  const [newJobIdNumber, setNewJobIdNumber] = useState(Number("00000"));
+  const newJobIdInputRefs = useRef([]);
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -78,6 +104,68 @@ const Jobs = () => {
       clearInterval(interval);
     };
   }, [storageUpdated]);
+
+  const generateDummyArray = () => {
+    const arr = [];
+    for (let i = 0; i <= 99; i++) {
+      arr.push(i.toString().padStart(5, "0"));
+    }
+    return arr;
+  };
+
+  const checkIfExists = (target, arr) => {
+    return arr.includes(target);
+  };
+
+  const handleNewJobIdChange = (e, index) => {
+    setNewJobIdExist(false);
+    var value = e.target.value;
+    // Only process if the value is a number (and not empty)
+    if (isNaN(value) && value !== "") {
+      return; // Do nothing if the entered value is not a number and it's not empty
+    }
+    const newOtp = [...newJobId];
+    newOtp[index] = e.target.value.slice(0, 1);
+    setNewJobId(newOtp);
+
+    if (newOtp[index] !== "" && index < 4) {
+      newJobIdInputRefs.current[index + 1].focus();
+    }
+
+    if (newOtp.every((digit) => digit !== "")) {
+      const target = newOtp.join("");
+      const arr = generateDummyArray();
+      // Check if the target exists in the array
+      const exists = checkIfExists(target, arr);
+      if (exists) {
+        setNewJobIdExist(true);
+        toast.error(
+          <>
+            <div>
+              <h3>Job ID already exists!</h3>
+            </div>
+            <p>
+              Please choose another jobs ID. Entered Job ID already has been
+              assigned to another job.
+            </p>
+          </>
+        );
+        return;
+      } else {
+        setNewJobIdNumber(Number(target));
+        setNewJobIdFilled(true);
+      }
+    }
+  };
+
+  const handleBackspace = (e, index) => {
+    if (e.key === "Backspace" && newJobId[index] === "") {
+      setNewJobIdExist(false);
+      if (index > 0) {
+        newJobIdInputRefs.current[index - 1].focus();
+      }
+    }
+  };
 
   const handleRemoveNotification = (notificationToRemove) => {
     setNotifications((prevNotifications) =>
@@ -133,7 +221,7 @@ const Jobs = () => {
       const response = await getJobsByFilter(filterString);
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
-        console.log(response?.res?.data);
+        // console.log(response?.res?.data);
       }
     } catch (error) {
       console.log("error in applying filter", error);
@@ -366,19 +454,19 @@ const Jobs = () => {
     }
   };
 
-  const handleStatusFilter = async (_status) => {
-    setLoading(true);
-    try {
-      const filterString = `status=${_status}`;
-      const res = await getJobsByFilter(filterString);
-      const { data } = res?.res;
-      setFilteredJobs(data);
-    } catch (error) {
-      console.log("error while filtering", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleStatusFilter = async (_status) => {
+  //   setLoading(true);
+  //   try {
+  //     const filterString = `status=${_status}`;
+  //     const res = await getJobsByFilter(filterString);
+  //     const { data } = res?.res;
+  //     setFilteredJobs(data);
+  //   } catch (error) {
+  //     console.log("error while filtering", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     const bodyScroll = document.getElementById("rightSCroll");
@@ -402,6 +490,131 @@ const Jobs = () => {
     return `${day}/${month}/${year}`;
   };
 
+  const handleFocus = () => {
+    if (newJobActiveBoxLeft !== "jobName") {
+      setNewJobActiveBoxLeft("jobName");
+      setNewJobActiveBoxRight("");
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      if (addJobName === "") {
+        return;
+      } else {
+        setAddJobNameAdded(true);
+        setNewJobActiveBoxLeft("");
+        setNewJobActiveBoxRight("");
+      }
+    }
+  };
+
+  const handleCancelAddJob = () => {
+    setShowAddJobRow(false);
+    setNewJobId(["", "", "", "", ""]);
+    setNewJobIdNumber(Number("00000"));
+    setNewJobIdFilled(false);
+    setAddJobNameAdded(false);
+    setNewJobActiveBoxLeft("");
+    setNewJobActiveBoxRight("");
+    setAddJobName("");
+    setNewJobCollaboratorsList([]);
+    setSelectNewJobStatus("");
+    setSelectedNewJobDueDate(null);
+  };
+
+  const addJobRowRefLeft = useRef(null);
+  const addJobRowRefRight = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        addJobRowRefLeft.current &&
+        !addJobRowRefLeft.current.contains(event.target)
+      ) {
+        setNewJobActiveBoxLeft("");
+      }
+      if (
+        addJobRowRefRight.current &&
+        !addJobRowRefRight.current.contains(event.target)
+      ) {
+        setNewJobActiveBoxRight("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getUserByRole(authToken);
+      if (response.res) {
+        setUsersList(response.res);
+      } else {
+        console.error("Failed to fetch Users:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleSelectCollaborator = (user) => {
+    setNewJobCollaboratorsList((prevList) => [...prevList, user]);
+    setUsersList((prevList) => prevList.filter((u) => u.email !== user.email));
+  };
+
+  const handleRemoveSelectCollaborator = (user) => {
+    setUsersList((prevList) => [...prevList, user]);
+    setNewJobCollaboratorsList((prevList) =>
+      prevList.filter((u) => u.email !== user.email)
+    );
+  };
+
+  const handleSelectDueDate = (date) => {
+    setNewJobActiveBoxLeft("");
+    setNewJobActiveBoxRight("");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    setSelectedNewJobDueDate(formattedDueDate);
+  };
+
+  const handleAddNewJob = async () => {
+    try {
+      setLoading(true);
+      let reqBody = [
+        {
+          title: addJobName,
+          due_date: selectedNewJobDueDate || "",
+          status: selectNewJobStatus || "",
+        },
+      ];
+      const response = await createJobs(reqBody[0]);
+      console.log("request body for create job", response);
+      if (response.res) {
+        toast.success(`${response.res.message}`);
+      } else {
+        toast.error(`${response.error.message}`);
+      }
+    } catch (error) {
+      console.log("error in updating jobs", error);
+    } finally {
+      setLoading(false);
+      fetchJobs();
+      handleCancelAddJob();
+    }
+  };
+
   return (
     <>
       {loading && (
@@ -419,15 +632,13 @@ const Jobs = () => {
       )}
 
       {showJobModal && (
-        <JobModal
-          job={getJob.data}
-          stage={getJob.stage}
+        <NewJobModal
+          job={addJobName}
           handleClose={() => {
             setGetJob();
             setShowJobModal(false);
           }}
           fetchJobs={fetchJobs}
-          usersLists={getJob?.data?.usersArray}
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
         />
@@ -467,8 +678,39 @@ const Jobs = () => {
                       }
                     }}
                   />
+                  {searchedInput !== "" && (
+                    <div
+                      className="IconBox"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setSearchedInput("")}
+                    >
+                      <CloseIcon />
+                    </div>
+                  )}
                 </div>
               </form>
+            </div>
+            <div
+              className="d-flex  align-items-baseline addNewTaskDiv position-relative"
+              style={{ cursor: "pointer" }}
+              ref={filterRef}
+            >
+              <div
+                className="d-flex align-items-center gap-2  "
+                onClick={() => setShowFilter(!showFilter)}
+              >
+                <NewFilterIcon />
+                <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
+                  Filter
+                </p>
+              </div>
+              {showFilter && (
+                <Filter
+                  setFilteredJobs={setFilteredJobs}
+                  setLoading={setLoading}
+                  closeFilter={() => setShowFilter(false)}
+                />
+              )}
             </div>
           </div>
           <div className="d-flex gap-3 flex-wrap align-items-center">
@@ -500,16 +742,22 @@ const Jobs = () => {
                 </div>
               </div>
             </div> */}
-            <div className="addjobs addJobsMobile" style={{gap:'16px'}}>
-              <div className="d-flex align-items-center" style={{gap:'8px',cursor: "pointer"}} onClick={() => setShowAddModal(true)}>
-                <div className="addJobIcon" >
+            <div className="addjobs addJobsMobile" style={{ gap: "16px" }}>
+              <div
+                className="d-flex align-items-center"
+                style={{ gap: "8px", cursor: "pointer" }}
+                onClick={() => setShowAddJobRow(true)}
+              >
+                <div className={`addJobIcon ${showAddJoRow && "active"}`}>
                   <AddIcon />
                 </div>
                 <span>Add Job</span>
               </div>
-              <div className="d-flex align-items-center" style={{gap:'8px', cursor: "pointer"}} onClick={() =>
-                          setNotificationDropDown(!notificationDropDown)
-                        }>
+              <div
+                className="d-flex align-items-center"
+                style={{ gap: "8px", cursor: "pointer" }}
+                onClick={() => setNotificationDropDown(!notificationDropDown)}
+              >
                 <div className="notifyIcon notificationWhite mx-0">
                   <div className="addNewTaskDiv">
                     <div
@@ -544,7 +792,9 @@ const Jobs = () => {
                                   </div>
                                   <div
                                     className="notificationCloseBtn"
-                                    onClick={() => setNotificationDropDown(false)}
+                                    onClick={() =>
+                                      setNotificationDropDown(false)
+                                    }
                                   ></div>
                                 </div>
                               )}
@@ -561,40 +811,57 @@ const Jobs = () => {
           </div>
         </div>
         <div className="JobsHeading d-flex align-items-center justify-content-between">
-          <div
-            className="delete-box"
-            style={{ cursor: "pointer", zIndex: 2 }}
-            onClick={handleDelete}
-          >
-            <div className="searchUserImg">
-              <DeleteIcon />
-            </div>
-            <div className="delete-item">
-              Mark {selectedJobs.length} Item(s) complete
-            </div>
-          </div>
-          <div
-            className="d-flex  align-items-baseline pe-md-4 addNewTaskDiv "
-            style={{ cursor: "pointer" }}
-            ref={filterRef}
-          >
+          {!showAddJoRow ? (
             <div
-              className="d-flex align-items-center gap-2  "
-              onClick={() => setShowFilter(!showFilter)}
+              className="delete-box"
+              style={{ cursor: "pointer", zIndex: 2 }}
+              onClick={handleDelete}
             >
-              <FilterIcon />
-              <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
-                Filter
-              </p>
+              <div className="searchUserImg">
+                <DeleteIcon />
+              </div>
+              <div className="delete-item">
+                Mark {selectedJobs.length} Item(s) complete
+              </div>
             </div>
-            {showFilter && (
-              <Filter
-                setFilteredJobs={setFilteredJobs}
-                setLoading={setLoading}
-                closeFilter={() => setShowFilter(false)}
-              />
-            )}
-          </div>
+          ) : (
+            <div className="d-flex align-items-center justify-content-start gap-3">
+              <div
+                className="delete-box"
+                style={{ cursor: "pointer", zIndex: 2 }}
+                onClick={handleCancelAddJob}
+              >
+                <div className="searchUserImg">
+                  <span style={{ rotate: "45deg" }}>
+                    <AddIcon />
+                  </span>
+                </div>
+                <div className="delete-item">Cancel</div>
+              </div>
+              {addJobNameBoxAdded && newJobIdFilled && (
+                <div
+                  className="delete-box"
+                  style={{ cursor: "pointer", zIndex: 2 }}
+                  onClick={handleAddNewJob}
+                >
+                  <div className="searchUserImg">
+                    <TickIcon />
+                  </div>
+                  <div className="delete-item">Save</div>
+                </div>
+              )}
+              {addJobNameBoxAdded && newJobIdFilled && (
+                <div
+                  className="delete-box"
+                  style={{ cursor: "pointer", zIndex: 2 }}
+                  onClick={() => setShowJobModal(true)}
+                >
+                  <OpenCloseIcon />
+                  <div className="delete-item">Open</div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div className="pagination-container">
           <div className="JobsContainer desktop" ref={containerRef}>
@@ -616,6 +883,7 @@ const Jobs = () => {
                               id={`select_all`}
                               onChange={handleSelectAll}
                               style={{ display: "none" }}
+                              disabled={showAddJoRow}
                             />
                             {filteredJobs?.length &&
                             selectedJobs?.length &&
@@ -651,9 +919,211 @@ const Jobs = () => {
                       </tr>
                     </thead>
                     <tbody>
+                      {showAddJoRow && (
+                        <tr className="addNewJobRow" ref={addJobRowRefLeft}>
+                          <th scope="row" className="text-center"></th>
+                          <td
+                            className={`text-center clickBox ${
+                              newJobActiveBoxLeft === "jobId" && "active"
+                            }`}
+                          >
+                            {newJobActiveBoxLeft !== "jobId" ? (
+                              newJobIdFilled ? (
+                                <span
+                                  className={`jobNoBtn `}
+                                  onClick={() => {
+                                    setNewJobIdFilled(false);
+                                    setNewJobActiveBoxLeft("jobId");
+                                  }}
+                                >
+                                  {newJobIdNumber}
+                                </span>
+                              ) : (
+                                <div
+                                  className={`clickBoxtext`}
+                                  onClick={() =>
+                                    setNewJobActiveBoxLeft("jobId")
+                                  }
+                                >
+                                  Enter Job No.
+                                </div>
+                              )
+                            ) : newJobIdFilled ? (
+                              <span
+                                className={`jobNoBtn `}
+                                onClick={() => {
+                                  setNewJobIdFilled(false);
+                                  setNewJobActiveBoxLeft("jobId");
+                                }}
+                              >
+                                {newJobIdNumber}
+                              </span>
+                            ) : (
+                              <div className="addJobNoBoxInputs">
+                                {/* Render 5 input fields for OTP */}
+                                {newJobId.map((digit, index) => (
+                                  <>
+                                    <input
+                                      ref={(el) =>
+                                        (newJobIdInputRefs.current[index] = el)
+                                      }
+                                      key={index}
+                                      type="text"
+                                      value={digit}
+                                      placeholder="0"
+                                      onChange={(e) =>
+                                        handleNewJobIdChange(e, index)
+                                      }
+                                      onKeyDown={(e) =>
+                                        handleBackspace(e, index)
+                                      }
+                                      maxLength="1"
+                                    />
+                                    {index === 1 && "-"}
+                                  </>
+                                ))}
+                              </div>
+                            )}
+                          </td>
+                          <td
+                            className={`px-3 clickBox ${
+                              newJobActiveBoxLeft === "jobName" && "active"
+                            }`}
+                          >
+                            {addJobNameBoxAdded ? (
+                              <div className={`newJobHeading`}>
+                                {addJobName}
+                              </div>
+                            ) : (
+                              <input
+                                className="clickBoxInput"
+                                placeholder="Enter Job Name"
+                                type="text"
+                                value={addJobName}
+                                onChange={(e) => setAddJobName(e.target.value)}
+                                onFocus={handleFocus}
+                                onKeyDown={handleKeyDown}
+                              />
+                            )}
+                          </td>
+                          <td
+                            className={`text-center clickBox ${
+                              newJobActiveBoxLeft === "AddCollaborators" &&
+                              "active"
+                            }`}
+                          >
+                            <div
+                              className="collaboratorsBox"
+                              onClick={() =>
+                                setNewJobActiveBoxLeft("AddCollaborators")
+                              }
+                            >
+                              <div className=" d-flex align-items-center justify-content-center">
+                                {newJobCollaboratorsList.length > 0 && (
+                                  <>
+                                    {newJobCollaboratorsList
+                                      .slice(0, 3)
+                                      .map((user, index) => {
+                                        const initials = user.name
+                                          .split(" ")
+                                          .map((part) =>
+                                            part.charAt(0).toUpperCase()
+                                          )
+                                          .join("");
+
+                                        return (
+                                          <div
+                                            key={index}
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: index,
+                                              cursor: "pointer",
+                                            }}
+                                            onClick={() =>
+                                              handleRemoveSelectCollaborator(
+                                                user
+                                              )
+                                            }
+                                          >
+                                            {initials}
+                                          </div>
+                                        );
+                                      })}
+
+                                    {newJobCollaboratorsList.length > 3 && (
+                                      <div
+                                        className={`collaboratorsBoxUser`}
+                                        style={{
+                                          minWidth: "40px",
+                                          zIndex: 4,
+                                        }}
+                                      >
+                                        +{newJobCollaboratorsList.length - 3}
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            {newJobCollaboratorsList.length === 0 && (
+                              <div
+                                className={`clickBoxtext`}
+                                onClick={() =>
+                                  setNewJobActiveBoxLeft("AddCollaborators")
+                                }
+                              >
+                                Add Collaborators
+                              </div>
+                            )}
+                            {newJobActiveBoxLeft === "AddCollaborators" && (
+                              <div className={`newJobItemDropBox`}>
+                                {usersList
+                                  ? usersList.map((user, index) => {
+                                      const initials = user.name
+                                        .split(" ")
+                                        .map((part) =>
+                                          part.charAt(0).toUpperCase()
+                                        )
+                                        .join("");
+
+                                      return (
+                                        <div
+                                          className="selectCollaboratorsBox"
+                                          key={index}
+                                          onClick={() =>
+                                            handleSelectCollaborator(user)
+                                          }
+                                        >
+                                          <div
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                            }}
+                                          >
+                                            {initials}
+                                          </div>
+                                          <div className="userName">
+                                            {user.name}
+                                          </div>
+                                          <div className="userMail">
+                                            {user.email}
+                                          </div>
+                                        </div>
+                                      );
+                                    })
+                                  : "No users found"}
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      )}
                       {filteredJobs && filteredJobs?.length > 0 ? (
                         filteredJobs?.map((job, index) => (
-                          <tr key={index}>
+                          <tr
+                            key={index}
+                            className={`${showAddJoRow && "disabled"}`}
+                          >
                             <th scope="row" className="text-center">
                               {" "}
                               <label htmlFor={`select_${index}`}>
@@ -819,7 +1289,9 @@ const Jobs = () => {
                             <div className="headerDiv">Subtasks</div>
                           </th>
                           <th scope="col">
-                            <div className="headerDiv">Client Last Contacted</div>
+                            <div className="headerDiv">
+                              Client Last Contacted
+                            </div>
                           </th>
                           <th scope="col">
                             <div className="headerDiv">Comments</div>
@@ -854,10 +1326,161 @@ const Jobs = () => {
                         </tr>
                       </thead>
                       <tbody>
+                        {showAddJoRow && (
+                          <tr className="addNewJobRow" ref={addJobRowRefRight}>
+                            <td
+                              className={`text-center clickBox ${
+                                newJobActiveBoxRight === "SelectStatus" &&
+                                "active"
+                              }`}
+                            >
+                              <div
+                                className={`clickBoxtext`}
+                                onClick={() =>
+                                  setNewJobActiveBoxRight("SelectStatus")
+                                }
+                              >
+                                {selectNewJobStatus ? (
+                                  <div
+                                    className={`statusBox ${selectNewJobStatus.replace(
+                                      /\s+/g,
+                                      ""
+                                    )}`}
+                                  >
+                                    {selectNewJobStatus}
+                                  </div>
+                                ) : (
+                                  "Select Status"
+                                )}
+                              </div>
+                              {newJobActiveBoxRight === "SelectStatus" && (
+                                <div className={`newJobItemDropBox`}>
+                                  <div
+                                    className="selectCollaboratorsBox"
+                                    onClick={() => {
+                                      setNewJobActiveBoxRight("");
+                                      setSelectNewJobStatus("Not Started");
+                                    }}
+                                  >
+                                    <div className={`statusBox NotStarted`}>
+                                      Not Started
+                                    </div>
+                                  </div>
+                                  <div
+                                    className="selectCollaboratorsBox"
+                                    onClick={() => {
+                                      setNewJobActiveBoxRight("");
+                                      setSelectNewJobStatus("Pending");
+                                    }}
+                                  >
+                                    <div className="statusBox Pending">
+                                      Pending
+                                    </div>
+                                  </div>
+                                  <div
+                                    className="selectCollaboratorsBox"
+                                    onClick={() => {
+                                      setNewJobActiveBoxRight("");
+                                      setSelectNewJobStatus("In Progress");
+                                    }}
+                                  >
+                                    <div className="statusBox InProgress">
+                                      In Progress
+                                    </div>
+                                  </div>
+                                  <div
+                                    className="selectCollaboratorsBox"
+                                    onClick={() => {
+                                      setNewJobActiveBoxRight("");
+                                      setSelectNewJobStatus("On Hold");
+                                    }}
+                                  >
+                                    <div className="statusBox OnHold">
+                                      On Hold
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </td>
+                            <td className="text-center clickBox">
+                              <div className={`clickBoxtext`}>
+                                {selectNewJobStatus ? (
+                                  <div
+                                    className={`progressBox ${selectNewJobStatus.replace(
+                                      /\s+/g,
+                                      ""
+                                    )}`}
+                                  >
+                                    0%
+                                  </div>
+                                ) : (
+                                  "No Data To Show"
+                                )}
+                              </div>
+                            </td>
+                            <td
+                              className={`text-center clickBox ${
+                                newJobActiveBoxRight === "SetDueDate" &&
+                                "active"
+                              }`}
+                            >
+                              <div
+                                className={`clickBoxtext`}
+                                style={{ cursor: "pointer" }}
+                                onClick={() =>
+                                  setNewJobActiveBoxRight("SetDueDate")
+                                }
+                              >
+                                {selectedNewJobDueDate ? (
+                                  <span style={{ color: "#fff" }}>
+                                    {selectedNewJobDueDate}
+                                  </span>
+                                ) : (
+                                  "Set Due Date"
+                                )}
+                              </div>
+                              {newJobActiveBoxRight === "SetDueDate" && (
+                                <div className="datePickerDiv">
+                                  <Calendar
+                                    date={selectedNewJobDueDate}
+                                    onChange={handleSelectDueDate}
+                                    value={selectedNewJobDueDate}
+                                    calendarType="ISO 8601"
+                                    minDate={new Date()}
+                                    rangeColors={["#E2E31F"]}
+                                  />
+                                </div>
+                              )}
+                            </td>
+                            <td className="text-center">
+                              {selectedNewJobDueDate &&
+                              Math.floor(
+                                (new Date(selectedNewJobDueDate) - new Date()) /
+                                  (1000 * 60 * 60 * 24)
+                              ) > 0
+                                ? Math.floor(
+                                    (new Date(selectedNewJobDueDate) -
+                                      new Date()) /
+                                      (1000 * 60 * 60 * 24)
+                                  ) + " days"
+                                : "0 days"}
+                            </td>
+                            <td className="px-3 text-start clickBox">
+                              <div className={`clickBoxtext`}>Add Subtasks</div>
+                            </td>
+                            <td className="text-center "></td>
+                            <td className="px-3">
+                              <div className="jobDescriptionTextDiv"></div>
+                            </td>
+                          </tr>
+                        )}
                         {filteredJobs &&
                           filteredJobs?.length > 0 &&
                           filteredJobs?.map((job) => (
-                            <tr key={job.id}>
+                            <tr
+                              key={job.id}
+                              className={`${showAddJoRow && "disabled"}`}
+                            >
                               <td className="text-center">
                                 <span className={`statusBtn ${job.status}`}>
                                   {StatusList[job.status]}
@@ -895,26 +1518,30 @@ const Jobs = () => {
                                 {moment(job.due_date).local().format("L")}
                               </td>
                               <td className="text-center">
-                                {
-                                  moment(job.due_date)
-                                    .local()
-                                    .isBefore(moment(), "day")
-                                    ? 0 
-                                    : moment(job.due_date)
-                                        .local()
-                                        .diff(moment(), "days") 
-                                } days
+                                {moment(job.due_date)
+                                  .local()
+                                  .isBefore(moment(), "day")
+                                  ? 0
+                                  : moment(job.due_date)
+                                      .local()
+                                      .diff(moment(), "days")}{" "}
+                                days
                               </td>
                               <td className="text-center">
-                                <div className="d-flex align-items-center justify-content-center flex-wrap" style={{gap:'8px'}}>
+                                <div
+                                  className="d-flex align-items-center justify-content-center flex-wrap"
+                                  style={{ gap: "8px" }}
+                                >
                                   <span className={`statusBtn mx-0 pending`}>
-                                  Lodge Application
+                                    Lodge Application
                                   </span>
-                                  <span className={`statusBtn mx-0 in-progress`}>
-                                  Action Notice
+                                  <span
+                                    className={`statusBtn mx-0 in-progress`}
+                                  >
+                                    Action Notice
                                   </span>
                                   <span className={`statusBtn mx-0 on-hold`}>
-                                  Action Notice
+                                    Action Notice
                                   </span>
                                 </div>
                               </td>

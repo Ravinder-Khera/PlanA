@@ -561,3 +561,149 @@ export function FilterIcon() {
     </>
   );
 }
+
+export function TickIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="19"
+      height="15"
+      viewBox="0 0 19 15"
+      fill="none"
+    >
+      <path
+        d="M6.28516 14.1L0.285156 8.1L2.38516 6L6.28516 9.9L16.1852 0L18.2852 2.1L6.28516 14.1Z"
+        fill="black"
+      />
+    </svg>
+  );
+}
+
+export function CloseIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+    >
+      <path
+        d="M1 17L17 1"
+        stroke="#E2E31F"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M17 17L1 1"
+        stroke="#E2E31F"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function NewFilterIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+    >
+      <mask id="path-1-inside-1_2301_1030" fill="white">
+        <rect width="36" height="36" rx="1" />
+      </mask>
+      <rect width="36" height="36" rx="1" fill="#E2E31F" />
+      <rect
+        width="36"
+        height="36"
+        rx="1"
+        stroke="#E2E31F"
+        stroke-width="3"
+        mask="url(#path-1-inside-1_2301_1030)"
+      />
+      <path
+        d="M22.8966 17.1552C22.8966 17.4021 22.7985 17.6389 22.6239 17.8135C22.4493 17.9881 22.2124 18.0862 21.9655 18.0862H12.0345C11.7876 18.0862 11.5507 17.9881 11.3761 17.8135C11.2015 17.6389 11.1034 17.4021 11.1034 17.1552C11.1034 16.9082 11.2015 16.6714 11.3761 16.4968C11.5507 16.3222 11.7876 16.2241 12.0345 16.2241H21.9655C22.2124 16.2241 22.4493 16.3222 22.6239 16.4968C22.7985 16.6714 22.8966 16.9082 22.8966 17.1552ZM25.069 12.5H8.93103C8.68411 12.5 8.4473 12.5981 8.27269 12.7727C8.09809 12.9473 8 13.1841 8 13.431C8 13.678 8.09809 13.9148 8.27269 14.0894C8.4473 14.264 8.68411 14.3621 8.93103 14.3621H25.069C25.3159 14.3621 25.5527 14.264 25.7273 14.0894C25.9019 13.9148 26 13.678 26 13.431C26 13.1841 25.9019 12.9473 25.7273 12.7727C25.5527 12.5981 25.3159 12.5 25.069 12.5ZM18.8621 19.9483H15.1379C14.891 19.9483 14.6542 20.0464 14.4796 20.221C14.305 20.3956 14.2069 20.6324 14.2069 20.8793C14.2069 21.1262 14.305 21.363 14.4796 21.5377C14.6542 21.7123 14.891 21.8103 15.1379 21.8103H18.8621C19.109 21.8103 19.3458 21.7123 19.5204 21.5377C19.695 21.363 19.7931 21.1262 19.7931 20.8793C19.7931 20.6324 19.695 20.3956 19.5204 20.221C19.3458 20.0464 19.109 19.9483 18.8621 19.9483Z"
+        fill="black"
+      />
+    </svg>
+  );
+}
+
+export function FilterCrossIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="8"
+      height="8"
+      viewBox="0 0 8 8"
+      fill="none"
+    >
+      <path
+        d="M1 6.82992L6.66 1.16992"
+        stroke="#fff"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M6.66 6.82992L1 1.16992"
+        stroke="#fff"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function OpenCloseIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+    >
+      <mask id="path-1-inside-1_2328_2242" fill="white">
+        <rect width="36" height="36" rx="1" />
+      </mask>
+      <rect width="36" height="36" rx="1" fill="#E2E31F" />
+      <rect
+        width="36"
+        height="36"
+        rx="1"
+        stroke="#E2E31F"
+        stroke-width="3"
+        mask="url(#path-1-inside-1_2328_2242)"
+      />
+      <path
+        d="M10 11.8179L15.9178 17.7357L10 23.6535L11.8179 25.4714L19.5536 17.7357L11.8179 10L10 11.8179ZM23.4214 10H26V25.4714H23.4214V10Z"
+        fill="black"
+      />
+    </svg>
+  );
+}
+
+export function UploadIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M18 15V18H6V15H4V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V15H18ZM7 9L8.41 10.41L11 7.83V16H13V7.83L15.59 10.41L17 9L12 4L7 9Z"
+        fill="#252525"
+      />
+    </svg>
+  );
+}

@@ -23,6 +23,7 @@ import { ColorRing } from "react-loader-spinner";
 import Pusher from "pusher-js";
 import eventEmitter from "../../../Event";
 import { getProfile } from "../../../services/auth";
+import { CrossIcon, UploadIcon } from "../../../assets/svg";
 
 const ChatAndAttachment = ({ JobId }) => {
   const maxLength = 10;
@@ -36,7 +37,7 @@ const ChatAndAttachment = ({ JobId }) => {
     type: "",
     data: "",
   });
-  const chatScroll = useRef()
+  const chatScroll = useRef();
   const [userDetails, setUserDetails] = useState();
 
   const fetchProfileData = async () => {
@@ -152,16 +153,19 @@ const ChatAndAttachment = ({ JobId }) => {
         fetchChats();
         const notificationData = {
           class: "user",
-          message: 'New Comment:'+ userDetails.name
+          message: "New Comment:" + userDetails.name,
         };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
+        const existingNotificationsJSON = localStorage.getItem("notifications");
         let existingNotifications = [];
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
         existingNotifications.push(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
+        localStorage.setItem(
+          "notifications",
+          JSON.stringify(existingNotifications)
+        );
         setBody("");
       }
     } catch (error) {
@@ -245,16 +249,19 @@ const ChatAndAttachment = ({ JobId }) => {
     link.click();
     const notificationData = {
       class: "success",
-      message: 'File Successfully Downloaded!'
+      message: "File Successfully Downloaded!",
     };
-    const existingNotificationsJSON = localStorage.getItem('notifications');
+    const existingNotificationsJSON = localStorage.getItem("notifications");
     let existingNotifications = [];
     if (existingNotificationsJSON) {
       existingNotifications = JSON.parse(existingNotificationsJSON);
     }
     existingNotifications.push(notificationData);
 
-    localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+    localStorage.setItem(
+      "notifications",
+      JSON.stringify(existingNotifications)
+    );
   };
 
   const handleDeleteAttachment = async (id) => {
@@ -333,9 +340,7 @@ const ChatAndAttachment = ({ JobId }) => {
                                   {msg.user.name}
                                 </p>
                               </div>
-                              <div
-                                className="position-absolute receiverImg "
-                              >
+                              <div className="position-absolute receiverImg ">
                                 {msg.user?.profile_pic !== "" ? (
                                   <img
                                     alt={msg.user.name}
@@ -383,9 +388,7 @@ const ChatAndAttachment = ({ JobId }) => {
                               >
                                 <p className="text-name p-0 ">You</p>
                               </div>
-                              <div
-                                className="position-absolute receiverImg"
-                              >
+                              <div className="position-absolute receiverImg">
                                 {msg.user?.profile_pic !== "" ? (
                                   <img
                                     alt={msg.user.name}
@@ -583,7 +586,7 @@ const ChatAndAttachment = ({ JobId }) => {
             <div className="sender-attachments">
               <div className="sender d-flex flex-wrap justify-content-start gap-3  mt-3">
                 {attachments?.length > 0 &&
-                  attachments?.map((msg,i) => (
+                  attachments?.map((msg, i) => (
                     <div key={i}>
                       <div
                         className={`attachments-box d-flex  flex-column align-items-center ${
@@ -669,7 +672,6 @@ const ChatAndAttachment = ({ JobId }) => {
                       onClick={() => {
                         if (attachmentRef.current) {
                           attachmentRef.current.click();
-                          
                         }
                       }}
                     />
@@ -692,6 +694,884 @@ const ChatAndAttachment = ({ JobId }) => {
             </div>
           </>
         )}
+      </div>
+    </>
+  );
+};
+
+export const AddNewJobChatAndAttachment = ({ JobId }) => {
+  const maxLength = 10;
+  const [loading, setLoading] = useState(false);
+  const [chats, setChats] = useState(null);
+  const [body, setBody] = useState("");
+  const attachmentRef = useRef(null);
+  const [attachments, setAttachments] = useState([]);
+  const [newMsg, setNewMsg] = useState({
+    type: "",
+    data: "",
+  });
+  const chatScroll = useRef();
+  const [userDetails, setUserDetails] = useState();
+
+  const fetchProfileData = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getProfile(authToken);
+      if (response.res) {
+        console.log(response.res.user);
+        setUserDetails(response.res.user);
+      } else {
+        console.error("profile error:", response.error);
+      }
+    } catch (error) {
+      console.error("There was an error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  useEffect(() => {
+    if (chatScroll.current) {
+      chatScroll.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chats]);
+
+  useEffect(() => {
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
+      cluster: process.env.REACT_APP_CLUSTER,
+      encrypted: true,
+    });
+    const id = localStorage.getItem("jobId") || "x";
+
+    const channel = pusher.subscribe(`job.${id}`);
+    channel.bind("message.created", (data) => {
+      const { message } = data;
+      console.log("message", message, chats);
+      if (message) {
+        const tempChats = chats;
+        console.log("tempChats before push", tempChats);
+        tempChats?.push(message);
+        console.log("tempChats after push", tempChats);
+        setChats(tempChats);
+      }
+    });
+
+    return () => {
+      pusher.unsubscribe(`job.${id}`);
+    };
+  }, [chats]);
+
+  eventEmitter.removeAllListeners("newMessage");
+  eventEmitter.on("newMessage", (data) => {
+    const tempChats = data;
+    console.log("tempChats before push", tempChats);
+    tempChats?.push(message);
+    console.log("tempChats after push", tempChats);
+    setChats(tempChats);
+  });
+
+  const fetchChats = async () => {
+    try {
+      setLoading(true);
+      console.log("chats", chats);
+      const response1 = await getMessages(JobId);
+      const response2 = await getAttachments(JobId);
+      // Combine both arrays
+      if (!response1.error && !response2.error) {
+        const combinedArray = [...response1.res, ...response2.res];
+        const sortedMessages = combinedArray.sort((a, b) => {
+          const dateA = new Date(a.created_at);
+          const dateB = new Date(b.created_at);
+          return dateA - dateB;
+        });
+
+        const sortedAttachhment = response2.res?.sort((a, b) => {
+          const dateA = new Date(a.created_at);
+          const dateB = new Date(b.created_at);
+          return dateA - dateB;
+        });
+        setNewMsg({
+          type: "",
+          data: "",
+        });
+        setChats(sortedMessages);
+        setAttachments(sortedAttachhment);
+      } else {
+        setChats([]);
+      }
+    } catch (error) {
+      setChats([]);
+      console.log("error in fetching messages");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!body || body?.trim() === "") {
+      toast.error("Message cannot be empty");
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await sendMessage(JobId, { body });
+      if (!response.error) {
+        fetchChats();
+        const notificationData = {
+          class: "user",
+          message: "New Comment:" + userDetails.name,
+        };
+        const existingNotificationsJSON = localStorage.getItem("notifications");
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+
+        localStorage.setItem(
+          "notifications",
+          JSON.stringify(existingNotifications)
+        );
+        setBody("");
+      }
+    } catch (error) {
+      console.log("error in sending messages", error);
+    } finally {
+      setLoading(false);
+      if (chatScroll.current) {
+        chatScroll.current.scrollIntoView({ behavior: "smooth" });
+      }
+      setNewMsg({
+        type: "",
+        data: "",
+      });
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    if (!e.target.files) return;
+    const selectedFile = e.target?.files[0];
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      setNewMsg({
+        type: "attachment",
+        data: selectedFile,
+      });
+      handleImageUpload(selectedFile);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFile = e.dataTransfer.files[0];
+
+    if (droppedFile && droppedFile.type.startsWith("image/")) {
+      setNewMsg({
+        type: "attachment",
+        data: droppedFile,
+      });
+      handleImageUpload(droppedFile);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleImageUpload = async (file) => {
+    console.log("file", file);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const formData = new FormData();
+      formData.append("attachment", file);
+      try {
+        setLoading(true);
+        let response = await addAttachments(formData, JobId);
+        console.log("response 123--->", response);
+        if (response.res) {
+          toast.success(response.res?.message);
+          fetchChats();
+        } else {
+          toast.error(`${response.error}`);
+        }
+      } catch (error) {
+        console.error("There was an error:", error);
+        toast.error("An error occurred while uploading the attachment");
+      } finally {
+        setLoading(false);
+        setNewMsg({
+          type: "",
+          data: "",
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDownloadFile = (fileUrl, docName) => {
+    const link = document.createElement("a");
+    link.href = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
+    link.download = docName;
+    link.target = "_blank";
+    link.click();
+    const notificationData = {
+      class: "success",
+      message: "File Successfully Downloaded!",
+    };
+    const existingNotificationsJSON = localStorage.getItem("notifications");
+    let existingNotifications = [];
+    if (existingNotificationsJSON) {
+      existingNotifications = JSON.parse(existingNotificationsJSON);
+    }
+    existingNotifications.push(notificationData);
+
+    localStorage.setItem(
+      "notifications",
+      JSON.stringify(existingNotifications)
+    );
+  };
+
+  const handleDeleteAttachment = async (id) => {
+    try {
+      setLoading(true);
+      const response = await deleteAttachments(id);
+      if (!response.error) {
+        toast.success(response.res?.message);
+        fetchChats();
+      }
+    } catch (error) {
+      console.log("error in sending messages", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="addJobPopUpAttachments">
+        <h3>Attachments</h3>
+        <div
+          className="attachmentsBox"
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+        >
+          <div
+            className="delete-box"
+            style={{ cursor: "pointer", zIndex: 2, minWidth: "max-content" }}
+            onClick={() => {
+              if (attachmentRef.current) {
+                attachmentRef.current.click();
+              }
+            }}
+          >
+            <input
+              type="file"
+              accept="image/*"
+              ref={attachmentRef}
+              className="d-none"
+              onChange={handleFileUpload}
+            />
+            <div className="deletBg" style={{ padding: "6px" }}>
+              <UploadIcon />
+            </div>
+            <div className="delete-item">Upload Attachment</div>
+          </div>
+          <div className="uploadedAttachments">
+            {attachments?.length > 0 &&
+              attachments?.map((msg, i) => (
+                <div key={i} className="attachments">
+                  <div className="imgBox">
+                    <img src={pngFIle} className="" alt="" />
+                  </div>
+                  <h5>
+                    {msg.original_name.length > maxLength
+                      ? `${msg.original_name.slice(0, maxLength)}...`
+                      : msg.original_name}
+                  </h5>
+                  <span onClick={() => handleDeleteAttachment(msg.id)}>
+                    <CrossIcon />
+                  </span>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="addJobPopUpAttachments">
+        <h3>Chat</h3>
+        <div className="chatsDiv">
+          {chats &&
+            chats?.length > 0 &&
+            chats?.map((msg) => (
+              <>
+                {msg.body && (
+                  <>
+                    {msg.user.name !== localStorage.getItem("user") && (
+                      <div className="chats-content-reciever ">
+                        <div className="d-flex justify-content-between gap-3 align-items-center">
+                          <div className="reciver-chats">
+                            <div
+                              className="position-absolute"
+                              style={{ top: "-10px", left: "16px" }}
+                            >
+                              <p className="text-name p-0 ">{msg.user.name}</p>
+                            </div>
+                            <div className="position-absolute receiverImg ">
+                              {msg.user?.profile_pic !== "" ? (
+                                <img
+                                  alt={msg.user.name}
+                                  src={
+                                    process.env
+                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                    msg.user.profile_pic
+                                  }
+                                  className="profileImg"
+                                  onError={(e) =>
+                                    (e.target.src = `${profileChat}`)
+                                  }
+                                />
+                              ) : (
+                                <img
+                                  src={profileChat}
+                                  alt=""
+                                  className="profileImg"
+                                />
+                              )}
+                            </div>
+                            <p>{msg.body}</p>
+                          </div>
+
+                          <div className="msg-timing">
+                            <p>sent</p>
+                            <p>{moment(msg.created_at).format("h:mm a")}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {msg.user.name === localStorage.getItem("user") && (
+                      <div className="chats-content-sender ">
+                        <div className="d-flex justify-content-between gap-3 align-items-center">
+                          <div className="msg-timing">
+                            <p>sent</p>
+                            <p>{moment(msg.created_at).format("h:mm a")}</p>
+                          </div>
+
+                          <div className="reciver-chats">
+                            <div
+                              className="position-absolute"
+                              style={{ top: "-10px", right: "16px" }}
+                            >
+                              <p className="text-name p-0 ">You</p>
+                            </div>
+                            <div className="position-absolute receiverImg">
+                              {msg.user?.profile_pic !== "" ? (
+                                <img
+                                  alt={msg.user.name}
+                                  src={
+                                    process.env
+                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                    msg.user.profile_pic
+                                  }
+                                  className="profileImg"
+                                  onError={(e) =>
+                                    (e.target.src = `${profileChat}`)
+                                  }
+                                />
+                              ) : (
+                                <img
+                                  src={profileChat}
+                                  alt=""
+                                  className="profileImg"
+                                />
+                              )}
+                            </div>
+                            <p className="text-right">{msg.body}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+                {!msg.body && (
+                  <>
+                    {msg.user.name !== localStorage.getItem("user") && (
+                      <div className="sender-attachments w-100 my-3">
+                        <div className="d-flex gap-2 justify-content-start ">
+                          <img src={attachmentsIcon} className="" alt="" /> 1
+                        </div>
+
+                        <div className="reciever d-flex flex-wrap justify-content-start gap-3  mt-3 ">
+                          <div>
+                            <div className="attachments-box d-flex justify-content-center flex-column align-items-center">
+                              {/* <div
+                                  className="d-flex pt-3 px-3 justify-content-end w-100 cursor"
+                                  onClick={() => handleDeleteAttachment(msg.id)}
+                                >
+                                  <img src={cut} alt="" className="cut" />
+                                </div> */}
+                              <div className="file-apload">
+                                <img src={pngFIle} className="" alt="" />
+                              </div>
+                              <h1>
+                                {msg.original_name?.length > maxLength
+                                  ? `${msg.original_name.slice(
+                                      0,
+                                      maxLength
+                                    )}...`
+                                  : msg.original_name}
+                              </h1>
+                            </div>
+                            <div
+                              className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor"
+                              onClick={() =>
+                                handleDownloadFile(
+                                  msg.filename,
+                                  msg.original_name
+                                )
+                              }
+                            >
+                              <img src={download} alt="" className="" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {msg.user.name === localStorage.getItem("user") && (
+                      <div className="sender-attachments w-100 my-3">
+                        <div className="d-flex gap-2 justify-content-end ">
+                          {/* <img src={deleteImg} className="" alt="" /> */}
+                          <img src={attachmentsIcon} className="" alt="" /> 1
+                        </div>
+                        <div className="sender d-flex flex-wrap justify-content-end gap-3  mt-3 ">
+                          <div>
+                            <div className="attachments-box d-flex  flex-column align-items-center">
+                              <div
+                                className="d-flex pt-3 px-3 justify-content-end w-100 cursor"
+                                onClick={() => handleDeleteAttachment(msg.id)}
+                              >
+                                <img src={cut} alt="" className="cut" />
+                              </div>
+                              <div className="file-apload">
+                                <img src={pngFIle} className="" alt="" />
+                              </div>
+                              <h1>
+                                {msg.original_name?.length > maxLength
+                                  ? `${msg.original_name.slice(
+                                      0,
+                                      maxLength
+                                    )}...`
+                                  : msg.original_name}
+                              </h1>
+                            </div>
+                            <div
+                              className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor"
+                              onClick={() =>
+                                handleDownloadFile(
+                                  msg.filename,
+                                  msg.original_name
+                                )
+                              }
+                            >
+                              {/* <img src={edit} alt="" className="" /> */}
+                              <img src={download} alt="" className="" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            ))}
+          {loading && newMsg.type === "msg" && (
+            <div className="chats-content-sender my-3" ref={chatScroll}>
+              <div className="d-flex justify-content-between gap-3 align-items-center">
+                <div className="msg-timing">
+                  <p>sending</p>
+                </div>
+
+                <div className="reciver-chats">
+                  <div
+                    className="position-absolute"
+                    style={{ top: "-10px", right: "16px" }}
+                  >
+                    <p className="text-name p-0 ">You</p>
+                  </div>
+                  <div
+                    className="position-absolute"
+                    style={{ top: "31px", left: "-14px" }}
+                  >
+                    {userDetails?.profile_pic !== "" ? (
+                      <img
+                        alt={userDetails.name}
+                        src={
+                          process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
+                          userDetails.profile_pic
+                        }
+                        className="profileImg"
+                        onError={(e) => (e.target.src = `${profileChat}`)}
+                      />
+                    ) : (
+                      <img src={profileChat} alt="" className="profileImg" />
+                    )}
+                  </div>
+                  <p className="text-right">{newMsg.data}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          {loading && newMsg.type === "attachment" && (
+            <div className="sender-attachments w-100 my-3">
+              <div className="d-flex gap-2 justify-content-end ">
+                <img src={attachmentsIcon} className="" alt="" /> 1
+              </div>
+              <div className="sender d-flex flex-wrap justify-content-end gap-3  mt-3 ">
+                <div>
+                  <div className="attachments-box d-flex  flex-column align-items-center">
+                    <div className="d-flex pt-3 px-3 justify-content-end w-100 cursor">
+                      <img src={cut} alt="" className="cut" />
+                    </div>
+                    <div className="file-apload">
+                      <img src={pngFIle} className="" alt="" />
+                    </div>
+                    <h1>
+                      {newMsg.data?.name?.length > maxLength
+                        ? `${newMsg.data?.name?.slice(0, maxLength)}...`
+                        : newMsg.data?.name}{" "}
+                      sending
+                    </h1>
+                  </div>
+                  <div className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor">
+                    <img src={download} alt="" className="" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {!chats && <p className="loading">Loading Messages...</p>}
+          {chats?.length === 0 && <p className="no-chats">No Messages yet</p>}
+        </div>
+      </div>
+
+      {/* <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onClick={handleFileUpload}
+        className="imgUploadArea addJobImgUploadArea"
+      >
+        <form onSubmit={handleSendMessage}>
+          <input
+            type="text"
+            placeholder="Add a comment..."
+            onChange={(e) => {
+              setBody(e.target.value);
+              setNewMsg({
+                type: "msg",
+                data: e.target.value,
+              });
+            }}
+            value={body}
+          />
+        </form>
+        <div className="d-flex gap-3 ">
+          <img
+            src={file}
+            className="cursor"
+            alt=""
+            onClick={() => {
+              if (attachmentRef.current) {
+                attachmentRef.current.click();
+              }
+            }}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            ref={attachmentRef}
+            className="d-none"
+            onChange={handleFileUpload}
+          />
+          <img
+            src={message}
+            className="cursor"
+            alt=""
+            onClick={handleSendMessage}
+          />
+        </div>
+      </div> */}
+    </>
+  );
+};
+
+export const AddNewJobSendChatAndAttachment = ({ JobId }) => {
+  const [loading, setLoading] = useState(false);
+  const [chats, setChats] = useState(null);
+  const [body, setBody] = useState("");
+  const attachmentRef = useRef(null);
+  const [attachments, setAttachments] = useState([]);
+  const [newMsg, setNewMsg] = useState({
+    type: "",
+    data: "",
+  });
+  const chatScroll = useRef();
+  const [userDetails, setUserDetails] = useState();
+
+  const fetchProfileData = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getProfile(authToken);
+      if (response.res) {
+        console.log(response.res.user);
+        setUserDetails(response.res.user);
+      } else {
+        console.error("profile error:", response.error);
+      }
+    } catch (error) {
+      console.error("There was an error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  useEffect(() => {
+    if (chatScroll.current) {
+      chatScroll.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chats]);
+
+  useEffect(() => {
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
+      cluster: process.env.REACT_APP_CLUSTER,
+      encrypted: true,
+    });
+    const id = localStorage.getItem("jobId") || "x";
+
+    const channel = pusher.subscribe(`job.${id}`);
+    channel.bind("message.created", (data) => {
+      const { message } = data;
+      console.log("message", message, chats);
+      if (message) {
+        const tempChats = chats;
+        console.log("tempChats before push", tempChats);
+        tempChats?.push(message);
+        console.log("tempChats after push", tempChats);
+        setChats(tempChats);
+      }
+    });
+
+    return () => {
+      pusher.unsubscribe(`job.${id}`);
+    };
+  }, [chats]);
+
+  eventEmitter.removeAllListeners("newMessage");
+  eventEmitter.on("newMessage", (data) => {
+    const tempChats = data;
+    console.log("tempChats before push", tempChats);
+    tempChats?.push(message);
+    console.log("tempChats after push", tempChats);
+    setChats(tempChats);
+  });
+
+  const fetchChats = async () => {
+    try {
+      setLoading(true);
+      console.log("chats", chats);
+      const response1 = await getMessages(JobId);
+      const response2 = await getAttachments(JobId);
+      // Combine both arrays
+      if (!response1.error && !response2.error) {
+        const combinedArray = [...response1.res, ...response2.res];
+        const sortedMessages = combinedArray.sort((a, b) => {
+          const dateA = new Date(a.created_at);
+          const dateB = new Date(b.created_at);
+          return dateA - dateB;
+        });
+
+        const sortedAttachhment = response2.res?.sort((a, b) => {
+          const dateA = new Date(a.created_at);
+          const dateB = new Date(b.created_at);
+          return dateA - dateB;
+        });
+        setNewMsg({
+          type: "",
+          data: "",
+        });
+        setChats(sortedMessages);
+        setAttachments(sortedAttachhment);
+      } else {
+        setChats([]);
+      }
+    } catch (error) {
+      setChats([]);
+      console.log("error in fetching messages");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!body || body?.trim() === "") {
+      toast.error("Message cannot be empty");
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await sendMessage(JobId, { body });
+      if (!response.error) {
+        fetchChats();
+        const notificationData = {
+          class: "user",
+          message: "New Comment:" + userDetails.name,
+        };
+        const existingNotificationsJSON = localStorage.getItem("notifications");
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
+        }
+        existingNotifications.push(notificationData);
+
+        localStorage.setItem(
+          "notifications",
+          JSON.stringify(existingNotifications)
+        );
+        setBody("");
+      }
+    } catch (error) {
+      console.log("error in sending messages", error);
+    } finally {
+      setLoading(false);
+      if (chatScroll.current) {
+        chatScroll.current.scrollIntoView({ behavior: "smooth" });
+      }
+      setNewMsg({
+        type: "",
+        data: "",
+      });
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    if (!e.target.files) return;
+    const selectedFile = e.target?.files[0];
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      setNewMsg({
+        type: "attachment",
+        data: selectedFile,
+      });
+      handleImageUpload(selectedFile);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFile = e.dataTransfer.files[0];
+
+    if (droppedFile && droppedFile.type.startsWith("image/")) {
+      setNewMsg({
+        type: "attachment",
+        data: droppedFile,
+      });
+      handleImageUpload(droppedFile);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleImageUpload = async (file) => {
+    console.log("file", file);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const formData = new FormData();
+      formData.append("attachment", file);
+      try {
+        setLoading(true);
+        let response = await addAttachments(formData, JobId);
+        console.log("response 123--->", response);
+        if (response.res) {
+          toast.success(response.res?.message);
+          fetchChats();
+        } else {
+          toast.error(`${response.error}`);
+        }
+      } catch (error) {
+        console.error("There was an error:", error);
+        toast.error("An error occurred while uploading the attachment");
+      } finally {
+        setLoading(false);
+        setNewMsg({
+          type: "",
+          data: "",
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <>
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onClick={handleFileUpload}
+        className="imgUploadArea addJobImgUploadArea"
+      >
+        <form onSubmit={handleSendMessage}>
+          <input
+            type="text"
+            placeholder="Add a comment..."
+            onChange={(e) => {
+              setBody(e.target.value);
+              setNewMsg({
+                type: "msg",
+                data: e.target.value,
+              });
+            }}
+            value={body}
+          />
+        </form>
+        <div className="d-flex gap-3 ">
+          <img
+            src={file}
+            className="cursor"
+            alt=""
+            onClick={() => {
+              if (attachmentRef.current) {
+                attachmentRef.current.click();
+              }
+            }}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            ref={attachmentRef}
+            className="d-none"
+            onChange={handleFileUpload}
+          />
+          <img
+            src={message}
+            className="cursor"
+            alt=""
+            onClick={handleSendMessage}
+          />
+        </div>
       </div>
     </>
   );

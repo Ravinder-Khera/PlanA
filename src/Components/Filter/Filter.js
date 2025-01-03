@@ -4,12 +4,18 @@ import downArr from "../../assets/icons/Vector (1).svg";
 import swapImg from "../../assets/icons/Vector (2).svg";
 import assignImg from "../../assets/icons/Group 13.svg";
 import { DateRangePicker, Calendar } from "react-date-range";
-import { Search, User } from "../../assets/svg";
+import {
+  CrossIcon,
+  FilterCrossIcon,
+  Search,
+  TickIcon,
+  User,
+} from "../../assets/svg";
 import { StatusList } from "../../helper";
 import { getJobsByFilter, getUserByRole } from "../../services/auth";
 import { toast } from "react-toastify";
 
-const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
+const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -275,44 +281,48 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                     className=""
                     alt={assignImg}
                     style={{ marginBottom: "-5px" }}
-                    />
-                    {showAssignee && (
-                        <div className="addTaskJobDropdown right mobileLeft" style={{maxWidth:'max-content'}}>
-                          <div className="addTaskJobListScroll">
-                            <div className="addTaskJobListItems">
-                              <label className="addedAssignees">Assignees</label>
-                              {usersList.map((user) => (
-                                <div
-                                  key={user.id}
-                                  className={`addAssigneeDiv `}
-                                  onClick={() => handleAssigneeClick(user)}
-                                >
-                                  <div
-                                    className={` UserImg addedUserImages `}
-                                    style={{ minWidth: "40px" }}
-                                  >
-                                    {user.profile_pic !== "" ? (
-                                      <img
-                                        alt={user.name}
-                                        src={
-                                          process.env.REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                          user.profile_pic
-                                        }
-                                      />
-                                    ) : (
-                                      <User />
-                                    )}
-                                  </div>
-                                  <div>
-                                    <h4>{user.name}</h4>
-                                    <p>{user.email}</p>
-                                  </div>
-                                </div>
-                              ))}
+                  />
+                  {showAssignee && (
+                    <div
+                      className="addTaskJobDropdown right mobileLeft"
+                      style={{ maxWidth: "max-content" }}
+                    >
+                      <div className="addTaskJobListScroll">
+                        <div className="addTaskJobListItems">
+                          <label className="addedAssignees">Assignees</label>
+                          {usersList.map((user) => (
+                            <div
+                              key={user.id}
+                              className={`addAssigneeDiv `}
+                              onClick={() => handleAssigneeClick(user)}
+                            >
+                              <div
+                                className={` UserImg addedUserImages `}
+                                style={{ minWidth: "40px" }}
+                              >
+                                {user.profile_pic !== "" ? (
+                                  <img
+                                    alt={user.name}
+                                    src={
+                                      process.env
+                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                      user.profile_pic
+                                    }
+                                  />
+                                ) : (
+                                  <User />
+                                )}
+                              </div>
+                              <div>
+                                <h4>{user.name}</h4>
+                                <p>{user.email}</p>
+                              </div>
                             </div>
-                          </div>
+                          ))}
                         </div>
-                    )}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <input
                   style={{ background: "#252525", padding: "14px 30px" }}
@@ -368,9 +378,9 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
 
         {!showSelectFIlter && selectedFilter === "Status" && (
           <div className="stage-buttonContainer">
-            {Object.keys(StatusList).map((key,i) => (
+            {Object.keys(StatusList).map((key, i) => (
               <button
-              key={i}
+                key={i}
                 className={`filter-statusBtn ${key} h-100`}
                 onClick={() => setSearchedInput(StatusList[key])}
               >
@@ -379,9 +389,414 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
             ))}
           </div>
         )}
-
-        
       </div>
+    </>
+  );
+};
+
+const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
+  const [showSelectFIlter, setSelectShowFilter] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectionRange, setSelectionRange] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+    key: "selection",
+  });
+  const [startDate, setStartDate] = useState("YYYY-MM-DD");
+  const [endDate, setEndDate] = useState("YYYY-MM-DD");
+  const [searchedInput, setSearchedInput] = useState("");
+  const [selectedField, setSelectedField] = useState("");
+  const [showAssignee, setShowAssignee] = useState(false);
+
+  const [filtersSeleted, setFiltersSeleted] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState([]);
+
+  const [usersList, setUsersList] = useState([]);
+
+  const selectDueDateRef = useRef(null);
+  const filterJobDropdownRef = useRef(null);
+  const SelectFilterData = [
+    {
+      data: "Title",
+      field: "title",
+    },
+    {
+      data: "Location",
+      field: "location",
+    },
+    {
+      data: "Latest Update",
+      field: "latest_update",
+    },
+    {
+      data: "Description",
+      field: "description",
+    },
+    {
+      data: "Stage",
+      field: "stage_name",
+    },
+    {
+      data: "Assignee",
+      field: "assignee",
+    },
+    {
+      data: "Date",
+      field: "due_date",
+    },
+    {
+      data: "Status",
+      field: "status",
+    },
+  ];
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (
+        filterJobDropdownRef.current &&
+        !filterJobDropdownRef.current.contains(e.target)
+      ) {
+        setSelectShowFilter(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getUserByRole(authToken);
+      if (response.res) {
+        setUsersList(response.res);
+      } else {
+        console.error("Failed to fetch Users:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  const handleItemClick = (data) => {
+    handleResetFields();
+    setSelectedFilter(data.data);
+    setSelectedField(data.field);
+    setSelectShowFilter(false);
+  };
+
+  const handleSelect = (ranges) => {
+    setSelectionRange(ranges.selection);
+    const { startDate, endDate } = ranges.selection;
+    const year = startDate.getFullYear();
+    const month = String(startDate.getMonth() + 1).padStart(2, "0");
+    const day = String(startDate.getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    setStartDate(formattedDueDate);
+    const end_year = endDate.getFullYear();
+    const end_month = String(endDate.getMonth() + 1).padStart(2, "0");
+    const end_day = String(endDate.getDate()).padStart(2, "0");
+    let end_formattedDueDate = `${end_year}-${end_month}-${end_day}`;
+    setEndDate(end_formattedDueDate);
+  };
+
+  const handleShowDatePicker = () => {
+    setShowDatePicker(!showDatePicker);
+  };
+
+  const handleResetFields = () => {
+    setShowDatePicker(false);
+    setStartDate("YYYY-MM-DD");
+    setEndDate("YYYY-MM-DD");
+    setSelectionRange({
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    });
+    setSearchedInput("");
+  };
+
+  const handleApply = async () => {
+    if (selectedField === "") {
+      toast.error("Please select filter before applying");
+      return;
+    }
+    let filterString = "";
+    if (selectedField === "due_date") {
+      filterString = `start_date=${startDate}&end_date=${endDate}`;
+    } else if (selectedField === "status") {
+      const value = Object.keys(StatusList).find(
+        (key) => StatusList[key] === searchedInput
+      );
+      filterString = `${selectedField}=${value}`;
+    } else {
+      filterString = `${selectedField}=${searchedInput}`;
+    }
+    setLoading(true);
+    try {
+      const response = await getJobsByFilter(filterString);
+      if (!response.error) {
+        setFilteredJobs(response?.res?.data);
+        handleResetFields();
+        closeFilter();
+      }
+    } catch (error) {
+      console.log("error in applying filter", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAssigneeClick = (user) => {
+    setSearchedInput(user.name);
+    setShowAssignee(false);
+  };
+
+  const handleCancel = async () => {
+    setSelectedFilters([]);
+    setFiltersSeleted(false);
+    closeFilter();
+  };
+
+  const handleFilterClick = (filter, className) => {
+    const filterObj = { filter, className };
+    if (!selectedFilters.some((item) => item.filter === filter)) {
+      setSelectedFilters([...selectedFilters, filterObj]);
+      setFiltersSeleted(true);
+    }
+  };
+
+  const handleFilterRemove = (filter) => {
+    const updatedFilters = selectedFilters.filter(
+      (item) => item.filter !== filter
+    );
+    setSelectedFilters(updatedFilters);
+    // If no filters are left, set filtersSelected to false
+    if (updatedFilters.length === 0) {
+      setFiltersSeleted(false);
+    }
+  };
+
+  return (
+    <>
+      {/* <div className="addTaskJobDiv"> */}
+      <div className="filterJobsDiv">
+        <div className="filterJobsDivBg" style={{ maxHeight: `${filtersSeleted ? 394 : 180}px` }}>
+          <div className="filterJobsDivHeading">Filter By</div>
+          {filtersSeleted && (
+            <>
+              <div className="FilterBoxes selectedFilters">
+                {selectedFilters.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`selectedFilterItem ${item.className}`}
+                    onClick={() => handleFilterRemove(item.filter)}
+                  >
+                    {item.filter}
+                    <FilterCrossIcon />
+                  </div>
+                ))}
+              </div>
+              <div className="divider" />
+            </>
+          )}
+          <div className="FilterBoxes selectFilters">
+            {usersList
+              ? usersList.map((user, index) => {
+                  const initials = user.name
+                    .split(" ")
+                    .map((part) => part.charAt(0).toUpperCase())
+                    .join("");
+                  return (
+                    <div
+                      key={index}
+                      className={`filterUserBox`}
+                      style={{
+                        minWidth: "40px",
+                      }}
+                      onClick={() =>
+                        handleFilterClick(initials, "filterUserBox")
+                      }
+                    >
+                      {initials}
+                    </div>
+                  );
+                })
+              : ""}
+            <div
+              className="filterStatusBox NotStarted"
+              onClick={() =>
+                handleFilterClick("Not Started", "filterStatusBox NotStarted")
+              }
+            >
+              Not Started
+            </div>
+            <div
+              className="filterStatusBox Pending"
+              onClick={() =>
+                handleFilterClick("Pending", "filterStatusBox Pending")
+              }
+            >
+              Pending
+            </div>
+            <div
+              className="filterStatusBox InProgress"
+              onClick={() =>
+                handleFilterClick("In Progress", "filterStatusBox InProgress")
+              }
+            >
+              In Progress
+            </div>
+            <div
+              className="filterStatusBox OnHold"
+              onClick={() =>
+                handleFilterClick("On Hold", "filterStatusBox OnHold")
+              }
+            >
+              On Hold
+            </div>
+            <div
+              className="filterStatusBox Completed"
+              onClick={() =>
+                handleFilterClick("Completed", "filterStatusBox Completed")
+              }
+            >
+              Completed
+            </div>
+            <div
+              className="filterProgressBox"
+              onClick={() =>
+                handleFilterClick("<50% Progress", "filterProgressBox")
+              }
+            >
+              {"<"}50% Progress
+            </div>
+            <div
+              className="filterProgressBox"
+              onClick={() =>
+                handleFilterClick(">50% Progress", "filterProgressBox")
+              }
+            >
+              {">"}50% Progress
+            </div>
+            <div
+              className="filterProgressBox"
+              onClick={() =>
+                handleFilterClick("Due This Week", "filterProgressBox")
+              }
+            >
+              Due This Week
+            </div>
+            <div
+              className="filterProgressBox"
+              onClick={() =>
+                handleFilterClick("<14 Days Left", "filterProgressBox")
+              }
+            >
+              {"<"}14 Days Left
+            </div>
+            <div
+              className="filterProgressBox"
+              onClick={() =>
+                handleFilterClick("Incomplete Subtask", "filterProgressBox")
+              }
+            >
+              Incomplete Subtask
+            </div>
+            <div
+              className="filterProgressBox"
+              onClick={() =>
+                handleFilterClick("In Progress Subtask", "filterProgressBox")
+              }
+            >
+              In Progress Subtask
+            </div>
+            <div
+              className="filterProgressBox"
+              onClick={() =>
+                handleFilterClick("Complete Subtask", "filterProgressBox")
+              }
+            >
+              Complete Subtask
+            </div>
+          </div>
+          {filtersSeleted && (
+            <>
+              <div className="filterBtnBox confirmBox" onClick={handleApply}>
+                <span>
+                  <TickIcon />
+                </span>
+                <p>Confirm Choices</p>
+              </div>
+              <div className="filterBtnBox cancelBox" onClick={handleCancel}>
+                <span>
+                  <CrossIcon />
+                </span>
+                <p>Cancel Filter</p>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      {!showSelectFIlter && selectedFilter === "Stage" && (
+        <div className="stage-buttonContainer">
+          <button
+            style={{ background: "#3B923999", border: " 1px solid #3B9239 " }}
+            onClick={() => setSearchedInput("Application")}
+          >
+            Application
+          </button>
+          <button
+            style={{ background: "#1FB4E366", border: "1px solid #1FB4E3" }}
+            onClick={() => setSearchedInput("Referral")}
+          >
+            Referral
+          </button>
+          <button
+            style={{ background: "#8A50C57D", border: "1px solid #8A50C5" }}
+            onClick={() => setSearchedInput("Information Request")}
+          >
+            Information Request
+          </button>
+          <button
+            style={{ background: " #FF5C008C", border: "1px solid #FF5C00" }}
+            onClick={() => setSearchedInput("Public Notification")}
+          >
+            Public Notification
+          </button>
+          <button
+            style={{ background: "#FF40BE66", border: " 1px solid #FF40BE" }}
+            onClick={() => setSearchedInput("Decision")}
+          >
+            {" "}
+            Decision
+          </button>
+        </div>
+      )}
+
+      {!showSelectFIlter && selectedFilter === "Status" && (
+        <div className="stage-buttonContainer">
+          {Object.keys(StatusList).map((key, i) => (
+            <button
+              key={i}
+              className={`filter-statusBtn ${key} h-100`}
+              onClick={() => setSearchedInput(StatusList[key])}
+            >
+              {StatusList[key]}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* </div> */}
     </>
   );
 };

@@ -2307,10 +2307,14 @@ body {
     width: 4px;
     height: 4px;
 }
-*:not(.Right):hover::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
+*:not(.Right){
+    &::-webkit-scrollbar{
+        &:hover{
+            width: 8px;
+            height: 8px;
+        }
+    }
+} 
 
 :-moz-scrollbar {
     width: 4px;
