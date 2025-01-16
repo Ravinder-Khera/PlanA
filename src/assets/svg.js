@@ -530,7 +530,7 @@ export function CalenderIcon() {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       >
@@ -591,14 +591,14 @@ export function CloseIcon() {
       <path
         d="M1 17L17 1"
         stroke="#E2E31F"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M17 17L1 1"
         stroke="#E2E31F"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
@@ -624,7 +624,7 @@ export function NewFilterIcon() {
         height="36"
         rx="1"
         stroke="#E2E31F"
-        stroke-width="3"
+        strokeWidth="3"
         mask="url(#path-1-inside-1_2301_1030)"
       />
       <path
@@ -647,14 +647,14 @@ export function FilterCrossIcon() {
       <path
         d="M1 6.82992L6.66 1.16992"
         stroke="#fff"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M6.66 6.82992L1 1.16992"
         stroke="#fff"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
@@ -680,7 +680,7 @@ export function OpenCloseIcon() {
         height="36"
         rx="1"
         stroke="#E2E31F"
-        stroke-width="3"
+        strokeWidth="3"
         mask="url(#path-1-inside-1_2328_2242)"
       />
       <path

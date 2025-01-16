@@ -346,7 +346,7 @@ export const getUserByRole = async (data) => {
         },
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/users/role/assignee`, requestOptions);;
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/users/role/assignee`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response,data);

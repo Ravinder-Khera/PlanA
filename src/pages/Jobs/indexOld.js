@@ -3,17 +3,23 @@ import {
   AddIcon,
   BellIcon,
   CloseIcon,
+  CrossIcon,
+  FilterIcon,
   NewFilterIcon,
+  NextIcon,
+  OpenCloseIcon,
   Search,
+  TickIcon,
+  User,
 } from "../../assets/svg";
 import "./Jobs.scss";
+import { DeleteIcon } from "../../assets/svg";
 import {
   createJobs,
   deleteJobs,
   getJobs,
   getJobsByFilter,
   getUserByRole,
-  updateJobs,
 } from "../../services/auth";
 import { Bars } from "react-loader-spinner";
 import { toast } from "react-toastify";
@@ -28,58 +34,49 @@ import { Calendar } from "react-date-range";
 
 const Jobs = () => {
   const containerRef = useRef(null);
-  const filterRef = useRef(null);
-  const [loading, setLoading] = useState(false);
-  const notificationRef = useRef(null);
-  const addJobRowRefLeft = useRef(null);
-  const addJobRowRefRight = useRef(null);
-  const newJobIdInputRefs = useRef([]);
-  const taskMobileScrollRef = useRef(null);
-  const tableActiveRowLeftRef = useRef(null);
-  const tableActiveRowRightRef = useRef(null);
-
   const location = useLocation();
 
-  const [filteredJobs, setFilteredJobs] = useState("");
-  const [searchedInput, setSearchedInput] = useState("");
-  const [newJobActiveBoxLeft, setNewJobActiveBoxLeft] = useState("");
-  const [newJobActiveBoxRight, setNewJobActiveBoxRight] = useState("");
-  const [addJobName, setAddJobName] = useState("");
-  const [selectNewJobStatus, setSelectNewJobStatus] = useState("");
-  const [editedValue, setEditedValue] = useState("");
-  const [activeJobField, setActiveJobField] = useState("");
-
-  const [showFilter, setShowFilter] = useState(false);
-  const [showAddJoRow, setShowAddJobRow] = useState(false);
-  const [notificationDropDown, setNotificationDropDown] = useState(false);
-  const [newJobIdFilled, setNewJobIdFilled] = useState(false);
-  const [newJobIdExist, setNewJobIdExist] = useState(false);
-  const [addJobNameBoxAdded, setAddJobNameAdded] = useState(false);
-  const [showJobModal, setShowJobModal] = useState(false);
-  const [showNewJobModal, setShowNewJobModal] = useState(false);
-  const [storageUpdated, setStorageUpdated] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [reloadTabs, setReloadTabs] = useState(false);
-
-  const [notifications, setNotifications] = useState([]);
-  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
-  const [usersList, setUsersList] = useState([]);
+  const [jobs, setJobs] = useState();
+  const [divWidth, setDivWidth] = useState(0);
   const [selectedJobs, setSelectedJobs] = useState([]);
+  const [status, setStatus] = useState("in-progress");
+  const [filteredJobs, setFilteredJobs] = useState("");
   const [pageUrls, setPageUrls] = useState([]);
-
-  const [newJobIdNumber, setNewJobIdNumber] = useState(Number("00000"));
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  const [newJobId, setNewJobId] = useState(["", "", "", "", ""]);
   const [getJob, setGetJob] = useState({
     data: {},
     stage: "",
   });
 
-  const [activeJob, setActiveJob] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [showJobModal, setShowJobModal] = useState(false);
+  const [showNewJobModal, setShowNewJobModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddJoRow, setShowAddJobRow] = useState(false);
+  const filterRef = useRef(null);
+  const [notificationDropDown, setNotificationDropDown] = useState(false);
+  const [reloadTabs, setReloadTabs] = useState(false);
+  const notificationRef = useRef(null);
+  const taskMobileScrollRef = useRef(null);
+  const [searchedInput, setSearchedInput] = useState("");
 
+  const [notifications, setNotifications] = useState([]);
+  const [storageUpdated, setStorageUpdated] = useState(false);
+  const [newJobActiveBoxLeft, setNewJobActiveBoxLeft] = useState("");
+  const [newJobActiveBoxRight, setNewJobActiveBoxRight] = useState("");
+  const [addJobNameBoxAdded, setAddJobNameAdded] = useState(false);
+  const [addJobName, setAddJobName] = useState("");
+  const [usersList, setUsersList] = useState([]);
+  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
+  const [selectNewJobStatus, setSelectNewJobStatus] = useState("");
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
+  const [newJobId, setNewJobId] = useState(["", "", "", "", ""]);
+  const [newJobIdFilled, setNewJobIdFilled] = useState(false);
+  const [newJobIdExist, setNewJobIdExist] = useState(false);
+  const [newJobIdNumber, setNewJobIdNumber] = useState(Number("00000"));
+  const newJobIdInputRefs = useRef([]);
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -254,6 +251,22 @@ const Jobs = () => {
   };
 
   useEffect(() => {
+    const updateDivWidth = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.offsetWidth;
+        setDivWidth(width);
+      }
+    };
+
+    updateDivWidth();
+    window.addEventListener("resize", updateDivWidth);
+
+    return () => {
+      window.removeEventListener("resize", updateDivWidth);
+    };
+  }, []);
+
+  useEffect(() => {
     let handler = (e) => {
       if (
         notificationRef.current &&
@@ -308,6 +321,7 @@ const Jobs = () => {
     try {
       const res = await getJobs(currentPage);
       const data = res?.res?.data;
+      setJobs(data);
       setFilteredJobs(data);
       const selectedJob = data.filter(
         (item) => item?.id === getJob?.data?.id || item?.id === state?.id
@@ -360,6 +374,16 @@ const Jobs = () => {
       setSelectedJobs((prevIds) =>
         prevIds.filter((selectedId) => selectedId !== id)
       );
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    const { checked } = e.target;
+    if (checked) {
+      const ids = filteredJobs?.map(({ id }) => id);
+      setSelectedJobs(ids);
+    } else {
+      setSelectedJobs([]);
     }
   };
 
@@ -431,6 +455,20 @@ const Jobs = () => {
     }
   };
 
+  // const handleStatusFilter = async (_status) => {
+  //   setLoading(true);
+  //   try {
+  //     const filterString = `status=${_status}`;
+  //     const res = await getJobsByFilter(filterString);
+  //     const { data } = res?.res;
+  //     setFilteredJobs(data);
+  //   } catch (error) {
+  //     console.log("error while filtering", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   useEffect(() => {
     const bodyScroll = document.getElementById("rightSCroll");
     if (showJobModal || showNewJobModal) {
@@ -442,7 +480,7 @@ const Jobs = () => {
     return () => {
       bodyScroll.style.overflow = "auto";
     };
-  }, [showJobModal, showNewJobModal]);
+  }, [showJobModal,showNewJobModal]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -486,15 +524,22 @@ const Jobs = () => {
     setSelectedNewJobDueDate(null);
   };
 
+  const addJobRowRefLeft = useRef(null);
+  const addJobRowRefRight = useRef(null);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         addJobRowRefLeft.current &&
-        !addJobRowRefLeft.current.contains(event.target) &&
+        !addJobRowRefLeft.current.contains(event.target)
+      ) {
+        setNewJobActiveBoxLeft("");
+      }
+      if (
         addJobRowRefRight.current &&
         !addJobRowRefRight.current.contains(event.target)
       ) {
-        handleCancelAddJob();
+        setNewJobActiveBoxRight("");
       }
     };
 
@@ -528,13 +573,6 @@ const Jobs = () => {
     setUsersList((prevList) => prevList.filter((u) => u.email !== user.email));
   };
 
-  const handleRemoveCollaborator = (user) => {
-    setNewJobCollaboratorsList((prevList) =>
-      prevList.filter((u) => u.email !== user.email)
-    );
-    setUsersList((prevList) => [...prevList, user]);
-  };
-
   const handleRemoveSelectCollaborator = (user) => {
     setUsersList((prevList) => [...prevList, user]);
     setNewJobCollaboratorsList((prevList) =>
@@ -555,17 +593,18 @@ const Jobs = () => {
   const handleAddNewJob = async () => {
     try {
       setLoading(true);
-
+  
+      // Request body with job details
       const reqBody = {
         title: addJobName,
-        due_date: selectedNewJobDueDate || "",
-        status: selectNewJobStatus || "",
+        due_date: selectedNewJobDueDate || "", // Use empty string if no date is selected
+        status: selectNewJobStatus || "", // Use empty string if no status is selected
       };
-
+  
       // API call to create job
       const response = await createJobs(reqBody);
       console.log("request body for create job", response);
-
+  
       if (response?.res?.message) {
         toast.success(`${response.res.message}`);
       } else {
@@ -579,114 +618,6 @@ const Jobs = () => {
       handleCancelAddJob(); // Reset state after action
     }
   };
-
-  const handleTitleClick = async (job) => {
-    console.log("clicked", job.id, activeJob, activeJobField);
-
-    setActiveJobField("Name");
-    setEditedValue(job.title);
-    if (activeJob?.id === job?.id) {
-      console.log("inside check");
-      return;
-    }
-    console.log("after check", job?.id);
-    setActiveJob(job);
-  };
-
-  const handleInputChange = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleTitleUpdate();
-      return;
-    }
-    setEditedValue(e.target.value);
-
-    setFilteredJobs((prevJobs) =>
-      prevJobs.map((job) =>
-        job.id === activeJob?.id ? { ...job, title: e.target.value } : job
-      )
-    );
-  };
-
-  const handleTitleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleTitleUpdate();
-    }
-    return;
-  };
-
-  const handleCollaboratorClick = (job) => {
-    setActiveJobField("Collaborators");
-    if (activeJob?.id === job?.id) {
-      return;
-    }
-    setActiveJob(job);
-    setNewJobCollaboratorsList(job?.usersArray)
-  };
-
-  const handleTitleUpdate = () => {
-    if (editedValue !== activeJob?.title) {
-      handleUpdateJob();
-    }
-    setActiveJobField("");
-  };
-
-  const handleUpdateJob = async () => {
-    if (editedValue !== activeJob?.title) {
-      try {
-        const reqBody = {
-          job_id: activeJob.id,
-          dataObj: {
-            title: editedValue,
-          },
-        };
-        setActiveJob(null);
-        const response = await updateJobs(reqBody);
-        if (!response.res) {
-          console.error("jobs update failed:", response.error);
-          const notificationData = {
-            class: "error",
-            message: response.error.message,
-          };
-          const existingNotificationsJSON = localStorage.getItem("notifications");
-          let existingNotifications = [];
-          if (existingNotificationsJSON) {
-            existingNotifications = JSON.parse(existingNotificationsJSON);
-          }
-          existingNotifications.push(notificationData);
-  
-          localStorage.setItem(
-            "notifications",
-            JSON.stringify(existingNotifications)
-          );
-          toast.error(`${response.error.message}`);
-        }
-      } catch (error) {
-        console.log("error in updating jobs", error);
-      } 
-    } else {
-      setActiveJob(null);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = async(event) => {
-      if (
-        tableActiveRowLeftRef.current &&
-        !tableActiveRowLeftRef.current.contains(event.target) &&
-        tableActiveRowRightRef.current &&
-        !tableActiveRowRightRef.current.contains(event.target)
-      ) {
-        handleUpdateJob();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <>
@@ -802,6 +733,34 @@ const Jobs = () => {
             </div>
           </div>
           <div className="d-flex gap-3 flex-wrap align-items-center">
+            {/* <div className="navSearchTab">
+              <div className="jobsTaskTabsDiv">
+                <div
+                  className={`jobtaskTab ${
+                    status === "in-progress" ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedJobs([]);
+                    setStatus("in-progress");
+                    handleStatusFilter("in-progress");
+                  }}
+                >
+                  Current Jobs
+                </div>
+                <div
+                  className={`jobtaskTab ${
+                    status === "completed" ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedJobs([]);
+                    setStatus("completed");
+                    handleStatusFilter("completed");
+                  }}
+                >
+                  Completed
+                </div>
+              </div>
+            </div> */}
             <div className="addjobs addJobsMobile" style={{ gap: "16px" }}>
               <div
                 className="d-flex align-items-center"
@@ -820,7 +779,10 @@ const Jobs = () => {
               >
                 <div className="notifyIcon notificationWhite mx-0">
                   <div className="addNewTaskDiv">
-                    <div className="bellIcon addTaskJobDiv">
+                    <div
+                      className="bellIcon addTaskJobDiv"
+                      // style={{ cursor: "pointer" }}
+                    >
                       <div>
                         <BellIcon />
                       </div>
@@ -868,11 +830,57 @@ const Jobs = () => {
           </div>
         </div>
         <div className="JobsHeading d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center justify-content-start gap-3">
-            <div className="delete-box">
-              <div className="delete-item">Showing All Jobs</div>
+          {!showAddJoRow ? (
+            <div
+              className="delete-box"
+              style={{ cursor: "pointer", zIndex: 2 }}
+              onClick={handleDelete}
+            >
+              <div className="searchUserImg">
+                <DeleteIcon />
+              </div>
+              <div className="delete-item">
+                Mark {selectedJobs.length} Item(s) complete
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="d-flex align-items-center justify-content-start gap-3">
+              <div
+                className="delete-box"
+                style={{ cursor: "pointer", zIndex: 2 }}
+                onClick={handleCancelAddJob}
+              >
+                <div className="searchUserImg">
+                  <span style={{ rotate: "45deg" }}>
+                    <AddIcon />
+                  </span>
+                </div>
+                <div className="delete-item">Cancel</div>
+              </div>
+              {addJobNameBoxAdded && newJobIdFilled && (
+                <div
+                  className="delete-box"
+                  style={{ cursor: "pointer", zIndex: 2 }}
+                  onClick={handleAddNewJob}
+                >
+                  <div className="searchUserImg">
+                    <TickIcon />
+                  </div>
+                  <div className="delete-item">Save</div>
+                </div>
+              )}
+              {addJobNameBoxAdded && newJobIdFilled && (
+                <div
+                  className="delete-box"
+                  style={{ cursor: "pointer", zIndex: 2 }}
+                  onClick={() => setShowNewJobModal(true)}
+                >
+                  <OpenCloseIcon />
+                  <div className="delete-item">Open</div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div className="pagination-container">
           <div className="JobsContainer desktop" ref={containerRef}>
@@ -882,6 +890,42 @@ const Jobs = () => {
                   <table className="table table-borderless text-light">
                     <thead>
                       <tr>
+                        <th scope="col" className="text-center">
+                          <label htmlFor={`select_all`}>
+                            <input
+                              type="checkbox"
+                              checked={
+                                filteredJobs?.length &&
+                                selectedJobs?.length &&
+                                filteredJobs?.length === selectedJobs?.length
+                              }
+                              id={`select_all`}
+                              onChange={handleSelectAll}
+                              style={{ display: "none" }}
+                              disabled={showAddJoRow}
+                            />
+                            {filteredJobs?.length &&
+                            selectedJobs?.length &&
+                            filteredJobs?.length === selectedJobs?.length ? (
+                              <div className="svg-box-2 mx-2">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="15"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                    fill="black"
+                                  />
+                                </svg>
+                              </div>
+                            ) : (
+                              <div className="svg-box mx-2"></div>
+                            )}
+                          </label>
+                        </th>
                         <th scope="col">
                           <div className="headerDiv">Job No.</div>
                         </th>
@@ -896,6 +940,7 @@ const Jobs = () => {
                     <tbody>
                       {showAddJoRow && (
                         <tr className="addNewJobRow" ref={addJobRowRefLeft}>
+                          <th scope="row" className="text-center"></th>
                           <td
                             className={`text-center clickBox ${
                               newJobActiveBoxLeft === "jobId" && "active"
@@ -1052,39 +1097,6 @@ const Jobs = () => {
                             )}
                             {newJobActiveBoxLeft === "AddCollaborators" && (
                               <div className={`newJobItemDropBox`}>
-                                {newJobCollaboratorsList.length > 0 && (
-                                  <div className="addedCollabs">
-                                    {newJobCollaboratorsList.map(
-                                      (user, index) => {
-                                        const initials = user.name
-                                          .split(" ")
-                                          .map((part) =>
-                                            part.charAt(0).toUpperCase()
-                                          )
-                                          .join("");
-
-                                        return (
-                                          <div
-                                            className="selectCollaboratorsBox"
-                                            key={index}
-                                            onClick={() =>
-                                              handleRemoveCollaborator(user)
-                                            }
-                                          >
-                                            <div
-                                              className={`collaboratorsBoxUser`}
-                                              style={{
-                                                minWidth: "40px",
-                                              }}
-                                            >
-                                              {initials}
-                                            </div>
-                                          </div>
-                                        );
-                                      }
-                                    )}
-                                  </div>
-                                )}
                                 {usersList
                                   ? usersList.map((user, index) => {
                                       const initials = user.name
@@ -1128,110 +1140,83 @@ const Jobs = () => {
                       {filteredJobs && filteredJobs?.length > 0 ? (
                         filteredJobs?.map((job, index) => (
                           <tr
-                            ref={(el) => {
-                              if (activeJob && activeJob.id === job.id) {
-                                tableActiveRowLeftRef.current = el;
-                              }
-                            }}
                             key={index}
-                            className={`addNewJobRow tableEntries ${
-                              showAddJoRow && "disabled"
-                            } ${
-                              activeJob
-                                ? activeJob?.id === job.id
-                                  ? "active"
-                                  : "disabled"
-                                : ""
-                            }`}
+                            className={`${showAddJoRow && "disabled"}`}
                           >
-                            <td className="text-center">
-                              <span className={`jobNoBtn`}>{job.id}</span>
-                            </td>
-                            <td className={`px-3 clickBox jobName`}>
-                              {activeJob?.id === job.id &&
-                              activeJobField === "Name" ? (
+                            <th scope="row" className="text-center">
+                              {" "}
+                              <label htmlFor={`select_${index}`}>
                                 <input
-                                  className="clickBoxInput"
-                                  placeholder="Enter Job Name"
-                                  type="text"
-                                  value={editedValue}
-                                  onChange={handleInputChange}
-                                  onKeyDown={handleTitleKeyDown}
-                                  onBlur={handleTitleUpdate}
-                                  autoFocus
+                                  type="checkbox"
+                                  checked={selectedJobs.includes(job.id)}
+                                  onChange={(e) =>
+                                    handleCheckBoxSelect(e, job.id)
+                                  }
+                                  id={`select_${index}`}
+                                  style={{ display: "none" }}
                                 />
-                              ) : (
-                                <div
-                                  className="job-name"
-                                  onClick={() => handleTitleClick(job)}
-                                >
-                                  <h4>{job.title}</h4>
-                                </div>
-                              )}
-                            </td>
-                            <td className={`text-center clickBox`}>
-                              <div
-                                className="collaboratorsBox"
-                                onClick={() => handleCollaboratorClick(job)}
-                              >
-                                <div className=" d-flex align-items-center justify-content-center">
-                                  {job?.usersArray?.length > 0 && (
-                                    <>
-                                      {job?.usersArray
-                                        .slice(0, 3)
-                                        .map((user, index) => {
-                                          const initials = user.name
-                                            .split(" ")
-                                            .map((part) =>
-                                              part.charAt(0).toUpperCase()
-                                            )
-                                            .join("");
-
-                                          return (
-                                            <div
-                                              key={index}
-                                              className={`collaboratorsBoxUser`}
-                                              style={{
-                                                minWidth: "40px",
-                                                zIndex: index,
-                                              }}
-                                            >
-                                              {initials}
-                                            </div>
-                                          );
-                                        })}
-
-                                      {job?.usersArray?.length > 3 && (
-                                        <div
-                                          className={`collaboratorsBoxUser`}
-                                          style={{
-                                            minWidth: "40px",
-                                            zIndex: index,
-                                          }}
-                                        >
-                                          +
-                                          {job?.usersArray.length - 3}
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                  {job.usersArray?.length === 0 && (
-                                    <div
-                                      className="collaboratorsBoxUser disabled m-0"
-                                      style={{ minWidth: "40px" }}
+                                {selectedJobs.includes(job.id) ? (
+                                  <div className="svg-box-2 mx-2">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="24"
+                                      height="15"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
                                     >
-                                      N/A
-                                    </div>
-                                  )}
-                                </div>
+                                      <path
+                                        d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                                        fill="black"
+                                      />
+                                    </svg>
+                                  </div>
+                                ) : (
+                                  <div className="svg-box mx-2"></div>
+                                )}
+                              </label>
+                            </th>
+                            <td className="text-center">
+                              <span
+                                className={`jobNoBtn btn_${findNearestStage(
+                                  job
+                                )}`}
+                              >
+                                {job.id}
+                              </span>
+                            </td>
+                            <td className="px-3">
+                              <div className="job-name">
+                                <h4
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => {
+                                    localStorage.setItem("jobId", job.id);
+                                    setShowJobModal(true);
+                                    setGetJob({
+                                      data: job,
+                                      stage: findNearestStage(job),
+                                    });
+                                  }}
+                                >
+                                  {job.title}
+                                </h4>
+                                {/* <h6>{job.description}</h6> */}
                               </div>
-                              {activeJob?.id === job.id &&
-                                activeJobField === "Collaborators" && (
-                                  <div className={`newJobItemDropBox`}>
-                                    {newJobCollaboratorsList.length > 0 && (
-                                      <div className="addedCollabs">
-                                        {newJobCollaboratorsList.map(
-                                          (user, index) => {
+                            </td>
+                            <td className="text-center">
+                              {job?.operative_id && (
+                                <div className="collaboratorsBox">
+                                  <div className=" d-flex align-items-center justify-content-center">
+                                    {job?.usersArray?.length > 0 && (
+                                      <>
+                                        {job?.usersArray
+                                          .filter(
+                                            (selectedId) =>
+                                              selectedId !== job?.operative_id
+                                          )
+                                          .slice(0, 3)
+                                          .map((user, index) => {
                                             const initials = user.name
                                               .split(" ")
                                               .map((part) =>
@@ -1241,69 +1226,53 @@ const Jobs = () => {
 
                                             return (
                                               <div
-                                                className="selectCollaboratorsBox"
                                                 key={index}
-                                                onClick={() =>
-                                                  handleRemoveCollaborator(user)
-                                                }
-                                              >
-                                                <div
-                                                  className={`collaboratorsBoxUser`}
-                                                  style={{
-                                                    minWidth: "40px",
-                                                  }}
-                                                >
-                                                  {initials}
-                                                </div>
-                                              </div>
-                                            );
-                                          }
-                                        )}
-                                      </div>
-                                    )}
-                                    {usersList
-                                      ? usersList.map((user, index) => {
-                                          const initials = user.name
-                                            .split(" ")
-                                            .map((part) =>
-                                              part.charAt(0).toUpperCase()
-                                            )
-                                            .join("");
-
-                                          return (
-                                            <div
-                                              className="selectCollaboratorsBox"
-                                              key={index}
-                                              onClick={() =>
-                                                handleSelectCollaborator(user)
-                                              }
-                                            >
-                                              <div
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
+                                                  zIndex: index,
                                                 }}
                                               >
                                                 {initials}
                                               </div>
-                                              <div className="userName">
-                                                {user.name}
-                                              </div>
-                                              <div className="userMail">
-                                                {user.email}
-                                              </div>
-                                            </div>
-                                          );
-                                        })
-                                      : "No users found"}
+                                            );
+                                          })}
+
+                                        {job?.usersArray?.length > 3 && (
+                                          <div
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: index,
+                                            }}
+                                          >
+                                            +
+                                            {job?.usersArray.filter(
+                                              (selectedId) =>
+                                                selectedId !== job?.operative_id
+                                            ).length - 3}
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                    {job.usersArray?.length === 0 && (
+                                      <div
+                                        className="collaboratorsBoxUser disabled m-0"
+                                        style={{ minWidth: "40px" }}
+                                      >
+                                        N/A
+                                      </div>
+                                    )}
                                   </div>
-                                )}
+                                </div>
+                              )}
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={3} className="text-center">
+                          <td></td>
+                          <td className="text-center">
                             <span className={`jobNoBtn btn_`}>
                               No Results Found
                             </span>
@@ -1346,6 +1315,33 @@ const Jobs = () => {
                           <th scope="col">
                             <div className="headerDiv">Comments</div>
                           </th>
+                          {/* <th scope="col">
+                            <div className="headerDiv">Job Manager</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Latest Update</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Archive</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Assessment Manager</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Latest Comment</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Operative</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">Created</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">EOFY</div>
+                          </th>
+                          <th scope="col">
+                            <div className="headerDiv">LinkedIn Post</div>
+                          </th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -1501,21 +1497,8 @@ const Jobs = () => {
                           filteredJobs?.length > 0 &&
                           filteredJobs?.map((job) => (
                             <tr
-                              ref={(el) => {
-                                if (activeJob && activeJob.id === job.id) {
-                                  tableActiveRowRightRef.current = el;
-                                }
-                              }}
                               key={job.id}
-                              className={`addNewJobRow tableEntries ${
-                                showAddJoRow && "disabled"
-                              } ${
-                                activeJob
-                                  ? activeJob?.id === job.id
-                                    ? "active"
-                                    : "disabled"
-                                  : ""
-                              }`}
+                              className={`${showAddJoRow && "disabled"}`}
                             >
                               <td className="text-center">
                                 <span className={`statusBtn ${job.status}`}>
@@ -1589,6 +1572,199 @@ const Jobs = () => {
                                   {job.latest_update}
                                 </div>
                               </td>
+
+                              {/* <td className="text-center">
+                                <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                  <div className=" d-flex align-items-center justify-content-center">
+                                    {job?.usersArray?.length > 0 && (
+                                      <>
+                                        {job?.usersArray
+                                          ?.slice(0, 1)
+                                          ?.map((user, index) => (
+                                            <div
+                                              key={index}
+                                              className={`UserImg addedUserImages`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                              }}
+                                              // onClick={() =>
+                                              //   toggleUserDropdown(i)
+                                              // }
+                                            >
+                                              {user.profile_pic !== "" &&
+                                              user.profile_pic !==
+                                                "default-profile-pic.jpg" ? (
+                                                <img
+                                                  alt={user.name}
+                                                  src={
+                                                    process.env
+                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                    user.profile_pic
+                                                  }
+                                                />
+                                              ) : (
+                                                <User />
+                                              )}
+                                            </div>
+                                          ))}
+                                      </>
+                                    )}
+                                    {job.usersArray?.length === 0 && (
+                                      <div
+                                        className="UserImg"
+                                        // onClick={() => toggleUserDropdown(i)}
+                                        style={{ minWidth: "40px" }}
+                                      >
+                                        <User />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-3">
+                                <div className="jobDescriptionTextDiv">
+                                  {job.latest_update}
+                                </div>
+                              </td>
+                              <td className="text-center">
+                                {job.is_archive !== "0" && (
+                                  <button
+                                    className={`checkBtn h-100`}
+                                    onClick={(e) => e.preventDefault}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="25"
+                                      height="25"
+                                      viewBox="0 0 15 15"
+                                    >
+                                      <rect
+                                        width="100%"
+                                        height="100%"
+                                        fill="none"
+                                      />
+                                      <path
+                                        fill="none"
+                                        stroke="#71E26E"
+                                        d="M4 7.5L7 10l4-5"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+                              </td>
+
+                              <td className="text-center ">
+                                {job.assessment_manager}
+                              </td>
+                              <td className="text-center ">
+                                {formatDate(job.latest_comment)}
+                              </td>
+                              <td className="text-center ">
+                                {job?.operative_id && (
+                                  <div className="listContent d-flex align-items-center gap-2 justify-content-center navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                    <div className=" d-flex align-items-center justify-content-center">
+                                      {job?.usersArray?.length > 0 && (
+                                        <>
+                                          {job?.usersArray
+                                            .filter(
+                                              (selectedId) =>
+                                                selectedId !== job?.operative_id
+                                            )
+                                            ?.map((user, index) => (
+                                              <div
+                                                key={index}
+                                                className={`UserImg addedUserImages`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  zIndex: index,
+                                                }}
+                                              >
+                                                {user.profile_pic !== "" &&
+                                                user.profile_pic !==
+                                                  "default-profile-pic.jpg" ? (
+                                                  <img
+                                                    alt={user.name}
+                                                    src={
+                                                      process.env
+                                                        .REACT_APP_USER_API_CLOUD_IMG_PATH +
+                                                      user.profile_pic
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <User />
+                                                )}
+                                              </div>
+                                            ))}
+                                        </>
+                                      )}
+                                      {job.usersArray?.length === 0 && (
+                                        <div
+                                          className="UserImg m-0"
+                                          style={{ minWidth: "40px" }}
+                                        >
+                                          <User />
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </td>
+                              <td className="text-center ">
+                                {formatDate(job.created_at)}
+                              </td>
+                              <td className="text-center ">
+                                {job.eofy !== "0" && (
+                                  <button
+                                    className={`checkBtn h-100`}
+                                    onClick={(e) => e.preventDefault}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="25"
+                                      height="25"
+                                      viewBox="0 0 15 15"
+                                    >
+                                      <rect
+                                        width="100%"
+                                        height="100%"
+                                        fill="none"
+                                      />
+                                      <path
+                                        fill="none"
+                                        stroke="#71E26E"
+                                        d="M4 7.5L7 10l4-5"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+                              </td>
+                              <td className="text-center ">
+                                {job.linkedin_post !== "0" && (
+                                  <button
+                                    className={`checkBtn h-100`}
+                                    onClick={(e) => e.preventDefault}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="25"
+                                      height="25"
+                                      viewBox="0 0 15 15"
+                                    >
+                                      <rect
+                                        width="100%"
+                                        height="100%"
+                                        fill="none"
+                                      />
+                                      <path
+                                        fill="none"
+                                        stroke="#71E26E"
+                                        d="M4 7.5L7 10l4-5"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+                              </td> */}
                             </tr>
                           ))}
                       </tbody>
