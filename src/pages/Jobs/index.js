@@ -78,6 +78,7 @@ const Jobs = () => {
   });
 
   const [activeJob, setActiveJob] = useState(null);
+  const [updateJobId, setUpdateJobId] = useState(null);
 
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
 
@@ -581,16 +582,13 @@ const Jobs = () => {
   };
 
   const handleTitleClick = async (job) => {
-    console.log("clicked", job.id, activeJob, activeJobField);
-
     setActiveJobField("Name");
     setEditedValue(job.title);
     if (activeJob?.id === job?.id) {
-      console.log("inside check");
       return;
     }
-    console.log("after check", job?.id);
     setActiveJob(job);
+    setUpdateJobId(job.id);
   };
 
   const handleInputChange = (e) => {
@@ -600,7 +598,6 @@ const Jobs = () => {
       return;
     }
     setEditedValue(e.target.value);
-
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
         job.id === activeJob?.id ? { ...job, title: e.target.value } : job
@@ -621,63 +618,60 @@ const Jobs = () => {
       return;
     }
     setActiveJob(job);
-    setNewJobCollaboratorsList(job?.usersArray)
+    setUpdateJobId(job.id);
+    setNewJobCollaboratorsList(job?.usersArray);
   };
 
   const handleTitleUpdate = () => {
-    if (editedValue !== activeJob?.title) {
-      handleUpdateJob();
-    }
     setActiveJobField("");
   };
 
-  const handleUpdateJob = async () => {
-    if (editedValue !== activeJob?.title) {
-      try {
-        const reqBody = {
-          job_id: activeJob.id,
-          dataObj: {
-            title: editedValue,
-          },
+  const handleUpdateJob = async (updateJobId) => {
+    console.log("editedValue in handleUpdateJob",editedValue);
+    try {
+      const reqBody = {
+        job_id: updateJobId,
+        dataObj: {
+          title: editedValue,
+        },
+      };
+      const response = await updateJobs(reqBody);
+      if (!response.res) {
+        console.error("jobs update failed:", response.error);
+        const notificationData = {
+          class: "error",
+          message: response.error.message,
         };
-        setActiveJob(null);
-        const response = await updateJobs(reqBody);
-        if (!response.res) {
-          console.error("jobs update failed:", response.error);
-          const notificationData = {
-            class: "error",
-            message: response.error.message,
-          };
-          const existingNotificationsJSON = localStorage.getItem("notifications");
-          let existingNotifications = [];
-          if (existingNotificationsJSON) {
-            existingNotifications = JSON.parse(existingNotificationsJSON);
-          }
-          existingNotifications.push(notificationData);
-  
-          localStorage.setItem(
-            "notifications",
-            JSON.stringify(existingNotifications)
-          );
-          toast.error(`${response.error.message}`);
+        const existingNotificationsJSON = localStorage.getItem("notifications");
+        let existingNotifications = [];
+        if (existingNotificationsJSON) {
+          existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-      } catch (error) {
-        console.log("error in updating jobs", error);
-      } 
-    } else {
-      setActiveJob(null);
+        existingNotifications.push(notificationData);
+
+        localStorage.setItem(
+          "notifications",
+          JSON.stringify(existingNotifications)
+        );
+        toast.error(`${response.error.message}`);
+      }
+    } catch (error) {
+      console.log("error in updating jobs", error);
     }
   };
 
   useEffect(() => {
-    const handleClickOutside = async(event) => {
+    const handleClickOutside = async (event) => {
       if (
         tableActiveRowLeftRef.current &&
         !tableActiveRowLeftRef.current.contains(event.target) &&
         tableActiveRowRightRef.current &&
         !tableActiveRowRightRef.current.contains(event.target)
       ) {
-        handleUpdateJob();
+        if (editedValue !== activeJob?.title) {
+          handleUpdateJob(updateJobId);
+        }
+        setActiveJob(null);
       }
     };
 
@@ -686,7 +680,7 @@ const Jobs = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [updateJobId, editedValue]);
 
   return (
     <>
@@ -1209,8 +1203,7 @@ const Jobs = () => {
                                             zIndex: index,
                                           }}
                                         >
-                                          +
-                                          {job?.usersArray.length - 3}
+                                          +{job?.usersArray.length - 3}
                                         </div>
                                       )}
                                     </>
@@ -1327,16 +1320,13 @@ const Jobs = () => {
                             <div className="headerDiv">Status</div>
                           </th>
                           <th scope="col">
-                            <div className="headerDiv">Progress</div>
-                          </th>
-                          <th scope="col">
                             <div className="headerDiv">Due Date</div>
                           </th>
                           <th scope="col">
                             <div className="headerDiv">Days Left</div>
                           </th>
                           <th scope="col">
-                            <div className="headerDiv">Subtasks</div>
+                            <div className="headerDiv">Tasks</div>
                           </th>
                           <th scope="col">
                             <div className="headerDiv">
@@ -1425,22 +1415,6 @@ const Jobs = () => {
                                 </div>
                               )}
                             </td>
-                            <td className="text-center clickBox">
-                              <div className={`clickBoxtext`}>
-                                {selectNewJobStatus ? (
-                                  <div
-                                    className={`progressBox ${selectNewJobStatus.replace(
-                                      /\s+/g,
-                                      ""
-                                    )}`}
-                                  >
-                                    0%
-                                  </div>
-                                ) : (
-                                  "No Data To Show"
-                                )}
-                              </div>
-                            </td>
                             <td
                               className={`text-center clickBox ${
                                 newJobActiveBoxRight === "SetDueDate" &&
@@ -1520,34 +1494,6 @@ const Jobs = () => {
                               <td className="text-center">
                                 <span className={`statusBtn ${job.status}`}>
                                   {StatusList[job.status]}
-                                </span>
-                              </td>
-                              <td className="text-center">
-                                <span
-                                  className={`statusBtn progressBtn ${job.status}`}
-                                >
-                                  <bar
-                                    className="bar"
-                                    style={{ width: `${job.progress}%` }}
-                                  >
-                                    <text
-                                      className="text"
-                                      style={{ color: "#ffffff99" }}
-                                    >
-                                      {job.progress >= 51 &&
-                                        (job.progress % 1 !== 0
-                                          ? job.progress.toFixed(1)
-                                          : job.progress) + "%"}
-                                    </text>
-                                  </bar>
-                                  {job.progress <= 50 && (
-                                    <text className="text">
-                                      {job.progress % 1 !== 0
-                                        ? job.progress.toFixed(1)
-                                        : job.progress}
-                                      %
-                                    </text>
-                                  )}
                                 </span>
                               </td>
                               <td className="text-center">
