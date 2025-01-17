@@ -2805,10 +2805,8 @@ export const NewJobModal = ({
       setLoader(true);
       setIsDeleting(true); // Set the deletion flag
       const response = await deleteJob(job.id);
-
       if (response.res) {
         console.log("Job delete successful", response.res);
-        toast.success("Job deleted successfully");
       } else {
         console.error("Job delete failed:", response.error);
         toast.error(response.error?.message || "Failed to delete the job");

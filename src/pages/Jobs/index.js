@@ -507,14 +507,13 @@ const Jobs = () => {
         console.log("request body for create job", response);
 
         if (response?.res?.message) {
-          toast.success(`${response.res.message}`);
+          console.log(`${response.res.message}`);
         } else {
           toast.error(`${response?.error?.message || "Error occurred"}`);
         }
       } catch (error) {
         console.log("error in updating jobs", error);
       } finally {
-        setLoading(false);
         fetchJobs(); // Ensure this fetches the latest jobs
         handleCancelAddJob(); // Reset state after action
       }
@@ -534,7 +533,7 @@ const Jobs = () => {
             {
               job_num: newJobIdNumber,
               title: addJobName,
-              collaborators: newJobCollaboratorsListId,
+              collaborators: newJobCollaboratorsList,
               due_date: selectedNewJobDueDate || "",
               status: selectNewJobStatus || "",
             },
@@ -582,15 +581,13 @@ const Jobs = () => {
         console.log("request body for create job", response);
 
         if (response?.res?.message) {
-          toast.success(`${response.res.message}`);
+          console.log(`${response.res.message}`);
         } else {
           toast.error(`${response?.error?.message || "Error occurred"}`);
         }
       } catch (error) {
         console.log("error in updating jobs", error);
       } finally {
-        setLoading(false);
-        fetchJobs(); // Ensure this fetches the latest jobs
         handleCancelAddJob(); // Reset state after action
       }
     };
@@ -880,6 +877,7 @@ const Jobs = () => {
         }
         if (!showNewJobModal) {
           setActiveJob(null);
+          setNewJobCollaboratorsList([]);
         }
       }
     };
@@ -965,6 +963,14 @@ const Jobs = () => {
     }
   };
 
+  useEffect(()=>{
+    if(isDeleting){
+      setFilteredJobs((prevJobs) =>
+        prevJobs.filter((job) => job.id !== activeJob?.id)
+      );
+    }
+  },[activeJob, isDeleting])
+
   return (
     <>
       {loading && (
@@ -990,6 +996,11 @@ const Jobs = () => {
             setShowNewJobModal(false);
             if (!isDeleting && activeJob) {
               await handleUpdateJobDesc(activeJob.id, activeJob.description);
+            }
+            if(isDeleting){
+              setFilteredJobs((prevJobs) =>
+                prevJobs.filter((job) => job.id !== activeJob.id)
+              );
             }
           }}
           fetchJobs={fetchJobs}
