@@ -963,14 +963,6 @@ const Jobs = () => {
     }
   };
 
-  useEffect(()=>{
-    if(isDeleting){
-      setFilteredJobs((prevJobs) =>
-        prevJobs.filter((job) => job.id !== activeJob?.id)
-      );
-    }
-  },[activeJob, isDeleting])
-
   return (
     <>
       {loading && (
