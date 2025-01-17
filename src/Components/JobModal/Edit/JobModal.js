@@ -12,13 +12,17 @@ import { Calendar } from "react-date-range";
 import { StageList, StatusList } from "../../../helper";
 import {
   createTask,
+  deleteJob,
   getUserByRole,
   updateJobs,
   updateTask,
 } from "../../../services/auth";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
-import ChatAndAttachment, { AddNewJobChatAndAttachment, AddNewJobSendChatAndAttachment } from "./ChatAndAttachment";
+import ChatAndAttachment, {
+  AddNewJobChatAndAttachment,
+  AddNewJobSendChatAndAttachment,
+} from "./ChatAndAttachment";
 
 const JobModal = ({
   job,
@@ -2767,17 +2771,13 @@ export const NewJobModal = ({
   reloadTabs,
   scrollRef,
 }) => {
-  const [data, setData] = useState(job);
   const [loader, setLoader] = useState(false);
-  const [state, setState] = useState({
-    title: "",
-    location: "",
-    description: "",
-  });
+  const [description, setDescription] = useState(job?.description || "");
+  const [isDeleting, setIsDeleting] = useState(false);
   const popUpRef = useRef(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef?.current) {
       scrollRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -2786,19 +2786,40 @@ export const NewJobModal = ({
   }, [scrollRef]);
 
   useEffect(() => {
-    setState({
-      title: job,
-      location: data?.location,
-      description: data?.description,
-    });
-
-  }, [data, job, reloadTabs]);  
+    setDescription(job?.description)
+  }, [job, reloadTabs]);
 
   const handleOnChange = (e) => {
-    setState({
-      ...state,
-      [e.target.name]: e.target.value,
-    });
+    setDescription(e.target.value);
+  };
+
+  const handleModalClose = async () => {
+    if (!isDeleting) {
+      job.description = description;
+    }
+    await handleClose(isDeleting); // Pass the deletion flag to the parent
+  };
+
+  const handleDelete = async () => {
+    try {
+      setLoader(true);
+      setIsDeleting(true); // Set the deletion flag
+      const response = await deleteJob(job.id);
+
+      if (response.res) {
+        console.log("Job delete successful", response.res);
+        toast.success("Job deleted successfully");
+      } else {
+        console.error("Job delete failed:", response.error);
+        toast.error(response.error?.message || "Failed to delete the job");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      toast.error("Error deleting job");
+    } finally {
+      setLoader(false);
+      await handleClose(true); // Notify the parent to close the modal with the deletion flag
+    }
   };
 
   return (
@@ -2829,7 +2850,7 @@ export const NewJobModal = ({
                     <div
                       className="delete-box"
                       style={{ cursor: "pointer", zIndex: 2 }}
-                      onClick={handleClose}
+                      onClick={handleDelete}
                     >
                       <div className="deletBg">
                         <DeleteIcon />
@@ -2839,7 +2860,7 @@ export const NewJobModal = ({
                     <div
                       className="delete-box"
                       style={{ cursor: "pointer", zIndex: 2 }}
-                      onClick={handleClose}
+                      onClick={handleModalClose}
                     >
                       <div className="searchUserImg">
                         <OpenCloseIcon />
@@ -2848,24 +2869,22 @@ export const NewJobModal = ({
                     </div>
                   </div>
                   <div className="innerScroll">
-                    <h2 className="jobTitle">
-                      {state.title}
-                    </h2>
+                    <h2 className="jobTitle">{job.title}</h2>
                     <div className="discriptionBox">
                       <h3>Description</h3>
-                        <textarea
-                          type="text"
-                          name="description"
-                          id=""
-                          rows={2}
-                          value={state.description}
-                          onChange={handleOnChange}
-                          placeholder="Add Description Here..."
-                        />
+                      <textarea
+                        type="text"
+                        name="description"
+                        id=""
+                        rows={2}
+                        value={description}
+                        onChange={handleOnChange}
+                        placeholder="Add Description Here..."
+                      />
                     </div>
-                    <AddNewJobChatAndAttachment JobId={data?.id} />
+                    <AddNewJobChatAndAttachment JobId={job?.id} />
                   </div>
-                    <AddNewJobSendChatAndAttachment JobId={data?.id} />
+                  <AddNewJobSendChatAndAttachment JobId={job?.id} />
                 </div>
               </div>
             </div>

@@ -1015,14 +1015,17 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
                     {msg.user.name !== localStorage.getItem("user") && (
                       <div className="chats-content-reciever ">
                         <div className="d-flex justify-content-between gap-3 align-items-center">
-                          <div className="reciver-chats">
-                            <div
-                              className="position-absolute"
-                              style={{ top: "-10px", left: "16px" }}
-                            >
-                              <p className="text-name p-0 ">{msg.user.name}</p>
+                          <div className="reciver-chats d-flex ">
+                            <div className="d-flex flex-column ">
+                              <div
+                                className=""
+                                style={{ top: "-10px", left: "16px" }}
+                              >
+                                <p className="text-name p-0 ">{msg.user.name}</p>
+                              </div>
+                              <p>{msg.body}</p>
                             </div>
-                            <div className="position-absolute receiverImg ">
+                            <div className=" receiverImg ">
                               {msg.user?.profile_pic !== "" ? (
                                 <img
                                   alt={msg.user.name}
@@ -1044,7 +1047,6 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
                                 />
                               )}
                             </div>
-                            <p>{msg.body}</p>
                           </div>
 
                           <div className="msg-timing">

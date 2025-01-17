@@ -9,9 +9,11 @@ import {
 import "./Jobs.scss";
 import {
   createJobs,
+  deleteJob,
   deleteJobs,
   getJobs,
   getJobsByFilter,
+  getJobsNum,
   getUserByRole,
   updateJobs,
 } from "../../services/auth";
@@ -41,6 +43,7 @@ const Jobs = () => {
   const location = useLocation();
 
   const [filteredJobs, setFilteredJobs] = useState("");
+  const [originalJobs, setOriginalJobs] = useState("");
   const [searchedInput, setSearchedInput] = useState("");
   const [newJobActiveBoxLeft, setNewJobActiveBoxLeft] = useState("");
   const [newJobActiveBoxRight, setNewJobActiveBoxRight] = useState("");
@@ -60,9 +63,13 @@ const Jobs = () => {
   const [storageUpdated, setStorageUpdated] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [reloadTabs, setReloadTabs] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [notifications, setNotifications] = useState([]);
   const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
+  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState(
+    []
+  );
   const [usersList, setUsersList] = useState([]);
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [pageUrls, setPageUrls] = useState([]);
@@ -81,6 +88,7 @@ const Jobs = () => {
   const [updateJobId, setUpdateJobId] = useState(null);
 
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
+  const [editedJobDueDate, setEditedJobDueDate] = useState(null);
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -110,19 +118,7 @@ const Jobs = () => {
     };
   }, [storageUpdated]);
 
-  const generateDummyArray = () => {
-    const arr = [];
-    for (let i = 0; i <= 99; i++) {
-      arr.push(i.toString().padStart(5, "0"));
-    }
-    return arr;
-  };
-
-  const checkIfExists = (target, arr) => {
-    return arr.includes(target);
-  };
-
-  const handleNewJobIdChange = (e, index) => {
+  const handleNewJobIdChange = async (e, index) => {
     setNewJobIdExist(false);
     var value = e.target.value;
     // Only process if the value is a number (and not empty)
@@ -139,10 +135,9 @@ const Jobs = () => {
 
     if (newOtp.every((digit) => digit !== "")) {
       const target = newOtp.join("");
-      const arr = generateDummyArray();
-      // Check if the target exists in the array
-      const exists = checkIfExists(target, arr);
-      if (exists) {
+      const exists = await getJobsNum(target);
+
+      if (exists.res.exists) {
         setNewJobIdExist(true);
         toast.error(
           <>
@@ -226,6 +221,7 @@ const Jobs = () => {
       const response = await getJobsByFilter(filterString);
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
+        setOriginalJobs(response?.res?.data);
         // console.log(response?.res?.data);
       }
     } catch (error) {
@@ -310,6 +306,7 @@ const Jobs = () => {
       const res = await getJobs(currentPage);
       const data = res?.res?.data;
       setFilteredJobs(data);
+      setOriginalJobs(data);
       const selectedJob = data.filter(
         (item) => item?.id === getJob?.data?.id || item?.id === state?.id
       );
@@ -364,73 +361,73 @@ const Jobs = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!selectedJobs.length) {
-      toast.error(
-        <>
-          <div>
-            <h3>Trouble Deleting Jobs?</h3>
-          </div>
-          <p>
-            Please choose the jobs you want to delete. Currently, no jobs have
-            been selected for deletion.
-          </p>
-        </>
-      );
-      return;
-    }
-    try {
-      setLoading(true);
-      let response = await deleteJobs({
-        ids: selectedJobs,
-      });
-      console.log("jobs delete successful", response);
-      if (response.res) {
-        const notificationData = {
-          class: "success",
-          message: response.res.message,
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.push(notificationData);
+  // const handleDelete = async () => {
+  //   if (!selectedJobs.length) {
+  //     toast.error(
+  //       <>
+  //         <div>
+  //           <h3>Trouble Deleting Jobs?</h3>
+  //         </div>
+  //         <p>
+  //           Please choose the jobs you want to delete. Currently, no jobs have
+  //           been selected for deletion.
+  //         </p>
+  //       </>
+  //     );
+  //     return;
+  //   }
+  //   try {
+  //     setLoading(true);
+  //     let response = await deleteJobs({
+  //       ids: selectedJobs,
+  //     });
+  //     console.log("jobs delete successful", response);
+  //     if (response.res) {
+  //       const notificationData = {
+  //         class: "success",
+  //         message: response.res.message,
+  //       };
+  //       const existingNotificationsJSON = localStorage.getItem("notifications");
+  //       let existingNotifications = [];
+  //       if (existingNotificationsJSON) {
+  //         existingNotifications = JSON.parse(existingNotificationsJSON);
+  //       }
+  //       existingNotifications.push(notificationData);
 
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+  //       localStorage.setItem(
+  //         "notifications",
+  //         JSON.stringify(existingNotifications)
+  //       );
 
-        toast.success(`${response.res.message}`);
-      } else {
-        console.error("jobs delete failed:", response.error);
-        const notificationData = {
-          class: "error",
-          message: response.error.message,
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.push(notificationData);
+  //       toast.success(`${response.res.message}`);
+  //     } else {
+  //       console.error("jobs delete failed:", response.error);
+  //       const notificationData = {
+  //         class: "error",
+  //         message: response.error.message,
+  //       };
+  //       const existingNotificationsJSON = localStorage.getItem("notifications");
+  //       let existingNotifications = [];
+  //       if (existingNotificationsJSON) {
+  //         existingNotifications = JSON.parse(existingNotificationsJSON);
+  //       }
+  //       existingNotifications.push(notificationData);
 
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+  //       localStorage.setItem(
+  //         "notifications",
+  //         JSON.stringify(existingNotifications)
+  //       );
 
-        toast.error(`${response.error.message}`);
-      }
-    } catch (error) {
-      console.error("There was an error:", error);
-    } finally {
-      setLoading(false);
-      fetchJobs();
-      setSelectedJobs([]);
-    }
-  };
+  //       toast.error(`${response.error.message}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("There was an error:", error);
+  //   } finally {
+  //     setLoading(false);
+  //     fetchJobs();
+  //     setSelectedJobs([]);
+  //   }
+  // };
 
   useEffect(() => {
     const bodyScroll = document.getElementById("rightSCroll");
@@ -485,9 +482,44 @@ const Jobs = () => {
     setNewJobCollaboratorsList([]);
     setSelectNewJobStatus("");
     setSelectedNewJobDueDate(null);
+    setNewJobCollaboratorsListId([]);
   };
 
   useEffect(() => {
+    const handleAddNewJob = async () => {
+      try {
+        const year = new Date().getFullYear();
+        const month = String(new Date().getMonth() + 1).padStart(2, "0");
+        const day = String(new Date().getDate()).padStart(2, "0");
+        let formattedDueDate = `${year}-${month}-${day}`;
+        const reqBody = {
+          job_num: newJobIdNumber,
+          title: addJobName,
+          collaborators: newJobCollaboratorsListId,
+          due_date: selectedNewJobDueDate || formattedDueDate,
+          status: selectNewJobStatus || "",
+        };
+
+        console.log("reqBody", reqBody);
+
+        // API call to create job
+        const response = await createJobs(reqBody);
+        console.log("request body for create job", response);
+
+        if (response?.res?.message) {
+          toast.success(`${response.res.message}`);
+        } else {
+          toast.error(`${response?.error?.message || "Error occurred"}`);
+        }
+      } catch (error) {
+        console.log("error in updating jobs", error);
+      } finally {
+        setLoading(false);
+        fetchJobs(); // Ensure this fetches the latest jobs
+        handleCancelAddJob(); // Reset state after action
+      }
+    };
+
     const handleClickOutside = (event) => {
       if (
         addJobRowRefLeft.current &&
@@ -495,7 +527,21 @@ const Jobs = () => {
         addJobRowRefRight.current &&
         !addJobRowRefRight.current.contains(event.target)
       ) {
-        handleCancelAddJob();
+        if (newJobIdNumber === 0 || !addJobName) {
+          handleCancelAddJob();
+        } else {
+          setFilteredJobs((prevJobs) => [
+            {
+              job_num: newJobIdNumber,
+              title: addJobName,
+              collaborators: newJobCollaboratorsListId,
+              due_date: selectedNewJobDueDate || "",
+              status: selectNewJobStatus || "",
+            },
+            ...prevJobs,
+          ]);
+          handleAddNewJob();
+        }
       }
     };
 
@@ -504,7 +550,110 @@ const Jobs = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [
+    addJobName,
+    newJobCollaboratorsList,
+    newJobIdNumber,
+    newJobCollaboratorsListId,
+    selectedNewJobDueDate,
+    selectNewJobStatus,
+    fetchJobs,
+  ]);
+
+  useEffect(() => {
+    const handleAddNewJob = async () => {
+      try {
+        const year = new Date().getFullYear();
+        const month = String(new Date().getMonth() + 1).padStart(2, "0");
+        const day = String(new Date().getDate()).padStart(2, "0");
+        let formattedDueDate = `${year}-${month}-${day}`;
+        const reqBody = {
+          job_num: newJobIdNumber,
+          title: addJobName,
+          collaborators: newJobCollaboratorsListId,
+          due_date: selectedNewJobDueDate || formattedDueDate,
+          status: selectNewJobStatus || "",
+        };
+
+        console.log("reqBody", reqBody);
+
+        // API call to create job
+        const response = await createJobs(reqBody);
+        console.log("request body for create job", response);
+
+        if (response?.res?.message) {
+          toast.success(`${response.res.message}`);
+        } else {
+          toast.error(`${response?.error?.message || "Error occurred"}`);
+        }
+      } catch (error) {
+        console.log("error in updating jobs", error);
+      } finally {
+        setLoading(false);
+        fetchJobs(); // Ensure this fetches the latest jobs
+        handleCancelAddJob(); // Reset state after action
+      }
+    };
+    const handleDoubleClick = (event) => {
+      if (
+        addJobRowRefLeft.current &&
+        addJobRowRefLeft.current.contains(event.target)
+      ) {
+        if (newJobIdNumber === 0 || !addJobName) {
+          return;
+        } else {
+          setFilteredJobs((prevJobs) => [
+            {
+              job_num: newJobIdNumber,
+              title: addJobName,
+              collaborators: newJobCollaboratorsListId,
+              due_date: selectedNewJobDueDate || "",
+              status: selectNewJobStatus || "",
+            },
+            ...prevJobs,
+          ]);
+          handleAddNewJob();
+          setShowNewJobModal(true);
+        }
+      }
+      if (
+        addJobRowRefRight.current &&
+        addJobRowRefRight.current.contains(event.target)
+      ) {
+        if (newJobIdNumber === 0 || !addJobName) {
+          return;
+        } else {
+          setFilteredJobs((prevJobs) => [
+            {
+              job_num: newJobIdNumber,
+              title: addJobName,
+              collaborators: newJobCollaboratorsListId,
+              due_date: selectedNewJobDueDate || "",
+              status: selectNewJobStatus || "",
+            },
+            ...prevJobs,
+          ]);
+          handleAddNewJob();
+          setShowNewJobModal(true);
+        }
+      }
+    };
+
+    document.addEventListener("dblclick", handleDoubleClick);
+
+    return () => {
+      document.removeEventListener("dblclick", handleDoubleClick);
+    };
+  }, [
+    addJobName,
+    fetchJobs,
+    newJobCollaboratorsListId,
+    newJobIdNumber,
+    selectNewJobStatus,
+    selectedNewJobDueDate,
+    tableActiveRowLeftRef,
+    tableActiveRowRightRef,
+  ]);
 
   const fetchUsers = async () => {
     try {
@@ -527,6 +676,14 @@ const Jobs = () => {
   const handleSelectCollaborator = (user) => {
     setNewJobCollaboratorsList((prevList) => [...prevList, user]);
     setUsersList((prevList) => prevList.filter((u) => u.email !== user.email));
+    setFilteredJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.id === activeJob?.id
+          ? { ...job, collaborators: [...(job.collaborators || []), user] }
+          : job
+      )
+    );
+    setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
   };
 
   const handleRemoveCollaborator = (user) => {
@@ -534,12 +691,20 @@ const Jobs = () => {
       prevList.filter((u) => u.email !== user.email)
     );
     setUsersList((prevList) => [...prevList, user]);
-  };
-
-  const handleRemoveSelectCollaborator = (user) => {
-    setUsersList((prevList) => [...prevList, user]);
-    setNewJobCollaboratorsList((prevList) =>
-      prevList.filter((u) => u.email !== user.email)
+    setFilteredJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.id === activeJob?.id
+          ? {
+              ...job,
+              collaborators: (job.collaborators || []).filter(
+                (collaborator) => collaborator.email !== user.email
+              ),
+            }
+          : job
+      )
+    );
+    setNewJobCollaboratorsListId((prevList) =>
+      prevList.filter((u) => u.id !== user.id)
     );
   };
 
@@ -551,34 +716,6 @@ const Jobs = () => {
     const day = String(date.getDate()).padStart(2, "0");
     let formattedDueDate = `${year}-${month}-${day}`;
     setSelectedNewJobDueDate(formattedDueDate);
-  };
-
-  const handleAddNewJob = async () => {
-    try {
-      setLoading(true);
-
-      const reqBody = {
-        title: addJobName,
-        due_date: selectedNewJobDueDate || "",
-        status: selectNewJobStatus || "",
-      };
-
-      // API call to create job
-      const response = await createJobs(reqBody);
-      console.log("request body for create job", response);
-
-      if (response?.res?.message) {
-        toast.success(`${response.res.message}`);
-      } else {
-        toast.error(`${response?.error?.message || "Error occurred"}`);
-      }
-    } catch (error) {
-      console.log("error in updating jobs", error);
-    } finally {
-      setLoading(false);
-      fetchJobs(); // Ensure this fetches the latest jobs
-      handleCancelAddJob(); // Reset state after action
-    }
   };
 
   const handleTitleClick = async (job) => {
@@ -614,28 +751,194 @@ const Jobs = () => {
 
   const handleCollaboratorClick = (job) => {
     setActiveJobField("Collaborators");
+    setNewJobCollaboratorsList(job?.collaborators);
     if (activeJob?.id === job?.id) {
       return;
     }
     setActiveJob(job);
     setUpdateJobId(job.id);
-    setNewJobCollaboratorsList(job?.usersArray);
+  };
+
+  const handleStatusClick = (job) => {
+    setActiveJobField("Status");
+    if (activeJob?.id === job?.id) {
+      return;
+    }
+    setActiveJob(job);
+    setUpdateJobId(job.id);
+  };
+
+  const handleStatusChange = (editedStatus) => {
+    setActiveJobField("");
+    setFilteredJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.id === activeJob?.id ? { ...job, status: editedStatus } : job
+      )
+    );
+  };
+
+  const handleDueDateClick = (job) => {
+    setActiveJobField("DueDate");
+    setEditedJobDueDate(new Date(job.due_date));
+    if (activeJob?.id === job?.id) {
+      return;
+    }
+    setActiveJob(job);
+    setUpdateJobId(job.id);
+  };
+
+  const handleDueDateChange = (date) => {
+    setActiveJobField("");
+    setNewJobActiveBoxRight("");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    setEditedJobDueDate(formattedDueDate);
+
+    setFilteredJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.id === activeJob?.id
+          ? { ...job, due_date: date.toISOString().split("T")[0] }
+          : job
+      )
+    );
   };
 
   const handleTitleUpdate = () => {
     setActiveJobField("");
   };
 
-  const handleUpdateJob = async (updateJobId) => {
-    console.log("editedValue in handleUpdateJob",editedValue);
+  useEffect(() => {
+    const handleUpdateJob = async (updatedJob) => {
+      console.log("editedValue in handleUpdateJob", editedValue, updatedJob.id);
+      try {
+        const reqBody = {
+          job_id: updatedJob.id,
+          dataObj: {
+            title: updatedJob.title,
+            collaborators: newJobCollaboratorsListId,
+            status: updatedJob.status,
+            due_date: updatedJob.due_date,
+          },
+        };
+        const response = await updateJobs(reqBody);
+        if (!response.res) {
+          console.error("jobs update failed:", response.error);
+          const notificationData = {
+            class: "error",
+            message: response.error.message,
+          };
+          const existingNotificationsJSON =
+            localStorage.getItem("notifications");
+          let existingNotifications = [];
+          if (existingNotificationsJSON) {
+            existingNotifications = JSON.parse(existingNotificationsJSON);
+          }
+          existingNotifications.push(notificationData);
+
+          localStorage.setItem(
+            "notifications",
+            JSON.stringify(existingNotifications)
+          );
+          toast.error(`${response.error.message}`);
+        }
+      } catch (error) {
+        console.log("error in updating jobs", error);
+      }
+    };
+    const handleClickOutside = async (event) => {
+      if (
+        tableActiveRowLeftRef.current &&
+        !tableActiveRowLeftRef.current.contains(event.target) &&
+        tableActiveRowRightRef.current &&
+        !tableActiveRowRightRef.current.contains(event.target)
+      ) {
+        const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
+        const originalJob = originalJobs.find((job) => job.id === updateJobId);
+
+        console.log(
+          "updatedJob -",
+          updatedJob.title,
+          updatedJob.collaborators,
+          updatedJob.status,
+          updatedJob.due_date
+        );
+
+        const isJobChanged = (updatedJob, originalJob) => {
+          return (
+            updatedJob.title !== originalJob.title ||
+            updatedJob.collaborators !== originalJob.collaborators ||
+            updatedJob.status !== originalJob.status ||
+            updatedJob.due_date !== originalJob.due_date ||
+            false
+          );
+        };
+        console.log("isJobChanged -", isJobChanged(updatedJob, originalJob));
+        if (isJobChanged(updatedJob, originalJob)) {
+          handleUpdateJob(updatedJob);
+        }
+        if (!showNewJobModal) {
+          setActiveJob(null);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [
+    updateJobId,
+    editedValue,
+    activeJob,
+    filteredJobs,
+    originalJobs,
+    newJobCollaboratorsListId,
+    showNewJobModal,
+  ]);
+
+  useEffect(() => {
+    const handleDoubleClick = (event) => {
+      if (
+        tableActiveRowLeftRef.current &&
+        tableActiveRowLeftRef.current.contains(event.target)
+      ) {
+        setShowNewJobModal(true);
+      }
+      if (
+        tableActiveRowRightRef.current &&
+        tableActiveRowRightRef.current.contains(event.target)
+      ) {
+        setShowNewJobModal(true);
+      }
+    };
+
+    document.addEventListener("dblclick", handleDoubleClick);
+
+    return () => {
+      document.removeEventListener("dblclick", handleDoubleClick);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (activeJob === null) {
+      setNewJobCollaboratorsListId([]);
+    }
+  }, [activeJob]);
+
+  const handleUpdateJobDesc = async (jobId, updatedFields) => {
     try {
       const reqBody = {
-        job_id: updateJobId,
+        job_id: jobId,
         dataObj: {
-          title: editedValue,
+          description: updatedFields,
         },
       };
+
       const response = await updateJobs(reqBody);
+
       if (!response.res) {
         console.error("jobs update failed:", response.error);
         const notificationData = {
@@ -655,32 +958,12 @@ const Jobs = () => {
         );
         toast.error(`${response.error.message}`);
       }
+      const updatedJob = await response.json();
+      console.log("Job updated successfully:", updatedJob);
     } catch (error) {
-      console.log("error in updating jobs", error);
+      console.error("Error updating job:", error);
     }
   };
-
-  useEffect(() => {
-    const handleClickOutside = async (event) => {
-      if (
-        tableActiveRowLeftRef.current &&
-        !tableActiveRowLeftRef.current.contains(event.target) &&
-        tableActiveRowRightRef.current &&
-        !tableActiveRowRightRef.current.contains(event.target)
-      ) {
-        if (editedValue !== activeJob?.title) {
-          handleUpdateJob(updateJobId);
-        }
-        setActiveJob(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [updateJobId, editedValue]);
 
   return (
     <>
@@ -700,14 +983,24 @@ const Jobs = () => {
 
       {showNewJobModal && (
         <NewJobModal
-          job={addJobName}
-          handleClose={() => {
+          job={activeJob}
+          handleClose={async (isDeleting = false) => {
             setGetJob();
+            setActiveJob(null);
             setShowNewJobModal(false);
+            if (!isDeleting && activeJob) {
+              await handleUpdateJobDesc(activeJob.id, activeJob.description);
+            }
           }}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
+          handleDelete={() => {
+            setFilteredJobs((prevJobs) =>
+              prevJobs.filter((job) => job.id !== activeJob.id)
+            );
+            setIsDeleting(true);
+          }}
         />
       )}
 
@@ -717,6 +1010,7 @@ const Jobs = () => {
           stage={getJob.stage}
           handleClose={() => {
             setGetJob();
+            setActiveJob(null);
             setShowJobModal(false);
           }}
           fetchJobs={fetchJobs}
@@ -982,9 +1276,10 @@ const Jobs = () => {
                           >
                             <div
                               className="collaboratorsBox"
-                              onClick={() =>
-                                setNewJobActiveBoxLeft("AddCollaborators")
-                              }
+                              onClick={() => {
+                                setNewJobActiveBoxLeft("AddCollaborators");
+                                setNewJobActiveBoxRight("");
+                              }}
                             >
                               <div className=" d-flex align-items-center justify-content-center">
                                 {newJobCollaboratorsList.length > 0 && (
@@ -1008,11 +1303,6 @@ const Jobs = () => {
                                               zIndex: index,
                                               cursor: "pointer",
                                             }}
-                                            onClick={() =>
-                                              handleRemoveSelectCollaborator(
-                                                user
-                                              )
-                                            }
                                           >
                                             {initials}
                                           </div>
@@ -1037,9 +1327,10 @@ const Jobs = () => {
                             {newJobCollaboratorsList.length === 0 && (
                               <div
                                 className={`clickBoxtext`}
-                                onClick={() =>
-                                  setNewJobActiveBoxLeft("AddCollaborators")
-                                }
+                                onClick={() => {
+                                  setNewJobActiveBoxLeft("AddCollaborators");
+                                  setNewJobActiveBoxRight("");
+                                }}
                               >
                                 Add Collaborators
                               </div>
@@ -1169,9 +1460,9 @@ const Jobs = () => {
                                 onClick={() => handleCollaboratorClick(job)}
                               >
                                 <div className=" d-flex align-items-center justify-content-center">
-                                  {job?.usersArray?.length > 0 && (
+                                  {job?.collaborators?.length > 0 && (
                                     <>
-                                      {job?.usersArray
+                                      {job?.collaborators
                                         .slice(0, 3)
                                         .map((user, index) => {
                                           const initials = user.name
@@ -1195,7 +1486,7 @@ const Jobs = () => {
                                           );
                                         })}
 
-                                      {job?.usersArray?.length > 3 && (
+                                      {job?.collaborators?.length > 3 && (
                                         <div
                                           className={`collaboratorsBoxUser`}
                                           style={{
@@ -1203,12 +1494,12 @@ const Jobs = () => {
                                             zIndex: index,
                                           }}
                                         >
-                                          +{job?.usersArray.length - 3}
+                                          +{job?.collaborators.length - 3}
                                         </div>
                                       )}
                                     </>
                                   )}
-                                  {job.usersArray?.length === 0 && (
+                                  {job.collaborators?.length === 0 && (
                                     <div
                                       className="collaboratorsBoxUser disabled m-0"
                                       style={{ minWidth: "40px" }}
@@ -1349,9 +1640,10 @@ const Jobs = () => {
                             >
                               <div
                                 className={`clickBoxtext`}
-                                onClick={() =>
-                                  setNewJobActiveBoxRight("SelectStatus")
-                                }
+                                onClick={() => {
+                                  setNewJobActiveBoxRight("SelectStatus");
+                                  setNewJobActiveBoxLeft("");
+                                }}
                               >
                                 {selectNewJobStatus ? (
                                   <div
@@ -1372,7 +1664,7 @@ const Jobs = () => {
                                     className="selectCollaboratorsBox"
                                     onClick={() => {
                                       setNewJobActiveBoxRight("");
-                                      setSelectNewJobStatus("Not Started");
+                                      setSelectNewJobStatus("not-started");
                                     }}
                                   >
                                     <div className={`statusBox NotStarted`}>
@@ -1383,7 +1675,7 @@ const Jobs = () => {
                                     className="selectCollaboratorsBox"
                                     onClick={() => {
                                       setNewJobActiveBoxRight("");
-                                      setSelectNewJobStatus("Pending");
+                                      setSelectNewJobStatus("pending");
                                     }}
                                   >
                                     <div className="statusBox Pending">
@@ -1394,7 +1686,7 @@ const Jobs = () => {
                                     className="selectCollaboratorsBox"
                                     onClick={() => {
                                       setNewJobActiveBoxRight("");
-                                      setSelectNewJobStatus("In Progress");
+                                      setSelectNewJobStatus("in-progress");
                                     }}
                                   >
                                     <div className="statusBox InProgress">
@@ -1405,7 +1697,7 @@ const Jobs = () => {
                                     className="selectCollaboratorsBox"
                                     onClick={() => {
                                       setNewJobActiveBoxRight("");
-                                      setSelectNewJobStatus("On Hold");
+                                      setSelectNewJobStatus("on-hold");
                                     }}
                                   >
                                     <div className="statusBox OnHold">
@@ -1424,9 +1716,10 @@ const Jobs = () => {
                               <div
                                 className={`clickBoxtext`}
                                 style={{ cursor: "pointer" }}
-                                onClick={() =>
-                                  setNewJobActiveBoxRight("SetDueDate")
-                                }
+                                onClick={() => {
+                                  setNewJobActiveBoxRight("SetDueDate");
+                                  setNewJobActiveBoxLeft("");
+                                }}
                               >
                                 {selectedNewJobDueDate ? (
                                   <span style={{ color: "#fff" }}>
@@ -1491,13 +1784,90 @@ const Jobs = () => {
                                   : ""
                               }`}
                             >
-                              <td className="text-center">
-                                <span className={`statusBtn ${job.status}`}>
+                              <td className={`text-center clickBox`}>
+                                <span
+                                  className={`statusBtn ${job.status}`}
+                                  onClick={() => handleStatusClick(job)}
+                                >
                                   {StatusList[job.status]}
                                 </span>
+                                {activeJob?.id === job.id &&
+                                  activeJobField === "Status" && (
+                                    <div className={`newJobItemDropBox`}>
+                                      <div
+                                        className="selectCollaboratorsBox"
+                                        onClick={() => {
+                                          handleStatusChange("not-started");
+                                        }}
+                                      >
+                                        <div className={`statusBox NotStarted`}>
+                                          Not Started
+                                        </div>
+                                      </div>
+                                      <div
+                                        className="selectCollaboratorsBox"
+                                        onClick={() => {
+                                          handleStatusChange("pending");
+                                        }}
+                                      >
+                                        <div className="statusBox Pending">
+                                          Pending
+                                        </div>
+                                      </div>
+                                      <div
+                                        className="selectCollaboratorsBox"
+                                        onClick={() => {
+                                          handleStatusChange("in-progress");
+                                        }}
+                                      >
+                                        <div className="statusBox InProgress">
+                                          In Progress
+                                        </div>
+                                      </div>
+                                      <div
+                                        className="selectCollaboratorsBox"
+                                        onClick={() => {
+                                          handleStatusChange("on-hold");
+                                        }}
+                                      >
+                                        <div className="statusBox OnHold">
+                                          On Hold
+                                        </div>
+                                      </div>
+                                      <div
+                                        className="selectCollaboratorsBox"
+                                        onClick={() => {
+                                          handleStatusChange("completed");
+                                        }}
+                                      >
+                                        <div className="statusBox completed">
+                                          Completed
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
                               </td>
-                              <td className="text-center">
-                                {moment(job.due_date).local().format("L")}
+                              <td className={`text-center clickBox`}>
+                                <div
+                                  className={`clickBoxtext`}
+                                  style={{ cursor: "pointer", color: "#fff" }}
+                                  onClick={() => handleDueDateClick(job)}
+                                >
+                                  {moment(job.due_date).local().format("L")}
+                                </div>
+                                {activeJob?.id === job.id &&
+                                  activeJobField === "DueDate" && (
+                                    <div className="datePickerDiv">
+                                      <Calendar
+                                        date={editedJobDueDate}
+                                        onChange={handleDueDateChange}
+                                        value={editedJobDueDate}
+                                        calendarType="ISO 8601"
+                                        // minDate={new Date(job.due_date)}
+                                        rangeColors={["#E2E31F"]}
+                                      />
+                                    </div>
+                                  )}
                               </td>
                               <td className="text-center">
                                 {moment(job.due_date)

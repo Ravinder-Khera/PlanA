@@ -2427,6 +2427,108 @@
             }
         }
     }
+    .chatsDiv{
+        .chats-content-reciever {
+            width: 100%;
+            padding: 0px 29px;
+            margin: 25px auto;
+            .reciver-chats {
+                background: #FFFFFF33;
+                max-width: 319px;
+                width: 100%;
+                border-radius: 5px;
+                position: relative;
+                .receiverImg{
+                    top: 50%;
+                    right: 0%;
+                    transform: translateX(50%) translateY(-50%);
+                    img{
+                        max-width: 40px;
+                        max-height: 40px;
+                    }
+                }
+                .text-name {
+                    font-family: Archivo;
+                    font-size: 16px;
+                    font-weight: 600;
+                    line-height: 17.41px;
+                    letter-spacing: -0.04em;
+                    text-align: left;
+                    color: #E2E31F;
+    
+                }
+    
+                .profileImg {
+                    width: 40px;
+                    height: 40px;
+                    box-shadow: 0px 4px 4px 0px #00000040;
+                    border: 1px solid #000;
+                    border-radius: 5px;
+                    background: #E2E31F;
+                }
+    
+                p {
+                    font-family: Archivo;
+                    font-size: 14px;
+                    font-weight: 400;
+                    line-height: 15.23px;
+                    letter-spacing: -0.04em;
+                    text-align: left;
+                    padding: 22px 34px 19px 16px;
+    
+                }
+    
+            }
+        }
+        .chats-content-sender {
+            width: 100%;
+            padding: 0px 29px;
+            margin: 25px auto;
+            .reciver-chats {
+                background: #353535;
+                max-width: 319px;
+                width: 100%;
+                border-radius: 5px;
+                position: relative;
+                box-shadow: 0px 8px 8px 0px #0000004D;
+                .receiverImg{
+                    top: 50%;
+                    left: 0%;
+                    transform: translateX(-50%) translateY(-50%);
+                    .profileImg{
+                        width: 40px;
+                        height: 40px;
+                        box-shadow: 0px 4px 4px 0px #00000040;
+                        border: 1px solid #000;
+                        border-radius: 5px;
+                        background: #E2E31F;
+                    }
+                }
+                .text-name {
+                    font-family: Archivo;
+                    font-size: 16px;
+                    font-weight: 600;
+                    line-height: 17.41px;
+                    letter-spacing: -0.04em;
+                    text-align: left;
+                    color: #E2E31F;
+
+                }
+
+                p {
+                    font-family: Archivo;
+                    font-size: 14px;
+                    font-weight: 400;
+                    line-height: 15.23px;
+                    letter-spacing: -0.04em;
+                    text-align: right;
+                    padding: 18px 21px 21px 29px;
+
+                }
+
+            }
+        }
+    }
 }
 
 .addJobImgUploadArea{
