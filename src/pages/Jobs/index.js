@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   AddIcon,
   BellIcon,
@@ -9,19 +9,27 @@ import {
 import "./Jobs.scss";
 import {
   createJobs,
+  createTask,
   deleteJob,
   deleteJobs,
+  deleteTask,
   getJobs,
   getJobsByFilter,
   getJobsNum,
   getUserByRole,
   updateJobs,
+  updateTask,
 } from "../../services/auth";
 import { Bars } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import moment from "moment";
 import Filter from "../../Components/Filter/Filter";
-import JobModal, { NewJobModal } from "../../Components/JobModal/Edit/JobModal";
+import JobModal, {
+  CreateTaskModal,
+  NewJobModal,
+  NewTaskModal,
+  UpdateTaskModal,
+} from "../../Components/JobModal/Edit/JobModal";
 import { StatusList } from "../../helper";
 import Add from "../../Components/JobModal/Add/Add";
 import { useLocation } from "react-router-dom";
@@ -60,10 +68,14 @@ const Jobs = () => {
   const [addJobNameBoxAdded, setAddJobNameAdded] = useState(false);
   const [showJobModal, setShowJobModal] = useState(false);
   const [showNewJobModal, setShowNewJobModal] = useState(false);
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [showNewJobAddTaskModal, setShowNewJobAddTaskModal] = useState(false);
+  const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
   const [storageUpdated, setStorageUpdated] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [reloadTabs, setReloadTabs] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAllTasks, setShowAllTasks] = useState(false);
 
   const [notifications, setNotifications] = useState([]);
   const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
@@ -76,6 +88,7 @@ const Jobs = () => {
 
   const [newJobIdNumber, setNewJobIdNumber] = useState(Number("00000"));
   const [currentPage, setCurrentPage] = useState(1);
+  const [loadMorePage, setLoadMorePage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const [newJobId, setNewJobId] = useState(["", "", "", "", ""]);
@@ -85,6 +98,9 @@ const Jobs = () => {
   });
 
   const [activeJob, setActiveJob] = useState(null);
+  const [activeTaskJob, setActiveTaskJob] = useState(null);
+  const [activeTaskJobId, setActiveTaskJobId] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
   const [updateJobId, setUpdateJobId] = useState(null);
 
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
@@ -296,39 +312,79 @@ const Jobs = () => {
     });
   }
 
-  useEffect(() => {
-    fetchJobs(currentPage);
-  }, [currentPage]);
-
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     setLoading(true);
     try {
       const res = await getJobs(currentPage);
-      const data = res?.res?.data;
+      const data = res?.res?.data || [];
+  
+      // Update jobs state
       setFilteredJobs(data);
       setOriginalJobs(data);
-      const selectedJob = data.filter(
+  
+      // Select the current job
+      const selectedJob = data.find(
         (item) => item?.id === getJob?.data?.id || item?.id === state?.id
       );
-      setGetJob({
-        data: selectedJob[0],
-        stage: findNearestStage(selectedJob[0]),
-      });
-      // Extract users from stages
-      if (data) {
+  
+      if (selectedJob) {
+        setGetJob({
+          data: selectedJob,
+          stage: findNearestStage(selectedJob),
+        });
+      }
+  
+      // Extract users and update pagination data
+      if (data.length > 0) {
         extractUsersFromStages(data);
-        // Print the users array
-        // setUsersList(users);
-        setTotalPages(res?.res.last_page);
-        setPageUrls(res?.res.links.slice(1, -1));
-        setReloadTabs(!reloadTabs);
+        setTotalPages(res?.res?.last_page || 0);
+        setPageUrls(res?.res?.links?.slice(1, -1) || []);
+        setReloadTabs((prevReload) => !prevReload);
       }
     } catch (error) {
-      console.log("error while fetching jobs", error);
+      console.error("Error while fetching jobs:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, getJob?.data?.id, state?.id]);
+  
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
+
+  const handleScroll = useCallback(async() => {
+    console.log("handleScroll called");
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Check if the container has been scrolled to the bottom
+    if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+        setLoading(true);
+        try {
+          const res = await getJobs(loadMorePage + 1);
+          const data = res?.res?.data;
+            setFilteredJobs((prevJobs) => [
+              ...prevJobs,
+              ...data 
+              ]);
+        } catch (error) {
+          console.log("error while fetching jobs", error);
+        } finally {
+          setLoading(false);
+        }
+        setLoadMorePage(loadMorePage + 1);
+    }
+  }, [loadMorePage]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    container.addEventListener("scroll", handleScroll);
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
+
 
   const findNearestStage = (data) => {
     let nearestStage = null;
@@ -765,6 +821,11 @@ const Jobs = () => {
     setUpdateJobId(job.id);
   };
 
+  const handleAddTaskClick = (job) => {
+    setActiveTaskJob(job);
+    setShowAddTaskModal(true)
+  };
+
   const handleStatusChange = (editedStatus) => {
     setActiveJobField("");
     setFilteredJobs((prevJobs) =>
@@ -963,6 +1024,84 @@ const Jobs = () => {
     }
   };
 
+  const toggleShowAllTasks = () => {
+    setShowAllTasks((prev) => !prev);
+  };
+
+  const handleUpdateTask = async (newData, taskId ,newJobCollaboratorsList,stage) => {
+    console.log(newData?.updatedTask?.title);
+
+    setFilteredJobs((prevJobs) =>
+      prevJobs.map((job) => ({
+        ...job,
+        tasks: job.tasks.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                title: newData.updatedTask.title,
+                due_date: newData.updatedTask.due_date,
+                status: newData.updatedTask.status,
+                description: newData.updatedTask.description,
+                users: newJobCollaboratorsList,
+                stage_id: stage.id,
+              }
+            : task
+        ),
+      }))
+    );
+    setShowUpdateTaskModal(false);
+    var response = await updateTask(newData, taskId);
+    if (response.res) {
+      console.log("Task Update successful", response.res);
+    } else {
+      console.error("Task Update failed:", response.error);
+      toast.error(response.error?.message || "Failed to Update the task");
+    }
+  };
+
+  const handleCreateTask = async (newData, taskId) => {
+    console.log(newData?.newTask?.title);
+    setFilteredJobs((prevJobs) =>
+      prevJobs.map((job) => ({
+        ...job,
+        tasks: job.id === taskId 
+          ? [
+              ...job.tasks,
+              {
+                title: newData.newTask.title,
+                due_date: newData.newTask.due_date,
+                status: newData.newTask.status,
+                description: newData.newTask.description,
+              },
+            ]
+          : job.tasks,
+      }))
+    );
+    setShowAddTaskModal(false);
+    var response = await createTask(newData.newTask, taskId);
+    if (response.res) {
+      console.log("Task create successful", response.res);
+    } else {
+      console.error("Task create failed:", response.error);
+      toast.error(response.error?.message || "Failed to add the task");
+    }
+  };
+
+  const handleTaskDelete = async (task) => {
+    try {
+      const response = await deleteTask(task.id);
+      if (response.res) {
+        console.log("Job delete successful", response.res);
+      } else {
+        console.error("Job delete failed:", response.error);
+        toast.error(response.error?.message || "Failed to delete the job");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      toast.error("Error deleting job");
+    }
+  };
+
   return (
     <>
       {loading && (
@@ -989,7 +1128,7 @@ const Jobs = () => {
             if (!isDeleting && activeJob) {
               await handleUpdateJobDesc(activeJob.id, activeJob.description);
             }
-            if(isDeleting){
+            if (isDeleting) {
               setFilteredJobs((prevJobs) =>
                 prevJobs.filter((job) => job.id !== activeJob.id)
               );
@@ -1003,6 +1142,53 @@ const Jobs = () => {
               prevJobs.filter((job) => job.id !== activeJob.id)
             );
             setIsDeleting(true);
+          }}
+        />
+      )}
+
+      {showAddTaskModal && (
+        <CreateTaskModal
+          task={activeTaskJob}
+          handleClose={async () => {
+            setGetJob();
+            setShowAddTaskModal(false);
+          }}
+          fetchJobs={fetchJobs}
+          reloadTabs={reloadTabs}
+          scrollRef={taskMobileScrollRef}
+          onCreateTask={handleCreateTask}
+          handleDelete={() => {
+            setFilteredJobs((prevJobs) =>
+              prevJobs.map((job) => ({
+                ...job,
+                tasks: job.tasks.filter((task) => task.id !== activeTask.id),
+              }))
+            );
+            setShowAddTaskModal(false);
+          }}
+        />
+      )}
+
+      {showUpdateTaskModal && (
+        <UpdateTaskModal
+          task={activeTask}
+          handleClose={async () => {
+            setGetJob();
+            setShowUpdateTaskModal(false);
+          }}
+          fetchJobs={fetchJobs}
+          reloadTabs={reloadTabs}
+          scrollRef={taskMobileScrollRef}
+          onUpdateTask={handleUpdateTask}
+          handleDelete={() => {
+            setFilteredJobs((prevJobs) =>
+              prevJobs.map((job) => ({
+                ...job,
+                tasks: job.tasks.filter((task) => task.id !== activeTask.id),
+              }))
+            );
+            handleTaskDelete(activeTask);
+            setShowUpdateTaskModal(false);
           }}
         />
       )}
@@ -1166,7 +1352,7 @@ const Jobs = () => {
           </div>
         </div>
         <div className="pagination-container">
-          <div className="JobsContainer desktop" ref={containerRef}>
+          <div className="JobsContainer desktop" ref={containerRef} style={{ overflowY: "auto", maxHeight: "calc(100vh - 175px" }}>
             <div className="left-side">
               <div className="first-table">
                 <div className="job_table_outer_div  ">
@@ -1620,7 +1806,7 @@ const Jobs = () => {
                             <div className="headerDiv">Days Left</div>
                           </th>
                           <th scope="col">
-                            <div className="headerDiv">Tasks</div>
+                            <div className="headerDiv text-start">Tasks</div>
                           </th>
                           <th scope="col">
                             <div className="headerDiv">
@@ -1758,8 +1944,20 @@ const Jobs = () => {
                                   ) + " days"
                                 : "0 days"}
                             </td>
-                            <td className="px-3 text-start clickBox">
-                              <div className={`clickBoxtext`}>Add Subtasks</div>
+                            <td
+                              className={`px-3 clickBox ${
+                                newJobActiveBoxRight === "AddTask" && "active"
+                              }`}
+                            >
+                              <div
+                                className={`clickBoxtext disabled`}
+                                onClick={() => {
+                                  setNewJobActiveBoxRight("AddTask");
+                                  setNewJobActiveBoxLeft("");
+                                }}
+                              >
+                                Add Tasks
+                              </div>
                             </td>
                             <td className="text-center "></td>
                             <td className="px-3">
@@ -1882,22 +2080,56 @@ const Jobs = () => {
                                       .diff(moment(), "days")}{" "}
                                 days
                               </td>
-                              <td className="text-center">
+                              <td className="text-start">
                                 <div
-                                  className="d-flex align-items-center justify-content-center flex-wrap"
+                                  className="d-flex align-items-center"
                                   style={{ gap: "8px" }}
                                 >
-                                  <span className={`statusBtn mx-0 pending`}>
-                                    Lodge Application
-                                  </span>
-                                  <span
-                                    className={`statusBtn mx-0 in-progress`}
-                                  >
-                                    Action Notice
-                                  </span>
-                                  <span className={`statusBtn mx-0 on-hold`}>
-                                    Action Notice
-                                  </span>
+                                  {job?.tasks?.length > 0 && (
+                                    <>
+                                      {job?.tasks
+                                        .slice(
+                                          0,
+                                          showAllTasks ? job?.tasks.length : 3
+                                        )
+                                        .map((task, index) => {
+                                          return (
+                                            <span
+                                              key={index}
+                                              style={{ cursor: "pointer" }}
+                                              className={`statusBtn mx-0 ${task.status}`}
+                                              onClick={() => {
+                                                setActiveTask(task);
+                                                setShowUpdateTaskModal(true);
+                                              }}
+                                            >
+                                              {task.title}
+                                            </span>
+                                          );
+                                        })}
+                                      {job?.tasks?.length > 3 && (
+                                        <span
+                                          className={`statusBtn clickBox mx-0 `}
+                                          onClick={toggleShowAllTasks}
+                                        >
+                                          {showAllTasks
+                                            ? "View Less"
+                                            : "View More"}
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                  <div className={`px-3 clickBox`}>
+                                    <div
+                                      className={`clickBoxtext`}
+                                      // onClick={() => {
+                                      //   setShowAddTaskModal(true);
+                                      // }}
+                                      onClick={() => handleAddTaskClick(job)}
+                                    >
+                                      Add Tasks
+                                    </div>
+                                  </div>
                                 </div>
                               </td>
                               <td className="text-center ">
@@ -2022,7 +2254,7 @@ const Jobs = () => {
             </div>
           </div>
 
-          <div className="JobsHeading paginationDiv">
+          {/* <div className="JobsHeading paginationDiv">
             <div className="paginationSections">
               <div className="btnDiv">
                 <button
@@ -2089,7 +2321,7 @@ const Jobs = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

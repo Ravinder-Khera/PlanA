@@ -269,7 +269,7 @@ export const createTask = async (data) => {
         body: JSON.stringify(data),
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks`, requestOptions);
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/tasks`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response,data);
@@ -293,10 +293,10 @@ export const updateTask = async (data,taskId) => {
             "Accept": "application/json",
             "Authorization": `Bearer ${authToken}`, 
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data.updatedTask),
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks/${taskId}`, requestOptions);
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/tasks/${taskId}`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response,data);
@@ -491,7 +491,6 @@ export const getTasksByFilter = async (filter) => {
     }
 };
 
-
 export const deleteJobs = async (data) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
@@ -545,7 +544,6 @@ export const deleteJob = async (id) => {
     }
 };
 
-
 export const updateJobs = async (res) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
@@ -572,7 +570,6 @@ export const updateJobs = async (res) => {
         return { res: null, error: error }
     }
 };
-
 
 export const createJobs = async (data) => {
     const authToken = localStorage.getItem('authToken');
@@ -618,6 +615,85 @@ export const createInvoice = async (data) => {
         const data = isJson && (await response.json());
         console.log(response,data);
         if(response.status === 201){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const getTaskStages = async () => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+        }
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/taskstages`, requestOptions);;
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const createTaskStage = async (data) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${authToken}`, 
+        },
+        body: JSON.stringify(data),
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/create-taskstage`, requestOptions);
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log("response in delete api", response,data);
+        if(response.status === 201){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const deleteTask = async (id) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${authToken}`, 
+        },
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/tasks/${id}`, requestOptions);
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log("response in delete api", response,data);
+        if(response.status === 200){
             return { res: data, error: null } ;
         }else{
             return { res: null, error: data } ;

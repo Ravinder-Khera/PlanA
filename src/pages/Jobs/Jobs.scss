@@ -1236,6 +1236,15 @@
               }
             }
 
+            &.to-do {
+              background: #e3881f99;
+              border: 1px solid #e3881f;
+              color: #e3881f;
+              .bar {
+                background: #e3881f;
+              }
+            }
+
             &.progressBtn {
               min-width: 152px;
               justify-content: start;

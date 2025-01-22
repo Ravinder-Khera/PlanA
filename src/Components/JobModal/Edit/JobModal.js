@@ -7,12 +7,18 @@ import {
   TaskIcon,
   OpenCloseIcon,
   DeleteIcon,
+  EditIcon,
+  AddIcon,
+  TickIcon,
+  CrossIcon,
 } from "../../../assets/svg";
 import { Calendar } from "react-date-range";
 import { StageList, StatusList } from "../../../helper";
 import {
   createTask,
+  createTaskStage,
   deleteJob,
+  getTaskStages,
   getUserByRole,
   updateJobs,
   updateTask,
@@ -2765,12 +2771,7 @@ const JobModal = ({
   );
 };
 
-export const NewJobModal = ({
-  job,
-  handleClose,
-  reloadTabs,
-  scrollRef,
-}) => {
+export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -2786,7 +2787,7 @@ export const NewJobModal = ({
   }, [scrollRef]);
 
   useEffect(() => {
-    setDescription(job?.description)
+    setDescription(job?.description);
   }, [job, reloadTabs]);
 
   const handleOnChange = (e) => {
@@ -2867,7 +2868,7 @@ export const NewJobModal = ({
                     </div>
                   </div>
                   <div className="innerScroll">
-                    <h2 className="jobTitle">{job.title}</h2>
+                    <h2 className="jobTitle">{job?.title}</h2>
                     <div className="discriptionBox">
                       <h3>Description</h3>
                       <textarea
@@ -2883,6 +2884,2113 @@ export const NewJobModal = ({
                     <AddNewJobChatAndAttachment JobId={job?.id} />
                   </div>
                   <AddNewJobSendChatAndAttachment JobId={job?.id} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export const NewTaskModal = ({
+  id,
+  handleClose,
+  handleDelete,
+  onCreateTask,
+  reloadTabs,
+  scrollRef,
+}) => {
+  const [loader, setLoader] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [dueDate, setDueDate] = useState(null);
+  const [stage, setStage] = useState(null);
+  const [stageBox, setStageBox] = useState(false);
+  const [stageList, setStageList] = useState([]);
+  const [dueDateCalender, setDueDateCalender] = useState(false);
+  const [collaboratorsBox, setCollaboratorsBox] = useState(false);
+  const [addStageBox, setAddStageBox] = useState(false);
+  const [statusBox, setStatusBox] = useState(false);
+  const [taskStatus, setTatskStatus] = useState("not-started");
+  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]
+  );
+  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState([]);
+  const [addStageTitle, setAddStageTitle] = useState("");
+  const [colors, setColors] = useState([]);
+  const [activeStageColor, setActiveStageColor] = useState("");
+  const [usersList, setUsersList] = useState([]);
+  const popUpRef = useRef(null);
+  const datePickerRef = useRef(null);
+  const newCollaboratorBoxRef = useRef(null);
+  const statusBoxRef = useRef(null);
+  const stageBoxRef = useRef(null);
+
+  const fetchUsers = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getUserByRole(authToken);
+      if (response.res) {
+        setUsersList(response.res);
+      } else {
+        console.error("Failed to fetch Users:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  const fetchStages = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getTaskStages(authToken);
+      if (response.res) {
+        setStageList(response.res);
+        console.log("stages", response.res);
+      } else {
+        console.error("Failed to fetch Users:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  useEffect(()=>{
+    const year = new Date().getFullYear();
+    const month = String(new Date().getMonth() + 1).padStart(2, "0");
+    const day = String(new Date().getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    setDueDate(formattedDueDate);
+  },[])
+
+  useEffect(() => {
+    fetchUsers();
+    fetchStages();
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef?.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [scrollRef]);
+
+  const handleOnChange = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleModalClose = async () => {
+    const newTask = {
+      job_id: id,
+      title: title,
+      due_date: dueDate,
+      status: taskStatus,
+      assignee_ids: newJobCollaboratorsListId,
+      stage_id: stage?.id,
+      description: description,
+    };
+    if (
+      title !== "" )
+    {
+        onCreateTask({ newTask }, id);
+      } else{
+        handleClose();
+      }
+  };
+
+  const handleDueDateChange = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    setDueDate(formattedDueDate);
+    setDueDateCalender(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = async (event) => {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target)
+      ) {
+        setDueDateCalender(false);
+      }
+      if (
+        newCollaboratorBoxRef.current &&
+        !newCollaboratorBoxRef.current.contains(event.target)
+      ) {
+        setCollaboratorsBox(false);
+      }
+      if (
+        statusBoxRef.current &&
+        !statusBoxRef.current.contains(event.target)
+      ) {
+        setStatusBox(false);
+      }
+      if (stageBoxRef.current && !stageBoxRef.current.contains(event.target)) {
+        setStageBox(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleRemoveCollaborator = (user) => {
+    setNewJobCollaboratorsList((prevList) =>
+      prevList.filter((u) => u.email !== user.email)
+    );
+    setUsersList((prevList) => [...prevList, user]);
+
+    setNewJobCollaboratorsListId((prevList) =>
+      prevList.filter((u) => u.id !== user.id)
+    );
+  };
+
+  const handleSelectCollaborator = (user) => {
+    setNewJobCollaboratorsList((prevList) => [...prevList, user]);
+    setUsersList((prevList) => prevList.filter((u) => u.email !== user.email));
+    setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
+  };
+
+  function formatStatus(status) {
+    return status
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  useEffect(() => {
+    const generatedColors = Array.from({ length: stageList?.length }, () =>
+      getRandomColor()
+    );
+    setColors(generatedColors);
+  }, [stageList?.length]);
+
+  const handleCreateStage = async (stageName) => {
+    const newStage = {
+      name: stageName,
+    };
+    setStageList((prevList) => [...prevList, newStage]);
+    setAddStageBox(false);
+    setAddStageTitle("");
+
+    const response = await createTaskStage(newStage);
+
+    if (response?.res?.message) {
+      console.log(`${response.res.message}`);
+    } else {
+      toast.error(`${response?.error?.message || "Error occurred"}`);
+    }
+  };
+
+  return (
+    <>
+      {loader && (
+        <div className="loaderDiv">
+          <Bars
+            height="80"
+            width="80"
+            color="#E2E31F"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      )}
+      <div className="loaderDiv2 mobile">
+        <div className="pop-wrapper">
+          <div className="wrapper">
+            <div
+              className="container newJob-pop-container pop-container"
+              ref={popUpRef}
+            >
+              <div className="popup-content" ref={scrollRef}>
+                <div className="popup-section-left">
+                  <div className="topFlexDiv">
+                    <div
+                      className="delete-box"
+                      style={{ cursor: "pointer", zIndex: 2 }}
+                      onClick={handleDelete}
+                    >
+                      <div className="deletBg">
+                        <DeleteIcon />
+                      </div>
+                      <div className="delete-item">Delete Task</div>
+                    </div>
+                    <div
+                      className="delete-box"
+                      style={{ cursor: "pointer", zIndex: 2 }}
+                      onClick={handleModalClose}
+                    >
+                      <div className="searchUserImg">
+                        <OpenCloseIcon />
+                      </div>
+                      <div className="delete-item">Collapse</div>
+                    </div>
+                  </div>
+                  <div className="innerScroll">
+                    <input
+                      type="text"
+                      className="jobTitle"
+                      name="title"
+                      value={title}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                      }}
+                      placeholder="Write Task Name..."
+                    />
+                    <div className="discriptionBox">
+                      <h3>Description</h3>
+                      <textarea
+                        type="text"
+                        name="description"
+                        rows={2}
+                        value={description}
+                        onChange={handleOnChange}
+                        placeholder="Add Description Here..."
+                      />
+                    </div>
+
+                    <div className="discriptionBox">
+                      <h3>Days Left</h3>
+                      {dueDate &&
+                      Math.floor(
+                        (new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24)
+                      ) > 0
+                        ? Math.floor(
+                            (new Date(dueDate) - new Date()) /
+                              (1000 * 60 * 60 * 24)
+                          ) + " days"
+                        : "0 days"}
+                    </div>
+
+                    <div className="discriptionBox">
+                      <div className="editBox">
+                        <div className="editBoxContent">
+                          <div className="editBoxInner">
+                            <h3>Job No.</h3>
+                            <p className="textClass disabled">
+                              <button className="taskJobBtn">
+                                {id}
+                              </button>
+                            </p>
+                          </div>
+                          <div className="editBoxInner">
+                            <h3>Collaborators</h3>
+                            <div className="textClass disabled collaboratorsBox justify-content-start position-relative">
+                              <div
+                                className=" d-flex align-items-center justify-content-center"
+                                onClick={() => setCollaboratorsBox(true)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {newJobCollaboratorsList.length > 0 && (
+                                  <>
+                                    {newJobCollaboratorsList
+                                      .slice(0, 3)
+                                      .map((user, index) => {
+                                        const initials = user.name
+                                          .split(" ")
+                                          .map((part) =>
+                                            part.charAt(0).toUpperCase()
+                                          )
+                                          .join("");
+
+                                        return (
+                                          <div
+                                            key={index}
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: index,
+                                            }}
+                                          >
+                                            {initials}
+                                          </div>
+                                        );
+                                      })}
+
+                                    {newJobCollaboratorsList.length > 3 && (
+                                      <div
+                                        className={`collaboratorsBoxUser`}
+                                        style={{
+                                          minWidth: "40px",
+                                          zIndex: "4",
+                                        }}
+                                      >
+                                        +{newJobCollaboratorsList.length - 3}
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                                {newJobCollaboratorsList.length === 0 && (
+                                  <div
+                                    className="collaboratorsBoxUser disabled m-0"
+                                    style={{
+                                      minWidth: "40px",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    Add Collaborators
+                                  </div>
+                                )}
+                              </div>
+                              {collaboratorsBox && (
+                                <div
+                                  className={`newJobItemDropBox`} style={{left:'11px'}}
+                                  ref={newCollaboratorBoxRef}
+                                >
+                                  {newJobCollaboratorsList.length > 0 && (
+                                    <div className="addedCollabs">
+                                      {newJobCollaboratorsList.map(
+                                        (user, index) => {
+                                          const initials = user.name
+                                            .split(" ")
+                                            .map((part) =>
+                                              part.charAt(0).toUpperCase()
+                                            )
+                                            .join("");
+
+                                          return (
+                                            <div
+                                              className="selectCollaboratorsBox"
+                                              key={index}
+                                              onClick={() =>
+                                                handleRemoveCollaborator(user)
+                                              }
+                                            >
+                                              <div
+                                                className={`collaboratorsBoxUser`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                }}
+                                              >
+                                                {initials}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  )}
+                                  {usersList
+                                    ? usersList.map((user, index) => {
+                                        const initials = user.name
+                                          .split(" ")
+                                          .map((part) =>
+                                            part.charAt(0).toUpperCase()
+                                          )
+                                          .join("");
+
+                                        return (
+                                          <div
+                                            className="selectCollaboratorsBox"
+                                            key={index}
+                                            onClick={() =>
+                                              handleSelectCollaborator(user)
+                                            }
+                                          >
+                                            <div
+                                              className={`collaboratorsBoxUser`}
+                                              style={{
+                                                minWidth: "40px",
+                                              }}
+                                            >
+                                              {initials}
+                                            </div>
+                                            <div className="userName">
+                                              {user.name}
+                                            </div>
+                                            <div className="userMail">
+                                              {user.email}
+                                            </div>
+                                          </div>
+                                        );
+                                      })
+                                    : "No users found"}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="editBoxInner position-relative">
+                            <h3>Status</h3>
+                            <button
+                              className={`statusBox ${taskStatus}`}
+                              onClick={() => setStatusBox(true)}
+                            >
+                              {formatStatus(taskStatus)}
+                            </button>
+                            {statusBox && (
+                              <div
+                                className={`newJobItemDropBox`}
+                                ref={statusBoxRef}
+                              >
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("not-started");
+                                  }}
+                                >
+                                  <div className={`statusBox not-started`}>
+                                    Not Started
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("pending");
+                                  }}
+                                >
+                                  <div className="statusBox pending">
+                                    Pending
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("in-progress");
+                                  }}
+                                >
+                                  <div className="statusBox in-progress">
+                                    In Progress
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("on-hold");
+                                  }}
+                                >
+                                  <div className="statusBox on-hold">
+                                    On Hold
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="editBoxInner">
+                            <h3>Due Date</h3>
+                            <div
+                              className={`textClass pointer ${
+                                !dueDate && "disabled"
+                              }`}
+                              onClick={() => setDueDateCalender(true)}
+                            >
+                              {dueDate}
+                              {dueDateCalender && (
+                                <div
+                                  className="datePickerDiv"
+                                  ref={datePickerRef}
+                                >
+                                  <Calendar
+                                    date={dueDate}
+                                    onChange={handleDueDateChange}
+                                    value={new Date(dueDate)}
+                                    calendarType="ISO 8601"
+                                    rangeColors={["#E2E31F"]}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="editBoxInner position-relative">
+                            <h3>Stage</h3>
+                            <button
+                              className={`statusBox stageBox position-relative ${stage}`}
+                              style={{
+                                border: `1px solid ${activeStageColor}`,
+                                background: "transparent",
+                                zIndex: "1",
+                              }}
+                              onClick={() => setStageBox(true)}
+                            >
+                              {stage ? stage.title : "Select Stage"}
+                              <span
+                                className="position-absolute w-100 h-100"
+                                style={{
+                                  backgroundColor: activeStageColor,
+                                  opacity: "0.5",
+                                  top: "0",
+                                  left: "0",
+                                  zIndex: "-1",
+                                }}
+                              ></span>
+                            </button>
+                            {stageBox && (
+                              <div
+                                className={`newJobItemDropBox stageBox`}
+                                ref={stageBoxRef}
+                              >
+                                <div className="stageListBox">
+                                  {stageList.map((stage, index) => {
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="selectCollaboratorsBox"
+                                        onClick={() => {
+                                          setStageBox(false);
+                                          setStage(stage);
+                                          setActiveStageColor(colors[index]);
+                                        }}
+                                      >
+                                        <div
+                                          className={`statusBox position-relative`}
+                                          style={{
+                                            border: `1px solid ${colors[index]}`,
+                                          }}
+                                        >
+                                          {stage.title}
+                                          <span
+                                            className="position-absolute w-100 h-100"
+                                            style={{
+                                              backgroundColor: colors[index],
+                                              opacity: "0.5",
+                                              top: "0",
+                                              left: "0",
+                                              zIndex: "-1",
+                                            }}
+                                          ></span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                {!addStageBox ? (
+                                  <div className="editBoxIcon pt-4">
+                                    <div
+                                      className="delete-box justify-content-start"
+                                      style={{ cursor: "pointer", zIndex: 2 }}
+                                      onClick={() => setAddStageBox(true)}
+                                    >
+                                      <div
+                                        className="deletBg d-flex align-items-center justify-content-center"
+                                        style={{
+                                          padding: "6px",
+                                          width: "36px",
+                                          height: "36px",
+                                        }}
+                                      >
+                                        <AddIcon />
+                                      </div>
+                                      <div className="delete-item">
+                                        Create New Stage
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="AddStageBox">
+                                    <input
+                                      type="text"
+                                      className="AddStageInput"
+                                      name="title"
+                                      value={addStageTitle}
+                                      onChange={(e) => {
+                                        setAddStageTitle(e.target.value);
+                                      }}
+                                      placeholder="Write New Stage Name Here..."
+                                    />
+                                    <div className="editBoxIcon">
+                                      <div
+                                        className="delete-box justify-content-start"
+                                        style={{ cursor: "pointer", zIndex: 2 }}
+                                        onClick={() =>
+                                          handleCreateStage(addStageTitle)
+                                        }
+                                      >
+                                        <div
+                                          className="deletBg d-flex align-items-center justify-content-center"
+                                          style={{
+                                            padding: "6px",
+                                            width: "36px",
+                                            height: "36px",
+                                          }}
+                                        >
+                                          <TickIcon />
+                                        </div>
+                                        <div className="delete-item">
+                                          Confirm New Stage
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="editBoxIcon">
+                                      <div
+                                        className="delete-box justify-content-start"
+                                        style={{ cursor: "pointer", zIndex: 2 }}
+                                        onClick={() => {
+                                          setAddStageBox(false);
+                                          setAddStageTitle("");
+                                        }}
+                                      >
+                                        <div
+                                          className="cancelBg d-flex align-items-center justify-content-center"
+                                          style={{
+                                            padding: "6px",
+                                            width: "36px",
+                                            height: "36px",
+                                          }}
+                                        >
+                                          <CrossIcon />
+                                        </div>
+                                        <div className="cancelBg-item">
+                                          Cancel
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="editBoxIcon pe-4">
+                          <div
+                            className="delete-box"
+                            style={{ cursor: "pointer", zIndex: 2 }}
+                          >
+                            <div className="deletBg" style={{ padding: "6px" }}>
+                              <EditIcon />
+                            </div>
+                            <div className="delete-item">Edit</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <AddNewJobChatAndAttachment JobId={id} />
+                  </div>
+                  <AddNewJobSendChatAndAttachment JobId={id} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export const UpdateTaskModal = ({
+  task,
+  handleClose,
+  handleDelete,
+  reloadTabs,
+  onUpdateTask,
+  scrollRef,
+}) => {
+  const [loader, setLoader] = useState(false);
+  const [title, setTitle] = useState(task?.title || "");
+  const [description, setDescription] = useState(task?.description || "");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [dueDate, setDueDate] = useState(task?.due_date || null);
+  const [stage, setStage] = useState(task?.stage || null);
+  const [stageBox, setStageBox] = useState(false);
+  const [stageList, setStageList] = useState([]);
+  const [dueDateCalender, setDueDateCalender] = useState(false);
+  const [collaboratorsBox, setCollaboratorsBox] = useState(false);
+  const [addStageBox, setAddStageBox] = useState(false);
+  const [statusBox, setStatusBox] = useState(false);
+  const [taskStatus, setTatskStatus] = useState(task?.status || "");
+  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState(
+    task?.users || []
+  );
+  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState([]);
+  const [addStageTitle, setAddStageTitle] = useState("");
+  const [colors, setColors] = useState([]);
+  const [activeStageColor, setActiveStageColor] = useState("");
+  const [usersList, setUsersList] = useState([]);
+  const popUpRef = useRef(null);
+  const datePickerRef = useRef(null);
+  const newCollaboratorBoxRef = useRef(null);
+  const statusBoxRef = useRef(null);
+  const stageBoxRef = useRef(null);
+
+  const fetchUsers = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getUserByRole(authToken);
+      if (response.res) {
+        setUsersList(response.res);
+      } else {
+        console.error("Failed to fetch Users:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  useEffect(()=>{
+    if(task?.users){
+      setNewJobCollaboratorsListId(task?.users.map((user) => user.id))
+    }
+  },[task])
+  
+  useEffect(() => {
+    const fetchStages = async () => {
+      try {
+        const authToken = localStorage.getItem("authToken");
+        let response = await getTaskStages(authToken);
+        if (response.res) {
+          setStageList(response.res);
+          console.log('setStage :',task?.stage_id);
+          
+          // setStage(response.res.filter((stage) => stage.id === task?.stage_id))
+          console.log("stages", response.res);
+        } else {
+          console.error("Failed to fetch Users:", response.error);
+        }
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+    fetchUsers();
+    fetchStages();
+  }, [task]);
+
+  useEffect(() => {
+    if (scrollRef?.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [scrollRef]);
+
+  useEffect(() => {
+    setDescription(task?.description);
+  }, [task, reloadTabs]);
+
+  const handleOnChange = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleModalClose = async () => {
+    const year = new Date().getFullYear();
+    const month = String(new Date().getMonth() + 1).padStart(2, "0");
+    const day = String(new Date().getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    const updatedTask = {
+      title: title,
+      due_date: dueDate ? dueDate : formattedDueDate,
+      status: taskStatus,
+      assignee_ids: newJobCollaboratorsListId,
+      stage_id: stage?.id,
+      description: description,
+    };
+    if (onUpdateTask ||
+      title !== task.title ||
+      dueDate !== task.due_date ||
+      taskStatus !== task.status ||
+      newJobCollaboratorsListId !== task.assignee_ids ||
+      stage?.id !== task.stage_id ||
+      description !== task.description) 
+    {
+        onUpdateTask({ updatedTask }, task.id , newJobCollaboratorsList, stage);
+      } else{
+        handleClose();
+      }
+  };
+
+  const handleDueDateChange = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    setDueDate(formattedDueDate);
+    setDueDateCalender(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = async (event) => {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target)
+      ) {
+        setDueDateCalender(false);
+      }
+      if (
+        newCollaboratorBoxRef.current &&
+        !newCollaboratorBoxRef.current.contains(event.target)
+      ) {
+        setCollaboratorsBox(false);
+      }
+      if (
+        statusBoxRef.current &&
+        !statusBoxRef.current.contains(event.target)
+      ) {
+        setStatusBox(false);
+      }
+      if (stageBoxRef.current && !stageBoxRef.current.contains(event.target)) {
+        setStageBox(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleRemoveCollaborator = (user) => {
+    setNewJobCollaboratorsList((prevList) =>
+      prevList.filter((u) => u.email !== user.email)
+    );
+    setUsersList((prevList) => [...prevList, user]);
+
+    setNewJobCollaboratorsListId((prevList) =>
+      prevList.filter((u) => u.id !== user.id)
+    );
+  };
+
+  const handleSelectCollaborator = (user) => {
+    setNewJobCollaboratorsList((prevList) => [...prevList, user]);
+    setUsersList((prevList) => prevList.filter((u) => u.email !== user.email));
+    setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
+  };
+
+  function formatStatus(status) {
+    return status
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  useEffect(() => {
+    const generatedColors = Array.from({ length: stageList?.length }, () =>
+      getRandomColor()
+    );
+    setColors(generatedColors);
+  }, [stageList?.length]);
+
+  const handleCreateStage = async (stageName) => {
+    const newStage = {
+      name: stageName,
+    };
+    setStageList((prevList) => [...prevList, newStage]);
+    setAddStageBox(false);
+    setAddStageTitle("");
+
+    const response = await createTaskStage(newStage);
+
+    if (response?.res?.message) {
+      console.log(`${response.res.message}`);
+    } else {
+      toast.error(`${response?.error?.message || "Error occurred"}`);
+    }
+  };
+
+  return (
+    <>
+      {loader && (
+        <div className="loaderDiv">
+          <Bars
+            height="80"
+            width="80"
+            color="#E2E31F"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      )}
+      <div className="loaderDiv2 mobile">
+        <div className="pop-wrapper">
+          <div className="wrapper">
+            <div
+              className="container newJob-pop-container pop-container"
+              ref={popUpRef}
+            >
+              <div className="popup-content" ref={scrollRef}>
+                <div className="popup-section-left">
+                  <div className="topFlexDiv">
+                    <div
+                      className="delete-box"
+                      style={{ cursor: "pointer", zIndex: 2 }}
+                      onClick={handleDelete}
+                    >
+                      <div className="deletBg">
+                        <DeleteIcon />
+                      </div>
+                      <div className="delete-item">Delete Task</div>
+                    </div>
+                    <div
+                      className="delete-box"
+                      style={{ cursor: "pointer", zIndex: 2 }}
+                      onClick={handleModalClose}
+                    >
+                      <div className="searchUserImg">
+                        <OpenCloseIcon />
+                      </div>
+                      <div className="delete-item">Collapse</div>
+                    </div>
+                  </div>
+                  <div className="innerScroll">
+                    <input
+                      type="text"
+                      className="jobTitle"
+                      name="title"
+                      value={title}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                      }}
+                      placeholder="Write Task Name..."
+                    />
+                    <div className="discriptionBox">
+                      <h3>Description</h3>
+                      <textarea
+                        type="text"
+                        name="description"
+                        rows={2}
+                        value={description}
+                        onChange={handleOnChange}
+                        placeholder="Add Description Here..."
+                      />
+                    </div>
+
+                    <div className="discriptionBox">
+                      <h3>Days Left</h3>
+                      {dueDate &&
+                      Math.floor(
+                        (new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24)
+                      ) > 0
+                        ? Math.floor(
+                            (new Date(dueDate) - new Date()) /
+                              (1000 * 60 * 60 * 24)
+                          ) + " days"
+                        : "0 days"}
+                    </div>
+
+                    <div className="discriptionBox">
+                      <div className="editBox">
+                        <div className="editBoxContent">
+                          <div className="editBoxInner">
+                            <h3>Job No.</h3>
+                            <p className="textClass disabled">
+                              <button className="taskJobBtn">
+                                {task?.job_num}
+                              </button>
+                            </p>
+                          </div>
+                          <div className="editBoxInner">
+                            <h3>Collaborators</h3>
+                            <div className="textClass disabled collaboratorsBox justify-content-start position-relative">
+                              <div
+                                className=" d-flex align-items-center justify-content-center"
+                                onClick={() => setCollaboratorsBox(true)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {newJobCollaboratorsList.length > 0 && (
+                                  <>
+                                    {newJobCollaboratorsList
+                                      .slice(0, 3)
+                                      .map((user, index) => {
+                                        const initials = user.name
+                                          .split(" ")
+                                          .map((part) =>
+                                            part.charAt(0).toUpperCase()
+                                          )
+                                          .join("");
+
+                                        return (
+                                          <div
+                                            key={index}
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: index,
+                                            }}
+                                          >
+                                            {initials}
+                                          </div>
+                                        );
+                                      })}
+
+                                    {newJobCollaboratorsList.length > 3 && (
+                                      <div
+                                        className={`collaboratorsBoxUser`}
+                                        style={{
+                                          minWidth: "40px",
+                                          zIndex: "4",
+                                        }}
+                                      >
+                                        +{newJobCollaboratorsList.length - 3}
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                                {newJobCollaboratorsList.length === 0 && (
+                                  <div
+                                    className="collaboratorsBoxUser disabled m-0"
+                                    style={{
+                                      minWidth: "40px",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    Add Collaborators
+                                  </div>
+                                )}
+                              </div>
+                              {collaboratorsBox && (
+                                <div
+                                  className={`newJobItemDropBox`} style={{left:'11px'}}
+                                  ref={newCollaboratorBoxRef}
+                                >
+                                  {newJobCollaboratorsList.length > 0 && (
+                                    <div className="addedCollabs">
+                                      {newJobCollaboratorsList.map(
+                                        (user, index) => {
+                                          const initials = user.name
+                                            .split(" ")
+                                            .map((part) =>
+                                              part.charAt(0).toUpperCase()
+                                            )
+                                            .join("");
+
+                                          return (
+                                            <div
+                                              className="selectCollaboratorsBox"
+                                              key={index}
+                                              onClick={() =>
+                                                handleRemoveCollaborator(user)
+                                              }
+                                            >
+                                              <div
+                                                className={`collaboratorsBoxUser`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                }}
+                                              >
+                                                {initials}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  )}
+                                  {usersList
+                                    ? usersList.map((user, index) => {
+                                        const initials = user.name
+                                          .split(" ")
+                                          .map((part) =>
+                                            part.charAt(0).toUpperCase()
+                                          )
+                                          .join("");
+
+                                        return (
+                                          <div
+                                            className="selectCollaboratorsBox"
+                                            key={index}
+                                            onClick={() =>
+                                              handleSelectCollaborator(user)
+                                            }
+                                          >
+                                            <div
+                                              className={`collaboratorsBoxUser`}
+                                              style={{
+                                                minWidth: "40px",
+                                              }}
+                                            >
+                                              {initials}
+                                            </div>
+                                            <div className="userName">
+                                              {user.name}
+                                            </div>
+                                            <div className="userMail">
+                                              {user.email}
+                                            </div>
+                                          </div>
+                                        );
+                                      })
+                                    : "No users found"}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="editBoxInner position-relative">
+                            <h3>Status</h3>
+                            <button
+                              className={`statusBox ${taskStatus}`}
+                              onClick={() => setStatusBox(true)}
+                            >
+                              {formatStatus(taskStatus)}
+                            </button>
+                            {statusBox && (
+                              <div
+                                className={`newJobItemDropBox`}
+                                ref={statusBoxRef}
+                              >
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("not-started");
+                                  }}
+                                >
+                                  <div className={`statusBox not-started`}>
+                                    Not Started
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("completed");
+                                  }}
+                                >
+                                  <div className="statusBox completed">
+                                  Completed
+                                  </div>
+                                </div>
+                                
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("in-progress");
+                                  }}
+                                >
+                                  <div className="statusBox in-progress">
+                                    In Progress
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("on-hold");
+                                  }}
+                                >
+                                  <div className="statusBox on-hold">
+                                    On Hold
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("canceled");
+                                  }}
+                                >
+                                  <div className="statusBox canceled">
+                                    Canceled
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="editBoxInner">
+                            <h3>Due Date</h3>
+                            <div
+                              className={`textClass pointer ${
+                                dueDate === task?.due_date && "disabled"
+                              }`}
+                              onClick={() => setDueDateCalender(true)}
+                            >
+                              {dueDate ? dueDate : "Select Date"}
+                              {dueDateCalender && (
+                                <div
+                                  className="datePickerDiv"
+                                  ref={datePickerRef}
+                                >
+                                  <Calendar
+                                    date={dueDate}
+                                    onChange={handleDueDateChange}
+                                    value={new Date(dueDate)}
+                                    calendarType="ISO 8601"
+                                    rangeColors={["#E2E31F"]}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="editBoxInner position-relative">
+                            <h3>Stage</h3>
+                            <button
+                              className={`statusBox stageBox position-relative ${stage}`}
+                              style={{
+                                border: `1px solid ${activeStageColor}`,
+                                background: "transparent",
+                                zIndex: "1",
+                              }}
+                              onClick={() => setStageBox(true)}
+                            >
+                              {stage ? stage.title : "Select Stage"}
+                              <span
+                                className="position-absolute w-100 h-100"
+                                style={{
+                                  backgroundColor: activeStageColor,
+                                  opacity: "0.5",
+                                  top: "0",
+                                  left: "0",
+                                  zIndex: "-1",
+                                }}
+                              ></span>
+                            </button>
+                            {stageBox && (
+                              <div
+                                className={`newJobItemDropBox stageBox`}
+                                ref={stageBoxRef}
+                              >
+                                <div className="stageListBox">
+                                  {stageList.map((stage, index) => {
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="selectCollaboratorsBox"
+                                        onClick={() => {
+                                          setStageBox(false);
+                                          setStage(stage);
+                                          setActiveStageColor(colors[index]);
+                                        }}
+                                      >
+                                        <div
+                                          className={`statusBox position-relative`}
+                                          style={{
+                                            border: `1px solid ${colors[index]}`,
+                                          }}
+                                        >
+                                          {stage.title}
+                                          <span
+                                            className="position-absolute w-100 h-100"
+                                            style={{
+                                              backgroundColor: colors[index],
+                                              opacity: "0.5",
+                                              top: "0",
+                                              left: "0",
+                                              zIndex: "-1",
+                                            }}
+                                          ></span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                {!addStageBox ? (
+                                  <div className="editBoxIcon pt-4">
+                                    <div
+                                      className="delete-box justify-content-start"
+                                      style={{ cursor: "pointer", zIndex: 2 }}
+                                      onClick={() => setAddStageBox(true)}
+                                    >
+                                      <div
+                                        className="deletBg d-flex align-items-center justify-content-center"
+                                        style={{
+                                          padding: "6px",
+                                          width: "36px",
+                                          height: "36px",
+                                        }}
+                                      >
+                                        <AddIcon />
+                                      </div>
+                                      <div className="delete-item">
+                                        Create New Stage
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="AddStageBox">
+                                    <input
+                                      type="text"
+                                      className="AddStageInput"
+                                      name="title"
+                                      value={addStageTitle}
+                                      onChange={(e) => {
+                                        setAddStageTitle(e.target.value);
+                                      }}
+                                      placeholder="Write New Stage Name Here..."
+                                    />
+                                    <div className="editBoxIcon">
+                                      <div
+                                        className="delete-box justify-content-start"
+                                        style={{ cursor: "pointer", zIndex: 2 }}
+                                        onClick={() =>
+                                          handleCreateStage(addStageTitle)
+                                        }
+                                      >
+                                        <div
+                                          className="deletBg d-flex align-items-center justify-content-center"
+                                          style={{
+                                            padding: "6px",
+                                            width: "36px",
+                                            height: "36px",
+                                          }}
+                                        >
+                                          <TickIcon />
+                                        </div>
+                                        <div className="delete-item">
+                                          Confirm New Stage
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="editBoxIcon">
+                                      <div
+                                        className="delete-box justify-content-start"
+                                        style={{ cursor: "pointer", zIndex: 2 }}
+                                        onClick={() => {
+                                          setAddStageBox(false);
+                                          setAddStageTitle("");
+                                        }}
+                                      >
+                                        <div
+                                          className="cancelBg d-flex align-items-center justify-content-center"
+                                          style={{
+                                            padding: "6px",
+                                            width: "36px",
+                                            height: "36px",
+                                          }}
+                                        >
+                                          <CrossIcon />
+                                        </div>
+                                        <div className="cancelBg-item">
+                                          Cancel
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="editBoxIcon pe-4">
+                          <div
+                            className="delete-box"
+                            style={{ cursor: "pointer", zIndex: 2 }}
+                          >
+                            <div className="deletBg" style={{ padding: "6px" }}>
+                              <EditIcon />
+                            </div>
+                            <div className="delete-item">Edit</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <AddNewJobChatAndAttachment JobId={task?.job_id} />
+                  </div>
+                  <AddNewJobSendChatAndAttachment JobId={task?.job_id} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export const CreateTaskModal = ({
+  task,
+  handleClose,
+  handleDelete,
+  onCreateTask,
+  reloadTabs,
+  scrollRef,
+}) => {
+  const [loader, setLoader] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [dueDate, setDueDate] = useState(null);
+  const [stage, setStage] = useState(null);
+  const [stageBox, setStageBox] = useState(false);
+  const [stageList, setStageList] = useState([]);
+  const [dueDateCalender, setDueDateCalender] = useState(false);
+  const [collaboratorsBox, setCollaboratorsBox] = useState(false);
+  const [addStageBox, setAddStageBox] = useState(false);
+  const [statusBox, setStatusBox] = useState(false);
+  const [taskStatus, setTatskStatus] = useState("not-started");
+  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]
+  );
+  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState([]);
+  const [addStageTitle, setAddStageTitle] = useState("");
+  const [colors, setColors] = useState([]);
+  const [activeStageColor, setActiveStageColor] = useState("");
+  const [usersList, setUsersList] = useState([]);
+  const popUpRef = useRef(null);
+  const datePickerRef = useRef(null);
+  const newCollaboratorBoxRef = useRef(null);
+  const statusBoxRef = useRef(null);
+  const stageBoxRef = useRef(null);
+
+  const fetchUsers = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getUserByRole(authToken);
+      if (response.res) {
+        setUsersList(response.res);
+      } else {
+        console.error("Failed to fetch Users:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  const fetchStages = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getTaskStages(authToken);
+      if (response.res) {
+        setStageList(response.res);
+        console.log("stages", response.res);
+      } else {
+        console.error("Failed to fetch Users:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  useEffect(()=>{
+    const year = new Date().getFullYear();
+    const month = String(new Date().getMonth() + 1).padStart(2, "0");
+    const day = String(new Date().getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    setDueDate(formattedDueDate);
+  },[])
+
+  useEffect(() => {
+    fetchUsers();
+    fetchStages();
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef?.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [scrollRef]);
+
+  const handleOnChange = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleModalClose = async () => {
+    const newTask = {
+      job_id: task?.id,
+      title: title,
+      due_date: dueDate,
+      status: taskStatus,
+      assignee_ids: newJobCollaboratorsListId,
+      stage_id: stage?.id,
+      description: description,
+    };
+    if (
+      title !== "" )
+    {
+        onCreateTask({ newTask }, task.id);
+      } else{
+        handleClose();
+      }
+  };
+
+  const handleDueDateChange = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
+    setDueDate(formattedDueDate);
+    setDueDateCalender(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = async (event) => {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target)
+      ) {
+        setDueDateCalender(false);
+      }
+      if (
+        newCollaboratorBoxRef.current &&
+        !newCollaboratorBoxRef.current.contains(event.target)
+      ) {
+        setCollaboratorsBox(false);
+      }
+      if (
+        statusBoxRef.current &&
+        !statusBoxRef.current.contains(event.target)
+      ) {
+        setStatusBox(false);
+      }
+      if (stageBoxRef.current && !stageBoxRef.current.contains(event.target)) {
+        setStageBox(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleRemoveCollaborator = (user) => {
+    setNewJobCollaboratorsList((prevList) =>
+      prevList.filter((u) => u.email !== user.email)
+    );
+    setUsersList((prevList) => [...prevList, user]);
+
+    setNewJobCollaboratorsListId((prevList) =>
+      prevList.filter((u) => u.id !== user.id)
+    );
+  };
+
+  const handleSelectCollaborator = (user) => {
+    setNewJobCollaboratorsList((prevList) => [...prevList, user]);
+    setUsersList((prevList) => prevList.filter((u) => u.email !== user.email));
+    setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
+  };
+
+  function formatStatus(status) {
+    return status
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  useEffect(() => {
+    const generatedColors = Array.from({ length: stageList?.length }, () =>
+      getRandomColor()
+    );
+    setColors(generatedColors);
+  }, [stageList?.length]);
+
+  const handleCreateStage = async (stageName) => {
+    const newStage = {
+      name: stageName,
+    };
+    setStageList((prevList) => [...prevList, newStage]);
+    setAddStageBox(false);
+    setAddStageTitle("");
+
+    const response = await createTaskStage(newStage);
+
+    if (response?.res?.message) {
+      console.log(`${response.res.message}`);
+    } else {
+      toast.error(`${response?.error?.message || "Error occurred"}`);
+    }
+  };
+
+  return (
+    <>
+      {loader && (
+        <div className="loaderDiv">
+          <Bars
+            height="80"
+            width="80"
+            color="#E2E31F"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      )}
+      <div className="loaderDiv2 mobile">
+        <div className="pop-wrapper">
+          <div className="wrapper">
+            <div
+              className="container newJob-pop-container pop-container"
+              ref={popUpRef}
+            >
+              <div className="popup-content" ref={scrollRef}>
+                <div className="popup-section-left">
+                  <div className="topFlexDiv">
+                    <div
+                      className="delete-box"
+                      style={{ cursor: "pointer", zIndex: 2 }}
+                      onClick={handleDelete}
+                    >
+                      <div className="deletBg">
+                        <DeleteIcon />
+                      </div>
+                      <div className="delete-item">Delete Task</div>
+                    </div>
+                    <div
+                      className="delete-box"
+                      style={{ cursor: "pointer", zIndex: 2 }}
+                      onClick={handleModalClose}
+                    >
+                      <div className="searchUserImg">
+                        <OpenCloseIcon />
+                      </div>
+                      <div className="delete-item">Collapse</div>
+                    </div>
+                  </div>
+                  <div className="innerScroll">
+                    <input
+                      type="text"
+                      className="jobTitle"
+                      name="title"
+                      value={title}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                      }}
+                      placeholder="Write Task Name..."
+                    />
+                    <div className="discriptionBox">
+                      <h3>Description</h3>
+                      <textarea
+                        type="text"
+                        name="description"
+                        rows={2}
+                        value={description}
+                        onChange={handleOnChange}
+                        placeholder="Add Description Here..."
+                      />
+                    </div>
+
+                    <div className="discriptionBox">
+                      <h3>Days Left</h3>
+                      {dueDate &&
+                      Math.floor(
+                        (new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24)
+                      ) > 0
+                        ? Math.floor(
+                            (new Date(dueDate) - new Date()) /
+                              (1000 * 60 * 60 * 24)
+                          ) + " days"
+                        : "0 days"}
+                    </div>
+
+                    <div className="discriptionBox">
+                      <div className="editBox">
+                        <div className="editBoxContent">
+                          <div className="editBoxInner">
+                            <h3>Job No.</h3>
+                            <p className="textClass disabled">
+                              <button className="taskJobBtn">
+                                {task?.job_num}
+                              </button>
+                            </p>
+                          </div>
+                          <div className="editBoxInner">
+                            <h3>Collaborators</h3>
+                            <div className="textClass disabled collaboratorsBox justify-content-start position-relative">
+                              <div
+                                className=" d-flex align-items-center justify-content-center"
+                                onClick={() => setCollaboratorsBox(true)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {newJobCollaboratorsList.length > 0 && (
+                                  <>
+                                    {newJobCollaboratorsList
+                                      .slice(0, 3)
+                                      .map((user, index) => {
+                                        const initials = user.name
+                                          .split(" ")
+                                          .map((part) =>
+                                            part.charAt(0).toUpperCase()
+                                          )
+                                          .join("");
+
+                                        return (
+                                          <div
+                                            key={index}
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: index,
+                                            }}
+                                          >
+                                            {initials}
+                                          </div>
+                                        );
+                                      })}
+
+                                    {newJobCollaboratorsList.length > 3 && (
+                                      <div
+                                        className={`collaboratorsBoxUser`}
+                                        style={{
+                                          minWidth: "40px",
+                                          zIndex: "4",
+                                        }}
+                                      >
+                                        +{newJobCollaboratorsList.length - 3}
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                                {newJobCollaboratorsList.length === 0 && (
+                                  <div
+                                    className="collaboratorsBoxUser disabled m-0"
+                                    style={{
+                                      minWidth: "40px",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    Add Collaborators
+                                  </div>
+                                )}
+                              </div>
+                              {collaboratorsBox && (
+                                <div
+                                  className={`newJobItemDropBox`} style={{left:'11px'}}
+                                  ref={newCollaboratorBoxRef}
+                                >
+                                  {newJobCollaboratorsList.length > 0 && (
+                                    <div className="addedCollabs">
+                                      {newJobCollaboratorsList.map(
+                                        (user, index) => {
+                                          const initials = user.name
+                                            .split(" ")
+                                            .map((part) =>
+                                              part.charAt(0).toUpperCase()
+                                            )
+                                            .join("");
+
+                                          return (
+                                            <div
+                                              className="selectCollaboratorsBox"
+                                              key={index}
+                                              onClick={() =>
+                                                handleRemoveCollaborator(user)
+                                              }
+                                            >
+                                              <div
+                                                className={`collaboratorsBoxUser`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                }}
+                                              >
+                                                {initials}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  )}
+                                  {usersList
+                                    ? usersList.map((user, index) => {
+                                        const initials = user.name
+                                          .split(" ")
+                                          .map((part) =>
+                                            part.charAt(0).toUpperCase()
+                                          )
+                                          .join("");
+
+                                        return (
+                                          <div
+                                            className="selectCollaboratorsBox"
+                                            key={index}
+                                            onClick={() =>
+                                              handleSelectCollaborator(user)
+                                            }
+                                          >
+                                            <div
+                                              className={`collaboratorsBoxUser`}
+                                              style={{
+                                                minWidth: "40px",
+                                              }}
+                                            >
+                                              {initials}
+                                            </div>
+                                            <div className="userName">
+                                              {user.name}
+                                            </div>
+                                            <div className="userMail">
+                                              {user.email}
+                                            </div>
+                                          </div>
+                                        );
+                                      })
+                                    : "No users found"}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="editBoxInner position-relative">
+                            <h3>Status</h3>
+                            <button
+                              className={`statusBox ${taskStatus}`}
+                              onClick={() => setStatusBox(true)}
+                            >
+                              {formatStatus(taskStatus)}
+                            </button>
+                            {statusBox && (
+                              <div
+                                className={`newJobItemDropBox`}
+                                ref={statusBoxRef}
+                              >
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("not-started");
+                                  }}
+                                >
+                                  <div className={`statusBox not-started`}>
+                                    Not Started
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("pending");
+                                  }}
+                                >
+                                  <div className="statusBox pending">
+                                    Pending
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("in-progress");
+                                  }}
+                                >
+                                  <div className="statusBox in-progress">
+                                    In Progress
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("on-hold");
+                                  }}
+                                >
+                                  <div className="statusBox on-hold">
+                                    On Hold
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="editBoxInner">
+                            <h3>Due Date</h3>
+                            <div
+                              className={`textClass pointer ${
+                                dueDate === task?.due_date && "disabled"
+                              }`}
+                              onClick={() => setDueDateCalender(true)}
+                            >
+                              {dueDate}
+                              {dueDateCalender && (
+                                <div
+                                  className="datePickerDiv"
+                                  ref={datePickerRef}
+                                >
+                                  <Calendar
+                                    date={dueDate}
+                                    onChange={handleDueDateChange}
+                                    value={new Date(dueDate)}
+                                    calendarType="ISO 8601"
+                                    rangeColors={["#E2E31F"]}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="editBoxInner position-relative">
+                            <h3>Stage</h3>
+                            <button
+                              className={`statusBox stageBox position-relative ${stage}`}
+                              style={{
+                                border: `1px solid ${activeStageColor}`,
+                                background: "transparent",
+                                zIndex: "1",
+                              }}
+                              onClick={() => setStageBox(true)}
+                            >
+                              {stage ? stage.title : "Select Stage"}
+                              <span
+                                className="position-absolute w-100 h-100"
+                                style={{
+                                  backgroundColor: activeStageColor,
+                                  opacity: "0.5",
+                                  top: "0",
+                                  left: "0",
+                                  zIndex: "-1",
+                                }}
+                              ></span>
+                            </button>
+                            {stageBox && (
+                              <div
+                                className={`newJobItemDropBox stageBox`}
+                                ref={stageBoxRef}
+                              >
+                                <div className="stageListBox">
+                                  {stageList.map((stage, index) => {
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="selectCollaboratorsBox"
+                                        onClick={() => {
+                                          setStageBox(false);
+                                          setStage(stage);
+                                          setActiveStageColor(colors[index]);
+                                        }}
+                                      >
+                                        <div
+                                          className={`statusBox position-relative`}
+                                          style={{
+                                            border: `1px solid ${colors[index]}`,
+                                          }}
+                                        >
+                                          {stage.title}
+                                          <span
+                                            className="position-absolute w-100 h-100"
+                                            style={{
+                                              backgroundColor: colors[index],
+                                              opacity: "0.5",
+                                              top: "0",
+                                              left: "0",
+                                              zIndex: "-1",
+                                            }}
+                                          ></span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                {!addStageBox ? (
+                                  <div className="editBoxIcon pt-4">
+                                    <div
+                                      className="delete-box justify-content-start"
+                                      style={{ cursor: "pointer", zIndex: 2 }}
+                                      onClick={() => setAddStageBox(true)}
+                                    >
+                                      <div
+                                        className="deletBg d-flex align-items-center justify-content-center"
+                                        style={{
+                                          padding: "6px",
+                                          width: "36px",
+                                          height: "36px",
+                                        }}
+                                      >
+                                        <AddIcon />
+                                      </div>
+                                      <div className="delete-item">
+                                        Create New Stage
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="AddStageBox">
+                                    <input
+                                      type="text"
+                                      className="AddStageInput"
+                                      name="title"
+                                      value={addStageTitle}
+                                      onChange={(e) => {
+                                        setAddStageTitle(e.target.value);
+                                      }}
+                                      placeholder="Write New Stage Name Here..."
+                                    />
+                                    <div className="editBoxIcon">
+                                      <div
+                                        className="delete-box justify-content-start"
+                                        style={{ cursor: "pointer", zIndex: 2 }}
+                                        onClick={() =>
+                                          handleCreateStage(addStageTitle)
+                                        }
+                                      >
+                                        <div
+                                          className="deletBg d-flex align-items-center justify-content-center"
+                                          style={{
+                                            padding: "6px",
+                                            width: "36px",
+                                            height: "36px",
+                                          }}
+                                        >
+                                          <TickIcon />
+                                        </div>
+                                        <div className="delete-item">
+                                          Confirm New Stage
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="editBoxIcon">
+                                      <div
+                                        className="delete-box justify-content-start"
+                                        style={{ cursor: "pointer", zIndex: 2 }}
+                                        onClick={() => {
+                                          setAddStageBox(false);
+                                          setAddStageTitle("");
+                                        }}
+                                      >
+                                        <div
+                                          className="cancelBg d-flex align-items-center justify-content-center"
+                                          style={{
+                                            padding: "6px",
+                                            width: "36px",
+                                            height: "36px",
+                                          }}
+                                        >
+                                          <CrossIcon />
+                                        </div>
+                                        <div className="cancelBg-item">
+                                          Cancel
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="editBoxIcon pe-4">
+                          <div
+                            className="delete-box"
+                            style={{ cursor: "pointer", zIndex: 2 }}
+                          >
+                            <div className="deletBg" style={{ padding: "6px" }}>
+                              <EditIcon />
+                            </div>
+                            <div className="delete-item">Edit</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <AddNewJobChatAndAttachment JobId={task?.job_id?.id} />
+                  </div>
+                  <AddNewJobSendChatAndAttachment JobId={task?.job_id?.id} />
                 </div>
               </div>
             </div>
