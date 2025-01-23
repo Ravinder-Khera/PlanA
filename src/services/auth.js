@@ -413,6 +413,58 @@ export const getJobs = async (page) => {
     }
 };
 
+export const getSingleJob = async (id) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+        }
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/job/${id}`, requestOptions);;
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const getJobByNum = async (id) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+        }
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobbynumber/${id}`, requestOptions);;
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log(response,data);
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
 export const getJobsNum = async (id) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
@@ -586,7 +638,7 @@ export const createJobs = async (data) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/create-job`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log("response in delete api", response,data);
+        console.log("response in create-job api", response,data);
         if(response.status === 201){
             return { res: data, error: null } ;
         }else{

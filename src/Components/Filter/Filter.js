@@ -525,10 +525,6 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
   };
 
   const handleApply = async () => {
-    if (selectedField === "") {
-      toast.error("Please select filter before applying");
-      return;
-    }
     let filterString = "";
     if (selectedField === "due_date") {
       filterString = `start_date=${startDate}&end_date=${endDate}`;

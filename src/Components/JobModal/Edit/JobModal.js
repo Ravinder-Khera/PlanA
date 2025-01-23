@@ -18,6 +18,7 @@ import {
   createTask,
   createTaskStage,
   deleteJob,
+  getJobByNum,
   getTaskStages,
   getUserByRole,
   updateJobs,
@@ -2895,7 +2896,7 @@ export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef }) => {
 };
 
 export const NewTaskModal = ({
-  id,
+  jobNum,
   handleClose,
   handleDelete,
   onCreateTask,
@@ -2905,7 +2906,6 @@ export const NewTaskModal = ({
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
   const [dueDate, setDueDate] = useState(null);
   const [stage, setStage] = useState(null);
   const [stageBox, setStageBox] = useState(false);
@@ -2915,9 +2915,10 @@ export const NewTaskModal = ({
   const [addStageBox, setAddStageBox] = useState(false);
   const [statusBox, setStatusBox] = useState(false);
   const [taskStatus, setTatskStatus] = useState("not-started");
-  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]
+  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
+  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState(
+    []
   );
-  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState([]);
   const [addStageTitle, setAddStageTitle] = useState("");
   const [colors, setColors] = useState([]);
   const [activeStageColor, setActiveStageColor] = useState("");
@@ -2957,13 +2958,13 @@ export const NewTaskModal = ({
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const year = new Date().getFullYear();
     const month = String(new Date().getMonth() + 1).padStart(2, "0");
     const day = String(new Date().getDate()).padStart(2, "0");
     let formattedDueDate = `${year}-${month}-${day}`;
     setDueDate(formattedDueDate);
-  },[])
+  }, []);
 
   useEffect(() => {
     fetchUsers();
@@ -2983,23 +2984,23 @@ export const NewTaskModal = ({
     setDescription(e.target.value);
   };
 
+
+
   const handleModalClose = async () => {
     const newTask = {
-      job_id: id,
       title: title,
+      job_num: jobNum,
       due_date: dueDate,
       status: taskStatus,
       assignee_ids: newJobCollaboratorsListId,
       stage_id: stage?.id,
       description: description,
     };
-    if (
-      title !== "" )
-    {
-        onCreateTask({ newTask }, id);
-      } else{
-        handleClose();
-      }
+    if (title !== "") {
+      onCreateTask(newTask);
+    } else {
+      handleClose();
+    }
   };
 
   const handleDueDateChange = (date) => {
@@ -3186,9 +3187,7 @@ export const NewTaskModal = ({
                           <div className="editBoxInner">
                             <h3>Job No.</h3>
                             <p className="textClass disabled">
-                              <button className="taskJobBtn">
-                                {id}
-                              </button>
+                              <button className="taskJobBtn">{jobNum}</button>
                             </p>
                           </div>
                           <div className="editBoxInner">
@@ -3252,7 +3251,8 @@ export const NewTaskModal = ({
                               </div>
                               {collaboratorsBox && (
                                 <div
-                                  className={`newJobItemDropBox`} style={{left:'11px'}}
+                                  className={`newJobItemDropBox`}
+                                  style={{ left: "11px" }}
                                   ref={newCollaboratorBoxRef}
                                 >
                                   {newJobCollaboratorsList.length > 0 && (
@@ -3355,13 +3355,14 @@ export const NewTaskModal = ({
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
-                                    setTatskStatus("pending");
+                                    setTatskStatus("completed");
                                   }}
                                 >
-                                  <div className="statusBox pending">
-                                    Pending
+                                  <div className="statusBox completed">
+                                    Completed
                                   </div>
                                 </div>
+
                                 <div
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
@@ -3382,6 +3383,17 @@ export const NewTaskModal = ({
                                 >
                                   <div className="statusBox on-hold">
                                     On Hold
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("canceled");
+                                  }}
+                                >
+                                  <div className="statusBox canceled">
+                                    Canceled
                                   </div>
                                 </div>
                               </div>
@@ -3575,9 +3587,9 @@ export const NewTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment JobId={id} />
+                    <AddNewJobChatAndAttachment JobId={jobNum} />
                   </div>
-                  <AddNewJobSendChatAndAttachment JobId={id} />
+                  <AddNewJobSendChatAndAttachment JobId={jobNum} />
                 </div>
               </div>
             </div>
@@ -3612,7 +3624,9 @@ export const UpdateTaskModal = ({
   const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState(
     task?.users || []
   );
-  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState([]);
+  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState(
+    []
+  );
   const [addStageTitle, setAddStageTitle] = useState("");
   const [colors, setColors] = useState([]);
   const [activeStageColor, setActiveStageColor] = useState("");
@@ -3637,12 +3651,12 @@ export const UpdateTaskModal = ({
     }
   };
 
-  useEffect(()=>{
-    if(task?.users){
-      setNewJobCollaboratorsListId(task?.users.map((user) => user.id))
+  useEffect(() => {
+    if (task?.users) {
+      setNewJobCollaboratorsListId(task?.users.map((user) => user.id));
     }
-  },[task])
-  
+  }, [task]);
+
   useEffect(() => {
     const fetchStages = async () => {
       try {
@@ -3650,8 +3664,8 @@ export const UpdateTaskModal = ({
         let response = await getTaskStages(authToken);
         if (response.res) {
           setStageList(response.res);
-          console.log('setStage :',task?.stage_id);
-          
+          console.log("setStage :", task?.stage_id);
+
           // setStage(response.res.filter((stage) => stage.id === task?.stage_id))
           console.log("stages", response.res);
         } else {
@@ -3695,18 +3709,19 @@ export const UpdateTaskModal = ({
       stage_id: stage?.id,
       description: description,
     };
-    if (onUpdateTask ||
+    if (
+      onUpdateTask ||
       title !== task.title ||
       dueDate !== task.due_date ||
       taskStatus !== task.status ||
       newJobCollaboratorsListId !== task.assignee_ids ||
       stage?.id !== task.stage_id ||
-      description !== task.description) 
-    {
-        onUpdateTask({ updatedTask }, task.id , newJobCollaboratorsList, stage);
-      } else{
-        handleClose();
-      }
+      description !== task.description
+    ) {
+      onUpdateTask({ updatedTask }, task.id, newJobCollaboratorsList, stage);
+    } else {
+      handleClose();
+    }
   };
 
   const handleDueDateChange = (date) => {
@@ -3959,7 +3974,8 @@ export const UpdateTaskModal = ({
                               </div>
                               {collaboratorsBox && (
                                 <div
-                                  className={`newJobItemDropBox`} style={{left:'11px'}}
+                                  className={`newJobItemDropBox`}
+                                  style={{ left: "11px" }}
                                   ref={newCollaboratorBoxRef}
                                 >
                                   {newJobCollaboratorsList.length > 0 && (
@@ -4066,10 +4082,10 @@ export const UpdateTaskModal = ({
                                   }}
                                 >
                                   <div className="statusBox completed">
-                                  Completed
+                                    Completed
                                   </div>
                                 </div>
-                                
+
                                 <div
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
@@ -4328,9 +4344,10 @@ export const CreateTaskModal = ({
   const [addStageBox, setAddStageBox] = useState(false);
   const [statusBox, setStatusBox] = useState(false);
   const [taskStatus, setTatskStatus] = useState("not-started");
-  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]
+  const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
+  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState(
+    []
   );
-  const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState([]);
   const [addStageTitle, setAddStageTitle] = useState("");
   const [colors, setColors] = useState([]);
   const [activeStageColor, setActiveStageColor] = useState("");
@@ -4370,13 +4387,13 @@ export const CreateTaskModal = ({
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const year = new Date().getFullYear();
     const month = String(new Date().getMonth() + 1).padStart(2, "0");
     const day = String(new Date().getDate()).padStart(2, "0");
     let formattedDueDate = `${year}-${month}-${day}`;
     setDueDate(formattedDueDate);
-  },[])
+  }, []);
 
   useEffect(() => {
     fetchUsers();
@@ -4406,13 +4423,11 @@ export const CreateTaskModal = ({
       stage_id: stage?.id,
       description: description,
     };
-    if (
-      title !== "" )
-    {
-        onCreateTask({ newTask }, task.id);
-      } else{
-        handleClose();
-      }
+    if (title !== "") {
+      onCreateTask({ newTask }, task.id);
+    } else {
+      handleClose();
+    }
   };
 
   const handleDueDateChange = (date) => {
@@ -4665,7 +4680,8 @@ export const CreateTaskModal = ({
                               </div>
                               {collaboratorsBox && (
                                 <div
-                                  className={`newJobItemDropBox`} style={{left:'11px'}}
+                                  className={`newJobItemDropBox`}
+                                  style={{ left: "11px" }}
                                   ref={newCollaboratorBoxRef}
                                 >
                                   {newJobCollaboratorsList.length > 0 && (
@@ -4768,13 +4784,14 @@ export const CreateTaskModal = ({
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
-                                    setTatskStatus("pending");
+                                    setTatskStatus("completed");
                                   }}
                                 >
-                                  <div className="statusBox pending">
-                                    Pending
+                                  <div className="statusBox completed">
+                                    Completed
                                   </div>
                                 </div>
+
                                 <div
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
@@ -4795,6 +4812,17 @@ export const CreateTaskModal = ({
                                 >
                                   <div className="statusBox on-hold">
                                     On Hold
+                                  </div>
+                                </div>
+                                <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("canceled");
+                                  }}
+                                >
+                                  <div className="statusBox canceled">
+                                    Canceled
                                   </div>
                                 </div>
                               </div>
