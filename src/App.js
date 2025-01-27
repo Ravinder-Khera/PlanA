@@ -41,6 +41,7 @@ import Pusher from "pusher-js";
 import eventEmitter from "./Event";
 import { getProfile } from "./services/auth";
 import { Bars } from "react-loader-spinner";
+import ViewTaskPage from "./pages/Dashboard/viewTasks";
 
 function DashboardMenuList() {
   const location = useLocation();
@@ -483,6 +484,7 @@ function RightSide() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/timeline" element={<TimelinePage />} />
             <Route path="/dashboard/tasks" element={<TaskPage />} />
+            <Route path="/dashboard/tasks/:id" element={<ViewTaskPage />} />
             <Route path="/invoice" element={<Invoice />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/settings" element={<SettingsPage />} />

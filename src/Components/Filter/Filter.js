@@ -12,7 +12,7 @@ import {
   User,
 } from "../../assets/svg";
 import { StatusList } from "../../helper";
-import { getJobsByFilter, getUserByRole } from "../../services/auth";
+import { FilterJobs, getJobsByFilter, getUserByRole } from "../../services/auth";
 import { toast } from "react-toastify";
 
 const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
@@ -394,7 +394,7 @@ const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
   );
 };
 
-const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
+const Filter = ({ setFilteredJobs,setFilteredString , setLoading, closeFilter }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -450,6 +450,8 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
       field: "status",
     },
   ];
+
+  const [filterQuery, setFilterQuery] = useState({});
 
   useEffect(() => {
     fetchUsers();
@@ -559,25 +561,101 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
   const handleCancel = async () => {
     setSelectedFilters([]);
     setFiltersSeleted(false);
+    setFilterQuery({})
     closeFilter();
   };
 
-  const handleFilterClick = (filter, className) => {
-    const filterObj = { filter, className };
+  const handleselectFilter = (type, value) => {
+    setFilterQuery((prevQuery) => {
+      if (type === "status") {
+        return {
+          ...prevQuery,
+          statuses: [...(prevQuery.statuses || []), value],
+        };
+      }
+  
+      if (type === "collaborator_ids") {
+        return {
+          ...prevQuery,
+          collaborator_ids: [...(prevQuery.collaborator_ids || []), value],
+        };
+      }
+  
+      if (type === "due") {
+        return {
+          ...prevQuery,
+          due: [...(prevQuery.due || []), value],
+        };
+      }
+  
+      return prevQuery;
+    });
+  };
+  
+  const handleRemoveFilter = (type, value) => {
+    setFilterQuery((prevQuery) => {
+      if (type === "status") {
+        return {
+          ...prevQuery,
+          statuses: prevQuery.statuses?.filter((status) => status !== value),
+        };
+      }
+  
+      if (type === "collaborator_ids") {
+        return {
+          ...prevQuery,
+          collaborator_ids: prevQuery.collaborator_ids?.filter((id) => id !== value),
+        };
+      }
+  
+      if (type === "due") {
+        return {
+          ...prevQuery,
+          due: prevQuery.due?.filter((item) => item !== value),
+        };
+      }
+  
+      return prevQuery;
+    });
+  };
+  
+  const handleFilterClick = (filter, className, type, value) => {
+    const filterObj = { filter, className, type, value };
     if (!selectedFilters.some((item) => item.filter === filter)) {
       setSelectedFilters([...selectedFilters, filterObj]);
       setFiltersSeleted(true);
     }
   };
-
-  const handleFilterRemove = (filter) => {
-    const updatedFilters = selectedFilters.filter(
-      (item) => item.filter !== filter
+  
+  const handleFilterRemove = (value) => {
+    setSelectedFilters((prevFilters) =>
+      prevFilters.filter((item) => item.value !== value)
     );
-    setSelectedFilters(updatedFilters);
-    // If no filters are left, set filtersSelected to false
-    if (updatedFilters.length === 0) {
+  
+    if (selectedFilters.length === 1) {
       setFiltersSeleted(false);
+    }
+  };
+  
+  useEffect(() => {
+    console.log("Filter Query:", filterQuery);
+    console.log("Selected Filters:", selectedFilters);
+  }, [filterQuery, selectedFilters]);
+  
+  const handleFilterApply = async () => {
+    setLoading(true);
+    try {
+      const filterNames = selectedFilters.map((item) => item.filter);
+      setFilteredString(filterNames);
+      const response = await FilterJobs(filterQuery);
+      if (!response.error) {
+        setFilteredJobs(response?.res?.data);
+        closeFilter();
+      }
+    } catch (error) {
+      console.log("error in applying filter", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -594,7 +672,10 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                   <div
                     key={index}
                     className={`selectedFilterItem ${item.className}`}
-                    onClick={() => handleFilterRemove(item.filter)}
+                    onClick={() => {
+                      handleFilterRemove(item.value)
+                      handleRemoveFilter(item.type,item.value)
+                    }}
                   >
                     {item.filter}
                     <FilterCrossIcon />
@@ -618,9 +699,10 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
                       style={{
                         minWidth: "40px",
                       }}
-                      onClick={() =>
-                        handleFilterClick(initials, "filterUserBox")
-                      }
+                      onClick={() =>{
+                        handleFilterClick(initials, "filterUserBox",'collaborator_ids',user.id)
+                        handleselectFilter('collaborator_ids',user.id)
+                      }}
                     >
                       {initials}
                     </div>
@@ -629,104 +711,111 @@ const Filter = ({ setFilteredJobs, setLoading, closeFilter }) => {
               : ""}
             <div
               className="filterStatusBox NotStarted"
-              onClick={() =>
-                handleFilterClick("Not Started", "filterStatusBox NotStarted")
-              }
+              onClick={() =>{
+                handleFilterClick("Not Started", "filterStatusBox NotStarted",'status','not-started')
+                handleselectFilter('status','not-started')
+              }}
             >
               Not Started
             </div>
             <div
               className="filterStatusBox Pending"
-              onClick={() =>
-                handleFilterClick("Pending", "filterStatusBox Pending")
-              }
+              onClick={() =>{
+                handleFilterClick("Pending", "filterStatusBox Pending",'status','pending')
+                handleselectFilter('status','pending')
+              }}
             >
               Pending
             </div>
             <div
               className="filterStatusBox InProgress"
-              onClick={() =>
-                handleFilterClick("In Progress", "filterStatusBox InProgress")
-              }
+              onClick={() =>{
+                handleFilterClick("In Progress", "filterStatusBox InProgress",'status','in-progress')
+                handleselectFilter('status','in-progress')
+              }}
             >
               In Progress
             </div>
             <div
               className="filterStatusBox OnHold"
-              onClick={() =>
-                handleFilterClick("On Hold", "filterStatusBox OnHold")
-              }
+              onClick={() =>{
+                handleFilterClick("On Hold", "filterStatusBox OnHold",'status','on-hold')
+                handleselectFilter('status','on-hold')
+              }}
             >
               On Hold
             </div>
             <div
               className="filterStatusBox Completed"
-              onClick={() =>
-                handleFilterClick("Completed", "filterStatusBox Completed")
-              }
+              onClick={() =>{
+                handleFilterClick("Completed", "filterStatusBox Completed",'status','completed')
+                handleselectFilter('status','completed')
+              }}
             >
               Completed
             </div>
-            <div
+            {/* <div
               className="filterProgressBox"
               onClick={() =>
                 handleFilterClick("<50% Progress", "filterProgressBox")
               }
             >
               {"<"}50% Progress
-            </div>
-            <div
+            </div> */}
+            {/* <div
               className="filterProgressBox"
               onClick={() =>
                 handleFilterClick(">50% Progress", "filterProgressBox")
               }
             >
               {">"}50% Progress
-            </div>
+            </div> */}
             <div
               className="filterProgressBox"
-              onClick={() =>
-                handleFilterClick("Due This Week", "filterProgressBox")
-              }
+              onClick={() =>{
+                handleFilterClick("Due This Week", "filterProgressBox",'due','this_week')
+                handleselectFilter('due','this_week')
+              }}
             >
               Due This Week
             </div>
             <div
               className="filterProgressBox"
-              onClick={() =>
-                handleFilterClick("<14 Days Left", "filterProgressBox")
-              }
+              onClick={() =>{
+                handleFilterClick("<14 Days Left", "filterProgressBox",'due','in_14_days')
+                handleselectFilter('due','in_14_days')
+              }}
             >
               {"<"}14 Days Left
             </div>
-            <div
+            {/* <div
               className="filterProgressBox"
               onClick={() =>
                 handleFilterClick("Incomplete Subtask", "filterProgressBox")
               }
             >
               Incomplete Subtask
-            </div>
-            <div
+            </div> */}
+            {/* <div
               className="filterProgressBox"
               onClick={() =>
                 handleFilterClick("In Progress Subtask", "filterProgressBox")
               }
             >
               In Progress Subtask
-            </div>
-            <div
+            </div> */}
+            {/* <div
               className="filterProgressBox"
               onClick={() =>
                 handleFilterClick("Complete Subtask", "filterProgressBox")
               }
             >
               Complete Subtask
-            </div>
+            </div> */}
           </div>
           {filtersSeleted && (
             <>
-              <div className="filterBtnBox confirmBox" onClick={handleApply}>
+              <div className="filterBtnBox confirmBox" onClick={handleFilterApply}>
                 <span>
                   <TickIcon />
                 </span>

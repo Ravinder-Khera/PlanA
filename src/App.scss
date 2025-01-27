@@ -1331,6 +1331,44 @@ body {
     }
 }
 
+.collaboratorsBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 165px;
+    .collaboratorsBoxUser {
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: -0.48px;
+      border-radius: 4px;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+      background: #353535;
+      padding: 8px 10px;
+      &:first-child {
+        border: 1px solid #f068ff;
+      }
+      &:nth-child(2) {
+        transform: translateX(-6px);
+        border: 1px solid #68fff0;
+      }
+      &:nth-child(3) {
+        transform: translateX(-12px);
+        border: 1px solid #687cff;
+      }
+      &:nth-child(4) {
+        transform: translateX(-18px);
+        border: 1px solid #7f7f7f;
+      }
+      &.disabled {
+        border: 1px solid #7f7f7f;
+      }
+    }
+  }
+
 .invoiceDeleteDiv {
     display: flex;
     align-items: center;
@@ -1571,10 +1609,9 @@ body {
                 }
             }
 
-            &.stage_Unknown {
+            &.stage_Unknown,&.stage_undefined {
                 background: #353535;
-
-                .btn_Unknown {
+                .btn_Unknown,.btn_undefined {
                     border: 1px solid #FFF;
                     background: rgba(255, 255, 255, 0.25);
                 }

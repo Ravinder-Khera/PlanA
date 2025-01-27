@@ -316,6 +316,20 @@
       font-size: 14px;
       color: #e2e31f;
       margin-left: 10px;
+      .filterItemBox{
+        padding: 7px 8px;
+        border-radius: 4px;
+        border: 1px solid #E2E31F;
+        background: rgba(226, 227, 31, 0.6);
+        color: #FEFF6F;
+        text-align: center;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        letter-spacing: -0.48px; 
+        margin-right: 8px;             
+      }
     }
   }
 
@@ -1229,6 +1243,15 @@
             line-height: normal;
             letter-spacing: -0.48px;
             margin: 0 20px;
+            &.linkBtn{
+              text-decoration: none;
+              background: rgba(255, 255, 255, 0.5);
+              border: 1px solid #fff;
+              color: #ffffff;
+              .bar {
+                background: #fff;
+              }
+            }
             &.pending {
               background: #1fb4e366;
               border: 1px solid #1fb4e3;

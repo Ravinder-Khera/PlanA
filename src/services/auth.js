@@ -122,7 +122,7 @@ export const getProfile = async (data) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/get-my-profile`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -220,7 +220,7 @@ export const getTasks = async (data) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -245,7 +245,7 @@ export const getTasksByStatus = async (data) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/tasks/by-status-and-date`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -272,7 +272,7 @@ export const createTask = async (data) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/tasks`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 201){
             return { res: data, error: null } ;
         }else{
@@ -299,7 +299,7 @@ export const updateTask = async (data,taskId) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/tasks/${taskId}`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -324,7 +324,7 @@ export const getJobIds = async (data) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/ids`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -349,7 +349,7 @@ export const getUserByRole = async (data) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/users/role/assignee`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -427,7 +427,7 @@ export const getSingleJob = async (id) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/job/${id}`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -453,7 +453,7 @@ export const getJobByNum = async (id) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobbynumber/${id}`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -479,7 +479,7 @@ export const getJobsNum = async (id) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobs/check-job-num/${id}`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -505,7 +505,61 @@ export const getJobsByFilter = async (filter) => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/filter?${filter}`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const SearchJobs = async (data) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/getjobsby`, requestOptions);;
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        // console.log(response,data);
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const FilterJobs = async (data) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/job/filter`, requestOptions);;
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{
@@ -691,7 +745,7 @@ export const getTaskStages = async () => {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/taskstages`, requestOptions);;
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
-        console.log(response,data);
+        // console.log(response,data);
         if(response.status === 200){
             return { res: data, error: null } ;
         }else{

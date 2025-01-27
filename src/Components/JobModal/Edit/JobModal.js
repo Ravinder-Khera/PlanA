@@ -3701,6 +3701,8 @@ export const UpdateTaskModal = ({
     const month = String(new Date().getMonth() + 1).padStart(2, "0");
     const day = String(new Date().getDate()).padStart(2, "0");
     let formattedDueDate = `${year}-${month}-${day}`;
+    console.log(
+      newJobCollaboratorsListId,task.assignee_ids);
     const updatedTask = {
       title: title,
       due_date: dueDate ? dueDate : formattedDueDate,
@@ -3710,7 +3712,6 @@ export const UpdateTaskModal = ({
       description: description,
     };
     if (
-      onUpdateTask ||
       title !== task.title ||
       dueDate !== task.due_date ||
       taskStatus !== task.status ||
@@ -4424,7 +4425,7 @@ export const CreateTaskModal = ({
       description: description,
     };
     if (title !== "") {
-      onCreateTask({ newTask }, task.id);
+      onCreateTask({ newTask }, task.id, newJobCollaboratorsList,stage);
     } else {
       handleClose();
     }

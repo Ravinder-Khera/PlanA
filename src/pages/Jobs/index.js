@@ -19,6 +19,7 @@ import {
   getJobsNum,
   getSingleJob,
   getUserByRole,
+  SearchJobs,
   updateJobs,
   updateTask,
 } from "../../services/auth";
@@ -34,7 +35,7 @@ import JobModal, {
 } from "../../Components/JobModal/Edit/JobModal";
 import { StatusList } from "../../helper";
 import Add from "../../Components/JobModal/Add/Add";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { NotificationComponent } from "../../Components/navMenu";
 import { Calendar } from "react-date-range";
 
@@ -63,6 +64,7 @@ const Jobs = () => {
   const [editedValue, setEditedValue] = useState("");
   const [activeJobField, setActiveJobField] = useState("");
   const [selectSearchOptions, setSelectSearchOptions] = useState("");
+  const [showingSearchOptions, setShowingSearchOptions] = useState("");
 
   const [showFilter, setShowFilter] = useState(false);
   const [showAddJoRow, setShowAddJobRow] = useState(false);
@@ -90,6 +92,7 @@ const Jobs = () => {
   const [usersList, setUsersList] = useState([]);
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [pageUrls, setPageUrls] = useState([]);
+  const [filteredString, setFilteredString] = useState([]);
 
   const [newJobIdNumber, setNewJobIdNumber] = useState(Number("00000"));
   const [newJobIdNumberForNewTask, setNewJobIdNumberForNewTask] = useState(
@@ -237,12 +240,14 @@ const Jobs = () => {
     fetchJobs();
   }, [location, state]);
 
-  const handleApply = async () => {
-    let filterString = `title=${searchedInput}`;
-
+  const handleSearchApply = async () => {
     setLoading(true);
     try {
-      const response = await getJobsByFilter(filterString);
+      var reqData = {
+        [selectSearchOptions]: searchedInput,
+      };
+      setShowingSearchOptions(searchedInput);
+      const response = await SearchJobs(reqData);
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
         setOriginalJobs(response?.res?.data);
@@ -1064,6 +1069,7 @@ const Jobs = () => {
                 description: newData?.updatedTask?.description,
                 users: newJobCollaboratorsList,
                 stage_id: stage?.id,
+                stage: stage,
               }
             : task
         ),
@@ -1240,7 +1246,7 @@ const Jobs = () => {
         !searchBarRef.current.contains(event.target)
       ) {
         setShowSearchOptions(false);
-        setSelectSearchOptions("")
+        setSelectSearchOptions("");
         setSearchedInput("");
       }
     };
@@ -1404,40 +1410,42 @@ const Jobs = () => {
                     <div className="SearchOptionBox">
                       <div
                         className={`searchOptionBtn ${
-                          selectSearchOptions !== "Job No." &&
+                          selectSearchOptions !== "job_num" &&
                           selectSearchOptions !== ""
                             ? "disable"
                             : selectSearchOptions !== ""
                             ? "active"
                             : ""
                         }`}
-                        onClick={() => setSelectSearchOptions("Job No.")}
+                        onClick={() => setSelectSearchOptions("job_num")}
                       >
                         Job No.
                       </div>
                       <div
                         className={`searchOptionBtn ${
-                          selectSearchOptions !== "Job Name" &&
+                          selectSearchOptions !== "title" &&
                           selectSearchOptions !== ""
                             ? "disable"
                             : selectSearchOptions !== ""
                             ? "active"
                             : ""
                         }`}
-                        onClick={() => setSelectSearchOptions("Job Name")}
+                        onClick={() => setSelectSearchOptions("title")}
                       >
                         Job Name
                       </div>
                       <div
                         className={`searchOptionBtn ${
-                          selectSearchOptions !== "Collaborator" &&
+                          selectSearchOptions !== "collaborator_name" &&
                           selectSearchOptions !== ""
                             ? "disable"
                             : selectSearchOptions !== ""
                             ? "active"
                             : ""
                         }`}
-                        onClick={() => setSelectSearchOptions("Collaborator")}
+                        onClick={() =>
+                          setSelectSearchOptions("collaborator_name")
+                        }
                       >
                         Collaborator
                       </div>
@@ -1446,11 +1454,20 @@ const Jobs = () => {
                           name="search"
                           placeholder="Search"
                           value={searchedInput}
-                          onChange={(e) => setSearchedInput(e.target.value)}
+                          onChange={(e) => {
+                            if (selectSearchOptions === "job_num") {
+                              const value = e.target.value;
+                              if (/^\d*$/.test(value)) {
+                                setSearchedInput(value);
+                              }
+                            } else {
+                              setSearchedInput(e.target.value);
+                            }
+                          }}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
-                              handleApply();
+                              handleSearchApply();
                             }
                           }}
                         />
@@ -1460,7 +1477,7 @@ const Jobs = () => {
                     <input
                       name="search"
                       placeholder="Search"
-                      onFocus={()=> setShowSearchOptions(true)}                      
+                      onFocus={() => setShowSearchOptions(true)}
                     />
                   )}
 
@@ -1469,7 +1486,7 @@ const Jobs = () => {
                       className="IconBox"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        setSelectSearchOptions("")
+                        setSelectSearchOptions("");
                         setSearchedInput("");
                         setShowSearchOptions(false);
                       }}
@@ -1496,6 +1513,7 @@ const Jobs = () => {
               </div>
               {showFilter && (
                 <Filter
+                  setFilteredString={setFilteredString}
                   setFilteredJobs={setFilteredJobs}
                   setLoading={setLoading}
                   closeFilter={() => setShowFilter(false)}
@@ -1575,7 +1593,28 @@ const Jobs = () => {
         <div className="JobsHeading d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center justify-content-start gap-3">
             <div className="delete-box">
-              <div className="delete-item">Showing All Jobs</div>
+              <div className="delete-item">
+                {showingSearchOptions ? (
+                  <>
+                    Search Results For: '{showingSearchOptions}'
+                  </>
+                ) : (
+                  <>
+                    {filteredString.length > 0 ? (
+                      <>
+                        Filtered By:{" "}
+                        {filteredString.map((string, index) => (
+                          <span className="filterItemBox" key={index}>
+                            {string}{" "}
+                          </span>
+                        ))}
+                      </>
+                    ) : (
+                      "Showing All Jobs"
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -2352,14 +2391,12 @@ const Jobs = () => {
                                           );
                                         })}
                                       {job?.tasks?.length > 3 && (
-                                        <span
-                                          className={`statusBtn clickBox mx-0 `}
-                                          onClick={toggleShowAllTasks}
+                                        <Link
+                                          className={`statusBtn linkBtn clickBox mx-0 `}
+                                          to={`/dashboard/tasks/${job?.job_num}`}
                                         >
-                                          {showAllTasks
-                                            ? "View Less"
-                                            : "View More"}
-                                        </span>
+                                          View More
+                                        </Link>
                                       )}
                                     </>
                                   )}
@@ -2368,7 +2405,7 @@ const Jobs = () => {
                                       className={`clickBoxtext`}
                                       onClick={() => handleAddTaskClick(job)}
                                     >
-                                      Add Tasks
+                                      Add Tasks +
                                     </div>
                                   </div>
                                 </div>
