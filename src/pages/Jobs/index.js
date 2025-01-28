@@ -3,6 +3,7 @@ import {
   AddIcon,
   BellIcon,
   CloseIcon,
+  FilterCrossIcon,
   NewFilterIcon,
   Search,
 } from "../../assets/svg";
@@ -13,6 +14,7 @@ import {
   deleteJob,
   deleteJobs,
   deleteTask,
+  FilterJobs,
   getJobByNum,
   getJobs,
   getJobsByFilter,
@@ -30,6 +32,7 @@ import Filter from "../../Components/Filter/Filter";
 import JobModal, {
   CreateTaskModal,
   NewJobModal,
+  NewJobModalWithTasks,
   NewTaskModal,
   UpdateTaskModal,
 } from "../../Components/JobModal/Edit/JobModal";
@@ -74,6 +77,8 @@ const Jobs = () => {
   const [addJobNameBoxAdded, setAddJobNameAdded] = useState(false);
   const [showJobModal, setShowJobModal] = useState(false);
   const [showNewJobModal, setShowNewJobModal] = useState(false);
+  const [showNewJobModalWithTasks, setShowNewJobModalWithTasks] =
+    useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showNewJobAddTaskModal, setShowNewJobAddTaskModal] = useState(false);
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
@@ -93,6 +98,7 @@ const Jobs = () => {
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [pageUrls, setPageUrls] = useState([]);
   const [filteredString, setFilteredString] = useState([]);
+  const [filteredQuery, setFilteredQuery] = useState([]);
 
   const [newJobIdNumber, setNewJobIdNumber] = useState(Number("00000"));
   const [newJobIdNumberForNewTask, setNewJobIdNumberForNewTask] = useState(
@@ -371,8 +377,8 @@ const Jobs = () => {
 
     // Check if the container has been scrolled to the bottom
     if (
-      container.scrollTop + container.clientHeight >=
-      container.scrollHeight
+      container.scrollTop + container.clientHeight >= container.scrollHeight &&
+      filteredJobs.length >= 20
     ) {
       setLoading(true);
       try {
@@ -386,7 +392,7 @@ const Jobs = () => {
       }
       setLoadMorePage(loadMorePage + 1);
     }
-  }, [loadMorePage]);
+  }, [loadMorePage, filteredJobs]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -427,74 +433,6 @@ const Jobs = () => {
       );
     }
   };
-
-  // const handleDelete = async () => {
-  //   if (!selectedJobs.length) {
-  //     toast.error(
-  //       <>
-  //         <div>
-  //           <h3>Trouble Deleting Jobs?</h3>
-  //         </div>
-  //         <p>
-  //           Please choose the jobs you want to delete. Currently, no jobs have
-  //           been selected for deletion.
-  //         </p>
-  //       </>
-  //     );
-  //     return;
-  //   }
-  //   try {
-  //     setLoading(true);
-  //     let response = await deleteJobs({
-  //       ids: selectedJobs,
-  //     });
-  //     console.log("jobs delete successful", response);
-  //     if (response.res) {
-  //       const notificationData = {
-  //         class: "success",
-  //         message: response.res.message,
-  //       };
-  //       const existingNotificationsJSON = localStorage.getItem("notifications");
-  //       let existingNotifications = [];
-  //       if (existingNotificationsJSON) {
-  //         existingNotifications = JSON.parse(existingNotificationsJSON);
-  //       }
-  //       existingNotifications.push(notificationData);
-
-  //       localStorage.setItem(
-  //         "notifications",
-  //         JSON.stringify(existingNotifications)
-  //       );
-
-  //       toast.success(`${response.res.message}`);
-  //     } else {
-  //       console.error("jobs delete failed:", response.error);
-  //       const notificationData = {
-  //         class: "error",
-  //         message: response.error.message,
-  //       };
-  //       const existingNotificationsJSON = localStorage.getItem("notifications");
-  //       let existingNotifications = [];
-  //       if (existingNotificationsJSON) {
-  //         existingNotifications = JSON.parse(existingNotificationsJSON);
-  //       }
-  //       existingNotifications.push(notificationData);
-
-  //       localStorage.setItem(
-  //         "notifications",
-  //         JSON.stringify(existingNotifications)
-  //       );
-
-  //       toast.error(`${response.error.message}`);
-  //     }
-  //   } catch (error) {
-  //     console.error("There was an error:", error);
-  //   } finally {
-  //     setLoading(false);
-  //     fetchJobs();
-  //     setSelectedJobs([]);
-  //   }
-  // };
 
   useEffect(() => {
     const bodyScroll = document.getElementById("rightSCroll");
@@ -937,27 +875,33 @@ const Jobs = () => {
 
         console.log(
           "updatedJob -",
-          updatedJob.title,
-          updatedJob.collaborators,
-          updatedJob.status,
-          updatedJob.due_date
+          updatedJob,originalJob,(!showNewJobModal || !showNewJobModalWithTasks)
         );
 
         const isJobChanged = (updatedJob, originalJob) => {
+          if (!updatedJob || !originalJob) {
+            console.error(
+              "isJobChanged called with undefined or null values:",
+              { updatedJob, originalJob }
+            );
+            return false;
+          }
+
           return (
-            updatedJob.title !== originalJob.title ||
-            updatedJob.collaborators !== originalJob.collaborators ||
-            updatedJob.status !== originalJob.status ||
-            updatedJob.due_date !== originalJob.due_date ||
-            false
+            (updatedJob?.title || "") !== (originalJob?.title || "") ||
+            (updatedJob?.collaborators || []) !==
+              (originalJob?.collaborators || []) ||
+            (updatedJob?.status || "") !== (originalJob?.status || "") ||
+            (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
           );
         };
+
         console.log("isJobChanged -", isJobChanged(updatedJob, originalJob));
         if (isJobChanged(updatedJob, originalJob)) {
           handleUpdateJob(updatedJob);
           synchronizeRowHeights();
         }
-        if (!showNewJobModal) {
+        if (!showNewJobModal && !showNewJobModalWithTasks) {
           setActiveJob(null);
           setNewJobCollaboratorsList([]);
         }
@@ -969,15 +913,7 @@ const Jobs = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [
-    updateJobId,
-    editedValue,
-    activeJob,
-    filteredJobs,
-    originalJobs,
-    newJobCollaboratorsListId,
-    showNewJobModal,
-  ]);
+  }, [updateJobId, editedValue, activeJob, filteredJobs, originalJobs, newJobCollaboratorsListId, showNewJobModal, showNewJobModalWithTasks]);
 
   useEffect(() => {
     const handleDoubleClick = (event) => {
@@ -1008,12 +944,13 @@ const Jobs = () => {
     }
   }, [activeJob]);
 
-  const handleUpdateJobDesc = async (jobId, updatedFields) => {
+  const handleUpdateJobDesc = async (jobId, updatedFields, tasks) => {
     try {
       const reqBody = {
         job_id: jobId,
         dataObj: {
           description: updatedFields,
+          tasks: tasks,
         },
       };
 
@@ -1038,8 +975,6 @@ const Jobs = () => {
         );
         toast.error(`${response.error.message}`);
       }
-      const updatedJob = await response.json();
-      console.log("Job updated successfully:", updatedJob);
     } catch (error) {
       console.error("Error updating job:", error);
     }
@@ -1093,13 +1028,13 @@ const Jobs = () => {
         tasks:
           job.id === taskId
             ? [
-                ...job.tasks,
-                {
-                  title: newData.newTask.title,
-                  due_date: newData.newTask.due_date,
-                  status: newData.newTask.status,
-                  description: newData.newTask.description,
-                },
+              {
+                title: newData.newTask.title,
+                due_date: newData.newTask.due_date,
+                status: newData.newTask.status,
+                description: newData.newTask.description,
+              },
+              ...job.tasks,
               ]
             : job.tasks,
       }))
@@ -1243,7 +1178,8 @@ const Jobs = () => {
     const handleClickOutside = async (event) => {
       if (
         searchBarRef.current &&
-        !searchBarRef.current.contains(event.target)
+        !searchBarRef.current.contains(event.target) &&
+        !selectSearchOptions
       ) {
         setShowSearchOptions(false);
         setSelectSearchOptions("");
@@ -1256,7 +1192,59 @@ const Jobs = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [selectSearchOptions]);
+
+  const [userColors, setUserColors] = useState({}); // To store colors for 'user' class elements
+
+  // Function to generate a random color
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  const handleRemoveFilter = async (value) => {
+    const updatedQuery = {
+      ...filteredQuery,
+      collaborator_ids: filteredQuery.collaborator_ids?.filter(
+        (id) => id !== value.value
+      ),
+      statuses: filteredQuery.statuses?.filter(
+        (status) => status !== value.value
+      ),
+    };
+
+    if (updatedQuery.collaborator_ids?.length === 0)
+      delete updatedQuery.collaborator_ids;
+    if (updatedQuery.statuses?.length === 0) delete updatedQuery.statuses;
+
+    setFilteredQuery(updatedQuery);
+    setFilteredString((prevFiltered) =>
+      prevFiltered.filter((item) => item !== value)
+    );
+
+    try {
+      setLoading(true);
+      const response = await FilterJobs(updatedQuery);
+
+      if (!response.error) {
+        setFilteredJobs(response?.res?.data);
+      }
+    } catch (error) {
+      console.error("Error in applying filter:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenJobWithTask = async (job) => {
+    setActiveJob(job);
+    setUpdateJobId(job.id);
+    setShowNewJobModalWithTasks(true);
+  };
 
   return (
     <>
@@ -1283,6 +1271,34 @@ const Jobs = () => {
             setShowNewJobModal(false);
             if (!isDeleting && activeJob) {
               await handleUpdateJobDesc(activeJob.id, activeJob.description);
+            }
+            if (isDeleting) {
+              setFilteredJobs((prevJobs) =>
+                prevJobs.filter((job) => job.id !== activeJob.id)
+              );
+            }
+          }}
+          fetchJobs={fetchJobs}
+          reloadTabs={reloadTabs}
+          scrollRef={taskMobileScrollRef}
+          handleDelete={() => {
+            setFilteredJobs((prevJobs) =>
+              prevJobs.filter((job) => job.id !== activeJob.id)
+            );
+            setIsDeleting(true);
+          }}
+        />
+      )}
+
+      {showNewJobModalWithTasks && (
+        <NewJobModalWithTasks
+          job={activeJob}
+          handleClose={async (isDeleting = false) => {
+            setGetJob();
+            setActiveJob(null);
+            setShowNewJobModalWithTasks(false);
+            if (!isDeleting && activeJob) {
+              await handleUpdateJobDesc(activeJob.id, activeJob.description, activeJob.tasks);
             }
             if (isDeleting) {
               setFilteredJobs((prevJobs) =>
@@ -1489,6 +1505,8 @@ const Jobs = () => {
                         setSelectSearchOptions("");
                         setSearchedInput("");
                         setShowSearchOptions(false);
+                        setShowingSearchOptions("");
+                        fetchJobs();
                       }}
                     >
                       <CloseIcon />
@@ -1514,6 +1532,7 @@ const Jobs = () => {
               {showFilter && (
                 <Filter
                   setFilteredString={setFilteredString}
+                  setFilteredQuery={setFilteredQuery}
                   setFilteredJobs={setFilteredJobs}
                   setLoading={setLoading}
                   closeFilter={() => setShowFilter(false)}
@@ -1593,26 +1612,70 @@ const Jobs = () => {
         <div className="JobsHeading d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center justify-content-start gap-3">
             <div className="delete-box">
-              <div className="delete-item">
+              <div className="delete-item d-flex align-items-center flex-wrap gap-2">
                 {showingSearchOptions ? (
+                  <>Search Results For: '{showingSearchOptions}'</>
+                ) : selectSearchOptions ? (
                   <>
-                    Search Results For: '{showingSearchOptions}'
-                  </>
-                ) : (
-                  <>
-                    {filteredString.length > 0 ? (
+                    {selectSearchOptions === "job_num" && (
                       <>
-                        Filtered By:{" "}
-                        {filteredString.map((string, index) => (
-                          <span className="filterItemBox" key={index}>
-                            {string}{" "}
-                          </span>
-                        ))}
+                        Enter the number of the ‘Job’ you would like to search
+                        for.
                       </>
-                    ) : (
-                      "Showing All Jobs"
+                    )}
+                    {selectSearchOptions === "title" && (
+                      <>
+                        Enter the name of the ‘Job’ you would like to search
+                        for.
+                      </>
+                    )}
+                    {selectSearchOptions === "collaborator_name" && (
+                      <>
+                        Enter the name of the ‘Collaborator’ you would like to
+                        search for.
+                      </>
+                    )}
+                    {!["job_num", "title", "collaborator_name"].includes(
+                      selectSearchOptions
+                    ) && (
+                      <>Select which category you would like to search by.</>
                     )}
                   </>
+                ) : filteredString.length > 0 ? (
+                  <>
+                    Filtered By:{" "}
+                    {filteredString.map((string, index) => {
+                      const className =
+                        string.filter.length <= 2
+                          ? "user"
+                          : string.filter.replace(/\s+/g, "-").toLowerCase();
+                      // Assign a random color only once for each `user` string
+                      if (className === "user" && !userColors[string.filter]) {
+                        setUserColors((prevColors) => ({
+                          ...prevColors,
+                          [string.filter]: getRandomColor(),
+                        }));
+                      }
+
+                      // Use the stored color or currentColor
+                      const borderColor =
+                        className === "user"
+                          ? userColors[string.filter]
+                          : "currentColor";
+                      return (
+                        <span
+                          className={`filterItemBox ${className}`}
+                          key={index}
+                          style={{ border: `1px solid ${borderColor}` }}
+                          onClick={() => handleRemoveFilter(string)}
+                        >
+                          {string.filter} <FilterCrossIcon />
+                        </span>
+                      );
+                    })}
+                  </>
+                ) : (
+                  "Showing All Jobs"
                 )}
               </div>
             </div>
@@ -2391,12 +2454,15 @@ const Jobs = () => {
                                           );
                                         })}
                                       {job?.tasks?.length > 3 && (
-                                        <Link
+                                        <div
                                           className={`statusBtn linkBtn clickBox mx-0 `}
-                                          to={`/dashboard/tasks/${job?.job_num}`}
+                                          // to={`/dashboard/tasks/${job?.job_num}`}
+                                          onClick={() =>
+                                            handleOpenJobWithTask(job)
+                                          }
                                         >
                                           View More
-                                        </Link>
+                                        </div>
                                       )}
                                     </>
                                   )}

@@ -1181,6 +1181,7 @@ function ViewTaskPage() {
               <li key={id} className="heading">
                 <div className="listContent">Title</div>
                 <div className="listContent centerContent">
+                  <div className="centerText">Status</div>
                   <div className="centerText">Stage</div>
                   <div className="centerText">Due Date</div>
                 </div>
@@ -1212,6 +1213,11 @@ function ViewTaskPage() {
                       </p>
                     </div>
                     <div className="listContent centerContent">
+                      <div
+                        className={`centerText statusBtn ${task?.status}`}
+                      >
+                        {task?.status ? task?.status : "N/A"}
+                      </div>
                       <div
                         className={`centerText stageBtn btn_${task?.stage?.title}`}
                       >

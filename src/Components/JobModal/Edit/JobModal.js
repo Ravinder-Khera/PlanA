@@ -18,7 +18,9 @@ import {
   createTask,
   createTaskStage,
   deleteJob,
+  deleteTask,
   getJobByNum,
+  getSingleJob,
   getTaskStages,
   getUserByRole,
   updateJobs,
@@ -2895,6 +2897,336 @@ export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef }) => {
   );
 };
 
+export const NewJobModalWithTasks = ({
+  job,
+  handleClose,
+  reloadTabs,
+  scrollRef,
+}) => {
+  const [loader, setLoader] = useState(false);
+  const [description, setDescription] = useState(job?.description || "");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [jobTasks, setJobTasks] = useState(job?.tasks || []);
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
+  const [activeTaskJob, setActiveTaskJob] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
+
+  const popUpRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef?.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [scrollRef]);
+
+  useEffect(() => {
+    setDescription(job?.description || "");
+  }, [job, reloadTabs]);
+
+  const handleOnChange = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleModalClose = async () => {
+    if (!isDeleting && job && description) {
+      job.description = description;
+    }
+    if (!isDeleting && job && jobTasks) {
+      job.tasks = jobTasks;
+    }
+    await handleClose(isDeleting);
+  };
+
+  const handleDelete = async () => {
+    try {
+      setLoader(true);
+      setIsDeleting(true); // Set the deletion flag
+      const response = await deleteJob(job.id);
+      if (response.res) {
+        console.log("Job delete successful", response.res);
+      } else {
+        console.error("Job delete failed:", response.error);
+        toast.error(response.error?.message || "Failed to delete the job");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      toast.error("Error deleting job");
+    } finally {
+      setLoader(false);
+      await handleClose(true); // Notify the parent to close the modal with the deletion flag
+    }
+  };
+
+  const handleAddTaskClick = (job) => {
+    setActiveTaskJob(job);
+    setShowAddTaskModal(true);
+  };
+
+  const handleCheckTask = async (jobId, index) => {
+    try {
+      setLoader(true);
+      const response = await getSingleJob(jobId);
+      if (response.res) {
+        setActiveTask(response.res.tasks[index]);
+        var updatedTask = response.res.tasks[index];
+        // setFilteredJobs((prevJobs) =>
+        //   prevJobs.map((job) =>
+        //     job.tasks.some((task) => task.id === updatedTask.id)
+        //       ? {
+        //           ...job,
+        //           tasks: job.tasks.map((task) =>
+        //             task.id === updatedTask.id
+        //               ? {
+        //                   ...task,
+        //                   title: updatedTask?.title,
+        //                 }
+        //               : task
+        //           ),
+        //         }
+        //       : job
+        //   )
+        // );
+        setShowUpdateTaskModal(true);
+      } else {
+        console.error("get task failed:", response.error);
+        toast.error(response.error?.message || "Failed to get the job");
+      }
+    } catch (error) {
+      console.error("Error getting job:", error);
+      toast.error("Error getting task");
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const handleCreateModalTask = async (newData, taskId, users, stage) => {
+    console.log(newData?.newTask);
+    setJobTasks((prevTasks) => [
+      {
+        title: newData?.newTask?.title,
+        description: newData?.newTask?.description,
+        stage_id: newData?.newTask?.stage_id,
+        due_date: newData?.newTask?.due_date,
+        status: newData?.newTask?.status,
+        assignee_ids: newData?.newTask?.assignee_ids,
+        users: users,
+        stage: stage,
+      },
+      ...prevTasks,
+    ]);
+    setShowAddTaskModal(false);
+    var response = await createTask(newData.newTask, taskId);
+    if (response.res) {
+      console.log("Task create successful", response.res);
+    } else {
+      console.error("Task create failed:", response.error);
+      toast.error(response.error?.message || "Failed to add the task");
+    }
+  };
+
+    const handleUpdateTask = async (
+      newData,
+      taskId,
+      newJobCollaboratorsList,
+      stage
+    ) => {
+      console.log(taskId," - ",activeTask.id," - ", newData);
+      
+      setJobTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                title: newData?.updatedTask?.title || task?.title,
+                description: newData?.updatedTask?.description || task?.description,
+                stage_id: newData?.updatedTask?.stage_id || task?.stage_id,
+                due_date: newData?.updatedTask?.due_date || task?.due_date,
+                status: newData?.updatedTask?.status || task?.status,
+                users: newJobCollaboratorsList || task?.users,
+                stage: stage || task?.stage,
+              }
+            : task
+        )
+      );
+      setShowUpdateTaskModal(false);
+      var response = await updateTask(newData, taskId);
+      if (response.res) {
+        console.log("Task Update successful", response.res);
+      } else {
+        console.error("Task Update failed:", response.error);
+        toast.error(response.error?.message || "Failed to Update the task");
+      }
+    };
+
+  const handleCloseModal = async () => {
+    setShowUpdateTaskModal(false);
+    setActiveTask(null);
+  };
+
+    const handleTaskDelete = async (task) => {
+      try {
+        const response = await deleteTask(task.id);
+        if (response.res) {
+          console.log("Job delete successful", response.res);
+        } else {
+          console.error("Job delete failed:", response.error);
+          toast.error(response.error?.message || "Failed to delete the job");
+        }
+      } catch (error) {
+        console.error("Error deleting job:", error);
+        toast.error("Error deleting job");
+      }
+    };
+
+  return (
+    <>
+      {loader && (
+        <div className="loaderDiv">
+          <Bars
+            height="80"
+            width="80"
+            color="#E2E31F"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      )}
+
+      {showAddTaskModal && (
+        <CreateTaskModal
+          task={activeTaskJob}
+          handleClose={async () => {
+            setShowAddTaskModal(false);
+          }}
+          onCreateTask={handleCreateModalTask}
+          handleDelete={() => {
+            setShowAddTaskModal(false);
+          }}
+        />
+      )}
+
+      {showUpdateTaskModal && activeTask && (
+        <UpdateTaskModal
+          task={activeTask}
+          handleClose={handleCloseModal}
+          onUpdateTask={handleUpdateTask}
+          handleDelete={() => {
+            setJobTasks((prevTask) =>
+              prevTask.filter((task) => task.id !== activeTask.id)
+            );
+            handleTaskDelete(activeTask);
+            handleCloseModal();
+          }}
+        />
+      )}
+
+      <div className="loaderDiv2 mobile">
+        <div className="pop-wrapper">
+          <div className="wrapper">
+            <div
+              className="container newJob-pop-container pop-container"
+              ref={popUpRef}
+            >
+              <div className="popup-content" ref={scrollRef}>
+                <div className="popup-section-left">
+                  <div className="topFlexDiv">
+                    <div
+                      className="delete-box"
+                      style={{ cursor: "pointer", zIndex: 2 }}
+                      onClick={handleDelete}
+                    >
+                      <div className="deletBg">
+                        <DeleteIcon />
+                      </div>
+                      <div className="delete-item">Delete Job</div>
+                    </div>
+                    <div
+                      className="delete-box"
+                      style={{ cursor: "pointer", zIndex: 2 }}
+                      onClick={handleModalClose}
+                    >
+                      <div className="searchUserImg">
+                        <OpenCloseIcon />
+                      </div>
+                      <div className="delete-item">Collapse</div>
+                    </div>
+                  </div>
+                  <div className="innerScroll">
+                    <h2 className="jobTitle">{job?.title}</h2>
+                    <div className="discriptionBox">
+                      <h3>Description</h3>
+                      <textarea
+                        type="text"
+                        name="description"
+                        id=""
+                        rows={2}
+                        value={description}
+                        onChange={handleOnChange}
+                        placeholder="Add Description Here..."
+                      />
+                    </div>
+                    <div className="discriptionBox">
+                      <h3>Tasks</h3>
+                      <div
+                        className="d-flex align-items-center flex-wrap"
+                        style={{ gap: "8px" }}
+                      >
+                        {jobTasks.length > 0 && (
+                          <>
+                            {jobTasks.map((task, index) => {
+                              return (
+                                <span
+                                  key={index}
+                                  style={{ cursor: "pointer" }}
+                                  className={`statusBtn mx-0 ${task.status}`}
+                                  onClick={() => {
+                                    console.log(task);
+                                    if (!task.id) {
+                                      console.log("not from db");
+                                      handleCheckTask(job.id, index);
+                                    } else {
+                                      setActiveTask(task);
+                                      setShowUpdateTaskModal(true);
+                                    }
+                                  }}
+                                >
+                                  {task.title}
+                                </span>
+                              );
+                            })}
+                          </>
+                        )}
+                        <div className={`px-3 clickBox`}>
+                          <div
+                            style={{ cursor: "pointer" }}
+                            className={`clickBoxtext`}
+                            onClick={() => handleAddTaskClick(job)}
+                          >
+                            Add Tasks +
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <AddNewJobChatAndAttachment JobId={job?.id} />
+                  </div>
+                  <AddNewJobSendChatAndAttachment JobId={job?.id} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
 export const NewTaskModal = ({
   jobNum,
   handleClose,
@@ -2983,8 +3315,6 @@ export const NewTaskModal = ({
   const handleOnChange = (e) => {
     setDescription(e.target.value);
   };
-
-
 
   const handleModalClose = async () => {
     const newTask = {
@@ -3701,8 +4031,7 @@ export const UpdateTaskModal = ({
     const month = String(new Date().getMonth() + 1).padStart(2, "0");
     const day = String(new Date().getDate()).padStart(2, "0");
     let formattedDueDate = `${year}-${month}-${day}`;
-    console.log(
-      newJobCollaboratorsListId,task.assignee_ids);
+    console.log(newJobCollaboratorsListId, task.assignee_ids);
     const updatedTask = {
       title: title,
       due_date: dueDate ? dueDate : formattedDueDate,
@@ -3836,7 +4165,7 @@ export const UpdateTaskModal = ({
           />
         </div>
       )}
-      <div className="loaderDiv2 mobile">
+      <div className="loaderDiv2 mobile" style={{zIndex:'1001'}}>
         <div className="pop-wrapper">
           <div className="wrapper">
             <div
@@ -4425,7 +4754,7 @@ export const CreateTaskModal = ({
       description: description,
     };
     if (title !== "") {
-      onCreateTask({ newTask }, task.id, newJobCollaboratorsList,stage);
+      onCreateTask({ newTask }, task.id, newJobCollaboratorsList, stage);
     } else {
       handleClose();
     }
@@ -4542,7 +4871,7 @@ export const CreateTaskModal = ({
           />
         </div>
       )}
-      <div className="loaderDiv2 mobile">
+      <div className="loaderDiv2 mobile" style={{ zIndex: "1001" }}>
         <div className="pop-wrapper">
           <div className="wrapper">
             <div

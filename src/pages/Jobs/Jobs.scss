@@ -328,7 +328,136 @@
         font-weight: 700;
         line-height: normal;
         letter-spacing: -0.48px; 
-        margin-right: 8px;             
+        // margin-right: 8px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        svg{
+          path{
+            stroke: #FEFF6F;
+          }
+        }
+        &.user{
+          border-radius: 4px;
+          color: #fff;
+          border: 1px solid ;
+          background: #353535;     
+          svg{
+            path{
+              stroke: currentColor;
+            }
+          }     
+        }
+          &.linkBtn{
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid #fff;
+            color: #ffffff;
+            .bar {
+              background: #fff;
+            }
+          }
+          &.pending {
+            background: #1fb4e366;
+            border: 1px solid #1fb4e3;
+            color: #1fb4e3;
+            .bar {
+              background: #1fb4e3;
+            }
+            svg{
+              path{
+                stroke: #1fb4e3;
+              }
+            }
+          }
+
+          &.in-progress {
+            background: #e3881f99;
+            border: 1px solid #e3881f;
+            color: #e3881f;
+            .bar {
+              background: #e3881f;
+            }
+            svg{
+              path{
+                stroke: #e3881f;
+              }
+            }
+          }
+
+          &.completed {
+            background: #3b923999;
+            border: 1px solid #3b9239;
+            color: #3b9239;
+            .bar {
+              background: #3b9239;
+            }
+            svg{
+              path{
+                stroke: #1fb4e3;
+              }
+            }
+          }
+
+          &.not-started {
+            background: #e31f1f80;
+            border: 1px solid #e31f1f;
+            color: #e31f1f;
+            svg{
+              path{
+                stroke: #e3881f;
+              }
+            }
+          }
+
+          &.on-hold {
+            background: #bababa99;
+            border: 1px solid #ddd;
+            color: #ddd;
+            .bar {
+              background: #ddd;
+            }
+            svg{
+              path{
+                stroke: #ddd;
+              }
+            }
+          }
+
+          &.to-do {
+            background: #e3881f99;
+            border: 1px solid #e3881f;
+            color: #e3881f;
+            .bar {
+              background: #e3881f;
+            }
+            svg{
+              path{
+                stroke: #e3881f;
+              }
+            }
+          }
+
+          &.progressBtn {
+            min-width: 152px;
+            justify-content: start;
+            padding: 0;
+            overflow: hidden;
+            .bar {
+              height: 30px;
+              display: flex;
+              justify-content: end;
+              align-items: center;
+              .text {
+                margin-right: 7px;
+              }
+            }
+            .text {
+              margin-left: 7px;
+            }
+          }            
       }
     }
   }
@@ -356,9 +485,11 @@
     min-width: 733px;
     // box-shadow: 8px 0px 8px 0px rgba(0, 0, 0, 0.2);
     // height: 100vh;
-    // position: fixed;
-    // z-index: 1000;
-    // background: #252525;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #252525;
+    height: max-content;
     @media screen and (max-width: 1599px) {
       min-width: 733px;
     }
@@ -1014,7 +1145,7 @@
 
   .right-side {
     padding: 6px 16px 6px 0;
-    max-width: calc(100% - 733px);
+    // max-width: calc(100% - 733px);
     // position: absolute;
     // left: 800px;
     // height: 100vh;

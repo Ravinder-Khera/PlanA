@@ -394,7 +394,7 @@ const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
   );
 };
 
-const Filter = ({ setFilteredJobs,setFilteredString , setLoading, closeFilter }) => {
+const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoading, closeFilter }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -451,7 +451,7 @@ const Filter = ({ setFilteredJobs,setFilteredString , setLoading, closeFilter })
     },
   ];
 
-  const [filterQuery, setFilterQuery] = useState({});
+  const [filterQuery, setFilterQuery] = useState({perPage:100});
 
   useEffect(() => {
     fetchUsers();
@@ -645,8 +645,8 @@ const Filter = ({ setFilteredJobs,setFilteredString , setLoading, closeFilter })
   const handleFilterApply = async () => {
     setLoading(true);
     try {
-      const filterNames = selectedFilters.map((item) => item.filter);
-      setFilteredString(filterNames);
+      setFilteredString(selectedFilters);
+      setFilteredQuery(filterQuery)
       const response = await FilterJobs(filterQuery);
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
