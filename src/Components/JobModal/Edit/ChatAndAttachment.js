@@ -700,7 +700,7 @@ const ChatAndAttachment = ({ JobId }) => {
   );
 };
 
-export const AddNewJobChatAndAttachment = ({ JobId }) => {
+export const AddNewJobChatAndAttachment = ({ JobId}) => {
   const maxLength = 10;
   const [loading, setLoading] = useState(false);
   const [chats, setChats] = useState(null);

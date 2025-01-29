@@ -109,7 +109,7 @@ export const changePassword = async (data) => {
     }
 };
 
-export const getProfile = async (data, {signal}) => {
+export const getProfile = async (data, {signal}={}) => {
     const requestOptions = {
         method: "GET",
         headers: {

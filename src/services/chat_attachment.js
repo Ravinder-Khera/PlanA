@@ -25,7 +25,7 @@ export const sendMessage = async (jobId, data) => {
 };
 
 
-export const getMessages = async (jobId, {signal }) => {
+export const getMessages = async (jobId, {signal }={}) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
         method: "GET",
@@ -52,7 +52,7 @@ export const getMessages = async (jobId, {signal }) => {
 };
 
 
-export const getAttachments = async (jobId, { signal }) => {
+export const getAttachments = async (jobId, { signal }={}) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
         method: "GET",
