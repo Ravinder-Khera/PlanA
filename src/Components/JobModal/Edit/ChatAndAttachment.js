@@ -24,6 +24,7 @@ import Pusher from "pusher-js";
 import eventEmitter from "../../../Event";
 import { getProfile } from "../../../services/auth";
 import { CrossIcon, UploadIcon } from "../../../assets/svg";
+import { debounce, throttle } from "lodash";
 
 const ChatAndAttachment = ({ JobId }) => {
   const maxLength = 10;
@@ -712,25 +713,32 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
   });
   const chatScroll = useRef();
   const [userDetails, setUserDetails] = useState();
-
+  const abortControllerRef = useRef(null);
+  const profileAbortControllerRef = useRef(null);
   const fetchProfileData = async () => {
     try {
+      if (profileAbortControllerRef.current) {
+        profileAbortControllerRef.current.abort(); // Abort previous request
+      }
+      profileAbortControllerRef.current = new AbortController();
+      const signal = profileAbortControllerRef.current.signal;
       const authToken = localStorage.getItem("authToken");
-      let response = await getProfile(authToken);
+      const response = await getProfile(authToken, { signal });
       if (response.res) {
-        console.log(response.res.user);
         setUserDetails(response.res.user);
       } else {
-        console.error("profile error:", response.error);
+        console.error("Profile error:", response.error);
       }
     } catch (error) {
-      console.error("There was an error:", error);
+      console.error("Error fetching profile:", error);
     }
   };
 
   useEffect(() => {
     fetchProfileData();
+    throttledFetchChats();
   }, []);
+
 
   useEffect(() => {
     if (chatScroll.current) {
@@ -738,9 +746,7 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
     }
   }, [chats]);
 
-  useEffect(() => {
-    fetchChats();
-  }, []);
+  
 
   useEffect(() => {
     const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
@@ -777,48 +783,44 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
   });
 
   const fetchChats = async () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort(); // Abort previous request
+    }
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     try {
       setLoading(true);
-      console.log("chats", chats);
-      const response1 = await getMessages(JobId);
-      const response2 = await getAttachments(JobId);
-      // Combine both arrays
+      const [response1, response2] = await Promise.all([
+        getMessages(JobId, { signal }),
+        getAttachments(JobId, { signal }),
+      ]);
+
       if (!response1.error && !response2.error) {
         const combinedArray = [...response1.res, ...response2.res];
-        const sortedMessages = combinedArray.sort((a, b) => {
-          const dateA = new Date(a.created_at);
-          const dateB = new Date(b.created_at);
-          return dateA - dateB;
-        });
+        const sortedMessages = combinedArray.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        );
+        const sortedAttachments = response2.res?.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        );
 
-        const sortedAttachhment = response2.res?.sort((a, b) => {
-          const dateA = new Date(a.created_at);
-          const dateB = new Date(b.created_at);
-          return dateA - dateB;
-        });
-        setNewMsg({
-          type: "",
-          data: "",
-        });
         setChats(sortedMessages);
-        setAttachments(sortedAttachhment);
+        setAttachments(sortedAttachments);
       } else {
         setChats([]);
       }
     } catch (error) {
-      setChats([]);
-      console.log("error in fetching messages");
+      if (error.name !== "AbortError") {
+        console.error("Error fetching messages:", error);
+        setChats([]);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!body || body?.trim() === "") {
-      toast.error("Message cannot be empty");
-      return;
-    }
+  const debouncedSendMessage = debounce(async (body) => {
     try {
       setLoading(true);
       const response = await sendMessage(JobId, { body });
@@ -826,15 +828,12 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
         fetchChats();
         const notificationData = {
           class: "user",
-          message: "New Comment:" + userDetails.name,
+          message: "New Comment: " + userDetails.name,
         };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
+        const existingNotifications = JSON.parse(
+          localStorage.getItem("notifications") || "[]"
+        );
         existingNotifications.push(notificationData);
-
         localStorage.setItem(
           "notifications",
           JSON.stringify(existingNotifications)
@@ -842,17 +841,26 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
         setBody("");
       }
     } catch (error) {
-      console.log("error in sending messages", error);
+      console.error("Error sending message:", error);
     } finally {
       setLoading(false);
       if (chatScroll.current) {
         chatScroll.current.scrollIntoView({ behavior: "smooth" });
       }
-      setNewMsg({
-        type: "",
-        data: "",
-      });
+      setNewMsg({ type: "", data: "" });
     }
+  }, 500);
+
+  const throttledFetchChats = throttle(fetchChats, 1000); // 1 second throttle delay
+
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!body || body?.trim() === "") {
+      toast.error("Message cannot be empty");
+      return;
+    }
+    debouncedSendMessage(body);
   };
 
   const handleFileUpload = (e) => {
@@ -896,7 +904,7 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
         console.log("response 123--->", response);
         if (response.res) {
           toast.success(response.res?.message);
-          fetchChats();
+          throttledFetchChats();
         } else {
           toast.error(`${response.error}`);
         }
@@ -943,7 +951,7 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
       const response = await deleteAttachments(id);
       if (!response.error) {
         toast.success(response.res?.message);
-        fetchChats();
+        throttledFetchChats();
       }
     } catch (error) {
       console.log("error in sending messages", error);
@@ -1263,272 +1271,7 @@ export const AddNewJobChatAndAttachment = ({ JobId }) => {
         </div>
       </div>
 
-      {/* <div
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onClick={handleFileUpload}
-        className="imgUploadArea addJobImgUploadArea"
-      >
-        <form onSubmit={handleSendMessage}>
-          <input
-            type="text"
-            placeholder="Add a comment..."
-            onChange={(e) => {
-              setBody(e.target.value);
-              setNewMsg({
-                type: "msg",
-                data: e.target.value,
-              });
-            }}
-            value={body}
-          />
-        </form>
-        <div className="d-flex gap-3 ">
-          <img
-            src={file}
-            className="cursor"
-            alt=""
-            onClick={() => {
-              if (attachmentRef.current) {
-                attachmentRef.current.click();
-              }
-            }}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            ref={attachmentRef}
-            className="d-none"
-            onChange={handleFileUpload}
-          />
-          <img
-            src={message}
-            className="cursor"
-            alt=""
-            onClick={handleSendMessage}
-          />
-        </div>
-      </div> */}
-    </>
-  );
-};
-
-export const AddNewJobSendChatAndAttachment = ({ JobId }) => {
-  const [loading, setLoading] = useState(false);
-  const [chats, setChats] = useState(null);
-  const [body, setBody] = useState("");
-  const attachmentRef = useRef(null);
-  const [attachments, setAttachments] = useState([]);
-  const [newMsg, setNewMsg] = useState({
-    type: "",
-    data: "",
-  });
-  const chatScroll = useRef();
-  const [userDetails, setUserDetails] = useState();
-
-  const fetchProfileData = async () => {
-    try {
-      const authToken = localStorage.getItem("authToken");
-      let response = await getProfile(authToken);
-      if (response.res) {
-        console.log(response.res.user);
-        setUserDetails(response.res.user);
-      } else {
-        console.error("profile error:", response.error);
-      }
-    } catch (error) {
-      console.error("There was an error:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
-
-  useEffect(() => {
-    if (chatScroll.current) {
-      chatScroll.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [chats]);
-
-  useEffect(() => {
-    fetchChats();
-  }, []);
-
-  useEffect(() => {
-    const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
-      cluster: process.env.REACT_APP_CLUSTER,
-      encrypted: true,
-    });
-    const id = localStorage.getItem("jobId") || "x";
-
-    const channel = pusher.subscribe(`job.${id}`);
-    channel.bind("message.created", (data) => {
-      const { message } = data;
-      console.log("message", message, chats);
-      if (message) {
-        const tempChats = chats;
-        console.log("tempChats before push", tempChats);
-        tempChats?.push(message);
-        console.log("tempChats after push", tempChats);
-        setChats(tempChats);
-      }
-    });
-
-    return () => {
-      pusher.unsubscribe(`job.${id}`);
-    };
-  }, [chats]);
-
-  eventEmitter.removeAllListeners("newMessage");
-  eventEmitter.on("newMessage", (data) => {
-    const tempChats = data;
-    console.log("tempChats before push", tempChats);
-    tempChats?.push(message);
-    console.log("tempChats after push", tempChats);
-    setChats(tempChats);
-  });
-
-  const fetchChats = async () => {
-    try {
-      setLoading(true);
-      console.log("chats", chats);
-      const response1 = await getMessages(JobId);
-      const response2 = await getAttachments(JobId);
-      // Combine both arrays
-      if (!response1.error && !response2.error) {
-        const combinedArray = [...response1.res, ...response2.res];
-        const sortedMessages = combinedArray.sort((a, b) => {
-          const dateA = new Date(a.created_at);
-          const dateB = new Date(b.created_at);
-          return dateA - dateB;
-        });
-
-        const sortedAttachhment = response2.res?.sort((a, b) => {
-          const dateA = new Date(a.created_at);
-          const dateB = new Date(b.created_at);
-          return dateA - dateB;
-        });
-        setNewMsg({
-          type: "",
-          data: "",
-        });
-        setChats(sortedMessages);
-        setAttachments(sortedAttachhment);
-      } else {
-        setChats([]);
-      }
-    } catch (error) {
-      setChats([]);
-      console.log("error in fetching messages");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!body || body?.trim() === "") {
-      toast.error("Message cannot be empty");
-      return;
-    }
-    try {
-      setLoading(true);
-      const response = await sendMessage(JobId, { body });
-      if (!response.error) {
-        fetchChats();
-        const notificationData = {
-          class: "user",
-          message: "New Comment:" + userDetails.name,
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.push(notificationData);
-
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
-        setBody("");
-      }
-    } catch (error) {
-      console.log("error in sending messages", error);
-    } finally {
-      setLoading(false);
-      if (chatScroll.current) {
-        chatScroll.current.scrollIntoView({ behavior: "smooth" });
-      }
-      setNewMsg({
-        type: "",
-        data: "",
-      });
-    }
-  };
-
-  const handleFileUpload = (e) => {
-    if (!e.target.files) return;
-    const selectedFile = e.target?.files[0];
-    if (selectedFile && selectedFile.type.startsWith("image/")) {
-      setNewMsg({
-        type: "attachment",
-        data: selectedFile,
-      });
-      handleImageUpload(selectedFile);
-    }
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const droppedFile = e.dataTransfer.files[0];
-
-    if (droppedFile && droppedFile.type.startsWith("image/")) {
-      setNewMsg({
-        type: "attachment",
-        data: droppedFile,
-      });
-      handleImageUpload(droppedFile);
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleImageUpload = async (file) => {
-    console.log("file", file);
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const formData = new FormData();
-      formData.append("attachment", file);
-      try {
-        setLoading(true);
-        let response = await addAttachments(formData, JobId);
-        console.log("response 123--->", response);
-        if (response.res) {
-          toast.success(response.res?.message);
-          fetchChats();
-        } else {
-          toast.error(`${response.error}`);
-        }
-      } catch (error) {
-        console.error("There was an error:", error);
-        toast.error("An error occurred while uploading the attachment");
-      } finally {
-        setLoading(false);
-        setNewMsg({
-          type: "",
-          data: "",
-        });
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  return (
-    <>
+      <>
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -1576,7 +1319,10 @@ export const AddNewJobSendChatAndAttachment = ({ JobId }) => {
         </div>
       </div>
     </>
+    </>
   );
 };
+
+
 
 export default ChatAndAttachment;

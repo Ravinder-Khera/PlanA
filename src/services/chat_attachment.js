@@ -25,7 +25,7 @@ export const sendMessage = async (jobId, data) => {
 };
 
 
-export const getMessages = async (jobId) => {
+export const getMessages = async (jobId, {signal }) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
         method: "GET",
@@ -34,9 +34,10 @@ export const getMessages = async (jobId) => {
             "Accept": "application/json",
             "Authorization": `Bearer ${authToken}`, 
         },
+        
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/${jobId}/messages`, requestOptions);
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/${jobId}/messages`, requestOptions, {signal});
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         if(response.status === 200){
@@ -51,7 +52,7 @@ export const getMessages = async (jobId) => {
 };
 
 
-export const getAttachments = async (jobId) => {
+export const getAttachments = async (jobId, { signal }) => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
         method: "GET",
@@ -62,7 +63,7 @@ export const getAttachments = async (jobId) => {
         },
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/${jobId}/attachments`, requestOptions);
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/${jobId}/attachments`, requestOptions,{signal});
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         if(response.status === 200){

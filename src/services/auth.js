@@ -109,7 +109,7 @@ export const changePassword = async (data) => {
     }
 };
 
-export const getProfile = async (data) => {
+export const getProfile = async (data, {signal}) => {
     const requestOptions = {
         method: "GET",
         headers: {
@@ -119,7 +119,7 @@ export const getProfile = async (data) => {
         },
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/get-my-profile`, requestOptions);;
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/get-my-profile`, requestOptions, {signal});
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         // console.log(response,data);

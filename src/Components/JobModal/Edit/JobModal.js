@@ -29,8 +29,7 @@ import {
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import ChatAndAttachment, {
-  AddNewJobChatAndAttachment,
-  AddNewJobSendChatAndAttachment,
+  AddNewJobChatAndAttachment
 } from "./ChatAndAttachment";
 
 const JobModal = ({
@@ -2886,7 +2885,6 @@ export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef }) => {
                     </div>
                     <AddNewJobChatAndAttachment JobId={job?.id} />
                   </div>
-                  <AddNewJobSendChatAndAttachment JobId={job?.id} />
                 </div>
               </div>
             </div>
@@ -3216,7 +3214,6 @@ export const NewJobModalWithTasks = ({
                     </div>
                     <AddNewJobChatAndAttachment JobId={job?.id} />
                   </div>
-                  <AddNewJobSendChatAndAttachment JobId={job?.id} />
                 </div>
               </div>
             </div>
@@ -3919,7 +3916,6 @@ export const NewTaskModal = ({
 
                     <AddNewJobChatAndAttachment JobId={jobNum} />
                   </div>
-                  <AddNewJobSendChatAndAttachment JobId={jobNum} />
                 </div>
               </div>
             </div>
@@ -4642,7 +4638,6 @@ export const UpdateTaskModal = ({
 
                     <AddNewJobChatAndAttachment JobId={task?.job_id} />
                   </div>
-                  <AddNewJobSendChatAndAttachment JobId={task?.job_id} />
                 </div>
               </div>
             </div>
@@ -5348,7 +5343,6 @@ export const CreateTaskModal = ({
 
                     <AddNewJobChatAndAttachment JobId={task?.job_id?.id} />
                   </div>
-                  <AddNewJobSendChatAndAttachment JobId={task?.job_id?.id} />
                 </div>
               </div>
             </div>
