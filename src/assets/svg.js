@@ -730,3 +730,57 @@ export function EditIcon() {
     </>
   );
 }
+
+export function RightArrow({ color= "#7F7F7F"}) {
+  return (
+    <>
+      <svg
+        width="8"
+        height="14"
+        viewBox="0 0 8 14"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.349609 12.3495L1.50011 13.5L8.00011 7L1.50011 0.5L0.349609 1.6505L5.69911 7L0.349609 12.3495Z"
+          fill={color}
+        />
+      </svg>
+    </>
+  );
+}
+
+export function DownArrow({className} = {}) {
+  return (
+    <>
+    <svg
+      width="18"
+      height="12"
+      viewBox="0 0 18 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M15.885 0.541992L9 7.42699L2.115 0.541992L0 2.65699L9 11.657L18 2.65699L15.885 0.541992Z"
+        fill="#E2E31F"
+      />
+    </svg>
+    </>
+  );
+}
+
+
+export function AddTaskGreyButton(){
+  return (
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="path-1-inside-1_4617_3752" fill="white">
+<rect width="36" height="36" rx="1"/>
+</mask>
+<rect width="36" height="36" rx="1" fill="#616161"/>
+<rect width="36" height="36" rx="1" stroke="#616161" stroke-width="3" mask="url(#path-1-inside-1_4617_3752)"/>
+<path d="M25 18.5C25 18.7069 24.9178 18.9053 24.7715 19.0515C24.6253 19.1978 24.4269 19.28 24.22 19.28H19.28V24.22C19.28 24.4269 19.1978 24.6253 19.0515 24.7715C18.9053 24.9178 18.7069 25 18.5 25C18.2931 25 18.0947 24.9178 17.9485 24.7715C17.8022 24.6253 17.72 24.4269 17.72 24.22V19.28H12.78C12.5731 19.28 12.3747 19.1978 12.2285 19.0515C12.0822 18.9053 12 18.7069 12 18.5C12 18.2931 12.0822 18.0947 12.2285 17.9485C12.3747 17.8022 12.5731 17.72 12.78 17.72H17.72V12.78C17.72 12.5731 17.8022 12.3747 17.9485 12.2285C18.0947 12.0822 18.2931 12 18.5 12C18.7069 12 18.9053 12.0822 19.0515 12.2285C19.1978 12.3747 19.28 12.5731 19.28 12.78V17.72H24.22C24.4269 17.72 24.6253 17.8022 24.7715 17.9485C24.9178 18.0947 25 18.2931 25 18.5Z" fill="black"/>
+</svg>
+
+  )
+}

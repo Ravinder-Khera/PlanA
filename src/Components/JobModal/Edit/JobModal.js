@@ -11,9 +11,12 @@ import {
   AddIcon,
   TickIcon,
   CrossIcon,
+  RightArrow,
+  DownArrow,
+  AddTaskGreyButton,
 } from "../../../assets/svg";
 import { Calendar } from "react-date-range";
-import { StageList, StatusList } from "../../../helper";
+import { AllStages, StageList, StatusList } from "../../../helper";
 import {
   createTask,
   createTaskStage,
@@ -29,8 +32,9 @@ import {
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import ChatAndAttachment, {
-  AddNewJobChatAndAttachment
+  AddNewJobChatAndAttachment,
 } from "./ChatAndAttachment";
+import moment from "moment";
 
 const JobModal = ({
   job,
@@ -2910,6 +2914,7 @@ export const NewJobModalWithTasks = ({
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
   const [activeTaskJob, setActiveTaskJob] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
+  const [showAllTasks, setShowAllTasks] = useState(false);
 
   const popUpRef = useRef(null);
 
@@ -2935,6 +2940,7 @@ export const NewJobModalWithTasks = ({
       job.description = description;
     }
     if (!isDeleting && job && jobTasks) {
+      console.log("job tasks", jobTasks);
       job.tasks = jobTasks;
     }
     await handleClose(isDeleting);
@@ -3027,59 +3033,66 @@ export const NewJobModalWithTasks = ({
     }
   };
 
-    const handleUpdateTask = async (
-      newData,
-      taskId,
-      newJobCollaboratorsList,
-      stage
-    ) => {
-      console.log(taskId," - ",activeTask.id," - ", newData);
-      
-      setJobTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === taskId
-            ? {
-                ...task,
-                title: newData?.updatedTask?.title || task?.title,
-                description: newData?.updatedTask?.description || task?.description,
-                stage_id: newData?.updatedTask?.stage_id || task?.stage_id,
-                due_date: newData?.updatedTask?.due_date || task?.due_date,
-                status: newData?.updatedTask?.status || task?.status,
-                users: newJobCollaboratorsList || task?.users,
-                stage: stage || task?.stage,
-              }
-            : task
-        )
-      );
-      setShowUpdateTaskModal(false);
-      var response = await updateTask(newData, taskId);
-      if (response.res) {
-        console.log("Task Update successful", response.res);
-      } else {
-        console.error("Task Update failed:", response.error);
-        toast.error(response.error?.message || "Failed to Update the task");
-      }
-    };
+  const handleUpdateTask = async (
+    newData,
+    taskId,
+    newJobCollaboratorsList,
+    stage
+  ) => {
+    console.log(taskId, " - ", activeTask.id, " - ", newData);
+
+    setJobTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              title: newData?.updatedTask?.title || task?.title,
+              description:
+                newData?.updatedTask?.description || task?.description,
+              stage_id: newData?.updatedTask?.stage_id || task?.stage_id,
+              due_date: newData?.updatedTask?.due_date || task?.due_date,
+              status: newData?.updatedTask?.status || task?.status,
+              users: newJobCollaboratorsList || task?.users,
+              stage: stage || task?.stage,
+            }
+          : task
+      )
+    );
+    setShowUpdateTaskModal(false);
+    var response = await updateTask(newData, taskId);
+    if (response.res) {
+      console.log("Task Update successful", response.res);
+    } else {
+      console.error("Task Update failed:", response.error);
+      toast.error(response.error?.message || "Failed to Update the task");
+    }
+  };
 
   const handleCloseModal = async () => {
     setShowUpdateTaskModal(false);
     setActiveTask(null);
   };
 
-    const handleTaskDelete = async (task) => {
-      try {
-        const response = await deleteTask(task.id);
-        if (response.res) {
-          console.log("Job delete successful", response.res);
-        } else {
-          console.error("Job delete failed:", response.error);
-          toast.error(response.error?.message || "Failed to delete the job");
-        }
-      } catch (error) {
-        console.error("Error deleting job:", error);
-        toast.error("Error deleting job");
+  const handleTaskDelete = async (task) => {
+    try {
+      const response = await deleteTask(task.id);
+      if (response.res) {
+        console.log("Job delete successful", response.res);
+      } else {
+        console.error("Job delete failed:", response.error);
+        toast.error(response.error?.message || "Failed to delete the job");
       }
-    };
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      toast.error("Error deleting job");
+    }
+  };
+
+  function formatStatus(status) {
+    return status
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
 
   return (
     <>
@@ -3170,7 +3183,7 @@ export const NewJobModalWithTasks = ({
                         placeholder="Add Description Here..."
                       />
                     </div>
-                    <div className="discriptionBox">
+                    {/* <div className="discriptionBox">
                       <h3>Tasks</h3>
                       <div
                         className="d-flex align-items-center flex-wrap"
@@ -3210,6 +3223,151 @@ export const NewJobModalWithTasks = ({
                             Add Tasks +
                           </div>
                         </div>
+                      </div>
+                    </div> */}
+                    <div className="discriptionBox">
+                      <h3>Tasks</h3>
+                      <div
+                        className={`task-table-container ${
+                          showAllTasks ? "show-more" : ""
+                        }`}
+                      >
+                        <table className="task-table">
+                          <tbody>
+                            {jobTasks.map((task, index) => (
+                              <tr key={index}>
+                                <td
+                                  className={`task-title ${
+                                    task.stage?.title?.split(" ")[0]
+                                  }`}
+                                  style={{
+                                    whiteSpace: "nowrap",      
+                                    overflow: "hidden",       
+                                    textOverflow: "ellipsis",   
+                                    maxWidth: "80px",         
+                                  }}
+                                >
+                                  {task?.title}
+                                </td>
+                                <td className="addNewTaskDiv text-center">
+                                  <span
+                                    className={`  addTaskJobBtn stage_${
+                                      task.stage?.title?.split(" ")[0]
+                                    }`}
+                                  >
+                                    {task.stage?.title
+                                      ? task.stage?.title
+                                      : "N/A"}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div
+                                    className=" d-flex align-items-center justify-content-center position-relative"
+                                  >
+                                    {task.users.length > 0 && (
+                                      <>
+                                        {task.users
+                                          .slice(0, 1)
+                                          .map((user, index) => {
+                                            const initials = user.name
+                                              .split(" ")
+                                              .map((part) =>
+                                                part.charAt(0).toUpperCase()
+                                              )
+                                              .join("");
+
+                                            return (
+                                              <div
+                                                key={index}
+                                                className={`collaboratorsBoxUser`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  zIndex: index,
+                                                }}
+                                              >
+                                                {initials}
+                                              </div>
+                                            );
+                                          })}
+
+                                        {task.users.length > 1 && (
+                                          <div
+                                            className={`collaboratorsBoxUser-nthuser`}
+                                            style={{
+                                              zIndex: "4",
+                                            }}
+                                          >
+                                            +{task.users.length - 1}
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                    {task.users.length === 0 && (
+                                      <div
+                                        className="collaboratorsBoxUser disabled m-0"
+                                        style={{
+                                          minWidth: "40px",
+                                        }}
+                                      >
+                                        N/A
+                                      </div>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="due-date">
+                                  Due Date:{" "}
+                                  <span>
+                                    {moment(task.due_date).format("MM/DD/YYYY")}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className={`statusBox ${task.status}`}>
+                                    {formatStatus(task.status)}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div
+                                    className="view-more"
+                                    onClick={() => {
+                                      if (!task.id) {
+                                        handleCheckTask(job.id, index);
+                                      } else {
+                                        setActiveTask(task);
+                                        setShowUpdateTaskModal(true);
+                                      }
+                                    }}
+                                  >
+                                    View More <RightArrow />
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div
+                        className={`show-all-tasks ${
+                          showAllTasks ? "show-more" : ""
+                        }`}
+                        onClick={() => setShowAllTasks(!showAllTasks)}
+                      >
+                        <DownArrow
+                          className={`down-arrow-icon ${
+                            showAllTasks ? "rotate" : ""
+                          }`}
+                        />
+                        <span>
+                          {showAllTasks ? "Show Less" : "Show All Tasks"}
+                        </span>
+                      </div>
+
+                      <div className={`px-1 add-task`}>
+                        <button
+                          className={`add-task-btn`}
+                          onClick={() => handleAddTaskClick(job)}
+                        >
+                          <AddTaskGreyButton /> Add Task
+                        </button>
                       </div>
                     </div>
                     <AddNewJobChatAndAttachment JobId={job?.id} />
@@ -4161,7 +4319,7 @@ export const UpdateTaskModal = ({
           />
         </div>
       )}
-      <div className="loaderDiv2 mobile" style={{zIndex:'1001'}}>
+      <div className="loaderDiv2 mobile" style={{ zIndex: "1001" }}>
         <div className="pop-wrapper">
           <div className="wrapper">
             <div
@@ -4682,6 +4840,42 @@ export const CreateTaskModal = ({
   const newCollaboratorBoxRef = useRef(null);
   const statusBoxRef = useRef(null);
   const stageBoxRef = useRef(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const inputRef = useRef(null);
+  const popupRef = useRef(null);
+  const [firstClick, setFirstClick] = useState(true);
+
+  const handleInputClick = () => {
+    setIsPopupOpen(true);
+  };
+
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target)
+      ) {
+        setIsPopupOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Handle option selection
+  const handleOptionClick = (option) => {
+    
+    setTitle(option.title);
+    setStage({ title: option.stageTitle });
+    setTatskStatus(option.status);
+    setIsPopupOpen(false);
+  };
 
   const fetchUsers = async () => {
     try {
@@ -4851,6 +5045,28 @@ export const CreateTaskModal = ({
     }
   };
 
+  const handleCreateCustomTask = () => {
+  
+    setFirstClick(false);
+    setIsPopupOpen(false);
+  
+    // Reset input and related states
+    setTitle(""); 
+    setStage(null);
+    setTatskStatus("not-started");
+  
+    // Wait for state update, then focus
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      } else {
+        console.log("inputRef is null"); // Debugging
+      }
+    }, 50); 
+  };
+  
+ 
+
   return (
     <>
       {loader && (
@@ -4900,14 +5116,81 @@ export const CreateTaskModal = ({
                   <div className="innerScroll">
                     <input
                       type="text"
-                      className="jobTitle"
+                      className="jobTitle position-relative"
                       name="title"
                       value={title}
                       onChange={(e) => {
-                        setTitle(e.target.value);
+                        if (!firstClick) {
+                          setTitle(e.target.value);
+                        } else {
+                          e.preventDefault();
+                        }
                       }}
-                      placeholder="Write Task Name..."
+                      onClick={handleInputClick}
+                      placeholder="Select Task"
+                      ref={inputRef}
+                      autoFocus={true}
                     />
+                    {isPopupOpen && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          padding: "20px",
+                          border: "1px solid #353535",
+                          borderRadius: "8px",
+                          backgroundColor: "#252525",
+                          width: "fit-content",
+                          zIndex: "99",
+                        }}
+                        className="main-Stage-Div"
+                        ref={popupRef}
+                      >
+                        <div
+                          className="stages"
+                         
+                          style={{
+                            maxWidth: "600px",
+                            maxHeight: "300px",
+                            overflowY: "auto",
+                          }}
+                        >
+                          {AllStages.map((task, index) => (
+                            <div
+                              key={index}
+                              onClick={() => handleOptionClick(task)}
+                              style={{
+                                padding: "5px",
+                                cursor: "pointer",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                              className="all-stage"
+                            >
+                              <div className={`title ${task.stageTitle}`}>
+                                {task.title}
+                              </div>
+                              <div
+                                className={`stage-title stage_${task.stageTitle}`}
+                              >
+                                {task.stageTitle}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div
+                          className="custom-task"
+                          onClick={() => {
+                            handleCreateCustomTask();
+                          }}
+                        >
+                          <div className="add-btn" style={{ minWidth: "40px" }}>
+                            <AddIcon />
+                          </div>{" "}
+                          Create Custom Task
+                        </div>
+                      </div>
+                    )}
                     <div className="discriptionBox">
                       <h3>Description</h3>
                       <textarea
@@ -5181,12 +5464,8 @@ export const CreateTaskModal = ({
                           <div className="editBoxInner position-relative">
                             <h3>Stage</h3>
                             <button
-                              className={`statusBox stageBox position-relative ${stage}`}
-                              style={{
-                                border: `1px solid ${activeStageColor}`,
-                                background: "transparent",
-                                zIndex: "1",
-                              }}
+                              className={`statusBox stageBox position-relative stage_${stage?.title}`}
+                              
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
@@ -5219,16 +5498,15 @@ export const CreateTaskModal = ({
                                         }}
                                       >
                                         <div
-                                          className={`statusBox position-relative`}
-                                          style={{
-                                            border: `1px solid ${colors[index]}`,
-                                          }}
+                                          className={`statusBox position-relative stage_${stage?.title}`}
+                                          // style={{
+                                          //   border: `1px solid ${colors[index]}`,
+                                          // }}
                                         >
                                           {stage.title}
                                           <span
                                             className="position-absolute w-100 h-100"
                                             style={{
-                                              backgroundColor: colors[index],
                                               opacity: "0.5",
                                               top: "0",
                                               left: "0",
@@ -5240,7 +5518,7 @@ export const CreateTaskModal = ({
                                     );
                                   })}
                                 </div>
-                                {!addStageBox ? (
+                                {/* {!addStageBox ? (
                                   <div className="editBoxIcon pt-4">
                                     <div
                                       className="delete-box justify-content-start"
@@ -5322,7 +5600,7 @@ export const CreateTaskModal = ({
                                       </div>
                                     </div>
                                   </div>
-                                )}
+                                )} */}
                               </div>
                             )}
                           </div>
