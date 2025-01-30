@@ -3180,6 +3180,19 @@
     justify-content: space-between;
    &:hover{ background-color: #353535;}
     margin-right: 15px;
+    .job-id{
+      display: flex
+      ;
+          width: 83px;
+          height: 28px;
+          padding: 0px 27px;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          border-radius: 4px;
+          border: 1px solid #7F7F7F;
+          background: #353535;
+    }
     div{
      padding: 6px;
   

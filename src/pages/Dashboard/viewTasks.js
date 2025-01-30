@@ -574,6 +574,7 @@ function ViewTaskPage() {
       {showAddTaskModal && (
         <CreateTaskModal
           task={activeTaskJob}
+          newTask={true}
           handleClose={async () => {
             setShowAddTaskModal(false);
           }}
