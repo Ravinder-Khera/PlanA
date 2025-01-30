@@ -901,6 +901,7 @@ const Jobs = () => {
         if (isJobChanged(updatedJob, originalJob)) {
           handleUpdateJob(updatedJob);
           synchronizeRowHeights();
+          
         }
         if (!showNewJobModal && !showNewJobModalWithTasks) {
           setActiveJob(null);

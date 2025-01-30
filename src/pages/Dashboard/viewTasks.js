@@ -9,6 +9,7 @@ import {
   getJobIds,
   getSingleJob,
   getTasksByFilter,
+  getTasksByUser,
   getUserByRole,
   updateTask,
 } from "../../services/auth";
@@ -397,11 +398,11 @@ function ViewTaskPage() {
   useEffect(() => {
     const handleJobFilter = async () => {
       try {
-        const response = await getJobByNum(475100);
+        const response = await getTasksByUser();
         if (response.res) {
           console.log("job tasks are", response?.res?.tasks);
-          setActiveTaskJob(response?.res);
-          setFilteredTasks(response?.res?.tasks);
+          setActiveTaskJob(response?.res.data);
+          setFilteredTasks(response?.res?.data);
           return response.res;
         } else {
           console.error("get task failed:", response.error);
