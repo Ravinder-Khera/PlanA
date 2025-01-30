@@ -494,7 +494,7 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                               ? "40px"
                               : "",
                         }}
-                        className={`jobCell ${
+                        className={`jobCell ${i === 5 && "first"} ${i === 10 && "last"} ${
                           currentDate >= createdAt &&
                           currentDate <= dueDate &&
                           findNearestStage(job) + " active"

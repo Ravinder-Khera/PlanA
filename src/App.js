@@ -483,8 +483,8 @@ function RightSide() {
             <Route path="/" element={<Navigate to="/dashboard"  />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/timeline" element={<TimelinePage />} />
-            <Route path="/dashboard/tasks" element={<TaskPage />} />
-            <Route path="/dashboard/tasks/:id" element={<ViewTaskPage />} />
+            <Route path="/dashboard/tasks" element={<ViewTaskPage />} />
+            {/* <Route path="/dashboard/tasks/:id" element={<ViewTaskPage />} /> */}
             <Route path="/invoice" element={<Invoice />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/settings" element={<SettingsPage />} />
