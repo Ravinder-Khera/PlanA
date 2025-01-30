@@ -3247,6 +3247,7 @@ export const NewJobModalWithTasks = ({
                                     textOverflow: "ellipsis",
                                     maxWidth: "80px",
                                   }}
+                                  title={task?.title}
                                 >
                                   {task?.title}
                                 </td>
@@ -4914,8 +4915,7 @@ export const CreateTaskModal = ({
 
   const fetchJonbNo = async () => {
     try {
-      const authToken = localStorage.getItem("authToken");
-      let response = await getJobsByUser(authToken);
+      let response = await getJobsByUser();
       if (response.res) {
         setJobNo(response.res?.job_numbers);
       } else {
@@ -5161,7 +5161,7 @@ export const CreateTaskModal = ({
                       <div className="delete-item">Collapse</div>
                     </div>
                   </div>
-                  <div className="innerScroll">
+                  <div className="innerScroll position-relative">
                     {newTask && (
                       <>
                         {" "}
@@ -5185,8 +5185,9 @@ export const CreateTaskModal = ({
                               border: "1px solid #353535",
                               borderRadius: "8px",
                               backgroundColor: "#252525",
-                              width: "fit-content",
+                              width: "max-content",
                               zIndex: "99",
+                              right:'0'
                             }}
                             className="main-Stage-Div"
                             ref={jobSelectRef}
@@ -5194,12 +5195,13 @@ export const CreateTaskModal = ({
                             <div
                               className="stages"
                               style={{
-                                maxWidth: "600px",
+                                marginLeft:'auto',
+                                minWidth: "600px",
                                 maxHeight: "300px",
                                 overflowY: "auto",
                               }}
                             >
-                              {jobNo.map((jobId, index) => (
+                              {jobNo?.map((jobId, index) => (
                                 <div
                                   key={index}
                                   onClick={() => handleJobOptionClick(jobId)}

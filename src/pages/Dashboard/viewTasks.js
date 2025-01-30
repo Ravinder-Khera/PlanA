@@ -617,7 +617,8 @@ function ViewTaskPage() {
               className={`addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none  ${
                 taskTab === "completed" && "d-none"
               }`}
-              onClick={() => setShowAddTaskModal(true)}
+              onClick={() => {if(filteredTasks.length > 0){setShowAddTaskModal(true)}}}
+              title={`${filteredTasks.length > 0 && 'Not Part of any Job yet'}`}
             >
               New Task{" "}
               <div className="UserImg" style={{ minWidth: "40px" }}>
@@ -625,7 +626,7 @@ function ViewTaskPage() {
               </div>
             </div>
           </div>
-          <div className="DashboardHeading d-flex justify-content-end align-items-center position-relative">
+          {/* <div className="DashboardHeading d-flex justify-content-end align-items-center position-relative">
             <div
               className="d-flex  align-items-baseline pe-md-4 addNewTaskDiv "
               style={{ cursor: "pointer", marginTop: "40px" }}
@@ -652,7 +653,7 @@ function ViewTaskPage() {
                 />
               )}
             </div>
-          </div>
+          </div> */}
 
           <div className="taskContainer">
             <ul>
@@ -662,10 +663,12 @@ function ViewTaskPage() {
                   <div className="centerText">Stage</div>
                   <div className="centerText">Job No.</div>
                 </div>
-                <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none">
-                  <div className="centerText">Status</div>
-                  <div className="centerText">Due Date</div>
-                  <div className="centerText">Days Left</div>
+                <div className="listContent navMenuDiv p-0 bg-transparent shadow-none d-flex justify-content-end" >
+                  <div className="d-flex w-100 align-items-center gap-2 justify-content-end" style={{maxWidth:'375px'}}>
+                    <div className="centerText text-center" style={{flex:'1',maxWidth:'100px'}}>Status</div>
+                    <div className="centerText text-center" style={{flex:'1'}}>Due Date</div>
+                    <div className="centerText text-center" style={{flex:'1'}}>Days Left</div>
+                  </div>
                 </div>
               </li>
               {filteredTasks.length > 0 &&
@@ -685,7 +688,7 @@ function ViewTaskPage() {
                   >
                     <div className={`listContent listTitle `}>
                       <p>
-                        {activeTaskJob?.job_num} |<span> {task?.title}</span>
+                        <span> {task?.title}</span>
                       </p>
                     </div>
                     <div className="listContent centerContent">
@@ -699,22 +702,24 @@ function ViewTaskPage() {
                       </div>
                     </div>
                     <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                      <div className={`centerText statusBtn ${task?.status}`}>
-                        {task?.status ? task?.status : "N/A"}
-                      </div>
-                      <div className="centerText">
-                        {formatDate(task?.due_date)}
-                      </div>
-                      <div className="centerText">
-                        {moment(task?.due_date)
-                          .local()
-                          .isBefore(moment(), "day")
-                          ? 0
-                          : moment(task?.due_date)
-                              .local()
-                              .diff(moment(), "days")}{" "}
-                        days
-                      </div>
+                    <div className="d-flex w-100 align-items-center gap-2 justify-content-end" style={{maxWidth:'375px'}}>
+                        <div  style={{flex:'1',maxWidth:'100px'}} className={`centerText statusBtn m-0 ${task?.status}`}>
+                          {task?.status ? task?.status : "N/A"}
+                        </div>
+                        <div style={{flex:'1'}}  className="text-center centerText">
+                          {formatDate(task?.due_date)}
+                        </div>
+                        <div style={{flex:'1'}}  className="text-center centerText">
+                          {moment(task?.due_date)
+                            .local()
+                            .isBefore(moment(), "day")
+                            ? 0
+                            : moment(task?.due_date)
+                                .local()
+                                .diff(moment(), "days")}{" "}
+                          days
+                        </div>
+                    </div>
                     </div>
                   </li>
                 ))}

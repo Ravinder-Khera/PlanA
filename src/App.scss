@@ -1409,7 +1409,7 @@ body {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 15px 11px 24px;
+            padding: 19px 15px 18px 24px;
             margin: 11px auto;
             transition: all 1.5s ease;
 
@@ -1425,12 +1425,13 @@ body {
 
             &.heading {
                 background: #353535;
-                color: #FFF;
+                color: #E2E31F;
                 font-size: 16px;
                 font-style: normal;
                 font-weight: 600;
                 line-height: normal;
                 letter-spacing: -0.64px;
+                padding: 27px 24px;
             }
 
             &.completeStage {

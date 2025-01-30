@@ -836,13 +836,14 @@ export const deleteTask = async (id) => {
     }
 };
 
-export const getJobsByUser = async (data) => {
+export const getJobsByUser = async () => {
+    const authToken = localStorage.getItem('authToken');
     const requestOptions = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "Authorization": `Bearer ${data}`,
+          "Authorization": `Bearer ${authToken}`,
         },
     };
     try {
