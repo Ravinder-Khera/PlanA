@@ -23,6 +23,7 @@ import {
   deleteJob,
   deleteTask,
   getJobByNum,
+  getJobsByUser,
   getSingleJob,
   getTaskStages,
   getUserByRole,
@@ -3241,10 +3242,10 @@ export const NewJobModalWithTasks = ({
                                     task.stage?.title?.split(" ")[0]
                                   }`}
                                   style={{
-                                    whiteSpace: "nowrap",      
-                                    overflow: "hidden",       
-                                    textOverflow: "ellipsis",   
-                                    maxWidth: "80px",         
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    maxWidth: "80px",
                                   }}
                                 >
                                   {task?.title}
@@ -3261,9 +3262,7 @@ export const NewJobModalWithTasks = ({
                                   </span>
                                 </td>
                                 <td>
-                                  <div
-                                    className=" d-flex align-items-center justify-content-center position-relative"
-                                  >
+                                  <div className=" d-flex align-items-center justify-content-center position-relative">
                                     {task.users.length > 0 && (
                                       <>
                                         {task.users
@@ -4807,13 +4806,15 @@ export const UpdateTaskModal = ({
 };
 
 export const CreateTaskModal = ({
-  task,
+  task: propTask,
   handleClose,
   handleDelete,
   onCreateTask,
   reloadTabs,
   scrollRef,
+  newTask,
 }) => {
+  const [task,setTask] = useState(propTask)
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -4836,17 +4837,26 @@ export const CreateTaskModal = ({
   const [activeStageColor, setActiveStageColor] = useState("");
   const [usersList, setUsersList] = useState([]);
   const popUpRef = useRef(null);
+  const popupRef = useRef(null);
   const datePickerRef = useRef(null);
   const newCollaboratorBoxRef = useRef(null);
   const statusBoxRef = useRef(null);
   const stageBoxRef = useRef(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isJobPopupOpen, setIsJobPopupOpen] = useState(false);
   const inputRef = useRef(null);
-  const popupRef = useRef(null);
+  const inputJobRef = useRef(null);
+  const jobSelectRef = useRef(null);
   const [firstClick, setFirstClick] = useState(true);
+  const [jobNo, setJobNo] = useState(null);
+  
 
   const handleInputClick = () => {
     setIsPopupOpen(true);
+  };
+
+  const handleInputJobClick = () => {
+    setIsJobPopupOpen(true);
   };
 
   // Handle outside click to close the popup
@@ -4867,16 +4877,54 @@ export const CreateTaskModal = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  // jobSelectRef
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        jobSelectRef.current &&
+        !jobSelectRef.current.contains(event.target) &&
+        inputJobRef.current &&
+        !inputJobRef.current.contains(event.target)
+      ) {
+        setIsJobPopupOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Handle option selection
   const handleOptionClick = (option) => {
-    
     setTitle(option.title);
     setStage({ title: option.stageTitle });
     setTatskStatus(option.status);
     setIsPopupOpen(false);
   };
 
+  const handleJobOptionClick = (id) => {
+    setTask((prevTask) => ({
+      ...prevTask,
+      job_num: id, // Update the job_num field
+    }));
+    setIsJobPopupOpen(false);
+  };
+
+  const fetchJonbNo = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let response = await getJobsByUser(authToken);
+      if (response.res) {
+        setJobNo(response.res?.job_numbers);
+      } else {
+        console.error("Failed to fetch Users:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
   const fetchUsers = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
@@ -4917,6 +4965,9 @@ export const CreateTaskModal = ({
   useEffect(() => {
     fetchUsers();
     fetchStages();
+    if (newTask) {
+      fetchJonbNo();
+    }
   }, []);
 
   useEffect(() => {
@@ -5046,15 +5097,14 @@ export const CreateTaskModal = ({
   };
 
   const handleCreateCustomTask = () => {
-  
     setFirstClick(false);
     setIsPopupOpen(false);
-  
+
     // Reset input and related states
-    setTitle(""); 
+    setTitle("");
     setStage(null);
     setTatskStatus("not-started");
-  
+
     // Wait for state update, then focus
     setTimeout(() => {
       if (inputRef.current) {
@@ -5062,10 +5112,8 @@ export const CreateTaskModal = ({
       } else {
         console.log("inputRef is null"); // Debugging
       }
-    }, 50); 
+    }, 50);
   };
-  
- 
 
   return (
     <>
@@ -5114,6 +5162,64 @@ export const CreateTaskModal = ({
                     </div>
                   </div>
                   <div className="innerScroll">
+                    {newTask && (
+                      <>
+                        {" "}
+                        <input
+                          type="text"
+                          className="jobTitle position-relative"
+                          name="title"
+                          value={task.job_num}
+                          onChange={(e) => {
+                            e.preventDefault();
+                          }}
+                          onClick={handleInputJobClick}
+                          placeholder="Select Job No."
+                          ref={inputJobRef}
+                        />
+                        {isJobPopupOpen && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              padding: "20px",
+                              border: "1px solid #353535",
+                              borderRadius: "8px",
+                              backgroundColor: "#252525",
+                              width: "fit-content",
+                              zIndex: "99",
+                            }}
+                            className="main-Stage-Div"
+                            ref={jobSelectRef}
+                          >
+                            <div
+                              className="stages"
+                              style={{
+                                maxWidth: "600px",
+                                maxHeight: "300px",
+                                overflowY: "auto",
+                              }}
+                            >
+                              {jobNo.map((jobId, index) => (
+                                <div
+                                  key={index}
+                                  onClick={() => handleJobOptionClick(jobId)}
+                                  style={{
+                                    padding: "5px",
+                                    cursor: "pointer",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                  className="all-stage"
+                                >
+                                  <span className="job-id">{jobId}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
                     <input
                       type="text"
                       className="jobTitle position-relative"
@@ -5147,7 +5253,6 @@ export const CreateTaskModal = ({
                       >
                         <div
                           className="stages"
-                         
                           style={{
                             maxWidth: "600px",
                             maxHeight: "300px",
@@ -5465,7 +5570,6 @@ export const CreateTaskModal = ({
                             <h3>Stage</h3>
                             <button
                               className={`statusBox stageBox position-relative stage_${stage?.title}`}
-                              
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
