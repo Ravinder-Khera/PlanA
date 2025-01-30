@@ -5,6 +5,7 @@ import {
   CloseIcon,
   FilterCrossIcon,
   NewFilterIcon,
+  RightArrow,
   Search,
 } from "../../assets/svg";
 import "./Jobs.scss";
@@ -2417,9 +2418,9 @@ const Jobs = () => {
                                       .diff(moment(), "days")}{" "}
                                 days
                               </td>
-                              <td className="text-start">
+                              <td className="text-start d-flex align-items-center justify-content-between">
                                 <div
-                                  className="d-flex align-items-center"
+                                  className="d-flex align-items-center "
                                   style={{ gap: "8px" }}
                                 >
                                   {job?.tasks?.length > 0 && (
@@ -2453,20 +2454,7 @@ const Jobs = () => {
                                             </span>
                                           );
                                         })}
-                                      {job?.tasks?.length > 3 && (
-                                        <div
-                                          className={`statusBtn linkBtn clickBox mx-0 `}
-                                          // to={`/dashboard/tasks/${job?.job_num}`}
-                                          onClick={() =>
-                                            handleOpenJobWithTask(job)
-                                          }
-                                        >
-                                          View More
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                  <div className={`px-3 clickBox`}>
+                                      <div className={`px-3 clickBox`}>
                                     <div
                                       className={`clickBoxtext`}
                                       onClick={() => handleAddTaskClick(job)}
@@ -2474,7 +2462,22 @@ const Jobs = () => {
                                       Add Tasks +
                                     </div>
                                   </div>
+                                    </>
+                                  )}
+                                 
                                 </div>
+                                <div className="task-view-more">
+                                  {job?.tasks?.length > 3 && (
+                                        <div
+                                          className={` mx-0 `}
+                                          onClick={() =>
+                                            handleOpenJobWithTask(job)
+                                          }
+                                        >
+                                          View More <RightArrow color="#E2E31F"/>
+                                        </div>
+                                      )}
+                                  </div>
                               </td>
                               <td className="text-center ">
                                 {formatDate(job.updated_at)}

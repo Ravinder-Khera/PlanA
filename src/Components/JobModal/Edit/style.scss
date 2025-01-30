@@ -1944,6 +1944,7 @@
               background: transparent;
               border: none;
               outline: none;
+              border-bottom: 1px solid #e2e31f26;
             }
           }
           .discriptionBox {
@@ -2190,43 +2191,7 @@
               }
               
             }
-            .collaboratorsBox {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-width: 165px;
-              .collaboratorsBoxUser {
-                color: #fff;
-                text-align: center;
-                font-size: 12px;
-                font-style: normal;
-                font-weight: 700;
-                line-height: normal;
-                letter-spacing: -0.48px;
-                border-radius: 4px;
-                box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-                background: #353535;
-                padding: 8px 10px;
-                &:first-child {
-                  border: 1px solid #f068ff;
-                }
-                &:nth-child(2) {
-                  transform: translateX(-6px);
-                  border: 1px solid #68fff0;
-                }
-                &:nth-child(3) {
-                  transform: translateX(-12px);
-                  border: 1px solid #687cff;
-                }
-                &:nth-child(4) {
-                  transform: translateX(-18px);
-                  border: 1px solid #7f7f7f;
-                }
-                &.disabled {
-                  border: 1px solid #7f7f7f;
-                }
-              }
-            }
+            
             .editBox {
               width: 100%;
               display: flex;
@@ -2249,6 +2214,60 @@
                   h3,
                   p {
                     margin-bottom: 0;
+                  }
+                  .statusBox{
+                      border-radius: 4px;
+                      color: #FFF;
+                      cursor: pointer;
+                      font-size: 12px;
+                      font-style: normal;
+                      font-weight: 700;
+                      line-height: normal;
+                      letter-spacing: -0.48px;
+                      min-height: 28px;
+                      align-content: center;
+                      min-width: max-content;
+                      padding: 7.5px 12px;
+                      border: 1px solid #FFF;
+                      background: rgba(255, 255, 255, 0.25);
+              
+                      &.stage_Application {
+                            border: 1px solid #3B9239;
+                            background: rgba(59, 146, 57, 0.60);
+                    }
+        
+                    &.stage_Referral {
+                            border: 1px solid #1FB4E3;
+                            background: rgba(31, 180, 227, 0.40);
+                        
+                    }
+        
+                    &.stage_Information {
+                      
+                            border: 1px solid #8A50C5;
+                            background: rgba(138, 80, 197, 0.49);
+                        
+                    }
+        
+                    &.stage_Public {
+                       
+                            border: 1px solid #FF5C00;
+                            background: rgba(255, 92, 0, 0.55);
+                        
+                    }
+        
+                    &.stage_Decision {
+                            border: 1px solid #FF40BE;
+                            background: rgba(255, 64, 190, 0.40);
+                        
+                    }
+        
+                    &.stage_Unknown,&.stage_undefined {
+                            border: 1px solid #FFF;
+                            background: rgba(255, 255, 255, 0.25);
+                        
+                    }
+                  
                   }
                 }
                 .taskJobBtn {
@@ -2375,6 +2394,201 @@
                 }
               }
             }
+            //new task section css
+            
+            .collaboratorsBoxUser {
+              color: #fff;
+              text-align: center;
+              font-size: 12px;
+              font-style: normal;
+              font-weight: 700;
+              line-height: normal;
+              letter-spacing: -0.48px;
+              border-radius: 4px;
+              box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+              background: #353535;
+              padding: 8px 10px;
+              &:first-child {
+                border: 1px solid #f068ff;
+              }
+            
+            }
+            .collaboratorsBoxUser-nthuser{
+              position: absolute;
+              bottom: -5px;
+              z-index: 4;
+              height: 18px;
+              width: 18px;
+              border-radius: 100%;
+              background: white;
+              right: 2px;
+              font-size: 9px;
+              display: flex
+          ;
+              justify-content: center;
+              align-items: center;
+              color: #252525;
+              font-weight: bold;
+            }
+            .due-date{
+              font-size: 12px;
+              color: #E2E31F;
+              span{
+                color: #fff;
+              }
+            }
+            .task-title{
+             
+                  color: rgba(255, 255, 255);
+          
+                  &.Application {
+                      color: rgba(59, 146, 57);
+                  }
+          
+                  &.Referral {
+                      color: rgba(31, 180, 227);
+                  }
+          
+                  &.Information {
+                      color: rgba(138, 80, 197);
+                  }
+          
+                  &.Public {
+                      color: rgba(255, 92, 0);
+                  }
+          
+                  &.Decision {
+                      color: rgba(255, 64, 190);
+                  }
+            }
+            .addNewTaskDiv {
+              .addTaskJobBtn {
+                  border-radius: 4px;
+                  color: #FFF;
+                  cursor: pointer;
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 700;
+                  line-height: normal;
+                  letter-spacing: -0.48px;
+                  min-height: 28px;
+                  align-content: center;
+                  min-width: max-content;
+                  padding: 7.5px 12px;
+                  border: 1px solid #FFF;
+                  background: rgba(255, 255, 255, 0.25);
+          
+                  &.stage_Application {
+                        border: 1px solid #3B9239;
+                        background: rgba(59, 146, 57, 0.60);
+                }
+    
+                &.stage_Referral {
+                        border: 1px solid #1FB4E3;
+                        background: rgba(31, 180, 227, 0.40);
+                    
+                }
+    
+                &.stage_Information {
+                  
+                        border: 1px solid #8A50C5;
+                        background: rgba(138, 80, 197, 0.49);
+                    
+                }
+    
+                &.stage_Public {
+                   
+                        border: 1px solid #FF5C00;
+                        background: rgba(255, 92, 0, 0.55);
+                    
+                }
+    
+                &.stage_Decision {
+                        border: 1px solid #FF40BE;
+                        background: rgba(255, 64, 190, 0.40);
+                    
+                }
+    
+                &.stage_Unknown,&.stage_undefined {
+                        border: 1px solid #FFF;
+                        background: rgba(255, 255, 255, 0.25);
+                    
+                }
+              }
+            }
+            .task-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 4px;
+          }
+          .task-table td {
+            padding: 8px 6px;
+          }
+          .task-table tr {
+            background: transparent;
+          }
+          .task-table-container {
+            max-height: 320px;
+            overflow-y: hidden;
+            margin-top: 12px;
+            border-radius: 8px;
+          }
+          .task-table-container.show-more {
+           
+            overflow-y: auto !important;
+          }
+          .task-table-container::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+          }
+          .task-table-container::-webkit-scrollbar-track {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgb(113, 113, 113) 30%, rgb(113, 113, 113) 70%, rgba(255, 255, 255, 0) 100%);
+            border-radius: 2px;
+          }
+          .task-table-container::-webkit-scrollbar-thumb {
+            background: #fff;
+            border-radius: 2px;
+          }
+        
+          .view-more {
+            color: #888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+          }
+          .view-more:hover {
+            color: #aaa;
+          }
+          .show-all-tasks {
+            color: #E2E31F;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            gap: 4px;
+            margin-top: 12px;
+            padding: 0 36px;
+            font-size: 14px;
+          }
+          
+          .down-arrow-icon {
+            transition: transform 0.5s ease-in-out;
+          }
+
+          .add-task-btn{
+            background: transparent;
+            color: #616161;
+            svg{
+              margin-right: 8px;
+            }
+          }
+          
+          .show-more .down-arrow-icon {
+            transform: rotate(180deg);
+          }
+          
           }
           .sender-attachments {
             padding: 0px 29px;
@@ -2957,4 +3171,118 @@
       }
     }
   }
+}
+
+.main-Stage-Div{
+  .all-stage{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+   &:hover{ background-color: #353535;}
+    margin-right: 15px;
+    div{
+     padding: 6px;
+  
+    }
+    div.title{
+             
+      color: rgba(255, 255, 255);
+
+      &.Application {
+          color: rgba(59, 146, 57);
+      }
+
+      &.Referral {
+          color: rgba(31, 180, 227);
+      }
+
+      &.Information {
+          color: rgba(138, 80, 197);
+      }
+
+      &.Public {
+          color: rgba(255, 92, 0);
+      }
+
+      &.Decision {
+          color: rgba(255, 64, 190);
+      }
+}
+    div.stage-title {
+          border-radius: 4px;
+          color: #FFF;
+          cursor: pointer;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: normal;
+          letter-spacing: -0.48px;
+          min-height: 28px;
+          align-content: center;
+          min-width: 100px;
+          padding: 7.5px 12px;
+          border: 1px solid #FFF;
+          background: rgba(255, 255, 255, 0.25);
+
+          &.stage_Application {
+                border: 1px solid #3B9239;
+                background: rgba(59, 146, 57, 0.60);
+        }
+
+        &.stage_Referral {
+                border: 1px solid #1FB4E3;
+                background: rgba(31, 180, 227, 0.40);
+            
+        }
+
+        &.stage_Information {
+          
+                border: 1px solid #8A50C5;
+                background: rgba(138, 80, 197, 0.49);
+            
+        }
+
+        &.stage_Public {
+          
+                border: 1px solid #FF5C00;
+                background: rgba(255, 92, 0, 0.55);
+            
+        }
+
+        &.stage_Decision {
+                border: 1px solid #FF40BE;
+                background: rgba(255, 64, 190, 0.40);
+            
+        }
+
+        &.stage_Unknown,&.stage_undefined {
+                border: 1px solid #FFF;
+                background: rgba(255, 255, 255, 0.25);
+            
+        }
+      }
+    }
+.custom-task{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 15px;
+  color: #E2E31F;
+  font-size: 16px;
+  padding: 0 10px;
+  cursor: pointer;
+  .add-btn{
+     width: 40px;
+      height: 40px;
+      background: #E2E31F;
+      border: 1.5px solid #E2E31F;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  }
+}
+
+
 }
