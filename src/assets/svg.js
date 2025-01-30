@@ -731,6 +731,14 @@ export function EditIcon() {
   );
 }
 
+export function ArrowRight() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="17" viewBox="0 0 10 17" fill="none">
+  <path d="M0.583984 15.084L1.99998 16.5L9.99998 8.5L1.99998 0.5L0.583984 1.916L7.16798 8.5L0.583984 15.084Z" fill="#E2E31F"/>
+</svg>
+  )
+}
+
 export function RightArrow({ color= "#7F7F7F"}) {
   return (
     <>
