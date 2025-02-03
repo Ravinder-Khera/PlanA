@@ -1136,20 +1136,30 @@ const Jobs = () => {
   const synchronizeRowHeights = () => {
     const rightRows = document.querySelectorAll(".table_right tr");
     const leftRows = document.querySelectorAll(".table_left tr");
+    const rightColumns = document.querySelectorAll(".table_right tr td");
+    const leftColumns = document.querySelectorAll(".table_left tr td");
 
     if (rightRows.length !== leftRows.length) {
       console.error("Both tables must have the same number of rows.");
       return;
     }
 
+    var maxHeight = 10;
+
     for (let i = 0; i < rightRows.length; i++) {
       const rightHeight = rightRows[i].offsetHeight;
       const leftHeight = leftRows[i].offsetHeight;
 
-      const maxHeight = Math.max(rightHeight, leftHeight);
+      maxHeight = Math.max(rightHeight, leftHeight);
 
       rightRows[i].style.height = `${maxHeight}px`;
       leftRows[i].style.height = `${maxHeight}px`;
+    }
+    for (let i = 0; i < rightColumns.length; i++) {
+      rightColumns[i].style.height = `${maxHeight}px`;
+    }
+    for (let i = 0; i < leftColumns.length; i++) {
+      leftColumns[i].style.height = `${maxHeight}px`;
     }
   };
 
