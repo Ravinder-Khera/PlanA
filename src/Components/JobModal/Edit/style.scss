@@ -19,7 +19,7 @@
   }
 
   .pop-wrapper {
-    background: rgba(37, 37, 37, 0.85);
+    background: rgba(37, 37, 37, 0.4);
     padding: 15px 30px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -1101,7 +1101,9 @@
                                   background: rgba(31, 180, 227, 0.4);
                                 }
 
-                                 &.Information, &.Inform, &.Info  {
+                                &.Information,
+                                &.Inform,
+                                &.Info {
                                   border: 1px solid #8a50c5;
                                   background: rgba(138, 80, 197, 0.49);
                                 }
@@ -2242,6 +2244,48 @@
                     border: 1px solid #fff;
                     background: rgba(255, 255, 255, 0.25);
 
+                    &.pending {
+                      background: #1fb4e366;
+                      border: 1px solid #1fb4e3;
+                      color: #1fb4e3;
+                      .bar {
+                        background: #1fb4e3;
+                      }
+                    }
+
+                    &.in-progress {
+                      background: #e3881f99;
+                      border: 1px solid #e3881f;
+                      color: #e3881f;
+                      .bar {
+                        background: #e3881f;
+                      }
+                    }
+
+                    &.completed {
+                      background: #3b923999;
+                      border: 1px solid #3b9239;
+                      color: #3b9239;
+                      .bar {
+                        background: #3a923900;
+                      }
+                    }
+
+                    &.not-started {
+                      background: #e31f1f80;
+                      border: 1px solid #e31f1f;
+                      color: #e31f1f;
+                    }
+
+                    &.on-hold {
+                      background: #bababa99;
+                      border: 1px solid #ddd;
+                      color: #ddd;
+                      .bar {
+                        background: #ddd;
+                      }
+                    }
+
                     &.stage_Application {
                       border: 1px solid #3b9239;
                       background: rgba(59, 146, 57, 0.6);
@@ -2452,7 +2496,9 @@
                 color: rgba(31, 180, 227);
               }
 
-               &.Information, &.Inform, &.Info  {
+              &.Information,
+              &.Inform,
+              &.Info {
                 color: rgba(138, 80, 197);
               }
 
@@ -3211,7 +3257,9 @@
         color: rgba(31, 180, 227);
       }
 
-       &.Information, &.Inform, &.Info  {
+      &.Information,
+      &.Inform,
+      &.Info {
         color: rgba(138, 80, 197);
       }
 
@@ -3321,7 +3369,6 @@
   .task-row td {
     padding: 8px;
     text-align: right !important;
-    
 
     .addNewTaskDiv,
     .due-date,
@@ -3333,12 +3380,6 @@
     }
   }
 }
-
-
-
-
-
-
 
 .newJobItemDropBox.chat-tag {
   position: absolute;
@@ -3485,5 +3526,47 @@
         letter-spacing: -0.56px;
       }
     }
+  }
+}
+
+.tag-container {
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-radius: 3px;
+  margin: 5px 8px;
+  background: #353535;
+  box-shadow: 0px 3px 3px 0px rgba(0, 0, 0, 0.25);
+  div.tag-initials {
+    width: 30px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    border: 0.75px solid #68fff0;
+    background: #353535;
+    box-shadow: 0px 3px 3px 0px rgba(0, 0, 0, 0.25);
+    h4 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      height: 100%;
+      font-size: 10px;
+      font-family: Archivo;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+  }
+  div.name {
+    color: #fff;
+    text-align: center;
+    font-family: Archivo;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: -0.36px;
+    margin: 8px;
   }
 }

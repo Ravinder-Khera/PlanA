@@ -10,13 +10,13 @@ export const sendMessage = async (jobId, data) => {
         body: JSON.stringify(data),
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/jobs/${jobId}/messages`, requestOptions);
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobs/${jobId}/messages`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         if(response.status === 201){
             return { res: data, error: null } ;
         }else{
-            return { res: null, error: data } ;
+            return { res: null, error: data } ; 
         }
     } catch (error) {
         console.error("There was an error!", error);

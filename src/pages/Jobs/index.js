@@ -1335,6 +1335,7 @@ const Jobs = () => {
 
       {showNewJobModalWithTasks && (
         <NewJobModalWithTasks
+        usersList={usersList}
           job={activeJob}
           handleClose={async (isDeleting = false) => {
             setGetJob();
@@ -1367,6 +1368,7 @@ const Jobs = () => {
 
       {showNewJobAddTaskModal && (
         <NewTaskModal
+        usersList={usersList}
           jobNum={newJobIdNumberForNewTask}
           handleClose={async () => {
             setGetJob();
@@ -1382,6 +1384,7 @@ const Jobs = () => {
 
       {showAddTaskModal && (
         <CreateTaskModal
+        usersList={usersList}
           task={activeTaskJob}
           handleClose={async () => {
             setGetJob();
@@ -1405,6 +1408,7 @@ const Jobs = () => {
 
       {showUpdateTaskModal && (
         <UpdateTaskModal
+        usersList={usersList}
           task={activeTask}
           handleClose={async () => {
             setGetJob();
@@ -1808,6 +1812,7 @@ const Jobs = () => {
                                 {newJobId.map((digit, index) => (
                                   <>
                                     <input
+                                    className={`${newJobIdExist && 'error'}`}
                                       ref={(el) =>
                                         (newJobIdInputRefs.current[index] = el)
                                       }
@@ -2243,6 +2248,9 @@ const Jobs = () => {
                                       /\s+/g,
                                       ""
                                     )}`}
+                                    style={{
+                                      textTransform:'capitalize'
+                                    }}
                                   >
                                     {selectNewJobStatus}
                                   </div>

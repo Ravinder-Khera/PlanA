@@ -865,6 +865,9 @@
           &:focus {
             border: 1px solid #fff;
           }
+          &.error{
+            border: 1px solid #F00;
+          }
         }
       }
       .statusBox{
@@ -1431,6 +1434,15 @@
               color: #e3881f;
               .bar {
                 background: #e3881f;
+              }
+            }
+
+            &.canceled {
+              background: transparent;
+              border: 1px solid #bababa99;
+              color: #bababa99;
+              .bar {
+                background: #bababa99;
               }
             }
 

@@ -25,6 +25,7 @@ import eventEmitter from "../../../Event";
 import { getProfile } from "../../../services/auth";
 import { CrossIcon, UploadIcon, User } from "../../../assets/svg";
 import { debounce, throttle } from "lodash";
+import TaggedUser from "./TaggedUser";
 
 const ChatAndAttachment = ({ JobId }) => {
   const maxLength = 10;
@@ -744,7 +745,6 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
       setUserIds((prevValue) => {
         return [...prevValue, user.id];
       });
-
     }
     setShowUserList(false);
   };
@@ -880,7 +880,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
       }
       setNewMsg({ type: "", data: "" });
     }
-  }, 500);
+  }, 300);
 
   const throttledFetchChats = throttle(fetchChats, 1000); // 1 second throttle delay
 
@@ -990,6 +990,34 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
     }
   };
 
+  // Function to properly format name (capitalize first letters)
+    // Function to handle text extraction and rendering
+    const renderMessage = (text) => {
+      // Regular expression to match words enclosed in {}
+      const regex = /{([^}]+)}/g;
+      let result = [];
+      let lastIndex = 0;
+      let match;
+  
+      // Iterate through each match of text inside {}
+      while ((match = regex.exec(text)) !== null) {
+        // Push the text before the match (normal text)
+        if (match.index > lastIndex) {
+          result.push(text.slice(lastIndex, match.index));
+        }
+        // Push the name inside {} as TaggedUser component
+        result.push(<TaggedUser key={match.index} name={match[1]} />);
+        lastIndex = regex.lastIndex; // Update last matched index
+      }
+  
+      // Push any remaining text after the last match
+      if (lastIndex < text.length) {
+        result.push(text.slice(lastIndex));
+      }
+  
+      return result;
+    };
+
   return (
     <>
       <div className="addJobPopUpAttachments">
@@ -1046,193 +1074,184 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
         <div className="chatsDiv">
           {chats &&
             chats?.length > 0 &&
-            chats?.map((msg) => (
-              <>
-                {msg.body && (
-                  <>
-                    {msg.user.name !== localStorage.getItem("user") && (
-                      <div className="chats-content-reciever ">
-                        <div className="d-flex justify-content-between gap-3 align-items-center">
-                          <div className="reciver-chats d-flex ">
-                            <div className="d-flex flex-column ">
+            chats?.map((msg) => {
+            
+              return (
+                <>
+                  {msg.body && (
+                    <>
+                      {msg.user.name !== localStorage.getItem("user") && (
+                        <div className="chats-content-reciever ">
+                          <div className="d-flex justify-content-between gap-3 align-items-center">
+                            <div className="reciver-chats d-flex align-items-center">
                               <div
-                                className=""
-                                style={{ top: "-10px", left: "16px" }}
+                                className={`InitialsBoxUser`}
+                                style={{
+                                  minWidth: "40px",
+                                  transform: "translateX(-50%)",
+                                }}
                               >
-                                <p className="text-name p-0 ">
-                                  {msg.user.name}
+                                {msg.user?.name
+                                  .split(" ")
+                                  .map((part) => part.charAt(0).toUpperCase())
+                                  .join("")}
+                              </div>
+                              <div className="d-flex flex-column ">
+                                <div
+                                  className=""
+                                  style={{ top: "-10px", left: "16px" }}
+                                >
+                                  <p className="text-name p-1 ">
+                                    {msg.user.name}
+                                  </p>
+                                </div>
+                                <p className="p-1">
+                                {renderMessage(msg.body)}
                                 </p>
                               </div>
-                              <p>{msg.body}</p>
                             </div>
-                            <div className=" receiverImg ">
-                              {msg.user?.profile_pic !== "" ? (
-                                <img
-                                  alt={msg.user.name}
-                                  src={
-                                    process.env
-                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                    msg.user.profile_pic
-                                  }
-                                  className="profileImg"
-                                  onError={(e) =>
-                                    (e.target.src = `${profileChat}`)
-                                  }
-                                />
-                              ) : (
-                                <img
-                                  src={profileChat}
-                                  alt=""
-                                  className="profileImg"
-                                />
-                              )}
-                            </div>
-                          </div>
 
-                          <div className="msg-timing">
-                            <p>sent</p>
-                            <p>{moment(msg.created_at).format("h:mm a")}</p>
+                            <div className="msg-timing">
+                              <p>sent</p>
+                              <p>{moment(msg.created_at).format("h:mm a")}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {msg.user.name === localStorage.getItem("user") && (
-                      <div className="chats-content-sender ">
-                        <div className="d-flex justify-content-between gap-3 align-items-center">
-                          <div className="msg-timing">
-                            <p>sent</p>
-                            <p>{moment(msg.created_at).format("h:mm a")}</p>
-                          </div>
+                      {msg.user.name === localStorage.getItem("user") && (
+                        <div className="chats-content-sender ">
+                          <div className="d-flex justify-content-between gap-3 align-items-center">
+                            <div className="msg-timing">
+                              <p>sent</p>
+                              <p>{moment(msg.created_at).format("h:mm a")}</p>
+                            </div>
 
-                          <div className="reciver-chats">
-                            <div
-                              className="position-absolute"
-                              style={{ top: "-10px", right: "16px" }}
-                            >
-                              <p className="text-name p-0 ">You</p>
+                            <div className="reciver-chats">
+                              <div
+                                className="position-absolute"
+                                style={{ top: "4px", right: "16px" }}
+                              >
+                                <p className="text-name p-0 ">You</p>
+                              </div>
+                              <div className="position-absolute receiverImg">
+                                <div
+                                  className={`InitialsBoxUser`}
+                                  style={{
+                                    minWidth: "40px",
+                                  }}
+                                >
+                                  {msg.user?.name
+                                    .split(" ")
+                                    .map((part) => part.charAt(0).toUpperCase())
+                                    .join("")}
+                                </div>
+                              </div>
+                              <p
+                                className="text-right"
+                                style={{ padding: "30px 21px 4px 29px" }}
+                              >
+                                 {renderMessage(msg.body)}
+                              </p>
                             </div>
-                            <div className="position-absolute receiverImg">
-                              {msg.user?.profile_pic !== "" ? (
-                                <img
-                                  alt={msg.user.name}
-                                  src={
-                                    process.env
-                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                    msg.user.profile_pic
-                                  }
-                                  className="profileImg"
-                                  onError={(e) =>
-                                    (e.target.src = `${profileChat}`)
-                                  }
-                                />
-                              ) : (
-                                <img
-                                  src={profileChat}
-                                  alt=""
-                                  className="profileImg"
-                                />
-                              )}
-                            </div>
-                            <p className="text-right">{msg.body}</p>
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </>
-                )}
-                {!msg.body && (
-                  <>
-                    {msg.user.name !== localStorage.getItem("user") && (
-                      <div className="sender-attachments w-100 my-3">
-                        <div className="d-flex gap-2 justify-content-start ">
-                          <img src={attachmentsIcon} className="" alt="" /> 1
-                        </div>
+                      )}
+                    </>
+                  )}
+                  {!msg.body && (
+                    <>
+                      {msg.user.name !== localStorage.getItem("user") && (
+                        <div className="sender-attachments w-100 my-3">
+                          <div className="d-flex gap-2 justify-content-start ">
+                            <img src={attachmentsIcon} className="" alt="" /> 1
+                          </div>
 
-                        <div className="reciever d-flex flex-wrap justify-content-start gap-3  mt-3 ">
-                          <div>
-                            <div className="attachments-box d-flex justify-content-center flex-column align-items-center">
-                              {/* <div
+                          <div className="reciever d-flex flex-wrap justify-content-start gap-3  mt-3 ">
+                            <div>
+                              <div className="attachments-box d-flex justify-content-center flex-column align-items-center">
+                                {/* <div
                                   className="d-flex pt-3 px-3 justify-content-end w-100 cursor"
                                   onClick={() => handleDeleteAttachment(msg.id)}
                                 >
                                   <img src={cut} alt="" className="cut" />
                                 </div> */}
-                              <div className="file-apload">
-                                <img src={pngFIle} className="" alt="" />
+                                <div className="file-apload">
+                                  <img src={pngFIle} className="" alt="" />
+                                </div>
+                                <h1>
+                                  {msg.original_name?.length > maxLength
+                                    ? `${msg.original_name.slice(
+                                        0,
+                                        maxLength
+                                      )}...`
+                                    : msg.original_name}
+                                </h1>
                               </div>
-                              <h1>
-                                {msg.original_name?.length > maxLength
-                                  ? `${msg.original_name.slice(
-                                      0,
-                                      maxLength
-                                    )}...`
-                                  : msg.original_name}
-                              </h1>
-                            </div>
-                            <div
-                              className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor"
-                              onClick={() =>
-                                handleDownloadFile(
-                                  msg.filename,
-                                  msg.original_name
-                                )
-                              }
-                            >
-                              <img src={download} alt="" className="" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {msg.user.name === localStorage.getItem("user") && (
-                      <div className="sender-attachments w-100 my-3">
-                        <div className="d-flex gap-2 justify-content-end ">
-                          {/* <img src={deleteImg} className="" alt="" /> */}
-                          <img src={attachmentsIcon} className="" alt="" /> 1
-                        </div>
-                        <div className="sender d-flex flex-wrap justify-content-end gap-3  mt-3 ">
-                          <div>
-                            <div className="attachments-box d-flex  flex-column align-items-center">
                               <div
-                                className="d-flex pt-3 px-3 justify-content-end w-100 cursor"
-                                onClick={() => handleDeleteAttachment(msg.id)}
+                                className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor"
+                                onClick={() =>
+                                  handleDownloadFile(
+                                    msg.filename,
+                                    msg.original_name
+                                  )
+                                }
                               >
-                                <img src={cut} alt="" className="cut" />
+                                <img src={download} alt="" className="" />
                               </div>
-                              <div className="file-apload">
-                                <img src={pngFIle} className="" alt="" />
-                              </div>
-                              <h1>
-                                {msg.original_name?.length > maxLength
-                                  ? `${msg.original_name.slice(
-                                      0,
-                                      maxLength
-                                    )}...`
-                                  : msg.original_name}
-                              </h1>
-                            </div>
-                            <div
-                              className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor"
-                              onClick={() =>
-                                handleDownloadFile(
-                                  msg.filename,
-                                  msg.original_name
-                                )
-                              }
-                            >
-                              {/* <img src={edit} alt="" className="" /> */}
-                              <img src={download} alt="" className="" />
                             </div>
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </>
-            ))}
+                      )}
+
+                      {msg.user.name === localStorage.getItem("user") && (
+                        <div className="sender-attachments w-100 my-3">
+                          <div className="d-flex gap-2 justify-content-end ">
+                            {/* <img src={deleteImg} className="" alt="" /> */}
+                            <img src={attachmentsIcon} className="" alt="" /> 1
+                          </div>
+                          <div className="sender d-flex flex-wrap justify-content-end gap-3  mt-3 ">
+                            <div>
+                              <div className="attachments-box d-flex  flex-column align-items-center">
+                                <div
+                                  className="d-flex pt-3 px-3 justify-content-end w-100 cursor"
+                                  onClick={() => handleDeleteAttachment(msg.id)}
+                                >
+                                  <img src={cut} alt="" className="cut" />
+                                </div>
+                                <div className="file-apload">
+                                  <img src={pngFIle} className="" alt="" />
+                                </div>
+                                <h1>
+                                  {msg.original_name?.length > maxLength
+                                    ? `${msg.original_name.slice(
+                                        0,
+                                        maxLength
+                                      )}...`
+                                    : msg.original_name}
+                                </h1>
+                              </div>
+                              <div
+                                className="d-flex justify-content-center gap-3 mt-3 mb-2 cursor"
+                                onClick={() =>
+                                  handleDownloadFile(
+                                    msg.filename,
+                                    msg.original_name
+                                  )
+                                }
+                              >
+                                {/* <img src={edit} alt="" className="" /> */}
+                                <img src={download} alt="" className="" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              );
+            })}
           {loading && newMsg.type === "msg" && (
             <div className="chats-content-sender my-3" ref={chatScroll}>
               <div className="d-flex justify-content-between gap-3 align-items-center">
@@ -1322,7 +1341,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                   data: value,
                 });
                 if (e?.target?.value.endsWith("@")) {
-                  setFilteredUsers(usersList)
+                  setFilteredUsers(usersList);
                   setShowUserList(true);
                 } else if (value.includes("@")) {
                   // If there's an '@', filter the users based on the text after '@'

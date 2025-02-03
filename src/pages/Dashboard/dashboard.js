@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import CountUp from "react-countup";
 import { Bars } from "react-loader-spinner";
-import { getDashboardSummary } from "../../services/auth";
+import { getDashboardSummary, updateTask } from "../../services/auth";
 import Timeline from "../../Components/Timeline";
 import { AddIcon, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,9 @@ function Dashboard() {
   const [selectedJobTask, setSelectedJobTask] = useState();
   const [taskCount, setTaskCount] = useState(0);
   const [chats, setChats] = useState(null);
+  const [markTaskStatus, setMarkTaskStatus] = useState(false);
+  const [updateTaskStatus, setUpdateTaskStatus] = useState(null);
+  const [delayedUpdate, setDelayedUpdate] = useState(false);
 
   const selectedJobRef = useRef(null);
   const overFlowRef = useRef(null);
@@ -103,7 +106,6 @@ function Dashboard() {
 
   useEffect(() => {
     if (selectedJob) {
-      const currentStage = findNearestStage(selectedJob);
       const currentDate = new Date();
       const applicationTasks = selectedJob?.tasks;
       const sortedTasks = applicationTasks
@@ -145,10 +147,41 @@ function Dashboard() {
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: '2-digit' };
+    const options = { year: "numeric", month: "long", day: "2-digit" };
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', options);
+    return date.toLocaleDateString("en-GB", options);
   };
+
+  useEffect(() => {
+    if (markTaskStatus) {
+      const timer = setTimeout(() => {
+        setDelayedUpdate(true);
+      }, 750); 
+  
+      return () => clearTimeout(timer);
+    } else {
+      setDelayedUpdate(false);
+    }
+
+    const handleTaskUpdate = async (task) => {
+      let reqBody = {
+        status: 'completed',
+      };
+      try {
+        const response = await updateTask(reqBody, task.id);
+        if (response.res) {
+          console.log('task status updated');
+        } 
+      } catch (error) {
+        console.log("error while updating task", error);
+      }
+    };
+
+    if (updateTaskStatus) {
+      console.log('task status called');
+      handleTaskUpdate(updateTaskStatus)
+    }
+  }, [markTaskStatus,updateTaskStatus]);
 
   return (
     <>
@@ -257,13 +290,15 @@ function Dashboard() {
                         ? task.title.substring(0, 35) + "..."
                         : task.title;
                     return (
-                      <div
-                        key={index}
-                        className={`tasksDiv ${task.stage}`}
-                      >
-                        <div className="d-flex align-items-center justify-content-between">
+                      <div key={index} className={`tasksDiv ${task.stage} ${delayedUpdate ? 'update' : ''}`}>
+                        <div className="d-flex align-items-center justify-content-between" style={{ gap: "20px" }}>
                           <div>
-                            <div className="taskHeading">|{task.id}|</div>
+                            <div className={`markTaskComplete ${markTaskStatus && 'active'}`} onClick={()=> {setMarkTaskStatus(true)
+                              setUpdateTaskStatus(task)
+                            }}></div>
+                          </div>
+                          <div>
+                            <div className="taskHeading">| {task.id} |</div>
                             <div className="taskHeading">{trimmedTitle}</div>
                             <div className="taskDate">
                               <span>Due Date</span>
@@ -272,75 +307,53 @@ function Dashboard() {
                           </div>
                           <div>
                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                              <div className=" d-flex align-items-center justify-content-end">
-                                {task.users?.length > 0 ? (
+                              <div className=" d-flex align-items-center collaboratorsBox justify-content-end">
+                                {task?.collaborators?.length > 0 && (
                                   <>
-                                    {task.users?.length < 3 ? (
-                                      <>
-                                        {task.users.map((user, index) => (
+                                    {task?.collaborators
+                                      .slice(0, 3)
+                                      .map((user, index) => {
+                                        const initials = user
+                                          .split(" ")
+                                          .map((part) =>
+                                            part.charAt(0).toUpperCase()
+                                          )
+                                          .join("");
+
+                                        return (
                                           <div
                                             key={index}
-                                            className={` UserImg addedUserImages `}
+                                            className={`collaboratorsBoxUser`}
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
                                             }}
                                           >
-                                            {user.profile_pic !== "" ? (
-                                              <img
-                                                alt={user.name}
-                                                src={
-                                                  process.env
-                                                    .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                  user.profile_pic
-                                                }
-                                              />
-                                            ) : (
-                                              <User />
-                                            )}
+                                            {initials}
                                           </div>
-                                        ))}
-                                      </>
-                                    ) : (
-                                      <>
-                                        {task.users
-                                          .slice(0, 3)
-                                          .map((user, index) => (
-                                            <div
-                                              key={index}
-                                              className={` UserImg addedUserImages ${
-                                                index === 2 ? "CountUsers" : ""
-                                              }`}
-                                              style={{
-                                                minWidth: "40px",
-                                                zIndex: index,
-                                              }}
-                                            >
-                                              {index === 2 ? (
-                                                <>{task.users.length - 2}+</>
-                                              ) : (
-                                                <>
-                                                  {user.profile_pic !== "" ? (
-                                                    <img
-                                                      alt={user.name}
-                                                      src={
-                                                        process.env
-                                                          .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                        user.profile_pic
-                                                      }
-                                                    />
-                                                  ) : (
-                                                    <User />
-                                                  )}
-                                                </>
-                                              )}
-                                            </div>
-                                          ))}
-                                      </>
+                                        );
+                                      })}
+
+                                    {task?.collaborators?.length > 3 && (
+                                      <div
+                                        className={`collaboratorsBoxUser`}
+                                        style={{
+                                          minWidth: "40px",
+                                          zIndex: 1,
+                                        }}
+                                      >
+                                        +{task?.collaborators.length - 3}
+                                      </div>
                                     )}
                                   </>
-                                ) : (
-                                  ""
+                                )}
+                                {task.collaborators?.length === 0 && (
+                                  <div
+                                    className="collaboratorsBoxUser disabled m-0"
+                                    style={{ minWidth: "40px" }}
+                                  >
+                                    N/A
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -353,7 +366,7 @@ function Dashboard() {
               <div className="taskCount text-center mt-4">
                 <p
                   onClick={() => {
-                    navigate("/jobs", { state: selectedJob });
+                    navigate("/dashboard/tasks", { state: selectedJob });
                   }}
                 >
                   See All
@@ -375,7 +388,7 @@ function Dashboard() {
             </div>
             <div className={`dashboard_task`}>
               <div className="taskDetails">
-                {chats && chats.length > 0 ?
+                {chats && chats.length > 0 ? (
                   chats.map((chat, index) => {
                     const trimmedTitle =
                       chat.body.length > 100
@@ -435,11 +448,11 @@ function Dashboard() {
                       </div>
                     );
                   })
-                :
-                <div className="taskCount text-center">
-                  <p>No Comments</p>
-                </div>
-                }
+                ) : (
+                  <div className="taskCount text-center">
+                    <p>No Comments</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

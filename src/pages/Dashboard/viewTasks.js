@@ -331,6 +331,7 @@ function ViewTaskPage() {
         status: newData?.newTask?.status,
         assignee_ids: newData?.newTask?.assignee_ids,
         job_num: newData?.newTask?.job_num,
+        job_id: newData?.newTask?.job_id,
         users: users,
         stage: stage,
 
@@ -350,6 +351,7 @@ function ViewTaskPage() {
   const handleCheckTask = async (jobId, index) => {
     try {
       setLoading(true);
+      
       const response = await getSingleJob(jobId);
       if (response.res) {
         setActiveTask(response.res.tasks[index]);
@@ -571,7 +573,7 @@ function ViewTaskPage() {
                     className={`  stage_` + task?.stage?.title}
                     onClick={() => {
                       if (!task.id) {
-                        console.log("not from db");
+                        console.log("not from db", task);
                         handleCheckTask(task.job_id, i);
                       } else {
                         handleActiveTask(task);

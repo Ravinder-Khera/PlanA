@@ -2915,6 +2915,7 @@ export const NewJobModalWithTasks = ({
   handleClose,
   reloadTabs,
   scrollRef,
+  usersList
 }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
@@ -3439,7 +3440,7 @@ export const NewJobModalWithTasks = ({
                         </button>
                       </div>
                     </div>
-                    <AddNewJobChatAndAttachment JobId={job?.id} />
+                    <AddNewJobChatAndAttachment JobId={job?.id} usersList={usersList} />
                   </div>
                 </div>
               </div>
@@ -4141,7 +4142,7 @@ export const NewTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment JobId={jobNum} />
+                    <AddNewJobChatAndAttachment JobId={jobNum} usersList={usersList}/>
                   </div>
                 </div>
               </div>
@@ -4160,6 +4161,7 @@ export const UpdateTaskModal = ({
   reloadTabs,
   onUpdateTask,
   scrollRef,
+  usersList: suggestedUser
 }) => {
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState(task?.title || "");
@@ -4863,7 +4865,7 @@ export const UpdateTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment JobId={task?.job_id} />
+                    <AddNewJobChatAndAttachment JobId={task?.job_id} usersList={suggestedUser} />
                   </div>
                 </div>
               </div>
@@ -4883,6 +4885,7 @@ export const CreateTaskModal = ({
   reloadTabs,
   scrollRef,
   newTask,
+  usersList: suggestedUser
 }) => {
   const [task, setTask] = useState(propTask);
   const [loader, setLoader] = useState(false);
@@ -5806,7 +5809,7 @@ export const CreateTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment JobId={task?.job_id?.id} />
+                    <AddNewJobChatAndAttachment JobId={task?.id}  usersList={suggestedUser}/>
                   </div>
                 </div>
               </div>
