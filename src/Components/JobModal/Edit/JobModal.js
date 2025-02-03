@@ -3490,6 +3490,25 @@ export const NewTaskModal = ({
   const [firstClick, setFirstClick] = useState(true); 
   const popupRef = useRef(null);
 
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target)
+      ) {
+        setIsPopupOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  
   const fetchUsers = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
@@ -4309,6 +4328,25 @@ export const UpdateTaskModal = ({
       console.error("Error fetching tasks:", error);
     }
   };
+
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target)
+      ) {
+        setIsPopupOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (task?.users) {

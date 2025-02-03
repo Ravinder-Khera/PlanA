@@ -587,11 +587,11 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
                                 <div
                                   className="timeLineJobItem"
                                   onClick={() => {
-                                    if (timeFrame === "weekly") {
-                                      setSelectedJob(job);
-                                    } else {
-                                      navigate("/jobs", { state: job });
-                                    }
+                                    setSelectedJob(job);
+                                    // if (timeFrame === "weekly") {
+                                    // } else {
+                                    //   navigate("/jobs", { state: job });
+                                    // }
                                   }}
                                 >
                                   <div
