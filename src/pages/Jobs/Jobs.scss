@@ -1434,6 +1434,15 @@
               }
             }
 
+            &.canceled {
+              background: transparent;
+              border: 1px solid #bababa99;
+              color: #bababa99;
+              .bar {
+                background: #bababa99;
+              }
+            }
+
             &.progressBtn {
               min-width: 152px;
               justify-content: start;
