@@ -171,8 +171,8 @@ const Jobs = () => {
     if (newOtp.every((digit) => digit !== "")) {
       const target = newOtp.join("");
       const exists = await getJobsNum(target);
-
-      if (exists.res.exists) {
+      console.log("exists", exists);
+      if (exists.res?.exists) {
         setNewJobIdExist(true);
         toast.error(
           <>
@@ -686,9 +686,12 @@ const Jobs = () => {
     fetchUsers();
   }, []);
 
-  const handleSelectCollaborator = async (user) => {
-    setNewJobCollaboratorsList((prevList) => [...prevList, user]);
+  const handleSelectCollaborator = (user) => {
+    setTimeout(() => {
+      setNewJobCollaboratorsList((prevList) => [...prevList, user]);
+    }, 0);
     setUsersList((prevList) => prevList.filter((u) => u.id !== user.id));
+
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
         job.id === activeJob?.id
@@ -696,13 +699,17 @@ const Jobs = () => {
           : job
       )
     );
-    setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
+    setTimeout(() => {
+      setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
+    }, 0);
   };
 
   const handleRemoveCollaborator = async (user) => {
-    setNewJobCollaboratorsList((prevList) =>
-      prevList.filter((u) => u.id !== user.id)
-    );
+    setTimeout(() => {
+      setNewJobCollaboratorsList((prevList) =>
+        prevList.filter((u) => u.id !== user.id)
+      );
+    }, 0);
     setUsersList((prevList) => [user, ...prevList]);
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
@@ -716,9 +723,11 @@ const Jobs = () => {
           : job
       )
     );
-    setNewJobCollaboratorsListId((prevList) =>
-      prevList.filter((u) => u.id !== user.id)
-    );
+    setTimeout(() => {
+      setNewJobCollaboratorsListId((prevList) =>
+        prevList.filter((u) => u.id !== user.id)
+      );
+    }, 0);
   };
 
   const handleSelectDueDate = (date) => {
@@ -766,6 +775,10 @@ const Jobs = () => {
   const handleCollaboratorClick = (job) => {
     setActiveJobField("Collaborators");
     setNewJobCollaboratorsList(job?.collaborators);
+    const CollaboratorsId = job?.collaborators?.map(
+      (collaborator) => collaborator.id
+    );
+    setNewJobCollaboratorsListId(CollaboratorsId);
     if (activeJob?.id === job?.id) {
       return;
     }
@@ -1989,7 +2002,8 @@ const Jobs = () => {
                                 />
                               ) : (
                                 <div
-                                  className="job-name" style={{flex:'1'}}
+                                  className="job-name"
+                                  style={{ flex: "1" }}
                                   onClick={() => handleTitleClick(job)}
                                 >
                                   <h4>{job.title}</h4>
@@ -2482,18 +2496,16 @@ const Jobs = () => {
                                             </span>
                                           );
                                         })}
-                                      <div className={`px-3 clickBox`}>
-                                        <div
-                                          className={`clickBoxtext`}
-                                          onClick={() =>
-                                            handleAddTaskClick(job)
-                                          }
-                                        >
-                                          Add Tasks +
-                                        </div>
-                                      </div>
                                     </>
                                   )}
+                                  <div className={`px-3 clickBox`}>
+                                    <div
+                                      className={`clickBoxtext`}
+                                      onClick={() => handleAddTaskClick(job)}
+                                    >
+                                      Add Tasks +
+                                    </div>
+                                  </div>
                                 </div>
                                 <div className="task-view-more">
                                   {job?.tasks?.length > 3 && (

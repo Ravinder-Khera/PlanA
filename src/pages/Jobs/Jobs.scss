@@ -877,22 +877,22 @@
         line-height: normal;
         letter-spacing: -0.48px;            
         border-radius: 4px;
-        &.NotStarted{
+        &.NotStarted, &.not-started{
             color: #FF4040;
             border: 1px solid #E31F1F;
             background: rgba(227, 31, 31, 0.50);            
         }
-        &.Pending{
+        &.Pending, &.pending{
             color: #72DDFF;
             border: 1px solid #1FB4E3;
             background: rgba(31, 180, 227, 0.40);
         }
-        &.InProgress{
+        &.InProgress, &.in-progress{
             color: #E3881F;
             border: 1px solid #E3881F;
             background: rgba(227, 136, 31, 0.60);                
         }
-        &.OnHold{
+        &.OnHold, &.on-hold{
             color: #DDD;
             border: 1px solid #DDD;
             background: rgba(186, 186, 186, 0.60);               
@@ -941,7 +941,7 @@
         max-width: 395px;
         max-height: 190px;
         overflow-y: auto;
-        z-index: 1;
+        z-index: 2;
         .addedCollabs{
           display: flex;
           justify-content: flex-start;

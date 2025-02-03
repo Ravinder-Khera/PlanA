@@ -383,7 +383,7 @@ function ViewTaskPage() {
         let filterTab = response?.res.data.filter(
           (item) => item.status === taskTab
         );
-        console.log(filterTab, taskTab);
+        console.log("tasks", filterTab, taskTab);
         setFilteredTasks(filterTab);
         setFilteredTotalPages(response?.res.last_page);
         setFilteredPageUrls(response?.res.links.slice(1, -1));
@@ -422,7 +422,6 @@ function ViewTaskPage() {
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-    console.log(newData?.newTask);
     setFilteredTasks((prevTasks) => [
       {
         title: newData?.newTask?.title,
@@ -431,8 +430,10 @@ function ViewTaskPage() {
         due_date: newData?.newTask?.due_date,
         status: newData?.newTask?.status,
         assignee_ids: newData?.newTask?.assignee_ids,
+        job_num: newData?.newTask?.job_num,
         users: users,
         stage: stage,
+
       },
       ...prevTasks,
     ]);
@@ -573,7 +574,7 @@ function ViewTaskPage() {
 
       {showAddTaskModal && (
         <CreateTaskModal
-          task={activeTaskJob}
+          task={null}
           newTask={true}
           handleClose={async () => {
             setShowAddTaskModal(false);
@@ -618,7 +619,7 @@ function ViewTaskPage() {
                 taskTab === "completed" && "d-none"
               }`}
               onClick={() => {if(filteredTasks.length > 0){setShowAddTaskModal(true)}}}
-              title={`${filteredTasks.length > 0 && 'Not Part of any Job yet'}`}
+              title={`${filteredTasks.length == 0 && 'Not Part of any Job yet'}`}
             >
               New Task{" "}
               <div className="UserImg" style={{ minWidth: "40px" }}>
