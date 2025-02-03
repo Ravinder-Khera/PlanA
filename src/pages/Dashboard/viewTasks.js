@@ -266,6 +266,35 @@ function ViewTaskPage() {
     return formattedDate;
   };
 
+  const handleStoredApply = async (page) => {
+    setLoading(true);
+    const filterString = localStorage.getItem("filterString");
+    try {
+      // const response = await getTasksByFilter(filterString+`&page=${page}`);
+      const response = await getTasksByFilter(
+        filterString +
+          `&status=${taskTab}&start_date=${selectionRange.startDate
+            .toISOString()
+            .slice(0, 10)}&end_date=${selectionRange.endDate
+            .toISOString()
+            .slice(0, 10)}&page=${page}`
+      );
+      if (!response.error) {
+        let filterTab = response?.res.data.filter(
+          (item) => item.status === taskTab
+        );
+        console.log("tasks", filterTab, taskTab);
+        setFilteredTasks(filterTab);
+        setFilteredTotalPages(response?.res.last_page);
+        setFilteredPageUrls(response?.res.links.slice(1, -1));
+      }
+    } catch (error) {
+      console.log("error in applying filter", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const handleJobFilter = async () => {
       try {
@@ -293,7 +322,6 @@ function ViewTaskPage() {
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-    console.log(newData?.newTask);
     setFilteredTasks((prevTasks) => [
       {
         title: newData?.newTask?.title,
@@ -302,8 +330,10 @@ function ViewTaskPage() {
         due_date: newData?.newTask?.due_date,
         status: newData?.newTask?.status,
         assignee_ids: newData?.newTask?.assignee_ids,
+        job_num: newData?.newTask?.job_num,
         users: users,
         stage: stage,
+
       },
       ...prevTasks,
     ]);
@@ -444,7 +474,7 @@ function ViewTaskPage() {
 
       {showAddTaskModal && (
         <CreateTaskModal
-          task={activeTaskJob}
+          task={null}
           newTask={true}
           handleClose={async () => {
             setShowAddTaskModal(false);

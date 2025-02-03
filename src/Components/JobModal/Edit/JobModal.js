@@ -4815,7 +4815,7 @@ export const CreateTaskModal = ({
   scrollRef,
   newTask,
 }) => {
-  const [task,setTask] = useState(propTask)
+  const [task, setTask] = useState(propTask);
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -4850,7 +4850,6 @@ export const CreateTaskModal = ({
   const jobSelectRef = useRef(null);
   const [firstClick, setFirstClick] = useState(true);
   const [jobNo, setJobNo] = useState(null);
-  
 
   const handleInputClick = () => {
     setIsPopupOpen(true);
@@ -4899,16 +4898,18 @@ export const CreateTaskModal = ({
 
   // Handle option selection
   const handleOptionClick = (option) => {
+
     setTitle(option.title);
-    setStage({ title: option.stageTitle });
+    setStage({ id: option.id, title: option.stageTitle });
     setTatskStatus(option.status);
     setIsPopupOpen(false);
   };
 
-  const handleJobOptionClick = (id) => {
+  const handleJobOptionClick = (job) => {
     setTask((prevTask) => ({
       ...prevTask,
-      job_num: id, // Update the job_num field
+      job_num: job?.job_num, // Update the job_num field
+      id: job?.id,
     }));
     setIsJobPopupOpen(false);
   };
@@ -4984,7 +4985,8 @@ export const CreateTaskModal = ({
   };
 
   const handleModalClose = async () => {
-    const newTask = {
+
+    const newTaskData = {
       job_id: task?.id,
       title: title,
       due_date: dueDate,
@@ -4992,9 +4994,18 @@ export const CreateTaskModal = ({
       assignee_ids: newJobCollaboratorsListId,
       stage_id: stage?.id,
       description: description,
+      job_num: task?.job_num
     };
-    if (title !== "") {
-      onCreateTask({ newTask }, task.id, newJobCollaboratorsList, stage);
+    if (
+      (title !== "" && !newTask) ||
+      (title !== "" && newTask && task && task?.job_num)
+    ) {
+      onCreateTask(
+        { newTask: newTaskData },
+        task.id,
+        newJobCollaboratorsList,
+        stage
+      );
     } else {
       handleClose();
     }
@@ -5131,13 +5142,13 @@ export const CreateTaskModal = ({
         </div>
       )}
       <div className="loaderDiv2 mobile" style={{ zIndex: "1001" }}>
-        <div className="pop-wrapper">
+        <div className="pop-wrapper position-relative">
           <div className="wrapper">
             <div
-              className="container newJob-pop-container pop-container"
+              className="container newJob-pop-container pop-container "
               ref={popUpRef}
             >
-              <div className="popup-content" ref={scrollRef}>
+              <div className="popup-content " ref={scrollRef}>
                 <div className="popup-section-left">
                   <div className="topFlexDiv">
                     <div
@@ -5161,7 +5172,7 @@ export const CreateTaskModal = ({
                       <div className="delete-item">Collapse</div>
                     </div>
                   </div>
-                  <div className="innerScroll position-relative">
+                  <div className="innerScroll ">
                     {newTask && (
                       <>
                         {" "}
@@ -5169,13 +5180,14 @@ export const CreateTaskModal = ({
                           type="text"
                           className="jobTitle position-relative"
                           name="title"
-                          value={task.job_num}
+                          value={task?.job_num}
                           onChange={(e) => {
                             e.preventDefault();
                           }}
                           onClick={handleInputJobClick}
                           placeholder="Select Job No."
                           ref={inputJobRef}
+                          autoFocus={true}
                         />
                         {isJobPopupOpen && (
                           <div
@@ -5187,7 +5199,7 @@ export const CreateTaskModal = ({
                               backgroundColor: "#252525",
                               width: "max-content",
                               zIndex: "99",
-                              right:'0'
+                              right: "50%",
                             }}
                             className="main-Stage-Div"
                             ref={jobSelectRef}
@@ -5195,8 +5207,8 @@ export const CreateTaskModal = ({
                             <div
                               className="stages"
                               style={{
-                                marginLeft:'auto',
-                                minWidth: "600px",
+                                marginLeft: "auto",
+                                minWidth: "300px",
                                 maxHeight: "300px",
                                 overflowY: "auto",
                               }}
@@ -5214,7 +5226,9 @@ export const CreateTaskModal = ({
                                   }}
                                   className="all-stage"
                                 >
-                                  <span className="job-id">{jobId}</span>
+                                  <span className="job-id">
+                                    {jobId.job_num}
+                                  </span>
                                 </div>
                               ))}
                             </div>
@@ -5237,7 +5251,7 @@ export const CreateTaskModal = ({
                       onClick={handleInputClick}
                       placeholder="Select Task"
                       ref={inputRef}
-                      autoFocus={true}
+                      autoFocus={!newTask && true}
                     />
                     {isPopupOpen && (
                       <div

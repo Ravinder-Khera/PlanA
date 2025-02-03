@@ -1615,10 +1615,10 @@ body {
                 }
             }
 
-            &.stage_Information {
+            &.stage_Information,  &.stage_Inform {
                 background: #573A73;
 
-                .btn_Information {
+                .btn_Information, .btn_Inform {
                     border: 1px solid #8A50C5;
                     background: rgba(138, 80, 197, 0.49);
                 }
