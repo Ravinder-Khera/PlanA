@@ -477,6 +477,7 @@ function ViewTaskPage() {
       {showAddTaskModal && (
         <CreateTaskModal
           task={null}
+          usersList={usersList}
           newTask={true}
           handleClose={async () => {
             setShowAddTaskModal(false);
@@ -492,6 +493,7 @@ function ViewTaskPage() {
       {showUpdateTaskModal && activeTask && (
         <UpdateTaskModal
           task={activeTask}
+          usersList={usersList}
           handleClose={handleCloseModal}
           scrollRef={taskMobileScrollRef}
           onUpdateTask={handleUpdateTask}
