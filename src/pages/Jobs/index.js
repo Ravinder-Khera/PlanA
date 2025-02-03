@@ -710,7 +710,9 @@ const Jobs = () => {
         prevList.filter((u) => u.id !== user.id)
       );
     }, 0);
-    setUsersList((prevList) => [user, ...prevList]);
+    setTimeout(() => {
+      setUsersList((prevList) => [user, ...prevList]);
+    }, 0);
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
         job.id === activeJob?.id
