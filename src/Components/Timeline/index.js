@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import moment from "moment";
 import { getJobs, getTimelineJobs } from "../../services/auth";
-import { TaskIcon, User } from "../../assets/svg";
+import { FilterIcon, TaskIcon, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
 
@@ -10,6 +10,7 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
+    const [showFilter, setShowFilter] = useState(false);
   const excessCalendarDate =
     timeFrame === "weekly" ? 6 : timeFrame === "monthly" ? 15 : 1;
 
@@ -440,6 +441,28 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
               />
             </div>
           )}
+          <div
+              className="d-flex  align-items-baseline addNewTaskDiv position-relative"
+              style={{ cursor: "pointer" }}
+              // ref={filterRef}
+            >
+              <div
+                className="d-flex align-items-center gap-2  "
+                onClick={() => setShowFilter(!showFilter)}
+              >
+                <FilterIcon />
+                <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
+                  Filter
+                </p>
+              </div>
+              {showFilter && (<>
+                <div className="dashboardFilterDropDown">
+                  <div className="dashboardFilterDropDownContent">
+
+                  </div>
+                </div>
+              </>)}
+            </div>
         </div>
         <div
           className="customTimeline"
