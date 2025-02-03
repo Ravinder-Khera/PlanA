@@ -1795,6 +1795,7 @@ const Jobs = () => {
                                 {newJobId.map((digit, index) => (
                                   <>
                                     <input
+                                    className={`${newJobIdExist && 'error'}`}
                                       ref={(el) =>
                                         (newJobIdInputRefs.current[index] = el)
                                       }
