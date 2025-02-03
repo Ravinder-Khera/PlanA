@@ -1,24 +1,25 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import moment from "moment";
-import { getJobs } from "../../services/auth";
+import { getJobs, getTimelineJobs } from "../../services/auth";
 import { TaskIcon, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
 
-function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
+function Timeline({ timeFrame, loadNo, setSelectedJob }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
   const excessCalendarDate =
-    timeFrame !== undefined && timeFrame === "weekly"
-      ? 3
-      : timeFrame === "monthly"
-      ? 7
-      : 1;
+    timeFrame === "weekly" ? 6 : timeFrame === "monthly" ? 15 : 1;
+
   const [selectionRange, setSelectionRange] = useState({
-    startDate: new Date(new Date().getDate() - excessCalendarDate),
-    endDate: new Date(new Date().getDate() + excessCalendarDate),
+    startDate: new Date(
+      new Date().setDate(new Date().getDate() - excessCalendarDate)
+    ),
+    endDate: new Date(
+      new Date().setDate(new Date().getDate() + excessCalendarDate)
+    ),
     key: "selection",
   });
   const [selectDate, setSelectDate] = useState(false);
@@ -108,22 +109,34 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
 
       const currentDate = new Date();
       const adjustedStartDate = new Date(currentDate);
-      const minsDaysAre = timeFrame !== undefined && timeFrame === "weekly" ? 3 : timeFrame === "monthly" ? 7 : 3 ;
+      const minsDaysAre =
+        timeFrame !== undefined && timeFrame === "weekly"
+          ? 3
+          : timeFrame === "monthly"
+          ? 7
+          : 3;
       adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
 
       // Adjust endDate to one month more
       let adjustedEndDate = new Date(maxDueDate);
       adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate);
 
-      const differenceInDays = (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
+      const differenceInDays =
+        (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
 
-      if(timeFrame !== undefined && timeFrame === "weekly"){
+      if (timeFrame !== undefined && timeFrame === "weekly") {
         if (differenceInDays < 10) {
-          adjustedEndDate = new Date(adjustedEndDate.getTime() + (10 - differenceInDays) * 24 * 60 * 60 * 1000);
+          adjustedEndDate = new Date(
+            adjustedEndDate.getTime() +
+              (10 - differenceInDays) * 24 * 60 * 60 * 1000
+          );
         }
-      } else if(timeFrame !== undefined && timeFrame === "monthly") {
+      } else if (timeFrame !== undefined && timeFrame === "monthly") {
         if (differenceInDays < 40) {
-          adjustedEndDate = new Date(adjustedEndDate.getTime() + (40 - differenceInDays) * 24 * 60 * 60 * 1000);
+          adjustedEndDate = new Date(
+            adjustedEndDate.getTime() +
+              (40 - differenceInDays) * 24 * 60 * 60 * 1000
+          );
         }
       }
 
@@ -140,9 +153,18 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
+      const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toISOString().split("T")[0];
+      };
+      console.log(selectionRange.startDate, formatDate(selectionRange.endDate));
       try {
-        const res = await getJobs();
-        const data = res?.res?.data;
+        const res = await getTimelineJobs(
+          formatDate(selectionRange.startDate),
+          formatDate(selectionRange.endDate)
+        );
+        const data = res?.res?.jobs;
+        console.log("user jobs are - ", data);
         if (data) {
           setJobs(data);
           extractUsersFromStages(data);
@@ -173,24 +195,36 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
         }
       });
 
-    const currentDate = new Date();
-    const adjustedStartDate = new Date(currentDate);
-    const minsDaysAre = timeFrame !== undefined && timeFrame === "weekly" ? 3 : timeFrame === "monthly" ? 7 : 3 ;
-    adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
+      const currentDate = new Date();
+      const adjustedStartDate = new Date(currentDate);
+      const minsDaysAre =
+        timeFrame !== undefined && timeFrame === "weekly"
+          ? 3
+          : timeFrame === "monthly"
+          ? 7
+          : 3;
+      adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
 
       // Adjust endDate to one month more
       let adjustedEndDate = new Date(maxDueDate);
       adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate);
 
-      const differenceInDays = (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
+      const differenceInDays =
+        (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
 
-      if(timeFrame !== undefined && timeFrame === "weekly"){
+      if (timeFrame !== undefined && timeFrame === "weekly") {
         if (differenceInDays < 10) {
-          adjustedEndDate = new Date(adjustedEndDate.getTime() + (10 - differenceInDays) * 24 * 60 * 60 * 1000);
+          adjustedEndDate = new Date(
+            adjustedEndDate.getTime() +
+              (10 - differenceInDays) * 24 * 60 * 60 * 1000
+          );
         }
-      } else if(timeFrame !== undefined && timeFrame === "monthly") {
+      } else if (timeFrame !== undefined && timeFrame === "monthly") {
         if (differenceInDays < 40) {
-          adjustedEndDate = new Date(adjustedEndDate.getTime() + (40 - differenceInDays) * 24 * 60 * 60 * 1000);
+          adjustedEndDate = new Date(
+            adjustedEndDate.getTime() +
+              (40 - differenceInDays) * 24 * 60 * 60 * 1000
+          );
         }
       }
 
@@ -319,54 +353,58 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
       ? 40
       : jobCellActive?.offsetWidth;
 
-    const formattedStartDate = selectionRange.startDate.toLocaleDateString(
-      "en-AU",
-      { day: "numeric", month: "short", year: "numeric" }
-    );
-    const formattedEndDate = selectionRange.endDate.toLocaleDateString("en-Au", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+  const formattedStartDate = selectionRange.startDate.toLocaleDateString(
+    "en-AU",
+    { day: "numeric", month: "short", year: "numeric" }
+  );
+  const formattedEndDate = selectionRange.endDate.toLocaleDateString("en-Au", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
-    const formatJobDate = (dateString) => {
-      const date = new Date(dateString);
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear().toString().slice(-2);
-      return `${day}/${month}/${year}`;
-    };
-    
-    const formatJobDates = (date) => {
-      const formattedJobDAte = formatJobDate(date);
-      return formattedJobDAte;
-    };
+  const formatJobDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
+  };
 
-    const handleSelect = (ranges) => {
-      setSelectionRange(ranges.selection);
-      const startDate = ranges.selection.startDate;
-      let endDate = ranges.selection.endDate;
-      
-      const differenceInMs = endDate.getTime() - startDate.getTime();
-      const differenceInDays = differenceInMs / (1000 * 3600 * 24);
+  const formatJobDates = (date) => {
+    const formattedJobDAte = formatJobDate(date);
+    return formattedJobDAte;
+  };
 
-      const roundedDifference = Math.round(differenceInDays);
-      if(timeFrame !== undefined && timeFrame === "weekly"){
-        if (roundedDifference < 10) {
-          endDate = new Date(endDate.getTime() + (10 - roundedDifference) * 24 * 60 * 60 * 1000);
-        }
-      } else if(timeFrame !== undefined && timeFrame === "monthly") {
-        if (roundedDifference < 40) {
-          endDate = new Date(endDate.getTime() + (40 - roundedDifference) * 24 * 60 * 60 * 1000);
-        }
+  const handleSelect = (ranges) => {
+    setSelectionRange(ranges.selection);
+    const startDate = ranges.selection.startDate;
+    let endDate = ranges.selection.endDate;
+
+    const differenceInMs = endDate.getTime() - startDate.getTime();
+    const differenceInDays = differenceInMs / (1000 * 3600 * 24);
+
+    const roundedDifference = Math.round(differenceInDays);
+    if (timeFrame !== undefined && timeFrame === "weekly") {
+      if (roundedDifference < 10) {
+        endDate = new Date(
+          endDate.getTime() + (10 - roundedDifference) * 24 * 60 * 60 * 1000
+        );
       }
-      
-      setSelectionRange({
-        startDate: startDate,
-        endDate: endDate,
-        key: "selection",
-      });
-    };
+    } else if (timeFrame !== undefined && timeFrame === "monthly") {
+      if (roundedDifference < 40) {
+        endDate = new Date(
+          endDate.getTime() + (40 - roundedDifference) * 24 * 60 * 60 * 1000
+        );
+      }
+    }
+
+    setSelectionRange({
+      startDate: startDate,
+      endDate: endDate,
+      key: "selection",
+    });
+  };
 
   return (
     <>
@@ -494,13 +532,15 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                               ? "40px"
                               : "",
                         }}
-                        className={`jobCell ${i === 5 && "first"} ${i === 10 && "last"} ${
+                        className={`jobCell ${i === 5 && "first"} ${
+                          i === 10 && "last"
+                        } ${
                           currentDate >= createdAt &&
                           currentDate <= dueDate &&
                           findNearestStage(job) + " active"
                         } ${isFirst ? "first" : ""} ${isLast ? "last" : ""} ${
                           isCurrentDay(currentDate) && "current-day"
-                        }`}
+                        } ${job.status}`}
                       >
                         {currentDate >= createdAt && currentDate <= dueDate ? (
                           <div className="timeLineJob">
@@ -508,129 +548,104 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                               <>
                                 <div
                                   className="timeLineJobItem"
-                                  onClick={() => { 
-                                    if(timeFrame === "weekly"){
-                                      setSelectedJob(job)
-                                    }else{
-                                      navigate("/jobs", { state: job })
+                                  onClick={() => {
+                                    if (timeFrame === "weekly") {
+                                      setSelectedJob(job);
+                                    } else {
+                                      navigate("/jobs", { state: job });
                                     }
-                                    }}>
-                                  <div className={`jobProgressDiv ${timeFrame === "monthly" && activeColumnsCount <= 2 ? 'hidden' : ''}`}>
-                                    <span className="text">
-                                      Progress:{" "}
-                                    </span>
-                                    <span className="percentage">
-                                      {job.progress % 1 !== 0
-                                        ? job.progress.toFixed(2)
-                                        : job.progress}
-                                      %
-                                    </span>
-                                  </div>
-                                  <div className={`jobDateDiv ${timeFrame === "monthly" && activeColumnsCount <= 2 ? 'hidden' : ''}`}>
-                                    <span className="text">
-                                      {formatJobDates(new Date(job.created_at))} - {formatJobDates(new Date(job.due_date))}
-                                    </span>
-                                  </div>
+                                  }}
+                                >
                                   <div
-                                    className={`timeLineJobItemDiv ${timeFrame === "monthly" && activeColumnsCount <= 2 ? 'hidden' : ''} ${timeFrame === "weekly" && activeColumnsCount <= 1 ? 'hidden' : ''}`}
+                                    className={`timeLineJobItemDiv ${
+                                      timeFrame === "monthly" &&
+                                      activeColumnsCount <= 2
+                                        ? "hidden"
+                                        : ""
+                                    } ${
+                                      timeFrame === "weekly" &&
+                                      activeColumnsCount <= 1
+                                        ? "hidden"
+                                        : ""
+                                    }`}
                                     style={{
                                       width: `calc(${cellWidth}px * ${activeColumnsCount})`,
+                                      maxWidth: `${activeColumnsCount <= 2 ? '20px' : 'max-content'}`,
                                     }}
                                   >
-                                    <div className="jobBox d-flex gap-2 align-items-center justify-content-between h-100 p-3">
+                                    <div className="jobBox d-flex gap-2 align-items-start justify-content-between h-100 p-3">
                                       <div
                                         className="jobProgressBg"
                                         style={{
-                                          minWidth: `${job.progress}%`,
+                                          minWidth: `100%`,
                                         }}
                                       ></div>
                                       <div className="textDiv">
                                         <span>
-                                          |{job.id}|{job.title}
+                                          | {job.job_num} | 
                                         </span>
-                                        <p>{job.description}</p>
+                                        <p>{job.title}</p>
                                       </div>
                                       <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                         <div className=" d-flex align-items-center justify-content-end">
-                                          {job.usersArray?.length > 0 ? (
-                                            <>
-                                              {job.usersArray?.length < 3 ? (
+                                          <div className="collaboratorsBox justify-content-end">
+                                            <div className=" d-flex align-items-center justify-content-center">
+                                              {job?.collaborators?.length >
+                                                0 && (
                                                 <>
-                                                  {job.usersArray.map(
-                                                    (user, index) => (
-                                                      <div
-                                                        key={index}
-                                                        className={` UserImg addedUserImages `}
-                                                        style={{
-                                                          minWidth: "40px",
-                                                          zIndex: index,
-                                                        }}
-                                                      >
-                                                        {user.profile_pic !==
-                                                        "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
-                                                          <img
-                                                            alt={user.name}
-                                                            src={
-                                                              process.env
-                                                                .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                              user.profile_pic
-                                                            }
-                                                          />
-                                                        ) : (
-                                                          <User />
-                                                        )}
-                                                      </div>
-                                                    )
+                                                  {job?.collaborators
+                                                    .slice(0, 3)
+                                                    .map((user, index) => {
+                                                      const initials = user
+                                                        .split(" ")
+                                                        .map((part) =>
+                                                          part
+                                                            .charAt(0)
+                                                            .toUpperCase()
+                                                        )
+                                                        .join("");
+
+                                                      return (
+                                                        <div
+                                                          key={index}
+                                                          className={`collaboratorsBoxUser`}
+                                                          style={{
+                                                            minWidth: "40px",
+                                                            zIndex: index,
+                                                          }}
+                                                        >
+                                                          {initials}
+                                                        </div>
+                                                      );
+                                                    })}
+
+                                                  {job?.collaborators?.length >
+                                                    3 && (
+                                                    <div
+                                                      className={`collaboratorsBoxUser`}
+                                                      style={{
+                                                        minWidth: "40px",
+                                                        zIndex: 1,
+                                                      }}
+                                                    >
+                                                      +
+                                                      {job?.collaborators
+                                                        .length - 3}
+                                                    </div>
                                                   )}
                                                 </>
-                                              ) : (
-                                                <>
-                                                  {job.usersArray
-                                                    .slice(0, 3)
-                                                    .map((user, index) => (
-                                                      <div
-                                                        key={index}
-                                                        className={` UserImg addedUserImages ${
-                                                          index === 2
-                                                            ? "CountUsers"
-                                                            : ""
-                                                        }`}
-                                                        style={{
-                                                          minWidth: "40px",
-                                                          zIndex: index,
-                                                        }}
-                                                      >
-                                                        {index === 2 ? (
-                                                          <>
-                                                            {job.usersArray
-                                                              .length - 2}
-                                                            +
-                                                          </>
-                                                        ) : (
-                                                          <>
-                                                            {user.profile_pic !==
-                                                            "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
-                                                              <img
-                                                                alt={user.name}
-                                                                src={
-                                                                  process.env
-                                                                    .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                                  user.profile_pic
-                                                                }
-                                                              />
-                                                            ) : (
-                                                              <User />
-                                                            )}
-                                                          </>
-                                                        )}
-                                                      </div>
-                                                    ))}
-                                                </>
                                               )}
-                                            </>
-                                          ) : (
-                                            ""
-                                          )}
+                                              {job.collaborators?.length ===
+                                                0 && (
+                                                <div
+                                                  className="collaboratorsBoxUser disabled m-0"
+                                                  style={{ minWidth: "40px" }}
+                                                >
+                                                  N/A
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
@@ -658,50 +673,44 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
             {jobs.map((job) => {
               return (
                 <div key={job.id} className="jobRow m-0 d-block">
-                  <div className={`jobCell ${findNearestStage(job) + " active"}`}>
+                  <div className={`jobCell ${job.status + " active"}`}>
                     <div className="timeLineJob">
                       <div
                         className="timeLineJobItem position-relative"
                         onClick={() => {
-                            navigate("/jobs", { state: job })
-                          }}>
-                        <div className={`jobProgressDiv `}>
-                          <span className="text">
-                            Progress:{" "}
-                          </span>
-                          <span className="percentage">
-                            {job.progress % 1 !== 0
-                              ? job.progress.toFixed(2)
-                              : job.progress}
-                            %
-                          </span>
-                        </div>
+                          navigate("/jobs", { state: job });
+                        }}
+                      >
                         <div className={`jobDateDiv `}>
                           <span className="text">
-                            {formatJobDates(new Date(job.created_at))} - {formatJobDates(new Date(job.due_date))}
+                            {formatJobDates(new Date(job.created_at))} -{" "}
+                            {formatJobDates(new Date(job.due_date))}
                           </span>
                         </div>
-                        <div className={`timeLineJobItemDiv d-flex align-items-center`}  style={{minHeight:'140px'}}>
+                        <div
+                          className={`timeLineJobItemDiv d-flex align-items-center`}
+                          style={{ minHeight: "140px" }}
+                        >
                           <div className="d-flex gap-2 align-items-center justify-content-between w-100 p-3">
                             <div
                               className="jobProgressBg"
                               style={{
-                                width: `${job.progress}%`,
+                                width: `100%`,
                               }}
                             ></div>
                             <div className="textDiv mobile">
                               <span>
-                                |{job.id}|{job.title}
+                                |{job.job_num}|{job.title}
                               </span>
                               <p>{job.description}</p>
                             </div>
                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                               <div className=" d-flex align-items-center justify-content-end">
-                                {job.usersArray?.length > 0 ? (
+                                {job.collaborators?.length > 0 ? (
                                   <>
-                                    {job.usersArray?.length < 3 ? (
+                                    {job.collaborators?.length < 3 ? (
                                       <>
-                                        {job.usersArray.map(
+                                        {job.collaborators.map(
                                           (user, index) => (
                                             <div
                                               key={index}
@@ -711,34 +720,20 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                                                 zIndex: index,
                                               }}
                                             >
-                                              {user.profile_pic !==
-                                              "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
-                                                <img
-                                                  alt={user.name}
-                                                  src={
-                                                    process.env
-                                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                    user.profile_pic
-                                                  }
-                                                />
-                                              ) : (
-                                                <User />
-                                              )}
+                                              <User />
                                             </div>
                                           )
                                         )}
                                       </>
                                     ) : (
                                       <>
-                                        {job.usersArray
+                                        {job.collaborators
                                           .slice(0, 3)
                                           .map((user, index) => (
                                             <div
                                               key={index}
                                               className={` UserImg addedUserImages ${
-                                                index === 2
-                                                  ? "CountUsers"
-                                                  : ""
+                                                index === 2 ? "CountUsers" : ""
                                               }`}
                                               style={{
                                                 minWidth: "40px",
@@ -747,25 +742,12 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                                             >
                                               {index === 2 ? (
                                                 <>
-                                                  {job.usersArray
-                                                    .length - 2}
+                                                  {job.collaborators.length - 2}
                                                   +
                                                 </>
                                               ) : (
                                                 <>
-                                                  {user.profile_pic !==
-                                                  "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
-                                                    <img
-                                                      alt={user.name}
-                                                      src={
-                                                        process.env
-                                                          .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                                        user.profile_pic
-                                                      }
-                                                    />
-                                                  ) : (
-                                                    <User />
-                                                  )}
+                                                  <User />
                                                 </>
                                               )}
                                             </div>
@@ -783,7 +765,6 @@ function Timeline({ timeFrame, loadNo ,setSelectedJob }) {
                       </div>
                     </div>
                   </div>
-                    
                 </div>
               );
             })}

@@ -1369,6 +1369,35 @@ body {
     }
   }
 
+  .InitialsBoxUser {
+    color: #fff;
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: -0.48px;
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    background: #353535;
+    padding: 8px 10px;
+    border: 1px solid #68FFF0;
+    margin-left: 8px;
+    position: relative;
+    &::after{
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #3B9239;
+        transform: translateX(-25%) translateY(-25%);
+    }
+  }
+
+
 .invoiceDeleteDiv {
     display: flex;
     align-items: center;
@@ -2699,7 +2728,7 @@ body {
                                     font-style: normal;
                                     font-weight: 300;
                                     line-height: normal;
-                                    letter-spacing: -0.48px;                                    
+                                    letter-spacing: -0.48px;                                                                     
                                 }
                                 p{
                                     color: #FFF;
@@ -2708,7 +2737,7 @@ body {
                                     font-weight: 600;
                                     line-height: normal;
                                     letter-spacing: -0.64px;       
-                                    margin-bottom: 0;                             
+                                    margin-bottom: 0; 
                                 }
                             }
                         }
@@ -2871,6 +2900,77 @@ body {
                             }
                         }
                     }
+
+                    &.application {
+                        background: transparent;
+                        .timeLineJobItemDiv{
+                            border: 1px solid #3B9239;
+                        }
+                        .jobProgressBg{
+                            background: rgba(59, 146, 57, 0.60) ;
+                        }
+                        .jobProgressDiv{
+                            background: #3b9239;
+                            color: #015504;
+                        }
+                      }
+    
+                      &.in-progress {
+                        background: transparent;
+                        .timeLineJobItemDiv{
+                            border: 1px solid #e3881f;
+                        }
+                        .jobProgressBg{
+                            background: #e3881f99 ;
+                        }
+                        .jobProgressDiv{
+                            background: #e3881f;
+                            color: #e3881f99;
+                        }
+                      }
+          
+                      &.completed {                        
+                        background: transparent;
+                        .timeLineJobItemDiv{
+                            border: 1px solid #3b9239;
+                        }
+                        .jobProgressBg{
+                            background: #3b923999 ;
+                        }
+                        .jobProgressDiv{
+                            background: #3b9239;
+                            color: #3b923999;
+                        }
+                      }
+          
+                      &.not-started {            
+                        background: transparent;
+                        .timeLineJobItemDiv{
+                            border: 1px solid #e31f1f;
+                        }
+                        .jobProgressBg{
+                            background: #e31f1f80 ;
+                        }
+                        .jobProgressDiv{
+                            background: #e31f1f;
+                            color: #e31f1f80;
+                        }
+                      }
+          
+                      &.on-hold {
+                        background: transparent;
+                        .timeLineJobItemDiv{
+                            border: 1px solid #ddd;
+                        }
+                        .jobProgressBg{
+                            background: #bababa99 ;
+                        }
+                        .jobProgressDiv{
+                            background: #ddd;
+                            color: #bababa99;
+                        }
+                      }
+          
                 }
             }
         }
@@ -3747,6 +3847,12 @@ body {
                     border: 1px solid #FF40BE;
                     background: rgba(255, 64, 190, 0.40);
                 }
+
+                &.null {
+                    border: 1px solid #ddd;
+                    background: rgb(221 221 221 / 40%);
+                }
+                
             }
         }
     }

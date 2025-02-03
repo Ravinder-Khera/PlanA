@@ -105,10 +105,7 @@ function Dashboard() {
     if (selectedJob) {
       const currentStage = findNearestStage(selectedJob);
       const currentDate = new Date();
-      const applicationStages = selectedJob?.stages.filter(
-        (stage) => stage.title === currentStage
-      );
-      const applicationTasks = applicationStages[0].tasks;
+      const applicationTasks = selectedJob?.tasks;
       const sortedTasks = applicationTasks
         .map((task) => {
           const dueDate = new Date(task.due_date);
@@ -262,7 +259,7 @@ function Dashboard() {
                     return (
                       <div
                         key={index}
-                        className={`tasksDiv ${findNearestStage(selectedJob)}`}
+                        className={`tasksDiv ${task.stage}`}
                       >
                         <div className="d-flex align-items-center justify-content-between">
                           <div>

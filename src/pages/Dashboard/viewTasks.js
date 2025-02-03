@@ -76,91 +76,6 @@ function ViewTaskPage() {
   const selectFilterRef = useRef(null);
   const taskMobileScrollRef = useRef(null);
 
-  const fetchTasksToDo = async (page) => {
-    try {
-      setLoading(true);
-      const authToken = localStorage.getItem("authToken");
-      const requestOptions = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      };
-      let response = await fetch(
-        `${
-          process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
-        }/tasks/by-status-and-date?status=to-do&start_date=${selectionRange.startDate
-          .toISOString()
-          .slice(0, 10)}&end_date=${selectionRange.endDate
-          .toISOString()
-          .slice(0, 10)}&page=${page}`,
-        requestOptions
-      );
-      const isJson = response.headers
-        .get("content-type")
-        ?.includes("application/json");
-      const data = isJson && (await response.json());
-      setTasksToDo(data.data);
-      setTotalPages(data.last_page);
-      setPageUrls(data.links.slice(1, -1));
-      if (response.status === 200) {
-        setLoading(false);
-        return { res: data, error: null };
-      } else {
-        return { res: null, error: data };
-      }
-    } catch (error) {
-      console.error("Error fetching Tasks:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchTasksCompleted = async (page) => {
-    try {
-      setLoading(true);
-      const authToken = localStorage.getItem("authToken");
-      const requestOptions = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      };
-      let response = await fetch(
-        `${
-          process.env.REACT_APP_USER_API_CLOUD_ENDPOINT
-        }/tasks/by-status-and-date?status=completed&start_date=${selectionRange.startDate
-          .toISOString()
-          .slice(0, 10)}&end_date=${selectionRange.endDate
-          .toISOString()
-          .slice(0, 10)}&page=${page}`,
-        requestOptions
-      );
-      const isJson = response.headers
-        .get("content-type")
-        ?.includes("application/json");
-      const data = isJson && (await response.json());
-
-      setTasksCompleted(data.data);
-      setTotalPages2(data.last_page);
-      setPageUrls2(data.links.slice(1, -1));
-      if (response.status === 200) {
-        setLoading(false);
-        return { res: data, error: null };
-      } else {
-        return { res: null, error: data };
-      }
-    } catch (error) {
-      console.error("Error fetching Tasks:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     let handler = (e) => {
       if (
@@ -331,13 +246,6 @@ function ViewTaskPage() {
         setLoading(false);
       }
     };
-    const filterString = localStorage.getItem("filterString");
-    if (filterString) {
-      handleStoredApply(currentFilteredPage);
-    } else {
-      fetchTasksToDo(currentPage);
-      fetchTasksCompleted(currentPage2);
-    }
     fetchJobUsers();
     fetchJobIds();
   }, [
@@ -356,43 +264,6 @@ function ViewTaskPage() {
       year: "numeric",
     });
     return formattedDate;
-  };
-
-  const handleClose = () => {
-    setTimeout(() => {
-      fetchTasksToDo();
-      fetchTasksCompleted();
-    }, 1000);
-    setShowPopup(false);
-  };
-
-  const handleStoredApply = async (page) => {
-    setLoading(true);
-    const filterString = localStorage.getItem("filterString");
-    try {
-      // const response = await getTasksByFilter(filterString+`&page=${page}`);
-      const response = await getTasksByFilter(
-        filterString +
-          `&status=${taskTab}&start_date=${selectionRange.startDate
-            .toISOString()
-            .slice(0, 10)}&end_date=${selectionRange.endDate
-            .toISOString()
-            .slice(0, 10)}&page=${page}`
-      );
-      if (!response.error) {
-        let filterTab = response?.res.data.filter(
-          (item) => item.status === taskTab
-        );
-        console.log(filterTab, taskTab);
-        setFilteredTasks(filterTab);
-        setFilteredTotalPages(response?.res.last_page);
-        setFilteredPageUrls(response?.res.links.slice(1, -1));
-      }
-    } catch (error) {
-      console.log("error in applying filter", error);
-    } finally {
-      setLoading(false);
-    }
   };
 
   useEffect(() => {
@@ -604,21 +475,12 @@ function ViewTaskPage() {
 
       <div className="DashboardTopMenu">
         <div className="pagination-container justify-content-start">
-          {showPopup && (
-            <Complete
-              data={selectedTask}
-              handleClose={() => handleClose()}
-              scrollRef={taskMobileScrollRef}
-            />
-          )}
           <div className="DashboardHeading d-flex justify-content-between align-items-center">
             <h2>Tasks</h2>
             <div
-              className={`addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none  ${
-                taskTab === "completed" && "d-none"
-              }`}
+              className={`addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none  ${filteredTasks.length}`}
               onClick={() => {if(filteredTasks.length > 0){setShowAddTaskModal(true)}}}
-              title={`${filteredTasks.length > 0 && 'Not Part of any Job yet'}`}
+              title={filteredTasks.length > 0 ? '' : 'Not Part of any Job yet'}
             >
               New Task{" "}
               <div className="UserImg" style={{ minWidth: "40px" }}>
