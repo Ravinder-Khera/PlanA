@@ -196,7 +196,9 @@
                       background: rgba(31, 180, 227, 0.4);
                     }
 
-                    &.card_Information {
+                    &.card_Information,
+                    &.btn_Inform,
+                    &.btn_Info {
                       border: 1px solid #8a50c5;
                       background: rgba(138, 80, 197, 0.49);
                     }
@@ -348,7 +350,9 @@
                         background: rgba(31, 180, 227, 0.4);
                       }
 
-                      &.btnn_Information {
+                      &.btnn_Information,
+                      &.btn_Inform,
+                      &.btn_Info {
                         border: 1px solid #8a50c5;
                         background: rgba(138, 80, 197, 0.49);
                       }
@@ -435,7 +439,9 @@
                           color: rgba(31, 180, 227);
                         }
 
-                        &.btnn_Information {
+                        &.btnn_Information,
+                        &.btnn_Inform,
+                        &.btnn_Info {
                           color: rgba(138, 80, 197);
                         }
 
@@ -533,7 +539,9 @@
                   background: rgba(31, 180, 227, 0.4);
                 }
 
-                &.btn_Information {
+                &.btn_Information,
+                &.btn_Inform,
+                &.btn_Info {
                   border: 1px solid #8a50c5;
                   background: rgba(138, 80, 197, 0.49);
                 }
@@ -908,7 +916,9 @@
                           color: #1fb4e3;
                         }
 
-                        &.text_Information {
+                        &.text_Information,
+                        &.text_Inform,
+                        &.text_Info {
                           color: #8a50c5;
                         }
 
@@ -1091,7 +1101,7 @@
                                   background: rgba(31, 180, 227, 0.4);
                                 }
 
-                                &.Information {
+                                 &.Information, &.Inform, &.Info  {
                                   border: 1px solid #8a50c5;
                                   background: rgba(138, 80, 197, 0.49);
                                 }
@@ -1195,7 +1205,9 @@
                           background: rgba(31, 180, 227, 0.4);
                         }
 
-                        &.btn_Information {
+                        &.btn_Information,
+                        &.btn_Inform,
+                        &.btn_Info {
                           border: 1px solid #8a50c5;
                           background: rgba(138, 80, 197, 0.49);
                         }
@@ -1997,52 +2009,52 @@
               top: 90%;
               z-index: 1;
             }
-            .statusBox{
-                padding: 7px 11px;
-                min-width: 83px;
-                text-align: center;
-                font-size: 12px;
-                font-style: normal;
-                font-weight: 700;
-                line-height: normal;
-                letter-spacing: -0.48px;            
-                border-radius: 4px;
-                &.not-started{
-                    color: #FF4040;
-                    border: 1px solid #E31F1F;
-                    background: rgba(227, 31, 31, 0.50);            
-                }
-                &.pending{
-                    color: #72DDFF;
-                    border: 1px solid #1FB4E3;
-                    background: rgba(31, 180, 227, 0.40);
-                }
-                &.in-progress{
-                    color: #E3881F;
-                    border: 1px solid #E3881F;
-                    background: rgba(227, 136, 31, 0.60);                
-                }
-                &.on-hold{
-                    color: #DDD;
-                    border: 1px solid #DDD;
-                    background: rgba(186, 186, 186, 0.60);               
-                }
-                &.stageBox{
-                  color: #ddd;
-                  border: 1px solid #ddd;
-                  background: rgb(221, 221, 221, 0.5); 
-                }
-                &.completed{
-                  color: #3b9239;
-                  background: #3b923999;
-                  border: 1px solid #3b9239;
-                }
-                &.canceled{
-                  color: #FF4040;
-                  border: 1px solid #E31F1F;
-                  background: rgba(227, 31, 31, 0.50);
-                }
+            .statusBox {
+              padding: 7px 11px;
+              min-width: 83px;
+              text-align: center;
+              font-size: 12px;
+              font-style: normal;
+              font-weight: 700;
+              line-height: normal;
+              letter-spacing: -0.48px;
+              border-radius: 4px;
+              &.not-started {
+                color: #ff4040;
+                border: 1px solid #e31f1f;
+                background: rgba(227, 31, 31, 0.5);
               }
+              &.pending {
+                color: #72ddff;
+                border: 1px solid #1fb4e3;
+                background: rgba(31, 180, 227, 0.4);
+              }
+              &.in-progress {
+                color: #e3881f;
+                border: 1px solid #e3881f;
+                background: rgba(227, 136, 31, 0.6);
+              }
+              &.on-hold {
+                color: #ddd;
+                border: 1px solid #ddd;
+                background: rgba(186, 186, 186, 0.6);
+              }
+              &.stageBox {
+                color: #ddd;
+                border: 1px solid #ddd;
+                background: rgb(221, 221, 221, 0.5);
+              }
+              &.completed {
+                color: #3b9239;
+                background: #3b923999;
+                border: 1px solid #3b9239;
+              }
+              &.canceled {
+                color: #ff4040;
+                border: 1px solid #e31f1f;
+                background: rgba(227, 31, 31, 0.5);
+              }
+            }
             .newJobItemDropBox {
               position: absolute;
               top: calc(100% - 11px);
@@ -2139,22 +2151,22 @@
                   letter-spacing: -0.48px;
                 }
               }
-              &.stageBox{
+              &.stageBox {
                 min-width: 375px;
                 max-width: 395px;
                 max-height: 700px;
-                .stageListBox{
+                .stageListBox {
                   max-height: 190px;
                   overflow-y: auto;
                 }
-                .AddStageBox{
-                  border-top: 1px solid #7E7E7E;
+                .AddStageBox {
+                  border-top: 1px solid #7e7e7e;
                   margin-top: 12px;
                   padding-top: 12px;
                   display: flex;
                   flex-direction: column;
                   gap: 10px;
-                  .AddStageInput{
+                  .AddStageInput {
                     width: 100%;
                     background: #353535;
                     padding: 12px 11px;
@@ -2162,36 +2174,35 @@
                     font-style: normal;
                     font-weight: 400;
                     line-height: normal;
-                    letter-spacing: -0.56px;                    
+                    letter-spacing: -0.56px;
                     color: #fff;
                     border: none;
                     outline: none;
-                    &::placeholder{
+                    &::placeholder {
                       opacity: 1;
                       color: #616161;
                       visibility: visible;
                     }
                   }
-                  .cancelBg{
-                    svg{
-                      path{
-                        fill: #6F6F6F;
+                  .cancelBg {
+                    svg {
+                      path {
+                        fill: #6f6f6f;
                       }
                     }
                   }
-                  .cancelBg-item{
-                    color: #6F6F6F;
+                  .cancelBg-item {
+                    color: #6f6f6f;
                     font-size: 14px;
                     font-style: normal;
                     font-weight: 400;
                     line-height: normal;
-                    letter-spacing: -0.56px;                    
+                    letter-spacing: -0.56px;
                   }
                 }
               }
-              
             }
-            
+
             .editBox {
               width: 100%;
               display: flex;
@@ -2215,59 +2226,54 @@
                   p {
                     margin-bottom: 0;
                   }
-                  .statusBox{
-                      border-radius: 4px;
-                      color: #FFF;
-                      cursor: pointer;
-                      font-size: 12px;
-                      font-style: normal;
-                      font-weight: 700;
-                      line-height: normal;
-                      letter-spacing: -0.48px;
-                      min-height: 28px;
-                      align-content: center;
-                      min-width: max-content;
-                      padding: 7.5px 12px;
-                      border: 1px solid #FFF;
-                      background: rgba(255, 255, 255, 0.25);
-              
-                      &.stage_Application {
-                            border: 1px solid #3B9239;
-                            background: rgba(59, 146, 57, 0.60);
+                  .statusBox {
+                    border-radius: 4px;
+                    color: #fff;
+                    cursor: pointer;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 700;
+                    line-height: normal;
+                    letter-spacing: -0.48px;
+                    min-height: 28px;
+                    align-content: center;
+                    min-width: max-content;
+                    padding: 7.5px 12px;
+                    border: 1px solid #fff;
+                    background: rgba(255, 255, 255, 0.25);
+
+                    &.stage_Application {
+                      border: 1px solid #3b9239;
+                      background: rgba(59, 146, 57, 0.6);
                     }
-        
+
                     &.stage_Referral {
-                            border: 1px solid #1FB4E3;
-                            background: rgba(31, 180, 227, 0.40);
-                        
+                      border: 1px solid #1fb4e3;
+                      background: rgba(31, 180, 227, 0.4);
                     }
-        
-                    &.stage_Information {
-                      
-                            border: 1px solid #8A50C5;
-                            background: rgba(138, 80, 197, 0.49);
-                        
+
+                    &.stage_Information,
+                    &.stage_Inform,
+                    &.stage_Info {
+                      border: 1px solid #8a50c5;
+                      background: rgba(138, 80, 197, 0.49);
                     }
-        
+
                     &.stage_Public {
-                       
-                            border: 1px solid #FF5C00;
-                            background: rgba(255, 92, 0, 0.55);
-                        
+                      border: 1px solid #ff5c00;
+                      background: rgba(255, 92, 0, 0.55);
                     }
-        
+
                     &.stage_Decision {
-                            border: 1px solid #FF40BE;
-                            background: rgba(255, 64, 190, 0.40);
-                        
+                      border: 1px solid #ff40be;
+                      background: rgba(255, 64, 190, 0.4);
                     }
-        
-                    &.stage_Unknown,&.stage_undefined {
-                            border: 1px solid #FFF;
-                            background: rgba(255, 255, 255, 0.25);
-                        
+
+                    &.stage_Unknown,
+                    &.stage_undefined {
+                      border: 1px solid #fff;
+                      background: rgba(255, 255, 255, 0.25);
                     }
-                  
                   }
                 }
                 .taskJobBtn {
@@ -2315,7 +2321,7 @@
               line-height: normal;
               letter-spacing: -0.48px;
               margin: 0 20px;
-              &.linkBtn{
+              &.linkBtn {
                 text-decoration: none;
                 background: rgba(255, 255, 255, 0.5);
                 border: 1px solid #fff;
@@ -2332,7 +2338,7 @@
                   background: #1fb4e3;
                 }
               }
-  
+
               &.in-progress {
                 background: #e3881f99;
                 border: 1px solid #e3881f;
@@ -2341,7 +2347,7 @@
                   background: #e3881f;
                 }
               }
-  
+
               &.completed {
                 background: #3b923999;
                 border: 1px solid #3b9239;
@@ -2350,13 +2356,13 @@
                   background: #3a923900;
                 }
               }
-  
+
               &.not-started {
                 background: #e31f1f80;
                 border: 1px solid #e31f1f;
                 color: #e31f1f;
               }
-  
+
               &.on-hold {
                 background: #bababa99;
                 border: 1px solid #ddd;
@@ -2365,7 +2371,7 @@
                   background: #ddd;
                 }
               }
-  
+
               &.to-do {
                 background: #e3881f99;
                 border: 1px solid #e3881f;
@@ -2374,7 +2380,7 @@
                   background: #e3881f;
                 }
               }
-  
+
               &.progressBtn {
                 min-width: 152px;
                 justify-content: start;
@@ -2395,7 +2401,7 @@
               }
             }
             //new task section css
-            
+
             .collaboratorsBoxUser {
               color: #fff;
               text-align: center;
@@ -2411,9 +2417,8 @@
               &:first-child {
                 border: 1px solid #f068ff;
               }
-            
             }
-            .collaboratorsBoxUser-nthuser{
+            .collaboratorsBoxUser-nthuser {
               position: absolute;
               bottom: -5px;
               z-index: 4;
@@ -2423,185 +2428,183 @@
               background: white;
               right: 2px;
               font-size: 9px;
-              display: flex
-          ;
+              display: flex;
               justify-content: center;
               align-items: center;
               color: #252525;
               font-weight: bold;
             }
-            .due-date{
+            .due-date {
               font-size: 12px;
-              color: #E2E31F;
-              span{
+              color: #e2e31f;
+              span {
                 color: #fff;
               }
             }
-            .task-title{
-             
-                  color: rgba(255, 255, 255);
-          
-                  &.Application {
-                      color: rgba(59, 146, 57);
-                  }
-          
-                  &.Referral {
-                      color: rgba(31, 180, 227);
-                  }
-          
-                  &.Information {
-                      color: rgba(138, 80, 197);
-                  }
-          
-                  &.Public {
-                      color: rgba(255, 92, 0);
-                  }
-          
-                  &.Decision {
-                      color: rgba(255, 64, 190);
-                  }
+            .task-title {
+              color: rgba(255, 255, 255);
+
+              &.Application {
+                color: rgba(59, 146, 57);
+              }
+
+              &.Referral {
+                color: rgba(31, 180, 227);
+              }
+
+               &.Information, &.Inform, &.Info  {
+                color: rgba(138, 80, 197);
+              }
+
+              &.Public {
+                color: rgba(255, 92, 0);
+              }
+
+              &.Decision {
+                color: rgba(255, 64, 190);
+              }
             }
             .addNewTaskDiv {
               .addTaskJobBtn {
-                  border-radius: 4px;
-                  color: #FFF;
-                  cursor: pointer;
-                  font-size: 12px;
-                  font-style: normal;
-                  font-weight: 700;
-                  line-height: normal;
-                  letter-spacing: -0.48px;
-                  min-height: 28px;
-                  align-content: center;
-                  min-width: max-content;
-                  padding: 7.5px 12px;
-                  border: 1px solid #FFF;
-                  background: rgba(255, 255, 255, 0.25);
-          
-                  &.stage_Application {
-                        border: 1px solid #3B9239;
-                        background: rgba(59, 146, 57, 0.60);
+                border-radius: 4px;
+                color: #fff;
+                cursor: pointer;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                letter-spacing: -0.48px;
+                min-height: 28px;
+                align-content: center;
+                min-width: max-content;
+                padding: 7.5px 12px;
+                border: 1px solid #fff;
+                background: rgba(255, 255, 255, 0.25);
+
+                &.stage_Application {
+                  border: 1px solid #3b9239;
+                  background: rgba(59, 146, 57, 0.6);
                 }
-    
+
                 &.stage_Referral {
-                        border: 1px solid #1FB4E3;
-                        background: rgba(31, 180, 227, 0.40);
-                    
+                  border: 1px solid #1fb4e3;
+                  background: rgba(31, 180, 227, 0.4);
                 }
-    
-                &.stage_Information {
-                  
-                        border: 1px solid #8A50C5;
-                        background: rgba(138, 80, 197, 0.49);
-                    
+
+                &.stage_Information,
+                &.stage_Inform,
+                &.stage_Info {
+                  border: 1px solid #8a50c5;
+                  background: rgba(138, 80, 197, 0.49);
                 }
-    
+
                 &.stage_Public {
-                   
-                        border: 1px solid #FF5C00;
-                        background: rgba(255, 92, 0, 0.55);
-                    
+                  border: 1px solid #ff5c00;
+                  background: rgba(255, 92, 0, 0.55);
                 }
-    
+
                 &.stage_Decision {
-                        border: 1px solid #FF40BE;
-                        background: rgba(255, 64, 190, 0.40);
-                    
+                  border: 1px solid #ff40be;
+                  background: rgba(255, 64, 190, 0.4);
                 }
-    
-                &.stage_Unknown,&.stage_undefined {
-                        border: 1px solid #FFF;
-                        background: rgba(255, 255, 255, 0.25);
-                    
+
+                &.stage_Unknown,
+                &.stage_undefined {
+                  border: 1px solid #fff;
+                  background: rgba(255, 255, 255, 0.25);
                 }
               }
             }
             .task-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 4px;
-          }
-          .task-table td {
-            padding: 8px 6px;
-          }
-          .task-table tr {
-            background: transparent;
-          }
-          .task-table-container {
-            max-height: 320px;
-            overflow-y: hidden;
-            margin-top: 12px;
-            border-radius: 8px;
-          }
-          .task-table-container.show-more {
-           
-            overflow-y: auto !important;
-          }
-          .task-table-container::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-          }
-          .task-table-container::-webkit-scrollbar-track {
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgb(113, 113, 113) 30%, rgb(113, 113, 113) 70%, rgba(255, 255, 255, 0) 100%);
-            border-radius: 2px;
-          }
-          .task-table-container::-webkit-scrollbar-thumb {
-            background: #fff;
-            border-radius: 2px;
-          }
-        
-          .view-more {
-            color: #888;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 14px;
-          }
-          .view-more:hover {
-            color: #aaa;
-          }
-          .show-all-tasks {
-            color: #E2E31F;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: end;
-            gap: 4px;
-            margin-top: 12px;
-            padding: 0 36px;
-            font-size: 14px;
-          }
-          
-          .down-arrow-icon {
-            transition: transform 0.5s ease-in-out;
-          }
-
-          .add-task-btn{
-            background: transparent;
-            color: #616161;
-            svg{
-              margin-right: 8px;
+              width: 100%;
+              border-collapse: separate;
+              border-spacing: 0 4px;
             }
-          }
-          
-          .show-more .down-arrow-icon {
-            transform: rotate(180deg);
-          }
-          
+            .task-table td {
+              padding: 8px 6px;
+            }
+            .task-table tr {
+              background: transparent;
+            }
+            .task-table-container {
+              max-height: 316px;
+              overflow-y: hidden;
+              margin-top: 12px;
+              border-radius: 8px;
+            }
+            .task-table-container.show-more {
+              overflow-y: auto !important;
+            }
+            .task-table-container::-webkit-scrollbar {
+              width: 4px;
+              height: 4px;
+            }
+            .task-table-container::-webkit-scrollbar-track {
+              background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgb(113, 113, 113) 30%,
+                rgb(113, 113, 113) 70%,
+                rgba(255, 255, 255, 0) 100%
+              );
+              border-radius: 2px;
+            }
+            .task-table-container::-webkit-scrollbar-thumb {
+              background: #fff;
+              border-radius: 2px;
+            }
+
+            .view-more {
+              color: #888;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              font-size: 14px;
+            }
+            .view-more:hover {
+              color: #aaa;
+            }
+            .show-all-tasks {
+              color: #e2e31f;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: end;
+              gap: 4px;
+              margin-top: 12px;
+              padding: 0 36px;
+              font-size: 14px;
+            }
+
+            .down-arrow-icon {
+              transition: transform 0.5s ease-in-out;
+            }
+
+            .add-task-btn {
+              background: transparent;
+              color: #616161;
+              svg {
+                margin-right: 8px;
+              }
+            }
+
+            .show-more .down-arrow-icon {
+              transform: rotate(180deg);
+            }
           }
           .sender-attachments {
             padding: 0px 29px;
-      
+
             .attachments-box {
               width: 121px;
               height: 134px;
               border: 1px solid #e2e31f;
-      
+
               .cut {
                 text-align: right;
               }
-      
+
               .file-apload {
                 width: 36px;
                 height: 36px;
@@ -2611,7 +2614,7 @@
                 align-items: center;
                 margin-top: 7px;
               }
-      
+
               h1 {
                 font-family: Archivo;
                 font-size: 16px;
@@ -3173,129 +3176,314 @@
   }
 }
 
-.main-Stage-Div{
-  .all-stage{
+.main-Stage-Div {
+  .all-stage {
     display: flex;
     align-items: center;
     justify-content: space-between;
-   &:hover{ background-color: #353535;}
+    &:hover {
+      background-color: #353535;
+    }
     margin-right: 15px;
-    .job-id{
-      display: flex
-      ;
-          width: 83px;
-          height: 28px;
-          padding: 0px 27px;
-          justify-content: center;
-          align-items: center;
-          gap: 10px;
-          border-radius: 4px;
-          border: 1px solid #7F7F7F;
-          background: #353535;
+    .job-id {
+      display: flex;
+      width: 83px;
+      height: 28px;
+      padding: 0px 27px;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      border-radius: 4px;
+      border: 1px solid #7f7f7f;
+      background: #353535;
     }
-    div{
-     padding: 6px;
-  
+    div {
+      padding: 6px;
     }
-    div.title{
-             
+    div.title {
       color: rgba(255, 255, 255);
 
       &.Application {
-          color: rgba(59, 146, 57);
+        color: rgba(59, 146, 57);
       }
 
       &.Referral {
-          color: rgba(31, 180, 227);
+        color: rgba(31, 180, 227);
       }
 
-      &.Information {
-          color: rgba(138, 80, 197);
+       &.Information, &.Inform, &.Info  {
+        color: rgba(138, 80, 197);
       }
 
       &.Public {
-          color: rgba(255, 92, 0);
+        color: rgba(255, 92, 0);
       }
 
       &.Decision {
-          color: rgba(255, 64, 190);
-      }
-}
-    div.stage-title {
-          border-radius: 4px;
-          color: #FFF;
-          cursor: pointer;
-          font-size: 12px;
-          font-style: normal;
-          font-weight: 700;
-          line-height: normal;
-          letter-spacing: -0.48px;
-          min-height: 28px;
-          align-content: center;
-          min-width: 100px;
-          padding: 7.5px 12px;
-          border: 1px solid #FFF;
-          background: rgba(255, 255, 255, 0.25);
-
-          &.stage_Application {
-                border: 1px solid #3B9239;
-                background: rgba(59, 146, 57, 0.60);
-        }
-
-        &.stage_Referral {
-                border: 1px solid #1FB4E3;
-                background: rgba(31, 180, 227, 0.40);
-            
-        }
-
-        &.stage_Information {
-          
-                border: 1px solid #8A50C5;
-                background: rgba(138, 80, 197, 0.49);
-            
-        }
-
-        &.stage_Public {
-          
-                border: 1px solid #FF5C00;
-                background: rgba(255, 92, 0, 0.55);
-            
-        }
-
-        &.stage_Decision {
-                border: 1px solid #FF40BE;
-                background: rgba(255, 64, 190, 0.40);
-            
-        }
-
-        &.stage_Unknown,&.stage_undefined {
-                border: 1px solid #FFF;
-                background: rgba(255, 255, 255, 0.25);
-            
-        }
+        color: rgba(255, 64, 190);
       }
     }
-.custom-task{
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-top: 15px;
-  color: #E2E31F;
-  font-size: 16px;
-  padding: 0 10px;
-  cursor: pointer;
-  .add-btn{
-     width: 40px;
+    div.stage-title {
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: -0.48px;
+      min-height: 28px;
+      align-content: center;
+      min-width: 100px;
+      padding: 7.5px 12px;
+      border: 1px solid #fff;
+      background: rgba(255, 255, 255, 0.25);
+
+      &.stage_Application {
+        border: 1px solid #3b9239;
+        background: rgba(59, 146, 57, 0.6);
+      }
+
+      &.stage_Referral {
+        border: 1px solid #1fb4e3;
+        background: rgba(31, 180, 227, 0.4);
+      }
+
+      &.stage_Information,
+      &.stage_Inform,
+      &.stage_Info {
+        border: 1px solid #8a50c5;
+        background: rgba(138, 80, 197, 0.49);
+      }
+
+      &.stage_Public {
+        border: 1px solid #ff5c00;
+        background: rgba(255, 92, 0, 0.55);
+      }
+
+      &.stage_Decision {
+        border: 1px solid #ff40be;
+        background: rgba(255, 64, 190, 0.4);
+      }
+
+      &.stage_Unknown,
+      &.stage_undefined {
+        border: 1px solid #fff;
+        background: rgba(255, 255, 255, 0.25);
+      }
+    }
+  }
+  .custom-task {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 15px;
+    color: #e2e31f;
+    font-size: 16px;
+    padding: 0 10px;
+    cursor: pointer;
+    .add-btn {
+      width: 40px;
       height: 40px;
-      background: #E2E31F;
-      border: 1.5px solid #E2E31F;
+      background: #e2e31f;
+      border: 1.5px solid #e2e31f;
       display: flex;
       justify-content: center;
       align-items: center;
       margin-right: 10px;
       box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    }
+  }
+}
+
+.job-task-table-container.task-table-container {
+  width: 100%;
+
+  .task-table {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .task-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 130px 80px 112px 43px;
+  }
+  .task-row td.task-title {
+    flex-grow: 1; /* First column takes all available space */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: auto; /* Push the first column to the left */
+    text-align: left !important;
+  }
+
+  .task-row td {
+    padding: 8px;
+    text-align: right !important;
+    
+
+    .addNewTaskDiv,
+    .due-date,
+    .statusBox,
+    .view-more {
+      width: auto; /* Allow columns to take up necessary space */
+      text-align: right; /* Align content to the right */
+      margin-left: 16px; /* Add some spacing between columns */
+    }
   }
 }
 
 
+
+
+
+
+
+.newJobItemDropBox.chat-tag {
+  position: absolute;
+  bottom: calc(100% - 11px);
+  left: 30%;
+  border-radius: 8px;
+  border: 1px solid #353535;
+  background: #252525;
+  padding: 20px;
+  min-width: 375px;
+  max-width: 395px;
+  max-height: 190px;
+  overflow-y: auto;
+  z-index: 4;
+  .addedCollabs {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #353535;
+    .selectCollaboratorsBox {
+      position: relative;
+      &::after {
+        position: absolute;
+        content: "";
+        width: 15px;
+        height: 15px;
+        top: 0;
+        right: 0;
+        background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsPSIjZmZmIiBkPSJtOC43NDYgOGwzLjEtMy4xYS41MjcuNTI3IDAgMSAwLS43NDYtLjc0Nkw4IDcuMjU0bC0zLjEtMy4xYS41MjcuNTI3IDAgMSAwLS43NDYuNzQ2bDMuMSAzLjFsLTMuMSAzLjFhLjUyNy41MjcgMCAxIDAgLjc0Ni43NDZsMy4xLTMuMWwzLjEgMy4xYS41MjcuNTI3IDAgMSAwIC43NDYtLjc0NnpNOCAxNkE4IDggMCAxIDEgOCAwYTggOCAwIDAgMSAwIDE2Ii8+PC9zdmc+");
+      }
+    }
+  }
+  .selectCollaboratorsBox {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 5px 6px 6px 6px;
+    cursor: pointer;
+    &:hover {
+      background: #353535;
+    }
+    .collaboratorsBoxUser {
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: -0.48px;
+      border-radius: 4px;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+      background: #353535;
+      padding: 8px 10px;
+    }
+    &:nth-child(4n + 1) {
+      .collaboratorsBoxUser {
+        border: 1px solid #f068ff;
+      }
+    }
+    &:nth-child(4n + 2) {
+      .collaboratorsBoxUser {
+        border: 1px solid #68fff0;
+      }
+    }
+    &:nth-child(4n + 3) {
+      .collaboratorsBoxUser {
+        border: 1px solid #687cff;
+      }
+    }
+    &:nth-child(4n + 4) {
+      .collaboratorsBoxUser {
+        border: 1px solid #7f7f7f;
+      }
+    }
+    .userName {
+      color: #fff;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      letter-spacing: -0.56px;
+    }
+    .userMail {
+      color: #a4a4a4;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      letter-spacing: -0.48px;
+    }
+  }
+  &.stageBox {
+    min-width: 375px;
+    max-width: 395px;
+    max-height: 700px;
+    .stageListBox {
+      max-height: 190px;
+      overflow-y: auto;
+    }
+    .AddStageBox {
+      border-top: 1px solid #7e7e7e;
+      margin-top: 12px;
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      .AddStageInput {
+        width: 100%;
+        background: #353535;
+        padding: 12px 11px;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        letter-spacing: -0.56px;
+        color: #fff;
+        border: none;
+        outline: none;
+        &::placeholder {
+          opacity: 1;
+          color: #616161;
+          visibility: visible;
+        }
+      }
+      .cancelBg {
+        svg {
+          path {
+            fill: #6f6f6f;
+          }
+        }
+      }
+      .cancelBg-item {
+        color: #6f6f6f;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        letter-spacing: -0.56px;
+      }
+    }
+  }
 }

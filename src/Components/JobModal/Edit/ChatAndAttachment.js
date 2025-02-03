@@ -23,7 +23,7 @@ import { ColorRing } from "react-loader-spinner";
 import Pusher from "pusher-js";
 import eventEmitter from "../../../Event";
 import { getProfile } from "../../../services/auth";
-import { CrossIcon, UploadIcon } from "../../../assets/svg";
+import { CrossIcon, UploadIcon, User } from "../../../assets/svg";
 import { debounce, throttle } from "lodash";
 
 const ChatAndAttachment = ({ JobId }) => {
@@ -700,7 +700,7 @@ const ChatAndAttachment = ({ JobId }) => {
   );
 };
 
-export const AddNewJobChatAndAttachment = ({ JobId}) => {
+export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
   const maxLength = 10;
   const [loading, setLoading] = useState(false);
   const [chats, setChats] = useState(null);
@@ -715,6 +715,40 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
   const [userDetails, setUserDetails] = useState();
   const abortControllerRef = useRef(null);
   const profileAbortControllerRef = useRef(null);
+  const [showUserList, setShowUserList] = useState(false);
+  const [userIds, setUserIds] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState(usersList);
+
+  const handleUserSelect = (user) => {
+    // Find the last occurrence of '@' in the body
+    const lastAtIndex = body.lastIndexOf("@");
+
+    // If '@' is found, replace the text from '@' to the next space or end of the string
+    if (lastAtIndex !== -1) {
+      const beforeAt = body.slice(0, lastAtIndex); // Text before '@'
+      const afterAt = body.slice(lastAtIndex); // Text after '@'
+
+      // Replace the old tag with the selected user's name
+      const newBody = `${beforeAt}@${user.name} ${afterAt.replace(
+        /@\S*$/,
+        ""
+      )}`; // Remove the old tag
+      setBody(newBody);
+
+      // Update newMsg data
+      setNewMsg(() => ({
+        type: "msg",
+        data: newBody,
+      }));
+
+      setUserIds((prevValue) => {
+        return [...prevValue, user.id];
+      });
+
+    }
+    setShowUserList(false);
+  };
+
   const fetchProfileData = async () => {
     try {
       if (profileAbortControllerRef.current) {
@@ -739,14 +773,11 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
     throttledFetchChats();
   }, []);
 
-
   useEffect(() => {
     if (chatScroll.current) {
       chatScroll.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chats]);
-
-  
 
   useEffect(() => {
     const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
@@ -823,7 +854,7 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
   const debouncedSendMessage = debounce(async (body) => {
     try {
       setLoading(true);
-      const response = await sendMessage(JobId, { body });
+      const response = await sendMessage(JobId, { body, ids: userIds });
       if (!response.error) {
         fetchChats();
         const notificationData = {
@@ -852,7 +883,6 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
   }, 500);
 
   const throttledFetchChats = throttle(fetchChats, 1000); // 1 second throttle delay
-
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -1029,7 +1059,9 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
                                 className=""
                                 style={{ top: "-10px", left: "16px" }}
                               >
-                                <p className="text-name p-0 ">{msg.user.name}</p>
+                                <p className="text-name p-0 ">
+                                  {msg.user.name}
+                                </p>
                               </div>
                               <p>{msg.body}</p>
                             </div>
@@ -1272,57 +1304,102 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
       </div>
 
       <>
-      <div
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onClick={handleFileUpload}
-        className="imgUploadArea addJobImgUploadArea"
-      >
-        <form onSubmit={handleSendMessage}>
-          <input
-            type="text"
-            placeholder="Add a comment..."
-            onChange={(e) => {
-              setBody(e.target.value);
-              setNewMsg({
-                type: "msg",
-                data: e.target.value,
-              });
-            }}
-            value={body}
-          />
-        </form>
-        <div className="d-flex gap-3 ">
-          <img
-            src={file}
-            className="cursor"
-            alt=""
-            onClick={() => {
-              if (attachmentRef.current) {
-                attachmentRef.current.click();
-              }
-            }}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            ref={attachmentRef}
-            className="d-none"
-            onChange={handleFileUpload}
-          />
-          <img
-            src={message}
-            className="cursor"
-            alt=""
-            onClick={handleSendMessage}
-          />
+        <div
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onClick={handleFileUpload}
+          className="imgUploadArea addJobImgUploadArea"
+        >
+          <form onSubmit={handleSendMessage} className="position-relative">
+            <input
+              type="text"
+              placeholder="Add a comment..."
+              onChange={(e) => {
+                const { value } = e.target;
+                setBody(value);
+                setNewMsg({
+                  type: "msg",
+                  data: value,
+                });
+                if (e?.target?.value.endsWith("@")) {
+                  setFilteredUsers(usersList)
+                  setShowUserList(true);
+                } else if (value.includes("@")) {
+                  // If there's an '@', filter the users based on the text after '@'
+                  const searchTerm = value.split("@").pop().trim();
+                  const filteredUsers = usersList.filter((user) =>
+                    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+                  );
+                  setFilteredUsers(filteredUsers);
+                } else {
+                  setShowUserList(false);
+                }
+              }}
+              value={body}
+            />
+
+            {showUserList && (
+              <div className="newJobItemDropBox chat-tag">
+                {filteredUsers?.length > 0
+                  ? filteredUsers.map((user, index) => {
+                      const initials = user.name
+                        .split(" ")
+                        .map((part) => part.charAt(0).toUpperCase())
+                        .join("");
+
+                      return (
+                        <div
+                          className="selectCollaboratorsBox"
+                          key={index}
+                          onClick={() => handleUserSelect(user)}
+                        >
+                          <div
+                            className={`collaboratorsBoxUser`}
+                            style={{
+                              minWidth: "40px",
+                            }}
+                          >
+                            {initials}
+                          </div>
+                          <div className="userName">{user.name}</div>
+                          <div className="userMail">{user.email}</div>
+                        </div>
+                      );
+                    })
+                  : "No users found"}
+              </div>
+            )}
+          </form>
+
+          <div className="d-flex gap-3 ">
+            <img
+              src={file}
+              className="cursor"
+              alt=""
+              onClick={() => {
+                if (attachmentRef.current) {
+                  attachmentRef.current.click();
+                }
+              }}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              ref={attachmentRef}
+              className="d-none"
+              onChange={handleFileUpload}
+            />
+            <img
+              src={message}
+              className="cursor"
+              alt=""
+              onClick={handleSendMessage}
+            />
+          </div>
         </div>
-      </div>
-    </>
+      </>
     </>
   );
 };
-
-
 
 export default ChatAndAttachment;

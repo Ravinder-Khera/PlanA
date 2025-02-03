@@ -2778,12 +2778,17 @@ const JobModal = ({
   );
 };
 
-export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef,usersList }) => {
+export const NewJobModal = ({
+  job,
+  handleClose,
+  reloadTabs,
+  scrollRef,
+  usersList,
+}) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showUserList, setShowUserList] = useState(false);
-  const [taggedUsers, setTaggedUsers] = useState([]);
+  
   const popUpRef = useRef(null);
 
   useEffect(() => {
@@ -2805,9 +2810,12 @@ export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef,usersList 
 
   const handleModalClose = async () => {
     if (!isDeleting) {
-      job.description = description;
+     job = {
+      ...job,
+      description: description ?? ""
+     }
     }
-    await handleClose(isDeleting); // Pass the deletion flag to the parent
+    await handleClose(isDeleting, description); // Pass the deletion flag to the parent
   };
 
   const handleDelete = async () => {
@@ -2890,7 +2898,7 @@ export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef,usersList 
                         placeholder="Add Description Here..."
                       />
                     </div>
-                    <AddNewJobChatAndAttachment JobId={job?.id} />
+                    <AddNewJobChatAndAttachment JobId={job?.id} usersList={usersList} />
                   </div>
                 </div>
               </div>
@@ -3230,7 +3238,7 @@ export const NewJobModalWithTasks = ({
                     </div> */}
                     <div className="discriptionBox">
                       <h3>Tasks</h3>
-                      <div
+                      {/* <div
                         className={`task-table-container ${
                           showAllTasks ? "show-more" : ""
                         }`}
@@ -3339,7 +3347,66 @@ export const NewJobModalWithTasks = ({
                                       }
                                     }}
                                   >
-                                    View More <RightArrow />
+                                     <RightArrow />
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div> */}
+                      <div
+                        className={`task-table-container job-task-table-container ${
+                          showAllTasks ? "show-more" : ""
+                        }`}
+                      >
+                        <table className="task-table">
+                          <tbody>
+                            {jobTasks.map((task, index) => (
+                              <tr key={index} className="task-row">
+                                <td
+                                  className={`task-title text-left   ${
+                                    task.stage?.title?.split(" ")[0]
+                                  }`}
+                                  title={task?.title}
+                                >
+                                  {task?.title}
+                                </td>
+                                <td className="addNewTaskDiv text-center">
+                                  <span
+                                    className={`addTaskJobBtn stage_${
+                                      task.stage?.title?.split(" ")[0]
+                                    }`}
+                                  >
+                                    {task.stage?.title
+                                      ? task.stage?.title
+                                      : "N/A"}
+                                  </span>
+                                </td>
+                                <td className="due-date">
+                                  Due Date:{" "}
+                                  <span>
+                                    {moment(task.due_date).format("MM/DD/YYYY")}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className={`statusBox ${task.status}`}>
+                                    {formatStatus(task.status)}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div
+                                    className="view-more"
+                                    onClick={() => {
+                                      if (!task.id) {
+                                        handleCheckTask(job.id, index);
+                                      } else {
+                                        setActiveTask(task);
+                                        setShowUpdateTaskModal(true);
+                                      }
+                                    }}
+                                  >
+                                    <RightArrow />
                                   </div>
                                 </td>
                               </tr>
@@ -4900,7 +4967,6 @@ export const CreateTaskModal = ({
 
   // Handle option selection
   const handleOptionClick = (option) => {
-
     setTitle(option.title);
     setStage({ id: option.id, title: option.stageTitle });
     setTatskStatus(option.status);
@@ -4987,7 +5053,6 @@ export const CreateTaskModal = ({
   };
 
   const handleModalClose = async () => {
-
     const newTaskData = {
       job_id: task?.id,
       title: title,
@@ -4996,7 +5061,7 @@ export const CreateTaskModal = ({
       assignee_ids: newJobCollaboratorsListId,
       stage_id: stage?.id,
       description: description,
-      job_num: task?.job_num
+      job_num: task?.job_num,
     };
     if (
       (title !== "" && !newTask) ||

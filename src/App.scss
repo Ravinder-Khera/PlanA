@@ -1488,7 +1488,7 @@ body {
                         background: rgba(31, 180, 227, 0.40);
                     }
 
-                    &.btn_Information {
+                    &.btn_Information,&.btn_Info {
                         border: 1px solid #8A50C5;
                         background: rgba(138, 80, 197, 0.49);
                     }
@@ -1615,10 +1615,10 @@ body {
                 }
             }
 
-            &.stage_Information,  &.stage_Inform {
+            &.stage_Information,  &.stage_Inform, &.stage_Info {
                 background: #573A73;
 
-                .btn_Information, .btn_Inform {
+                .btn_Information, .btn_Inform, .btn_Info {
                     border: 1px solid #8A50C5;
                     background: rgba(138, 80, 197, 0.49);
                 }
@@ -1829,7 +1829,7 @@ body {
             background: rgba(31, 180, 227, 0.40);
         }
 
-        &.Information {
+         &.Information, &.Inform, &.Info  {
             border: 1px solid #8A50C5;
             background: rgba(138, 80, 197, 0.49);
         }
@@ -2127,7 +2127,7 @@ body {
                             background: rgba(31, 180, 227, 0.40);
                         }
 
-                        &.Information {
+                         &.Information, &.Inform, &.Info  {
                             border: 1px solid #8A50C5;
                             background: rgba(138, 80, 197, 0.49);
                         }
@@ -2846,7 +2846,7 @@ body {
                             }
                         }
                     }
-                    &.Information {
+                     &.Information, &.Inform, &.Info  {
                         background: transparent;
                         .timeLineJobItemDiv{
                             border: 1px solid #8A50C5;
@@ -3833,7 +3833,7 @@ body {
                     background: rgba(31, 180, 227, 0.40);
                 }
         
-                &.Information {
+                 &.Information, &.Inform, &.Info  {
                     border: 1px solid #8A50C5;
                     background: rgba(138, 80, 197, 0.49);
                 }

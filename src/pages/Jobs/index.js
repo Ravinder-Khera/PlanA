@@ -240,6 +240,7 @@ const Jobs = () => {
     if (state) {
       localStorage.setItem("jobId", state?.id);
       setShowJobModal(true);
+      console.log("job id",filteredJobs, state?.id);
       setGetJob({
         data: state,
         stage: findNearestStage(state),
@@ -347,7 +348,6 @@ const Jobs = () => {
       const selectedJob = data.find(
         (item) => item?.id === getJob?.data?.id || item?.id === state?.id
       );
-
       if (selectedJob) {
         setGetJob({
           data: selectedJob,
@@ -1308,12 +1308,12 @@ const Jobs = () => {
         <NewJobModal
           job={activeJob}
           usersList={usersList}
-          handleClose={async (isDeleting = false) => {
+          handleClose={async (isDeleting = false, description) => {
             setGetJob();
             setActiveJob(null);
             setShowNewJobModal(false);
             if (!isDeleting && activeJob) {
-              await handleUpdateJobDesc(activeJob.id, activeJob.description);
+              await handleUpdateJobDesc(activeJob?.id, description);
             }
             if (isDeleting) {
               setFilteredJobs((prevJobs) =>
@@ -1427,21 +1427,33 @@ const Jobs = () => {
         />
       )}
 
-      {showJobModal && (
-        <JobModal
+      
+       {showJobModal && <NewJobModal
           job={getJob.data}
-          stage={getJob.stage}
-          handleClose={() => {
+          usersList={usersList}
+          handleClose={async (isDeleting = false, description) => {
             setGetJob();
             setActiveJob(null);
             setShowJobModal(false);
+            if (!isDeleting && getJob?.data) {
+              await handleUpdateJobDesc(getJob.data?.id, description);
+            }
+            if (isDeleting) {
+              setFilteredJobs((prevJobs) =>
+                prevJobs.filter((job) => job.id !== getJob?.data?.id)
+              );
+            }
           }}
           fetchJobs={fetchJobs}
-          usersLists={getJob?.data?.usersArray}
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
-        />
-      )}
+          handleDelete={() => {
+            setFilteredJobs((prevJobs) =>
+              prevJobs.filter((job) => job.id !== getJob?.data?.id)
+            );
+            setIsDeleting(true);
+          }}
+        />}
 
       {showAddModal && (
         <Add
