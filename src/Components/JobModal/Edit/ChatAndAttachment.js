@@ -700,7 +700,7 @@ const ChatAndAttachment = ({ JobId }) => {
   );
 };
 
-export const AddNewJobChatAndAttachment = ({ JobId}) => {
+export const AddNewJobChatAndAttachment = ({ JobId }) => {
   const maxLength = 10;
   const [loading, setLoading] = useState(false);
   const [chats, setChats] = useState(null);
@@ -739,14 +739,11 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
     throttledFetchChats();
   }, []);
 
-
   useEffect(() => {
     if (chatScroll.current) {
       chatScroll.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chats]);
-
-  
 
   useEffect(() => {
     const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
@@ -852,7 +849,6 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
   }, 500);
 
   const throttledFetchChats = throttle(fetchChats, 1000); // 1 second throttle delay
-
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -1023,37 +1019,29 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
                     {msg.user.name !== localStorage.getItem("user") && (
                       <div className="chats-content-reciever ">
                         <div className="d-flex justify-content-between gap-3 align-items-center">
-                          <div className="reciver-chats d-flex ">
+                          <div className="reciver-chats d-flex align-items-center">
+                            <div
+                              className={`InitialsBoxUser`}
+                              style={{
+                                minWidth: "40px",
+                                transform:'translateX(-50%)'
+                              }}
+                            >
+                              {msg.user?.name
+                                .split(" ")
+                                .map((part) => part.charAt(0).toUpperCase())
+                                .join("")}
+                            </div>
                             <div className="d-flex flex-column ">
                               <div
                                 className=""
                                 style={{ top: "-10px", left: "16px" }}
                               >
-                                <p className="text-name p-0 ">{msg.user.name}</p>
+                                <p className="text-name p-1 ">
+                                  {msg.user.name}
+                                </p>
                               </div>
-                              <p>{msg.body}</p>
-                            </div>
-                            <div className=" receiverImg ">
-                              {msg.user?.profile_pic !== "" ? (
-                                <img
-                                  alt={msg.user.name}
-                                  src={
-                                    process.env
-                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                    msg.user.profile_pic
-                                  }
-                                  className="profileImg"
-                                  onError={(e) =>
-                                    (e.target.src = `${profileChat}`)
-                                  }
-                                />
-                              ) : (
-                                <img
-                                  src={profileChat}
-                                  alt=""
-                                  className="profileImg"
-                                />
-                              )}
+                              <p className="p-1">{msg.body}</p>
                             </div>
                           </div>
 
@@ -1076,33 +1064,24 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
                           <div className="reciver-chats">
                             <div
                               className="position-absolute"
-                              style={{ top: "-10px", right: "16px" }}
+                              style={{ top: "4px", right: "16px" }}
                             >
                               <p className="text-name p-0 ">You</p>
                             </div>
                             <div className="position-absolute receiverImg">
-                              {msg.user?.profile_pic !== "" ? (
-                                <img
-                                  alt={msg.user.name}
-                                  src={
-                                    process.env
-                                      .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                    msg.user.profile_pic
-                                  }
-                                  className="profileImg"
-                                  onError={(e) =>
-                                    (e.target.src = `${profileChat}`)
-                                  }
-                                />
-                              ) : (
-                                <img
-                                  src={profileChat}
-                                  alt=""
-                                  className="profileImg"
-                                />
-                              )}
+                            <div
+                              className={`InitialsBoxUser`}
+                              style={{
+                                minWidth: "40px"
+                              }}
+                            >
+                              {msg.user?.name
+                                .split(" ")
+                                .map((part) => part.charAt(0).toUpperCase())
+                                .join("")}
                             </div>
-                            <p className="text-right">{msg.body}</p>
+                            </div>
+                            <p className="text-right" style={{padding:'30px 21px 4px 29px'}}>{msg.body}</p>
                           </div>
                         </div>
                       </div>
@@ -1272,57 +1251,55 @@ export const AddNewJobChatAndAttachment = ({ JobId}) => {
       </div>
 
       <>
-      <div
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onClick={handleFileUpload}
-        className="imgUploadArea addJobImgUploadArea"
-      >
-        <form onSubmit={handleSendMessage}>
-          <input
-            type="text"
-            placeholder="Add a comment..."
-            onChange={(e) => {
-              setBody(e.target.value);
-              setNewMsg({
-                type: "msg",
-                data: e.target.value,
-              });
-            }}
-            value={body}
-          />
-        </form>
-        <div className="d-flex gap-3 ">
-          <img
-            src={file}
-            className="cursor"
-            alt=""
-            onClick={() => {
-              if (attachmentRef.current) {
-                attachmentRef.current.click();
-              }
-            }}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            ref={attachmentRef}
-            className="d-none"
-            onChange={handleFileUpload}
-          />
-          <img
-            src={message}
-            className="cursor"
-            alt=""
-            onClick={handleSendMessage}
-          />
+        <div
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onClick={handleFileUpload}
+          className="imgUploadArea addJobImgUploadArea"
+        >
+          <form onSubmit={handleSendMessage}>
+            <input
+              type="text"
+              placeholder="Add a comment..."
+              onChange={(e) => {
+                setBody(e.target.value);
+                setNewMsg({
+                  type: "msg",
+                  data: e.target.value,
+                });
+              }}
+              value={body}
+            />
+          </form>
+          <div className="d-flex gap-3 ">
+            <img
+              src={file}
+              className="cursor"
+              alt=""
+              onClick={() => {
+                if (attachmentRef.current) {
+                  attachmentRef.current.click();
+                }
+              }}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              ref={attachmentRef}
+              className="d-none"
+              onChange={handleFileUpload}
+            />
+            <img
+              src={message}
+              className="cursor"
+              alt=""
+              onClick={handleSendMessage}
+            />
+          </div>
         </div>
-      </div>
-    </>
+      </>
     </>
   );
 };
-
-
 
 export default ChatAndAttachment;

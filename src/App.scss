@@ -1383,17 +1383,19 @@ body {
     padding: 8px 10px;
     border: 1px solid #68FFF0;
     margin-left: 8px;
-    position: relative;
-    &::after{
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #3B9239;
-        transform: translateX(-25%) translateY(-25%);
+    &.active{
+        position: relative;
+        &::after{
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3B9239;
+            transform: translateX(-25%) translateY(-25%);
+        }
     }
   }
 

@@ -379,7 +379,7 @@ function NavMenu() {
                     </span>
                   </div>
                   <div
-                    className={`InitialsBoxUser`}
+                    className={`InitialsBoxUser active`}
                     style={{
                       minWidth: "40px",
                     }}
