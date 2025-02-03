@@ -2778,10 +2778,12 @@ const JobModal = ({
   );
 };
 
-export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef }) => {
+export const NewJobModal = ({ job, handleClose, reloadTabs, scrollRef,usersList }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showUserList, setShowUserList] = useState(false);
+  const [taggedUsers, setTaggedUsers] = useState([]);
   const popUpRef = useRef(null);
 
   useEffect(() => {

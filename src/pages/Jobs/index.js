@@ -1297,6 +1297,7 @@ const Jobs = () => {
       {showNewJobModal && (
         <NewJobModal
           job={activeJob}
+          usersList={usersList}
           handleClose={async (isDeleting = false) => {
             setGetJob();
             setActiveJob(null);
