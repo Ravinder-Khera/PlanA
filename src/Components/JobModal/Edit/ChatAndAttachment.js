@@ -1346,8 +1346,8 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                 } else if (value.includes("@")) {
                   // If there's an '@', filter the users based on the text after '@'
                   const searchTerm = value.split("@").pop().trim();
-                  const filteredUsers = usersList.filter((user) =>
-                    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+                  const filteredUsers = usersList?.filter((user) =>
+                    user?.name?.toLowerCase().includes(searchTerm.toLowerCase())
                   );
                   setFilteredUsers(filteredUsers);
                 } else {
