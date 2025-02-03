@@ -108,13 +108,15 @@ function Dashboard() {
     if (selectedJob) {
       const currentDate = new Date();
       const applicationTasks = selectedJob?.tasks;
-      const sortedTasks = applicationTasks
-        .map((task) => {
-          const dueDate = new Date(task.due_date);
-          const timeDiff = Math.abs(dueDate - currentDate);
-          return { ...task, timeDiff };
-        })
-        .sort((a, b) => a.timeDiff - b.timeDiff);
+      const sortedTasks =
+        applicationTasks.length > 0 &&
+        applicationTasks
+          .map((task) => {
+            const dueDate = new Date(task.due_date);
+            const timeDiff = Math.abs(dueDate - currentDate);
+            return { ...task, timeDiff };
+          })
+          .sort((a, b) => a.timeDiff - b.timeDiff);
       const nearestTask =
         sortedTasks.length > 2 ? sortedTasks.slice(0, 2) : sortedTasks;
       setTaskCount(sortedTasks.length);
@@ -156,8 +158,8 @@ function Dashboard() {
     if (markTaskStatus) {
       const timer = setTimeout(() => {
         setDelayedUpdate(true);
-      }, 750); 
-  
+      }, 750);
+
       return () => clearTimeout(timer);
     } else {
       setDelayedUpdate(false);
@@ -165,23 +167,23 @@ function Dashboard() {
 
     const handleTaskUpdate = async (task) => {
       let reqBody = {
-        status: 'completed',
+        status: "completed",
       };
       try {
         const response = await updateTask(reqBody, task.id);
         if (response.res) {
-          console.log('task status updated');
-        } 
+          console.log("task status updated");
+        }
       } catch (error) {
         console.log("error while updating task", error);
       }
     };
 
     if (updateTaskStatus) {
-      console.log('task status called');
-      handleTaskUpdate(updateTaskStatus)
+      console.log("task status called");
+      handleTaskUpdate(updateTaskStatus);
     }
-  }, [markTaskStatus,updateTaskStatus]);
+  }, [markTaskStatus, updateTaskStatus]);
 
   return (
     <>
@@ -290,12 +292,26 @@ function Dashboard() {
                         ? task.title.substring(0, 35) + "..."
                         : task.title;
                     return (
-                      <div key={index} className={`tasksDiv ${task.stage} ${delayedUpdate ? 'update' : ''}`}>
-                        <div className="d-flex align-items-center justify-content-between" style={{ gap: "20px" }}>
+                      <div
+                        key={index}
+                        className={`tasksDiv ${task.stage} ${
+                          delayedUpdate ? "update" : ""
+                        }`}
+                      >
+                        <div
+                          className="d-flex align-items-center justify-content-between"
+                          style={{ gap: "20px" }}
+                        >
                           <div>
-                            <div className={`markTaskComplete ${markTaskStatus && 'active'}`} onClick={()=> {setMarkTaskStatus(true)
-                              setUpdateTaskStatus(task)
-                            }}></div>
+                            <div
+                              className={`markTaskComplete ${
+                                markTaskStatus && "active"
+                              }`}
+                              onClick={() => {
+                                setMarkTaskStatus(true);
+                                setUpdateTaskStatus(task);
+                              }}
+                            ></div>
                           </div>
                           <div>
                             <div className="taskHeading">| {task.id} |</div>
@@ -404,24 +420,15 @@ function Dashboard() {
                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                               <div className=" d-flex align-items-center justify-content-end">
                                 <div
-                                  className={` UserImg addedUserImages `}
+                                  className={`InitialsBoxUser`}
                                   style={{
                                     minWidth: "40px",
-                                    zIndex: index,
                                   }}
                                 >
-                                  {chat.user.profile_pic !== "" ? (
-                                    <img
-                                      alt={chat.user.name}
-                                      src={
-                                        process.env
-                                          .REACT_APP_USER_API_CLOUD_IMG_PATH +
-                                        chat.user.profile_pic
-                                      }
-                                    />
-                                  ) : (
-                                    <User />
-                                  )}
+                                  {chat.user.name
+                                    .split(" ")
+                                    .map((part) => part.charAt(0).toUpperCase())
+                                    .join("")}
                                 </div>
                               </div>
                             </div>
