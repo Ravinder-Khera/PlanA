@@ -10,7 +10,8 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
-    const [showFilter, setShowFilter] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [filterString, setfilterString] = useState('Select Filter');
   const excessCalendarDate =
     timeFrame === "weekly" ? 6 : timeFrame === "monthly" ? 15 : 1;
 
@@ -458,7 +459,21 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
               {showFilter && (<>
                 <div className="dashboardFilterDropDown">
                   <div className="dashboardFilterDropDownContent">
-
+                    <div className="selectFilterDiv">
+                      <div className="selectBox">{filterString}</div>
+                      <button>Apply</button>
+                    </div>
+                    <div className="filterOptionsDiv">
+                      <div className="filterOptionsScroll">
+                        <div className="filterOption" onClick={()=>setfilterString('not-started')}>Not Started</div>
+                        <div className="filterOption" onClick={()=>setfilterString('in-progress')}>In Progress</div>
+                        <div className="filterOption" onClick={()=>setfilterString('pending')}>Pending</div>
+                        <div className="filterOption" onClick={()=>setfilterString('on-hold')}>On Hold</div>
+                        <div className="filterOption" onClick={()=>setfilterString('completed')}>Completed</div>
+                        <div className="filterOption" onClick={()=>setfilterString('this_week')}>Due This Week</div>
+                        <div className="filterOption" onClick={()=>setfilterString('in_14_days')}>Due In 14 Days</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </>)}
