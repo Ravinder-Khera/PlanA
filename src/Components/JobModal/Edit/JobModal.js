@@ -4291,6 +4291,10 @@ export const UpdateTaskModal = ({
   const newCollaboratorBoxRef = useRef(null);
   const statusBoxRef = useRef(null);
   const stageBoxRef = useRef(null);
+  const [firstClick, setFirstClick] = useState(true);
+  const inputRef = useRef(null);
+  const popupRef = useRef(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -4475,6 +4479,38 @@ export const UpdateTaskModal = ({
     }
   };
 
+   // Handle option selection
+   const handleOptionClick = (option) => {
+    setTitle(option.title);
+    setStage({ id: option.id, title: option.stageTitle });
+    setTatskStatus(option.status);
+    setIsPopupOpen(false);
+  };
+
+
+  const handleCreateCustomTask = () => {
+    setFirstClick(false);
+    setIsPopupOpen(false);
+
+    // Reset input and related states
+    setTitle("");
+    setStage(null);
+    setTatskStatus("not-started");
+
+    // Wait for state update, then focus
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      } else {
+        console.log("inputRef is null"); // Debugging
+      }
+    }, 50);
+  };
+
+  const handleInputClick = () => {
+    setIsPopupOpen(true);
+  };
+
   return (
     <>
       {loader && (
@@ -4528,10 +4564,75 @@ export const UpdateTaskModal = ({
                       name="title"
                       value={title}
                       onChange={(e) => {
-                        setTitle(e.target.value);
+                        if (!firstClick) {
+                          setTitle(e.target.value);
+                        } else {
+                          e.preventDefault();
+                        }
                       }}
-                      placeholder="Write Task Name..."
+                      onClick={handleInputClick}
+                      placeholder="Select Task"
+                      ref={inputRef}
                     />
+                     {isPopupOpen && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          padding: "20px",
+                          border: "1px solid #353535",
+                          borderRadius: "8px",
+                          backgroundColor: "#252525",
+                          width: "fit-content",
+                          zIndex: "99",
+                        }}
+                        className="main-Stage-Div"
+                        ref={popupRef}
+                      >
+                        <div
+                          className="stages"
+                          style={{
+                            maxWidth: "600px",
+                            maxHeight: "300px",
+                            overflowY: "auto",
+                          }}
+                        >
+                          {AllStages.map((task, index) => (
+                            <div
+                              key={index}
+                              onClick={() => handleOptionClick(task)}
+                              style={{
+                                padding: "5px",
+                                cursor: "pointer",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                              className="all-stage"
+                            >
+                              <div className={`title ${task.stageTitle}`}>
+                                {task.title}
+                              </div>
+                              <div
+                                className={`stage-title stage_${task.stageTitle}`}
+                              >
+                                {task.stageTitle}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div
+                          className="custom-task"
+                          onClick={() => {
+                            handleCreateCustomTask();
+                          }}
+                        >
+                          <div className="add-btn" style={{ minWidth: "40px" }}>
+                            <AddIcon />
+                          </div>{" "}
+                          Create Custom Task
+                        </div>
+                      </div>
+                    )}
                     <div className="discriptionBox">
                       <h3>Description</h3>
                       <textarea
