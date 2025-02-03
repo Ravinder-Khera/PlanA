@@ -3245,7 +3245,7 @@ export const NewJobModalWithTasks = ({
                                     whiteSpace: "nowrap",
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
-                                    maxWidth: "80px",
+                                    maxWidth: "180px",
                                   }}
                                   title={task?.title}
                                 >

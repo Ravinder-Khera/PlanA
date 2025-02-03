@@ -779,6 +779,9 @@ const Jobs = () => {
       (collaborator) => collaborator.id
     );
     setNewJobCollaboratorsListId(CollaboratorsId);
+
+    setUsersList((prevList) => prevList.filter((u) => !CollaboratorsId.includes(u.id)));
+
     if (activeJob?.id === job?.id) {
       return;
     }
