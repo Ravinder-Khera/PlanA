@@ -865,6 +865,9 @@
           &:focus {
             border: 1px solid #fff;
           }
+          &.error{
+            border: 1px solid #F00;
+          }
         }
       }
       .statusBox{
