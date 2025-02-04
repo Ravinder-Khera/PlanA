@@ -5,6 +5,7 @@ import { getJobs, getTimelineJobs } from "../../services/auth";
 import { FilterIcon, TaskIcon, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
+import { formatJobNumber } from "../../pages/Jobs";
 
 function Timeline({
   timeFrame,
@@ -41,6 +42,7 @@ function Timeline({
   const filterRef = useRef(null);
   const [dateChanged, setDateChanged] = useState(false);
   const [applyFilter, setApplyFilter] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   const statusFilterData = [
     {
@@ -502,7 +504,7 @@ function Timeline({
 
   const handleApplyFilter = () => {
     setApplyFilter((prevValue) => !prevValue);
-    setShowFilter(false)
+    setShowFilter(false);
   };
 
   return (
@@ -546,7 +548,10 @@ function Timeline({
           >
             <div
               className="d-flex align-items-center gap-2  "
-              onClick={() => setShowFilter(!showFilter)}
+              onClick={() => {
+                setShowFilterDropdown(true);
+                setShowFilter(!showFilter);
+              }}
             >
               <FilterIcon />
               <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
@@ -557,35 +562,42 @@ function Timeline({
               <>
                 <div className="dashboardFilterDropDown">
                   <div className="dashboardFilterDropDownContent">
-                    <div className="selectFilterDiv">
+                    <div
+                      className="selectFilterDiv"
+                      onClick={() => {
+                        setShowFilterDropdown(!showFilterDropdown);
+                      }}
+                    >
                       <div className="selectBox">{filterString.label}</div>
                       <button onClick={handleApplyFilter}>Apply</button>
                     </div>
-                    <div className="filterOptionsDiv">
-                      <div className="filterOptionsScroll">
-                        {statusFilterData?.map((status) => {
-                          return (
-                            <div
-                              className={`filterOption ${
-                                filterString.value === status.value
-                                  ? "active"
-                                  : ""
-                              }`}
-                              onClick={() => {
-                                if (filterString.value === status.value) {
-                                  setfilterString({
-                                    label: "Select Filter",
-                                    value: "",
-                                  });
-                                } else setfilterString(status);
-                              }}
-                            >
-                              {status.label}
-                            </div>
-                          );
-                        })}
+                    {showFilterDropdown && (
+                      <div className="filterOptionsDiv">
+                        <div className="filterOptionsScroll">
+                          {statusFilterData?.map((status) => {
+                            return (
+                              <div
+                                className={`filterOption ${
+                                  filterString.value === status.value
+                                    ? "active"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  if (filterString.value === status.value) {
+                                    setfilterString({
+                                      label: "Select Filter",
+                                      value: "",
+                                    });
+                                  } else setfilterString(status);
+                                }}
+                              >
+                                {status.label}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </>
@@ -732,7 +744,7 @@ function Timeline({
                                         }}
                                       ></div>
                                       <div className="textDiv">
-                                        <span>| {job.job_num} |</span>
+                                        <span>| {formatJobNumber(job.job_num)} |</span>
                                         <p>{job.title}</p>
                                       </div>
                                       <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
@@ -849,7 +861,7 @@ function Timeline({
                             ></div>
                             <div className="textDiv mobile">
                               <span>
-                                |{job.job_num}|{job.title}
+                                |{formatJobNumber(job.job_num)}|{job.title}
                               </span>
                               <p>{job.description}</p>
                             </div>

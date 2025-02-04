@@ -382,7 +382,7 @@ function NavMenu() {
                     className="d-flex flex-column justify-content-center"
                   >
                     <p>{[user]}</p>
-                    <span style={{ fontSize: "12px", fontWeight: "300" }}>
+                    <span style={{ fontSize: "12px", fontWeight: "300", textTransform:'capitalize' }}>
                       {[userDesignation]}{' '}
                     </span>
                   </div>
@@ -398,7 +398,8 @@ function NavMenu() {
                       .join("")}
                   </div>
                 </Link>
-                <div className="addNewTaskDiv">
+                <div className="addNewTaskDiv d-flex align-items-center justify-content-center gap-2">
+                  
                   <div
                     className="bellIcon addTaskJobDiv"
                     style={{ cursor: "pointer" }}
@@ -409,6 +410,7 @@ function NavMenu() {
                       }
                     >
                       <BellIcon />
+                     
                     </div>
                     {notificationDropDown && (
                       <div
@@ -444,6 +446,21 @@ function NavMenu() {
                       </div>
                     )}
                   </div>
+                  <div
+  style={{
+    color: "#E2E31F",
+    textAlign: "right",
+    fontFamily: "Archivo",
+    fontSize: "16px",
+    fontStyle: "normal",
+    fontWeight: "400",
+    lineHeight: "normal",
+    letterSpacing: "-0.56px",
+  }}
+>
+  Notifications
+</div>
+
                 </div>
               </div>
             </div>
@@ -490,7 +507,7 @@ function NavMenu() {
                       className="resultMap"
                       key={index}
                       onClick={() => {
-                        navigate("/dashboard/tasks", { state: Task });
+                        navigate("/jobs/tasks", { state: Task });
                         setIsPopupOpen(false);
                         setSearchValue("");
                       }}

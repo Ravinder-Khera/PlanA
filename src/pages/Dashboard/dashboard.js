@@ -6,6 +6,7 @@ import Timeline from "../../Components/Timeline";
 import { AddIcon, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { getMessages } from "../../services/chat_attachment";
+import { formatJobNumber } from "../Jobs";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -382,7 +383,7 @@ function Dashboard() {
               <div className="taskCount text-center mt-4">
                 <p
                   onClick={() => {
-                    navigate("/dashboard/tasks", { state: selectedJob });
+                    navigate("/jobs/tasks", { state: selectedJob });
                   }}
                 >
                   See All
@@ -416,7 +417,7 @@ function Dashboard() {
                           className="d-flex align-items-center justify-content-start"
                           style={{ gap: "19px" }}
                         >
-                          <div>
+                          <div className="d-flex align-items-start gap-3" >
                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                               <div className=" d-flex align-items-center justify-content-end">
                                 <div
@@ -432,13 +433,13 @@ function Dashboard() {
                                 </div>
                               </div>
                             </div>
-                          </div>
                           <div>
                             <div className="chatHeading">{chat.user.name}</div>
                             <div className="chatTime">
-                              |{selectedJob.id}|{selectedJob.title}
+                              | {formatJobNumber(selectedJob.id)} | {selectedJob.title}
                             </div>
                             <div className="chatMsg">"{trimmedTitle}"</div>
+                          </div>
                           </div>
                         </div>
                         <div className="chatBtnDiv">

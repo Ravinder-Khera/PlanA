@@ -409,7 +409,7 @@ function MobileMenu() {
                 ))}
                 {filteredTasks && filteredTasks.map((Task, index)=>(
                   <div className="resultMap" key={index} onClick={() => {
-                    navigate("/dashboard/tasks", { state: Task }); setIsPopupOpen(false);setSearchValue('');
+                    navigate("/jobs/tasks", { state: Task }); setIsPopupOpen(false);setSearchValue('');
                   }}>
                       <div className="d-flex align-items-center" style={{gap:'16px'}}>
                         <div className="identityBadge">

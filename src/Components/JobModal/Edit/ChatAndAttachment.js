@@ -992,31 +992,31 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
 
   // Function to properly format name (capitalize first letters)
   // Function to handle text extraction and rendering
-  const renderMessage = (text) => {
-    // Regular expression to match words enclosed in {}
-    const regex = /{([^}]+)}/g;
-    let result = [];
-    let lastIndex = 0;
-    let match;
+    const renderMessage = (text) => {
+      // Regular expression to match words enclosed in {}
+      const regex = /{([^}]+)}/g;
+      let result = [];
+      let lastIndex = 0;
+      let match;
 
-    // Iterate through each match of text inside {}
-    while ((match = regex.exec(text)) !== null) {
-      // Push the text before the match (normal text)
-      if (match.index > lastIndex) {
-        result.push(text.slice(lastIndex, match.index));
+      // Iterate through each match of text inside {}
+      while ((match = regex.exec(text)) !== null) {
+        // Push the text before the match (normal text)
+        if (match.index > lastIndex) {
+          result.push(text.slice(lastIndex, match.index));
+        }
+        // Push the name inside {} as TaggedUser component
+        result.push(<TaggedUser key={match.index} name={match[1]} />);
+        lastIndex = regex.lastIndex; // Update last matched index
       }
-      // Push the name inside {} as TaggedUser component
-      result.push(<TaggedUser key={match.index} name={match[1]} />);
-      lastIndex = regex.lastIndex; // Update last matched index
-    }
 
-    // Push any remaining text after the last match
-    if (lastIndex < text.length) {
-      result.push(text.slice(lastIndex));
-    }
+      // Push any remaining text after the last match
+      if (lastIndex < text.length) {
+        result.push(text.slice(lastIndex));
+      }
 
-    return result;
-  };
+      return result;
+    };
 
   return (
     <>

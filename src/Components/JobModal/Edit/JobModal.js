@@ -2585,7 +2585,7 @@ const JobModal = ({
                         style={{ textAlign: "left", cursor: "auto" }}
                       >
                         <div className="addTaskDueDateBtn ">
-                          {formatDate(data?.latest_comment)}
+                          {formatDate(data?.comment)}
                         </div>
                       </div>
                     </div>

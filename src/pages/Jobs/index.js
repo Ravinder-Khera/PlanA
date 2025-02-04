@@ -44,7 +44,70 @@ import { Link, useLocation } from "react-router-dom";
 import { NotificationComponent } from "../../Components/navMenu";
 import { Calendar } from "react-date-range";
 import ErrorToast from "../../Components/ErrorToast";
+import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 
+const renderComment = (message) => {
+
+  if(!message) return <p className="no-comment">No Comments</p>
+  const renderMessage = (text) => {
+    // Regular expression to match words enclosed in {}
+    const regex = /{([^}]+)}/g;
+    let result = [];
+    let lastIndex = 0;
+    let match;
+
+    // Iterate through each match of text inside {}
+    while ((match = regex.exec(text)) !== null) {
+      // Push the text before the match (normal text)
+      if (match.index > lastIndex) {
+        result.push(text.slice(lastIndex, match.index));
+      }
+      // Push the name inside {} as TaggedUser component
+      result.push(<TaggedUser key={match.index} name={match[1]} />);
+      lastIndex = regex.lastIndex; // Update last matched index
+    }
+
+    // Push any remaining text after the last match
+    if (lastIndex < text.length) {
+      result.push(text.slice(lastIndex));
+    }
+
+    return result;
+  };
+  return (
+    <div className="latest-comment">
+      <div className="msg">
+        <p className="time">
+          {" "}
+          {moment(message.created_at).isBefore(moment().subtract(1, "hour"))
+            ? moment(message.created_at).format("h:mm a") // Show time if more than 1 hour ago
+            : moment(message.created_at)
+                .fromNow()
+                .replace("minute", "min")
+                .replace("minutes", "mins")}
+        </p>
+        <span></span>
+        <p className="name"> {message.user} :</p> 
+      </div>
+      <p className="content">{renderMessage(message.body)}</p>
+    </div>
+  );
+};
+
+
+export const formatJobNumber = (jobNum) => {
+  // Ensure jobNum is a number or a string
+  const jobStr = jobNum?.toString();
+
+  // Check if the job number has at least 5 digits for slicing
+  if (jobStr && jobStr.length >= 5) {
+    return `${jobStr.slice(0,2)}-${jobStr.slice(-3)}`;
+  }
+  else{
+    return jobStr
+  }
+
+};
 const Jobs = () => {
   const containerRef = useRef(null);
   const filterRef = useRef(null);
@@ -443,7 +506,7 @@ const Jobs = () => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear().toString().slice(2);
+    const year = date.getFullYear().toString();
 
     return `${day}/${month}/${year}`;
   };
@@ -631,7 +694,7 @@ const Jobs = () => {
               title: addJobName,
               collaborators: newJobCollaboratorsListId,
               due_date: selectedNewJobDueDate || "",
-              status: selectNewJobStatus || "",
+              status: selectNewJobStatus || "not-started",
             },
             ...prevJobs,
           ]);
@@ -732,7 +795,6 @@ const Jobs = () => {
     setSelectedNewJobDueDate(formattedDueDate);
   };
 
-
   const handleTitleClick = async (job) => {
     setActiveJobField("Name");
     setEditedValue(job.title);
@@ -820,18 +882,20 @@ const Jobs = () => {
   const handleDueDateChange = (date) => {
     setActiveJobField("");
     setNewJobActiveBoxRight("");
-  
+
     // Use UTC to avoid timezone shifts
-    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  
+    const utcDate = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    );
+
     const year = utcDate.getUTCFullYear();
     const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
     const day = String(utcDate.getUTCDate()).padStart(2, "0");
-  
+
     // Format the date as YYYY-MM-DD
     let formattedDueDate = `${year}-${month}-${day}`;
     setEditedJobDueDate(formattedDueDate);
-  
+
     // Update the due_date in the filteredJobs array
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
@@ -841,7 +905,6 @@ const Jobs = () => {
       )
     );
   };
-  
 
   const handleTitleUpdate = () => {
     setActiveJobField("");
@@ -1291,10 +1354,10 @@ const Jobs = () => {
   };
 
   const handleErrorToastClose = () => {
-    console.log('handleErrorToastClose')
-    setNewJobId(["", "", "", "", ""])
-    setNewJobIdExist(false)
-  }
+    console.log("handleErrorToastClose");
+    setNewJobId(["", "", "", "", ""]);
+    setNewJobIdExist(false);
+  };
 
   return (
     <>
@@ -1763,7 +1826,7 @@ const Jobs = () => {
               <div className="first-table">
                 <div className="job_table_outer_div  ">
                   <table className="table table-borderless text-light">
-                    <thead>
+                    <thead className="sticky-header">
                       <tr>
                         <th scope="col">
                           <div className="headerDiv">Job No.</div>
@@ -1841,7 +1904,11 @@ const Jobs = () => {
                                     {index === 1 && "-"}
                                   </>
                                 ))}
-                                {newJobIdExist && <ErrorToast onClose={()=>handleErrorToastClose()}/>}
+                                {newJobIdExist && (
+                                  <ErrorToast
+                                    onClose={() => handleErrorToastClose()}
+                                  />
+                                )}
                               </div>
                             )}
                           </td>
@@ -2026,7 +2093,8 @@ const Jobs = () => {
                             }`}
                           >
                             <td className="text-center">
-                              <span className={`jobNoBtn`}>{job.job_num}</span>
+                              <span className={`jobNoBtn`}>{formatJobNumber(job?.job_num)}
+                              </span>
                             </td>
                             <td
                               className={`px-3 clickBox jobName d-flex align-items-center justify-content-between`}
@@ -2213,7 +2281,7 @@ const Jobs = () => {
                 <div className="table-responsive right-side-table">
                   <div className="job_table_outer_div">
                     <table className="table table-borderless text-light">
-                      <thead>
+                      <thead className="">
                         <tr>
                           <th scope="col">
                             <div className="headerDiv">Status</div>
@@ -2414,10 +2482,10 @@ const Jobs = () => {
                             >
                               <td className={`text-center clickBox`}>
                                 <span
-                                  className={`statusBtn ${job.status}`}
+                                  className={`statusBtn ${job.status != undefined ? job.status : 'not-started'}`}
                                   onClick={() => handleStatusClick(job)}
                                 >
-                                  {StatusList[job.status]}
+                                   {job.status != undefined ? StatusList[job.status]: 'Not Started'}
                                 </span>
                                 {activeJob?.id === job.id &&
                                   activeJobField === "Status" && (
@@ -2570,7 +2638,7 @@ const Jobs = () => {
                               </td>
                               <td className="px-3">
                                 <div className="jobDescriptionTextDiv">
-                                  {job.latest_comment}
+                                  {renderComment(job?.latest_messages[0])}
                                 </div>
                               </td>
                             </tr>

@@ -92,33 +92,38 @@
   }
 }
 
-  .toast-body {
-    position: absolute;
-    display: inline-flex;
-    padding: 20px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    border-radius: 8px;
-    width: clamp(350px, 35vw, 490px);
-    border: 1px solid #353535;
-    background: #252525;
-    z-index: 999;
-    top: 100%;
-    left: 100%;
-    p {
-      color: #F00;
-      font-family: Archivo;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-      letter-spacing: -0.56px;
-      margin: 0;
-      text-align: justify;
-    }
-    svg.cross{
-      cursor: pointer;
-    }
-
+.toast-body {
+  position: absolute;
+  display: inline-flex;
+  padding: 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-radius: 8px;
+  width: clamp(350px, 35vw, 490px);
+  border: 1px solid #353535;
+  background: #252525;
+  z-index: 999;
+  top: 100%;
+  left: 100%;
+  p {
+    color: #f00;
+    font-family: Archivo;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.56px;
+    margin: 0;
+    text-align: justify;
   }
+  svg {
+    height: 45px;
+    width: 50px;
+  }
+  svg.cross {
+    height: 20px !important;
+    width: 20px !important;
+    cursor: pointer;
+  }
+}

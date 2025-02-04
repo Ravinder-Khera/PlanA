@@ -5,6 +5,7 @@ import { AddIcon } from "../../assets/svg";
 import { updateTask } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 import { getMessages } from "../../services/chat_attachment";
+import { formatJobNumber } from "../Jobs";
 
 function TimelinePage() {
   const navigate = useNavigate();
@@ -268,7 +269,7 @@ function TimelinePage() {
               <div className="taskCount text-center mt-4">
                 <p
                   onClick={() => {
-                    navigate("/dashboard/tasks", { state: selectedJob });
+                    navigate("/jobs/tasks", { state: selectedJob });
                   }}
                 >
                   See All
@@ -322,7 +323,7 @@ function TimelinePage() {
                           <div>
                             <div className="chatHeading">{chat.user.name}</div>
                             <div className="chatTime">
-                              |{selectedJob.id}|{selectedJob.title}
+                              | {formatJobNumber(selectedJob.id)} | {selectedJob.title}
                             </div>
                             <div className="chatMsg">"{trimmedTitle}"</div>
                           </div>
