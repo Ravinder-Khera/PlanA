@@ -11,6 +11,7 @@ import {
   LogoutIcon,
   SettingsIcon,
   TaskIcon,
+  TaskIcon2,
   TimelineIcon,
   User,
 } from "./assets/svg";
@@ -411,7 +412,7 @@ function DashboardMenuList() {
                           }
                         >
                           <Link to="/jobs/tasks" onClick={handleMenuClose}>
-                            <TaskIcon />
+                            <TaskIcon2 />
                             <p>Tasks</p>
                           </Link>
                         </li>
