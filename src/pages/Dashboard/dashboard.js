@@ -12,14 +12,12 @@ function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [randomNumber, setRandomNumber] = useState(0);
-  const [selectedJob, setSelectedJob] = useState();
   const [selectedJobTask, setSelectedJobTask] = useState();
   const [taskCount, setTaskCount] = useState(0);
   const [chats, setChats] = useState(null);
-  const [markTaskStatus, setMarkTaskStatus] = useState(false);
   const [updateTaskStatus, setUpdateTaskStatus] = useState(null);
-  const [delayedUpdate, setDelayedUpdate] = useState(false);
-
+  const [reloadTask, setReloadTask] = useState(false);
+  const [selectedJob, setSelectedJob] = useState();
   const selectedJobRef = useRef(null);
   const overFlowRef = useRef(null);
 
@@ -54,7 +52,6 @@ function Dashboard() {
 
   const fetchChats = async (jobId) => {
     try {
-      setLoading(true);
       const response1 = await getMessages(jobId);
       if (!response1.error) {
         const combinedArray = [...response1.res];
@@ -74,15 +71,14 @@ function Dashboard() {
     } catch (error) {
       setChats([]);
       console.log("error in fetching messages");
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const handleSelectJobClose = () => {
     if (selectedJob) {
       const popUpSlide = selectedJobRef.current;
       popUpSlide.classList.remove("slideIn");
+
     }
     setTimeout(() => {
       setSelectedJob();
@@ -100,28 +96,34 @@ function Dashboard() {
       if (selectedJob) {
         const popUpSlide = selectedJobRef.current;
         popUpSlide.classList.add("slideIn");
+        
       }
     }, 1000);
   }, [selectedJob]);
 
-  useEffect(() => {
-    if (selectedJob) {
-      const currentDate = new Date();
-      const applicationTasks = selectedJob?.tasks;
-      const sortedTasks =
-        applicationTasks.length > 0 &&
-        applicationTasks
-          .map((task) => {
+  const taskHandle = () => {
+    const currentDate = new Date();
+    const applicationTasks = selectedJob?.tasks;
+    const sortedTasks =
+      applicationTasks.length > 0 &&
+      applicationTasks?.filter((task) =>  task.status !== 'completed' )
+        .map((task) => {
             const dueDate = new Date(task.due_date);
             const timeDiff = Math.abs(dueDate - currentDate);
             return { ...task, timeDiff };
-          })
-          .sort((a, b) => a.timeDiff - b.timeDiff);
-      const nearestTask =
-        sortedTasks.length > 2 ? sortedTasks.slice(0, 2) : sortedTasks;
-      setTaskCount(sortedTasks.length);
-      setSelectedJobTask(nearestTask);
-      fetchChats(selectedJob.id);
+        })
+        .sort((a, b) => a.timeDiff - b.timeDiff);
+    const nearestTask =
+      sortedTasks?.length > 2 ? sortedTasks?.slice(0, 2) : sortedTasks;
+    setTaskCount(sortedTasks?.length);
+    console.log("nearestTask", nearestTask);
+    setSelectedJobTask(nearestTask);
+    fetchChats(selectedJob.id);
+  };
+
+  useEffect(() => {
+    if (selectedJob) {
+      taskHandle();
     }
   }, [selectedJob]);
 
@@ -154,36 +156,25 @@ function Dashboard() {
     return date.toLocaleDateString("en-GB", options);
   };
 
-  useEffect(() => {
-    if (markTaskStatus) {
-      const timer = setTimeout(() => {
-        setDelayedUpdate(true);
-      }, 750);
 
-      return () => clearTimeout(timer);
-    } else {
-      setDelayedUpdate(false);
-    }
-
-    const handleTaskUpdate = async (task) => {
+  const handleTaskUpdate = async (task) => {
       let reqBody = {
         status: "completed",
       };
       try {
-        const response = await updateTask(reqBody, task.id);
+        const response = await updateTask({ updatedTask: reqBody }, task.id);
         if (response.res) {
+          setReloadTask((prevValue) => !prevValue);
+          setTimeout(() => {
+            setUpdateTaskStatus(null);
+          }, 1000)
           console.log("task status updated");
         }
       } catch (error) {
         console.log("error while updating task", error);
       }
-    };
-
-    if (updateTaskStatus) {
-      console.log("task status called");
-      handleTaskUpdate(updateTaskStatus);
-    }
-  }, [markTaskStatus, updateTaskStatus]);
+   
+  };
 
   return (
     <>
@@ -265,7 +256,9 @@ function Dashboard() {
         <Timeline
           timeFrame="weekly"
           loadNo={randomNumber}
+          selectedJob={selectedJob}
           setSelectedJob={setSelectedJob}
+          reloadTask={reloadTask}
         />
         {selectedJob && (
           <div className="jobTaskPopUp" ref={selectedJobRef}>
@@ -285,40 +278,47 @@ function Dashboard() {
             <div className={`dashboard_task`}>
               <div className="taskCount">{taskCount} Tasks</div>
               <div className="taskDetails">
-                {selectedJobTask &&
+                {selectedJobTask && selectedJobTask?.length > 0 &&
                   selectedJobTask.map((task, index) => {
                     const trimmedTitle =
-                      task.title.length > 35
-                        ? task.title.substring(0, 35) + "..."
-                        : task.title;
+                      task?.title?.length > 35
+                        ? task?.title.substring(0, 35) + "..."
+                        : task?.title;
+                    const isTaskUpdated =
+                      updateTaskStatus?.id === task.id
                     return (
                       <div
                         key={index}
                         className={`tasksDiv ${task.stage} ${
-                          delayedUpdate ? "update" : ""
+                          isTaskUpdated ? "update" : ""
                         }`}
                       >
                         <div
                           className="d-flex align-items-center justify-content-between"
                           style={{ gap: "20px" }}
                         >
-                          <div>
+                          <div
+                            className="d-flex align-items-center justify-content-between"
+                            style={{ gap: "20px" }}
+                          >
                             <div
                               className={`markTaskComplete ${
-                                markTaskStatus && "active"
+                                (updateTaskStatus?.id === task?.id) &&
+                                "active"
                               }`}
                               onClick={() => {
-                                setMarkTaskStatus(true);
+                                if (task.status === "completed") return;
                                 setUpdateTaskStatus(task);
+                                handleTaskUpdate(task);
                               }}
                             ></div>
-                          </div>
-                          <div>
-                            <div className="taskHeading">| {task.id} |</div>
-                            <div className="taskHeading">{trimmedTitle}</div>
-                            <div className="taskDate">
-                              <span>Due Date</span>
-                              <span>{task.due_date}</span>
+                            <div>
+                              <div className="taskHeading">| {task.id} |</div>
+                              <div className="taskHeading">{trimmedTitle}</div>
+                              <div className="taskDate">
+                                <span>Due Date</span>
+                                <span>{task.due_date}</span>
+                              </div>
                             </div>
                           </div>
                           <div>

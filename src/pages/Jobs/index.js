@@ -43,6 +43,7 @@ import Add from "../../Components/JobModal/Add/Add";
 import { Link, useLocation } from "react-router-dom";
 import { NotificationComponent } from "../../Components/navMenu";
 import { Calendar } from "react-date-range";
+import ErrorToast from "../../Components/ErrorToast";
 
 const Jobs = () => {
   const containerRef = useRef(null);
@@ -174,17 +175,6 @@ const Jobs = () => {
       console.log("exists", exists);
       if (exists.res?.exists) {
         setNewJobIdExist(true);
-        toast.error(
-          <>
-            <div>
-              <h3>Job ID already exists!</h3>
-            </div>
-            <p>
-              Please choose another jobs ID. Entered Job ID already has been
-              assigned to another job.
-            </p>
-          </>
-        );
         return;
       } else {
         setNewJobIdNumber(Number(target));
@@ -240,7 +230,7 @@ const Jobs = () => {
     if (state) {
       localStorage.setItem("jobId", state?.id);
       setShowJobModal(true);
-      console.log("job id",filteredJobs, state?.id);
+      console.log("job id", filteredJobs, state?.id);
       setGetJob({
         data: state,
         stage: findNearestStage(state),
@@ -742,6 +732,7 @@ const Jobs = () => {
     setSelectedNewJobDueDate(formattedDueDate);
   };
 
+
   const handleTitleClick = async (job) => {
     setActiveJobField("Name");
     setEditedValue(job.title);
@@ -782,7 +773,9 @@ const Jobs = () => {
     );
     setNewJobCollaboratorsListId(CollaboratorsId);
 
-    setUsersList((prevList) => prevList.filter((u) => !CollaboratorsId.includes(u.id)));
+    setUsersList((prevList) =>
+      prevList.filter((u) => !CollaboratorsId.includes(u.id))
+    );
 
     if (activeJob?.id === job?.id) {
       return;
@@ -827,20 +820,28 @@ const Jobs = () => {
   const handleDueDateChange = (date) => {
     setActiveJobField("");
     setNewJobActiveBoxRight("");
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+  
+    // Use UTC to avoid timezone shifts
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  
+    const year = utcDate.getUTCFullYear();
+    const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(utcDate.getUTCDate()).padStart(2, "0");
+  
+    // Format the date as YYYY-MM-DD
     let formattedDueDate = `${year}-${month}-${day}`;
     setEditedJobDueDate(formattedDueDate);
-
+  
+    // Update the due_date in the filteredJobs array
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
         job.id === activeJob?.id
-          ? { ...job, due_date: date.toISOString().split("T")[0] }
+          ? { ...job, due_date: utcDate.toISOString().split("T")[0] }
           : job
       )
     );
   };
+  
 
   const handleTitleUpdate = () => {
     setActiveJobField("");
@@ -1045,6 +1046,7 @@ const Jobs = () => {
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
+      fetchJobs();
       console.log("Task Update successful", response.res);
     } else {
       console.error("Task Update failed:", response.error);
@@ -1288,6 +1290,12 @@ const Jobs = () => {
     setShowNewJobModalWithTasks(true);
   };
 
+  const handleErrorToastClose = () => {
+    console.log('handleErrorToastClose')
+    setNewJobId(["", "", "", "", ""])
+    setNewJobIdExist(false)
+  }
+
   return (
     <>
       {loading && (
@@ -1335,7 +1343,7 @@ const Jobs = () => {
 
       {showNewJobModalWithTasks && (
         <NewJobModalWithTasks
-        usersList={usersList}
+          usersList={usersList}
           job={activeJob}
           handleClose={async (isDeleting = false) => {
             setGetJob();
@@ -1368,7 +1376,7 @@ const Jobs = () => {
 
       {showNewJobAddTaskModal && (
         <NewTaskModal
-        usersList={usersList}
+          usersList={usersList}
           jobNum={newJobIdNumberForNewTask}
           handleClose={async () => {
             setGetJob();
@@ -1384,7 +1392,7 @@ const Jobs = () => {
 
       {showAddTaskModal && (
         <CreateTaskModal
-        usersList={usersList}
+          usersList={usersList}
           task={activeTaskJob}
           handleClose={async () => {
             setGetJob();
@@ -1408,7 +1416,7 @@ const Jobs = () => {
 
       {showUpdateTaskModal && (
         <UpdateTaskModal
-        usersList={usersList}
+          usersList={usersList}
           task={activeTask}
           handleClose={async () => {
             setGetJob();
@@ -1431,8 +1439,8 @@ const Jobs = () => {
         />
       )}
 
-      
-       {showJobModal && <NewJobModal
+      {showJobModal && (
+        <NewJobModal
           job={getJob.data}
           usersList={usersList}
           handleClose={async (isDeleting = false, description) => {
@@ -1457,7 +1465,8 @@ const Jobs = () => {
             );
             setIsDeleting(true);
           }}
-        />}
+        />
+      )}
 
       {showAddModal && (
         <Add
@@ -1807,12 +1816,12 @@ const Jobs = () => {
                                 {newJobIdNumber}
                               </span>
                             ) : (
-                              <div className="addJobNoBoxInputs">
+                              <div className="addJobNoBoxInputs position-relative">
                                 {/* Render 5 input fields for OTP */}
                                 {newJobId.map((digit, index) => (
                                   <>
                                     <input
-                                    className={`${newJobIdExist && 'error'}`}
+                                      className={`${newJobIdExist && "error"}`}
                                       ref={(el) =>
                                         (newJobIdInputRefs.current[index] = el)
                                       }
@@ -1828,9 +1837,11 @@ const Jobs = () => {
                                       }
                                       maxLength="1"
                                     />
+
                                     {index === 1 && "-"}
                                   </>
                                 ))}
+                                {newJobIdExist && <ErrorToast onClose={()=>handleErrorToastClose()}/>}
                               </div>
                             )}
                           </td>
@@ -2249,7 +2260,7 @@ const Jobs = () => {
                                       ""
                                     )}`}
                                     style={{
-                                      textTransform:'capitalize'
+                                      textTransform: "capitalize",
                                     }}
                                   >
                                     {selectNewJobStatus}

@@ -2641,7 +2641,9 @@
           }
           .sender-attachments {
             padding: 0px 29px;
-
+            .cursor {
+              cursor: pointer;
+            }
             .attachments-box {
               width: 121px;
               height: 134px;
@@ -2649,6 +2651,7 @@
 
               .cut {
                 text-align: right;
+                cursor: pointer;
               }
 
               .file-apload {
@@ -2940,7 +2943,9 @@
 
     .sender-attachments {
       padding: 0px 29px;
-
+      .cursor {
+        cursor: pointer;
+      }
       .attachments-box {
         width: 121px;
         height: 134px;
@@ -2948,6 +2953,7 @@
 
         .cut {
           text-align: right;
+          cursor: pointer;
         }
 
         .file-apload {
@@ -3083,100 +3089,369 @@
     }
   }
   .chatsDiv {
-    .chats-content-reciever {
-      width: 100%;
-      padding: 0px 29px;
-      margin: 25px auto;
-      .reciver-chats {
-        background: #ffffff33;
-        max-width: 319px;
-        width: 100%;
-        border-radius: 5px;
-        position: relative;
-        .receiverImg {
-          top: 50%;
-          right: 0%;
-          transform: translateX(50%) translateY(-50%);
-          img {
-            max-width: 40px;
-            max-height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 14px;
+    .chats-content-reciever-new {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 12px;
+      .InitialsBoxUser {
+        width: max-content;
+        color: #fff;
+        text-align: center;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        letter-spacing: -0.48px;
+        border-radius: 4px;
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+        border: 1px solid #f068ff;
+        background: #353535;
+        padding: 8px 10px;
+        margin: 0px !important;
+      }
+      .msg-body {
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+        align-items: baseline;
+        flex-direction: column;
+        margin-right: 10px;
+        gap: 4px;
+        .msg {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          p.name {
+            color: #fff;
+            font-family: Archivo;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.64px;
+          }
+          span {
+            display: inline-block;
+            display: inline-block;
+            height: 2px;
+            width: 2px;
+            border-radius: 50%;
+            background: #616161;
+            font-family: Archivo;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.64px;
+          }
+          p.time {
+            color: #616161;
+            font-family: Archivo;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.48px;
           }
         }
-        .text-name {
+        p.content {
+          color: #fff;
           font-family: Archivo;
-          font-size: 16px;
-          font-weight: 600;
-          line-height: 17.41px;
-          letter-spacing: -0.04em;
-          text-align: left;
-          color: #e2e31f;
+          font-size: 15px;
+          font-style: normal;
+          font-weight: 200;
+          line-height: normal;
+          letter-spacing: -0.6px;
         }
-
-        .profileImg {
-          width: 40px;
-          height: 40px;
-          box-shadow: 0px 4px 4px 0px #00000040;
-          border: 1px solid #000;
-          border-radius: 5px;
-          background: #e2e31f;
-        }
-
-        p {
-          font-family: Archivo;
-          font-size: 14px;
-          font-weight: 400;
-          line-height: 15.23px;
-          letter-spacing: -0.04em;
-          text-align: left;
-          padding: 22px 34px 19px 16px;
-        }
-      }
-    }
-    .chats-content-sender {
-      width: 100%;
-      padding: 0px 29px;
-      margin: 25px auto;
-      .reciver-chats {
-        background: #353535;
-        max-width: 319px;
-        width: 100%;
-        border-radius: 5px;
-        position: relative;
-        box-shadow: 0px 8px 8px 0px #0000004d;
-        .receiverImg {
-          top: 50%;
-          left: 0%;
-          transform: translateX(-50%) translateY(-50%);
-          .profileImg {
+        .attachments {
+          border: 1px solid #fff;
+          display: inline-flex;
+          padding: 10px;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: nowrap;
+          min-width: max-content;
+          .imgBox {
+            background: #ffffff;
             width: 40px;
             height: 40px;
-            box-shadow: 0px 4px 4px 0px #00000040;
-            border: 1px solid #000;
-            border-radius: 5px;
-            background: #e2e31f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            img {
+              max-width: 100%;
+              object-fit: contain;
+            }
           }
-        }
-        .text-name {
-          font-family: Archivo;
-          font-size: 16px;
-          font-weight: 600;
-          line-height: 17.41px;
-          letter-spacing: -0.04em;
-          text-align: left;
-          color: #e2e31f;
-        }
-
-        p {
-          font-family: Archivo;
-          font-size: 14px;
-          font-weight: 400;
-          line-height: 15.23px;
-          letter-spacing: -0.04em;
-          text-align: right;
-          padding: 18px 21px 21px 29px;
+          h5 {
+            margin-bottom: 0;
+            color: #fff;
+            text-align: center;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.56px;
+          }
+          span {
+            cursor: pointer;
+            padding-left: 8px;
+            svg {
+              width: 10px;
+              height: 10px;
+              path {
+                fill: #e2e31f;
+              }
+            }
+          }
         }
       }
     }
+    .chats-content-sender-new {
+      display: flex
+      ;
+          justify-content: flex-end;
+          align-items: flex-start;
+          flex-direction: row-reverse;
+          gap: 12px;
+          width: 100%;
+          padding-right: 14px;
+      .InitialsBoxUser {
+        width: max-content;
+        color: #fff;
+        text-align: center;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        letter-spacing: -0.48px;
+        padding: 8px 10px;
+        margin: 0px !important;
+        border-radius: 4px;
+        border: 1px solid #f068ff;
+        background: #353535;
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+      }
+      .msg-body {
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-end;
+        flex-direction: column;
+        gap: 4px;
+        .msg {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: row-reverse;
+          gap: 6px;
+          p.name {
+            color: #fff;
+            font-family: Archivo;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.64px;
+          }
+          span {
+            display: inline-block;
+            display: inline-block;
+            height: 2px;
+            width: 2px;
+            border-radius: 50%;
+            background: #616161;
+            font-family: Archivo;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.64px;
+          }
+          p.time {
+            color: #616161;
+            font-family: Archivo;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.48px;
+          }
+        }
+        p.content {
+          color: #fff;
+          font-family: Archivo;
+          font-size: 15px;
+          font-style: normal;
+          font-weight: 200;
+          line-height: normal;
+          letter-spacing: -0.6px;
+        }
+        .attachments {
+          border: 1px solid #fff;
+          display: inline-flex;
+          padding: 10px;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: nowrap;
+          min-width: max-content;
+          position: relative;
+          &:hover {
+            .download-icon {
+              opacity: 1; /* Show download icon when hovered */
+              visibility: visible; /* Ensure visibility */
+            }
+          }
+          /* The download icon styling */
+          .download-icon {
+            position: absolute; /* Position it at the bottom-right */
+            bottom: 2px; /* Adjust the distance from the bottom */
+            right: 5px; /* Adjust the distance from the right */
+            opacity: 0; /* Hide it by default */
+            visibility: hidden; /* Hide it by default */
+            cursor: pointer;
+            transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition for appearance */
+          }
+          .imgBox {
+            background: #ffffff;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            img {
+              max-width: 100%;
+              object-fit: contain;
+            }
+          }
+          h5 {
+            margin-bottom: 0;
+            color: #fff;
+            text-align: center;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.56px;
+          }
+          span {
+            cursor: pointer;
+            padding-left: 8px;
+            svg {
+              width: 10px;
+              height: 10px;
+              path {
+                fill: #e2e31f;
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+
+    // .chats-content-reciever {
+    //   width: 100%;
+    //   padding: 0px 29px;
+    //   margin: 25px auto;
+    //   .reciver-chats {
+    //     background: #ffffff33;
+    //     max-width: 319px;
+    //     width: 100%;
+    //     border-radius: 5px;
+    //     position: relative;
+    //     .receiverImg {
+    //       top: 50%;
+    //       right: 0%;
+    //       transform: translateX(50%) translateY(-50%);
+    //       img {
+    //         max-width: 40px;
+    //         max-height: 40px;
+    //       }
+    //     }
+    //     .text-name {
+    //       font-family: Archivo;
+    //       font-size: 16px;
+    //       font-weight: 600;
+    //       line-height: 17.41px;
+    //       letter-spacing: -0.04em;
+    //       text-align: left;
+    //       color: #e2e31f;
+    //     }
+
+    //     .profileImg {
+    //       width: 40px;
+    //       height: 40px;
+    //       box-shadow: 0px 4px 4px 0px #00000040;
+    //       border: 1px solid #000;
+    //       border-radius: 5px;
+    //       background: #e2e31f;
+    //     }
+
+    //     p {
+    //       font-family: Archivo;
+    //       font-size: 14px;
+    //       font-weight: 400;
+    //       line-height: 15.23px;
+    //       letter-spacing: -0.04em;
+    //       text-align: left;
+    //       padding: 22px 34px 19px 16px;
+    //     }
+    //   }
+    // }
+    // .chats-content-sender {
+    //   width: 100%;
+    //   padding: 0px 29px;
+    //   margin: 25px auto;
+    //   .reciver-chats {
+    //     background: #353535;
+    //     max-width: 319px;
+    //     width: 100%;
+    //     border-radius: 5px;
+    //     position: relative;
+    //     box-shadow: 0px 8px 8px 0px #0000004d;
+    //     .receiverImg {
+    //       top: 50%;
+    //       left: 0%;
+    //       transform: translateX(-50%) translateY(-50%);
+    //       .profileImg {
+    //         width: 40px;
+    //         height: 40px;
+    //         box-shadow: 0px 4px 4px 0px #00000040;
+    //         border: 1px solid #000;
+    //         border-radius: 5px;
+    //         background: #e2e31f;
+    //       }
+    //     }
+    //     .text-name {
+    //       font-family: Archivo;
+    //       font-size: 16px;
+    //       font-weight: 600;
+    //       line-height: 17.41px;
+    //       letter-spacing: -0.04em;
+    //       text-align: left;
+    //       color: #e2e31f;
+    //     }
+
+    //     p {
+    //       font-family: Archivo;
+    //       font-size: 14px;
+    //       font-weight: 400;
+    //       line-height: 15.23px;
+    //       letter-spacing: -0.04em;
+    //       text-align: right;
+    //       padding: 18px 21px 21px 29px;
+    //     }
+    //   }
+    // }
   }
 }
 
@@ -3534,12 +3809,12 @@
   justify-content: flex-end;
   align-items: center;
   border-radius: 3px;
-  margin: 5px 8px;
+  margin: 5px 0px;
   background: #353535;
   box-shadow: 0px 3px 3px 0px rgba(0, 0, 0, 0.25);
   div.tag-initials {
     width: 30px;
-    height: 28px;
+    height: 25px;
     flex-shrink: 0;
     border-radius: 3px;
     border: 0.75px solid #68fff0;
@@ -3562,11 +3837,11 @@
     color: #fff;
     text-align: center;
     font-family: Archivo;
-    font-size: 12px;
+    font-size: 10px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
     letter-spacing: -0.36px;
-    margin: 8px;
+    margin: 8px 10px;
   }
 }

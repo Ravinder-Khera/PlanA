@@ -356,23 +356,7 @@ function ViewTaskPage() {
       if (response.res) {
         setActiveTask(response.res.tasks[index]);
         var updatedTask = response.res.tasks[index];
-        // setFilteredJobs((prevJobs) =>
-        //   prevJobs.map((tasks) =>
-        //     tasks.some((task) => task.id === updatedTask.id)
-        //       ? {
-        //           ...task,
-        //           tasks: job.tasks.map((task) =>
-        //             task.id === updatedTask.id
-        //               ? {
-        //                   ...task,
-        //                   title: updatedTask?.title,
-        //                 }
-        //               : task
-        //           ),
-        //         }
-        //       : job
-        //   )
-        // );
+       
         setShowUpdateTaskModal(true);
       } else {
         console.error("get task failed:", response.error);

@@ -7,6 +7,12 @@ import { Provider } from 'react-redux';
 import store from './services/store';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+if (process.env.REACT_APP_NODE_ENV === "production") {
+  console.log = function () {}; // No-op function
+  console.error = function () {};
+  console.warn = function () {};
+}
+
 root.render(
   // <React.StrictMode>
     <Provider store={store}>

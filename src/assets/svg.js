@@ -733,13 +733,22 @@ export function EditIcon() {
 
 export function ArrowRight() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="17" viewBox="0 0 10 17" fill="none">
-  <path d="M0.583984 15.084L1.99998 16.5L9.99998 8.5L1.99998 0.5L0.583984 1.916L7.16798 8.5L0.583984 15.084Z" fill="#E2E31F"/>
-</svg>
-  )
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="10"
+      height="17"
+      viewBox="0 0 10 17"
+      fill="none"
+    >
+      <path
+        d="M0.583984 15.084L1.99998 16.5L9.99998 8.5L1.99998 0.5L0.583984 1.916L7.16798 8.5L0.583984 15.084Z"
+        fill="#E2E31F"
+      />
+    </svg>
+  );
 }
 
-export function RightArrow({ color= "#7F7F7F"}) {
+export function RightArrow({ color = "#7F7F7F" }) {
   return (
     <>
       <svg
@@ -758,37 +767,109 @@ export function RightArrow({ color= "#7F7F7F"}) {
   );
 }
 
-export function DownArrow({className} = {}) {
+export function DownArrow({ className } = {}) {
   return (
     <>
-    <svg
-      width="18"
-      height="12"
-      viewBox="0 0 18 12"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-    >
-      <path
-        d="M15.885 0.541992L9 7.42699L2.115 0.541992L0 2.65699L9 11.657L18 2.65699L15.885 0.541992Z"
-        fill="#E2E31F"
-      />
-    </svg>
+      <svg
+        width="18"
+        height="12"
+        viewBox="0 0 18 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+      >
+        <path
+          d="M15.885 0.541992L9 7.42699L2.115 0.541992L0 2.65699L9 11.657L18 2.65699L15.885 0.541992Z"
+          fill="#E2E31F"
+        />
+      </svg>
     </>
   );
 }
 
-
-export function AddTaskGreyButton(){
+export function AddTaskGreyButton() {
   return (
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="path-1-inside-1_4617_3752" fill="white">
-<rect width="36" height="36" rx="1"/>
-</mask>
-<rect width="36" height="36" rx="1" fill="#616161"/>
-<rect width="36" height="36" rx="1" stroke="#616161" stroke-width="3" mask="url(#path-1-inside-1_4617_3752)"/>
-<path d="M25 18.5C25 18.7069 24.9178 18.9053 24.7715 19.0515C24.6253 19.1978 24.4269 19.28 24.22 19.28H19.28V24.22C19.28 24.4269 19.1978 24.6253 19.0515 24.7715C18.9053 24.9178 18.7069 25 18.5 25C18.2931 25 18.0947 24.9178 17.9485 24.7715C17.8022 24.6253 17.72 24.4269 17.72 24.22V19.28H12.78C12.5731 19.28 12.3747 19.1978 12.2285 19.0515C12.0822 18.9053 12 18.7069 12 18.5C12 18.2931 12.0822 18.0947 12.2285 17.9485C12.3747 17.8022 12.5731 17.72 12.78 17.72H17.72V12.78C17.72 12.5731 17.8022 12.3747 17.9485 12.2285C18.0947 12.0822 18.2931 12 18.5 12C18.7069 12 18.9053 12.0822 19.0515 12.2285C19.1978 12.3747 19.28 12.5731 19.28 12.78V17.72H24.22C24.4269 17.72 24.6253 17.8022 24.7715 17.9485C24.9178 18.0947 25 18.2931 25 18.5Z" fill="black"/>
-</svg>
+    <svg
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <mask id="path-1-inside-1_4617_3752" fill="white">
+        <rect width="36" height="36" rx="1" />
+      </mask>
+      <rect width="36" height="36" rx="1" fill="#616161" />
+      <rect
+        width="36"
+        height="36"
+        rx="1"
+        stroke="#616161"
+        stroke-width="3"
+        mask="url(#path-1-inside-1_4617_3752)"
+      />
+      <path
+        d="M25 18.5C25 18.7069 24.9178 18.9053 24.7715 19.0515C24.6253 19.1978 24.4269 19.28 24.22 19.28H19.28V24.22C19.28 24.4269 19.1978 24.6253 19.0515 24.7715C18.9053 24.9178 18.7069 25 18.5 25C18.2931 25 18.0947 24.9178 17.9485 24.7715C17.8022 24.6253 17.72 24.4269 17.72 24.22V19.28H12.78C12.5731 19.28 12.3747 19.1978 12.2285 19.0515C12.0822 18.9053 12 18.7069 12 18.5C12 18.2931 12.0822 18.0947 12.2285 17.9485C12.3747 17.8022 12.5731 17.72 12.78 17.72H17.72V12.78C17.72 12.5731 17.8022 12.3747 17.9485 12.2285C18.0947 12.0822 18.2931 12 18.5 12C18.7069 12 18.9053 12.0822 19.0515 12.2285C19.1978 12.3747 19.28 12.5731 19.28 12.78V17.72H24.22C24.4269 17.72 24.6253 17.8022 24.7715 17.9485C24.9178 18.0947 25 18.2931 25 18.5Z"
+        fill="black"
+      />
+    </svg>
+  );
+}
 
-  )
+export function ToastErrorIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+    >
+      <mask id="path-1-inside-1_4439_1918" fill="white">
+        <rect width="36" height="36" rx="1" />
+      </mask>
+      <rect width="36" height="36" rx="1" fill="#FF0000" />
+      <rect
+        width="36"
+        height="36"
+        rx="1"
+        stroke="#FF0000"
+        stroke-width="3"
+        mask="url(#path-1-inside-1_4439_1918)"
+      />
+      <path
+        d="M16.8 21.6H19.2V24H16.8V21.6ZM16.8 12H19.2V19.2H16.8V12ZM17.988 6C11.364 6 6 11.376 6 18C6 24.624 11.364 30 17.988 30C24.624 30 30 24.624 30 18C30 11.376 24.624 6 17.988 6ZM18 27.6C12.696 27.6 8.4 23.304 8.4 18C8.4 12.696 12.696 8.4 18 8.4C23.304 8.4 27.6 12.696 27.6 18C27.6 23.304 23.304 27.6 18 27.6Z"
+        fill="black"
+      />
+    </svg>
+  );
+}
+
+export function ToastCloseIcon({ className, ...props}={}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={className}
+      {...props}
+    >
+      <path
+        d="M1 15L15 1"
+        stroke="#6F6F6F"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M15 15L1 1"
+        stroke="#6F6F6F"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
 }

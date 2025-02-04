@@ -6,12 +6,21 @@ import { FilterIcon, TaskIcon, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
 
-function Timeline({ timeFrame, loadNo, setSelectedJob }) {
+function Timeline({
+  timeFrame,
+  loadNo,
+  selectedJob,
+  setSelectedJob,
+  reloadTask,
+}) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
-  const [filterString, setfilterString] = useState('Select Filter');
+  const [filterString, setfilterString] = useState({
+    label: "Select Filter",
+    value: "",
+  });
   const excessCalendarDate =
     timeFrame === "weekly" ? 6 : timeFrame === "monthly" ? 15 : 1;
 
@@ -29,6 +38,29 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
   const [scrollPerformed, setScrollPerformed] = useState(false);
   const currentDayRef = useRef(null);
   const selectDateRef = useRef(null);
+  const filterRef = useRef(null);
+  const [dateChanged, setDateChanged] = useState(false);
+  const [applyFilter, setApplyFilter] = useState(false);
+
+  const statusFilterData = [
+    {
+      label: " Not Started",
+      value: "not-started",
+    },
+    {
+      label: "In Progress",
+      value: "in-progress",
+    },
+    {
+      label: "On Hold",
+      value: "on-hold",
+    },
+    { label: "Pending", value: "pending" },
+    {
+      label: "Completed",
+      value: "completed",
+    },
+  ];
 
   useEffect(() => {
     if (loadNo && !scrollPerformed) {
@@ -45,7 +77,22 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
   useEffect(() => {
     let handler = (e) => {
       if (selectDateRef.current && !selectDateRef.current.contains(e.target)) {
+        setDateChanged((prevValue) => !prevValue);
         setSelectDate(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setShowFilter(false);
       }
     };
 
@@ -159,18 +206,17 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
         const date = new Date(dateString);
         return date.toISOString().split("T")[0];
       };
-      console.log(selectionRange.startDate, formatDate(selectionRange.endDate));
       try {
         const res = await getTimelineJobs(
           formatDate(selectionRange.startDate),
-          formatDate(selectionRange.endDate)
+          formatDate(selectionRange.endDate),
+          filterString.value
         );
         const data = res?.res?.jobs;
-        console.log("user jobs are - ", data);
         if (data) {
           setJobs(data);
           extractUsersFromStages(data);
-          setSelectionRangeFromJobs(data);
+          if (!dateChanged) setSelectionRangeFromJobs(data);
           console.log("data", data);
         }
       } catch (error) {
@@ -249,7 +295,46 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
         });
       }
     }
-  }, [excessCalendarDate, setSelectionRangeFromJobs, timeFrame]);
+  }, [
+    excessCalendarDate,
+    setSelectionRangeFromJobs,
+    timeFrame,
+    dateChanged,
+    applyFilter,
+  ]);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toISOString().split("T")[0];
+      };
+      try {
+        const res = await getTimelineJobs(
+          formatDate(selectionRange.startDate),
+          formatDate(selectionRange.endDate)
+        );
+        const data = res?.res?.jobs;
+        console.log("user jobs are - ", data);
+        if (data) {
+          if (selectedJob) {
+            const filteredData = data.filter(
+              (job) => job.id === selectedJob.id
+            );
+            console.log("filteredData", filteredData);
+            setSelectedJob(filteredData[0]);
+          }
+          setJobs(data);
+          extractUsersFromStages(data);
+          setSelectionRangeFromJobs(data);
+          console.log("data", data);
+        }
+      } catch (error) {
+        console.log("error while fetching jobs", error);
+      }
+    };
+    fetchJobs();
+  }, [reloadTask]);
 
   const formatDate = (date) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -379,33 +464,45 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
   };
 
   const handleSelect = (ranges) => {
-    setSelectionRange(ranges.selection);
-    const startDate = ranges.selection.startDate;
-    let endDate = ranges.selection.endDate;
+    let startDate = new Date(ranges.selection.startDate);
+    let endDate = new Date(ranges.selection.endDate);
+    setDateChanged(false);
+    // Ensure local time by resetting to start of the day
+    startDate = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth(),
+      startDate.getDate()
+    );
+    endDate = new Date(
+      endDate.getFullYear(),
+      endDate.getMonth(),
+      endDate.getDate()
+    );
 
     const differenceInMs = endDate.getTime() - startDate.getTime();
     const differenceInDays = differenceInMs / (1000 * 3600 * 24);
-
     const roundedDifference = Math.round(differenceInDays);
-    if (timeFrame !== undefined && timeFrame === "weekly") {
-      if (roundedDifference < 10) {
-        endDate = new Date(
-          endDate.getTime() + (10 - roundedDifference) * 24 * 60 * 60 * 1000
-        );
-      }
-    } else if (timeFrame !== undefined && timeFrame === "monthly") {
-      if (roundedDifference < 40) {
-        endDate = new Date(
-          endDate.getTime() + (40 - roundedDifference) * 24 * 60 * 60 * 1000
-        );
-      }
+
+    if (timeFrame === "weekly" && roundedDifference < 10) {
+      endDate = new Date(
+        endDate.getTime() + (10 - roundedDifference) * 24 * 60 * 60 * 1000
+      );
+    } else if (timeFrame === "monthly" && roundedDifference < 40) {
+      endDate = new Date(
+        endDate.getTime() + (40 - roundedDifference) * 24 * 60 * 60 * 1000
+      );
     }
 
     setSelectionRange({
-      startDate: startDate,
-      endDate: endDate,
+      startDate,
+      endDate,
       key: "selection",
     });
+  };
+
+  const handleApplyFilter = () => {
+    setApplyFilter((prevValue) => !prevValue);
+    setShowFilter(false)
   };
 
   return (
@@ -443,41 +540,57 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
             </div>
           )}
           <div
-              className="d-flex  align-items-baseline addNewTaskDiv position-relative"
-              style={{ cursor: "pointer" }}
-              // ref={filterRef}
+            className="d-flex  align-items-baseline addNewTaskDiv position-relative"
+            style={{ cursor: "pointer" }}
+            ref={filterRef}
+          >
+            <div
+              className="d-flex align-items-center gap-2  "
+              onClick={() => setShowFilter(!showFilter)}
             >
-              <div
-                className="d-flex align-items-center gap-2  "
-                onClick={() => setShowFilter(!showFilter)}
-              >
-                <FilterIcon />
-                <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
-                  Filter
-                </p>
-              </div>
-              {showFilter && (<>
+              <FilterIcon />
+              <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
+                Filter
+              </p>
+            </div>
+            {showFilter && (
+              <>
                 <div className="dashboardFilterDropDown">
                   <div className="dashboardFilterDropDownContent">
                     <div className="selectFilterDiv">
-                      <div className="selectBox">{filterString}</div>
-                      <button>Apply</button>
+                      <div className="selectBox">{filterString.label}</div>
+                      <button onClick={handleApplyFilter}>Apply</button>
                     </div>
                     <div className="filterOptionsDiv">
                       <div className="filterOptionsScroll">
-                        <div className="filterOption" onClick={()=>setfilterString('not-started')}>Not Started</div>
-                        <div className="filterOption" onClick={()=>setfilterString('in-progress')}>In Progress</div>
-                        <div className="filterOption" onClick={()=>setfilterString('pending')}>Pending</div>
-                        <div className="filterOption" onClick={()=>setfilterString('on-hold')}>On Hold</div>
-                        <div className="filterOption" onClick={()=>setfilterString('completed')}>Completed</div>
-                        <div className="filterOption" onClick={()=>setfilterString('this_week')}>Due This Week</div>
-                        <div className="filterOption" onClick={()=>setfilterString('in_14_days')}>Due In 14 Days</div>
+                        {statusFilterData?.map((status) => {
+                          return (
+                            <div
+                              className={`filterOption ${
+                                filterString.value === status.value
+                                  ? "active"
+                                  : ""
+                              }`}
+                              onClick={() => {
+                                if (filterString.value === status.value) {
+                                  setfilterString({
+                                    label: "Select Filter",
+                                    value: "",
+                                  });
+                                } else setfilterString(status);
+                              }}
+                            >
+                              {status.label}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
                 </div>
-              </>)}
-            </div>
+              </>
+            )}
+          </div>
         </div>
         <div
           className="customTimeline"
@@ -588,10 +701,6 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
                                   className="timeLineJobItem"
                                   onClick={() => {
                                     setSelectedJob(job);
-                                    // if (timeFrame === "weekly") {
-                                    // } else {
-                                    //   navigate("/jobs", { state: job });
-                                    // }
                                   }}
                                 >
                                   <div
@@ -608,7 +717,11 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
                                     }`}
                                     style={{
                                       width: `calc(${cellWidth}px * ${activeColumnsCount})`,
-                                      maxWidth: `${activeColumnsCount <= 2 ? '20px' : 'max-content'}`,
+                                      maxWidth: `${
+                                        activeColumnsCount <= 2
+                                          ? "20px"
+                                          : "max-content"
+                                      }`,
                                     }}
                                   >
                                     <div className="jobBox d-flex gap-2 align-items-start justify-content-between h-100 p-3">
@@ -619,9 +732,7 @@ function Timeline({ timeFrame, loadNo, setSelectedJob }) {
                                         }}
                                       ></div>
                                       <div className="textDiv">
-                                        <span>
-                                          | {job.job_num} | 
-                                        </span>
+                                        <span>| {job.job_num} |</span>
                                         <p>{job.title}</p>
                                       </div>
                                       <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">

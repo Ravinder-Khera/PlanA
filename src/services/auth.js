@@ -295,6 +295,7 @@ export const updateTask = async (data,taskId) => {
         },
         body: JSON.stringify(data.updatedTask),
     };
+    console.log("request options: ", data, requestOptions);
     try {
         let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/tasks/${taskId}`, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
@@ -413,7 +414,7 @@ export const getJobs = async (page) => {
     }
 };
 
-export const getTimelineJobs = async (start_date, end_date) => {
+export const getTimelineJobs = async (start_date, end_date, status="") => {
     const authToken = localStorage.getItem('authToken');
     const requestOptions = {
         method: "GET",
@@ -424,7 +425,11 @@ export const getTimelineJobs = async (start_date, end_date) => {
         }
     };
     try {
-        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobs/timeline?start_date=${start_date}&end_date=${end_date}`, requestOptions);
+        let url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobs/timeline?start_date=${start_date}&end_date=${end_date}`
+        if(status){
+            url += `&status=${status}`
+        }
+        let response = await fetch(url, requestOptions);
         const isJson = response.headers.get("content-type")?.includes("application/json");
         const data = isJson && (await response.json());
         console.log(response,data);

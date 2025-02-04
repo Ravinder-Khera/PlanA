@@ -6,11 +6,19 @@ import eventEmitter from "../Event";
 import { Link, useNavigate } from "react-router-dom";
 
 export function NotificationComponent({ notificationData, onRemove }) {
+  const [removing, setRemoving] = useState(false);
+  
   const handleRemove = () => {
-    onRemove(notificationData);
+    setRemoving(true);
+    setTimeout(() => {
+      setRemoving(false)
+      onRemove(notificationData);
+    }, 500); // Wait for the animation to complete before removing
   };
   return (
-    <div className={`notificationClass ${notificationData.class}-class`}>
+    <div  className={`notificationClass ${notificationData.class}-class ${
+      removing ? "slide-out" : ""
+    }`} >
       <div className="notificationMsg">
         <div className="notificationIcon"></div>
         <div className="notificationText">
