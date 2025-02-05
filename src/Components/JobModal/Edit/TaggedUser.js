@@ -1,7 +1,6 @@
 import React from "react";
 import "./style.scss"
 const TaggedUser = ({ key, name }) => {
-  console.log("name", name)
   const initials = name
                         .split(" ")
                         .map((part) => part.charAt(0).toUpperCase())

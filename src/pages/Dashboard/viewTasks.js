@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
-import { AddIcon, FilterIcon } from "../../assets/svg";
+import {
+  AddIcon,
+  BellIcon,
+  CloseIcon,
+  FilterCrossIcon,
+  FilterIcon,
+  NewFilterIcon,
+  Search,
+} from "../../assets/svg";
 import "./viewTasks.scss";
 import {
   createTask,
@@ -26,6 +34,8 @@ import {
   UpdateTaskModal,
 } from "../../Components/JobModal/Edit/JobModal";
 import moment from "moment";
+import Filter from "../../Components/Filter/Filter";
+import { NotificationComponent } from "../../Components/navMenu";
 function ViewTaskPage() {
   const [loading, setLoading] = useState(true);
   const [taskTab, setTaskTab] = useState("to-do");
@@ -62,7 +72,10 @@ function ViewTaskPage() {
   const [currentPage2, setCurrentPage2] = useState(1);
   const [pageUrls2, setPageUrls2] = useState([]);
   const [totalPages2, setTotalPages2] = useState(1);
-
+  const [showSearchOptions, setShowSearchOptions] = useState(false);
+  const [selectSearchOptions, setSelectSearchOptions] = useState("");
+  const [showingSearchOptions, setShowingSearchOptions] = useState("");
+  const [searchedInput, setSearchedInput] = useState("");
   const addTaskJobDropdownRef = useRef(null);
   const addTaskJobDropdownRefMobile = useRef(null);
   const addTaskJobStageDropdownRef = useRef(null);
@@ -75,6 +88,71 @@ function ViewTaskPage() {
   const selectAssigneeRef = useRef(null);
   const selectFilterRef = useRef(null);
   const taskMobileScrollRef = useRef(null);
+  const searchBarRef = useRef(null);
+  const [notificationDropDown, setNotificationDropDown] = useState(false);
+  const [filteredString, setFilteredString] = useState([]);
+  const [filteredQuery, setFilteredQuery] = useState([]);
+const [storageUpdated, setStorageUpdated] = useState(false);
+  const [userColors, setUserColors] = useState({}); 
+ const [notifications, setNotifications] = useState([]);
+  const notificationRef = useRef(null);
+ useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "notifications") {
+        const updatedNotifications = JSON.parse(event.newValue);
+        setNotifications(updatedNotifications);
+        console.log(updatedNotifications, "updatedNotifications");
+        setStorageUpdated(true);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    const checkNotifications = () => {
+      const existingNotificationsJSON = localStorage.getItem("notifications");
+      if (existingNotificationsJSON) {
+        setNotifications(JSON.parse(existingNotificationsJSON));
+      }
+    };
+
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 1000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [storageUpdated]);
+
+  const handleRemoveNotification = (notificationToRemove) => {
+
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter(
+        (notification) => notification !== notificationToRemove
+      )
+    );
+    const updatedNotifications = notifications.filter(
+      (notification) => notification !== notificationToRemove
+    );
+    localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+  };
+
+   useEffect(() => {
+      let handler = (e) => {
+        if (
+          notificationRef.current &&
+          !notificationRef.current.contains(e.target)
+        ) {
+          setNotificationDropDown(false);
+        }
+      };
+  
+      document.addEventListener("mousedown", handler);
+  
+      return () => {
+        document.removeEventListener("mousedown", handler);
+      };
+    }, []);
 
   useEffect(() => {
     let handler = (e) => {
@@ -256,51 +334,32 @@ function ViewTaskPage() {
     currentFilteredPage,
   ]);
 
-  const handleFormatedDate = (date) => {
-    const originalDate = new Date(date);
-    const formattedDate = originalDate.toLocaleDateString("en-AU", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-    return formattedDate;
-  };
-
-  const handleStoredApply = async (page) => {
-    setLoading(true);
-    const filterString = localStorage.getItem("filterString");
-    try {
-      // const response = await getTasksByFilter(filterString+`&page=${page}`);
-      const response = await getTasksByFilter(
-        filterString +
-          `&status=${taskTab}&start_date=${selectionRange.startDate
-            .toISOString()
-            .slice(0, 10)}&end_date=${selectionRange.endDate
-            .toISOString()
-            .slice(0, 10)}&page=${page}`
-      );
-      if (!response.error) {
-        let filterTab = response?.res.data.filter(
-          (item) => item.status === taskTab
-        );
-        console.log("tasks", filterTab, taskTab);
-        setFilteredTasks(filterTab);
-        setFilteredTotalPages(response?.res.last_page);
-        setFilteredPageUrls(response?.res.links.slice(1, -1));
+  useEffect(() => {
+    const handleClickOutside = async (event) => {
+      if (
+        searchBarRef.current &&
+        !searchBarRef.current.contains(event.target) &&
+        !selectSearchOptions
+      ) {
+        setShowSearchOptions(false);
+        setSelectSearchOptions("");
+        setSearchedInput("");
       }
-    } catch (error) {
-      console.log("error in applying filter", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [selectSearchOptions]);
+
 
   useEffect(() => {
     const handleJobFilter = async () => {
       try {
         const response = await getTasksByUser();
         if (response.res) {
-          console.log("job tasks are", response?.res?.tasks);
           setActiveTaskJob(response?.res.data);
           setFilteredTasks(response?.res?.data);
           return response.res;
@@ -334,7 +393,6 @@ function ViewTaskPage() {
         job_id: newData?.newTask?.job_id,
         users: users,
         stage: stage,
-
       },
       ...prevTasks,
     ]);
@@ -351,12 +409,12 @@ function ViewTaskPage() {
   const handleCheckTask = async (jobId, index) => {
     try {
       setLoading(true);
-      
+
       const response = await getSingleJob(jobId);
       if (response.res) {
         setActiveTask(response.res.tasks[index]);
         var updatedTask = response.res.tasks[index];
-       
+
         setShowUpdateTaskModal(true);
       } else {
         console.error("get task failed:", response.error);
@@ -436,11 +494,74 @@ function ViewTaskPage() {
     setActiveTask(null);
   };
 
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB"); // DD/MM/YYYY format
   };
+
+  const handleSearchApply = async () => {
+    setLoading(true);
+    try {
+      var reqData = {
+        [selectSearchOptions]: searchedInput,
+      };
+      setShowingSearchOptions(searchedInput);
+      const response = await getTasksByUser();
+      if (!response.error) {
+        // setFilteredJobs(response?.res?.data);
+        // setOriginalJobs(response?.res?.data);
+        // // console.log(response?.res?.data);
+      }
+    } catch (error) {
+      console.log("error in applying filter", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to generate a random color
+    const getRandomColor = () => {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    };
+  
+    const handleRemoveFilter = async (value) => {
+      const updatedQuery = {
+        ...filteredQuery,
+        collaborator_ids: filteredQuery.collaborator_ids?.filter(
+          (id) => id !== value.value
+        ),
+        statuses: filteredQuery.statuses?.filter(
+          (status) => status !== value.value
+        ),
+      };
+  
+      if (updatedQuery.collaborator_ids?.length === 0)
+        delete updatedQuery.collaborator_ids;
+      if (updatedQuery.statuses?.length === 0) delete updatedQuery.statuses;
+  
+      setFilteredQuery(updatedQuery);
+      setFilteredString((prevFiltered) =>
+        prevFiltered.filter((item) => item !== value)
+      );
+  
+      try {
+        setLoading(true);
+        // const response = await FilterJobs(updatedQuery);
+  
+        // if (!response.error) {
+        //   setFilteredJobs(response?.res?.data);
+        // }
+      } catch (error) {
+        console.error("Error in applying filter:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <>
@@ -491,21 +612,291 @@ function ViewTaskPage() {
         />
       )}
 
+      <div
+        className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap"
+        style={{ zIndex: "2" }}
+      >
+        <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
+          <h2>Tasks</h2>
+          <div className="navSearchDiv jobSearchDiv jobSearchBar">
+            <form>
+              <div
+                className="searchBox"
+                onClick={() => setShowSearchOptions(true)}
+                ref={searchBarRef}
+              >
+                <div
+                  className="IconBox"
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  onClick={handleSearchApply}
+                >
+                  <Search />
+                </div>
+                {showSearchOptions ? (
+                  <div className="SearchOptionBox">
+                    <div
+                      className={`searchOptionBtn ${
+                        selectSearchOptions !== "job_num" &&
+                        selectSearchOptions !== ""
+                          ? "disable"
+                          : selectSearchOptions !== ""
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() => setSelectSearchOptions("job_num")}
+                    >
+                      Task Name
+                    </div>
+                    <div
+                      className={`searchOptionBtn ${
+                        selectSearchOptions !== "title" &&
+                        selectSearchOptions !== ""
+                          ? "disable"
+                          : selectSearchOptions !== ""
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() => setSelectSearchOptions("title")}
+                    >
+                      Job Name
+                    </div>
+                 
+                    {selectSearchOptions !== "" && (
+                      <input
+                        name="search"
+                        placeholder="Search"
+                        value={searchedInput}
+                        onChange={(e) => {
+                          if (selectSearchOptions === "job_num") {
+                            const value = e.target.value;
+                            if (/^\d*$/.test(value)) {
+                              setSearchedInput(value);
+                            }
+                          } else {
+                            setSearchedInput(e.target.value);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleSearchApply();
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <input
+                    name="search"
+                    placeholder="Search"
+                    onFocus={() => setShowSearchOptions(true)}
+                  />
+                )}
+
+                {(searchedInput !== "" || selectSearchOptions !== "") && (
+                  <div
+                    className="IconBox"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setSelectSearchOptions("");
+                      setSearchedInput("");
+                      setShowSearchOptions(false);
+                      setShowingSearchOptions("");
+                      // fetchJobs();
+                    }}
+                  >
+                    <CloseIcon />
+                  </div>
+                )}
+              </div>
+            </form>
+          </div>
+          {/* <div
+            className="d-flex  align-items-baseline addNewTaskDiv position-relative"
+            style={{ cursor: "pointer" }}
+            ref={filterRef}
+          >
+            <div
+              className="d-flex align-items-center gap-2  "
+              onClick={() => setShowFilter(!showFilter)}
+            >
+              <NewFilterIcon />
+              <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
+                Filter
+              </p>
+            </div>
+            {showFilter && (
+              <Filter
+                setFilteredString={setFilteredString}
+                setFilteredQuery={setFilteredQuery}
+                setFilteredJobs={setFilteredTasks}
+                setLoading={setLoading}
+                closeFilter={() => setShowFilter(false)}
+              />
+            )}
+          </div> */}
+        </div>
+        <div className="d-flex gap-3 flex-wrap align-items-center">
+          <div className="addjobs addJobsMobile" style={{ gap: "16px" }}>
+            <div
+              className="d-flex align-items-center"
+              style={{ gap: "8px", cursor: "pointer" }}
+              onClick={() => {
+                if (filteredTasks.length > 0) {
+                  setShowAddTaskModal(true);
+                }
+              }}
+              title={filteredTasks.length > 0 ? "" : "Not Part of any Job yet"}
+            >
+              <div className={`addJobIcon`}>
+                <AddIcon />
+              </div>
+              <span>Add Task</span>
+            </div>
+            <div
+              className="d-flex align-items-center"
+              style={{ gap: "8px", cursor: "pointer" }}
+              onClick={() => setNotificationDropDown(!notificationDropDown)}
+            >
+              <div className="notifyIcon notificationWhite mx-0">
+                <div className="addNewTaskDiv">
+                  <div className="bellIcon addTaskJobDiv">
+                    <div>
+                      <BellIcon />
+                    </div>
+                    {notificationDropDown && (
+                      <div
+                        className="addTaskJobDropdown notificationDropdown right"
+                        ref={notificationRef}
+                      >
+                        <div className="addTaskJobListScroll">
+                          <div className="addTaskJobListItems">
+                            {notifications.length > 0 ? (
+                              notifications.map((notification, index) => (
+                                <NotificationComponent
+                                  key={index}
+                                  notificationData={notification}
+                                  onRemove={handleRemoveNotification}
+                                />
+                              ))
+                            ) : (
+                              <div className="notificationClass info-class">
+                                <div className="notificationMsg">
+                                  <div className="notificationIcon"></div>
+                                  <div className="notificationText">
+                                    No Notifications
+                                  </div>
+                                </div>
+                                <div
+                                  className="notificationCloseBtn"
+                                  onClick={() => setNotificationDropDown(false)}
+                                ></div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <span>Notifications</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <div className="JobsHeading d-flex align-items-center justify-content-between">
+        <div className="d-flex align-items-center justify-content-start gap-3">
+          <div className="delete-box">
+            <div className="delete-item d-flex align-items-center flex-wrap gap-2">
+              {showSearchOptions && selectSearchOptions === "" && (
+                <>Select which category you would like to search by.</>
+              )}
+              {showingSearchOptions ? (
+                <>Search Results For: '{showingSearchOptions}'</>
+              ) : selectSearchOptions ? (
+                <>
+                   {selectSearchOptions === "title" && (
+                    <>
+                      Enter the name of the ‘Task Name’ you would like to search
+                      for.
+                    </>
+                  )}
+                  {selectSearchOptions === "job_name" && (
+                    <>
+                      Enter the name of the ‘Job Name’ you would like to search
+                      for.
+                    </>
+                  )}
+                  
+                  {!["title", "job_name"].includes(
+                    selectSearchOptions
+                  ) && <>Select which category you would like to search by.</>}
+                </>
+              ) : filteredString.length > 0 ? (
+                <>
+                  Filtered By:{" "}
+                  {filteredString.map((string, index) => {
+                    const className =
+                      string.filter.length <= 2
+                        ? "user"
+                        : string.filter.replace(/\s+/g, "-").toLowerCase();
+                    // Assign a random color only once for each `user` string
+                    if (className === "user" && !userColors[string.filter]) {
+                      setUserColors((prevColors) => ({
+                        ...prevColors,
+                        [string.filter]: getRandomColor(),
+                      }));
+                    }
+
+                    // Use the stored color or currentColor
+                    const borderColor =
+                      className === "user"
+                        ? userColors[string.filter]
+                        : "currentColor";
+                    return (
+                      <span
+                        className={`filterItemBox ${className}`}
+                        key={index}
+                        style={{ border: `1px solid ${borderColor}` }}
+                        onClick={() => handleRemoveFilter(string)}
+                      >
+                        {string.filter} <FilterCrossIcon />
+                      </span>
+                    );
+                  })}
+                </>
+              ) : (
+                !showSearchOptions &&
+                selectSearchOptions === "" &&
+                "Showing All Tasks"
+              )}
+            </div>
+          </div>
+        </div>
+      </div> */}
+
       <div className="DashboardTopMenu">
         <div className="pagination-container justify-content-start">
-          <div className="DashboardHeading d-flex justify-content-between align-items-center">
+          {/* <div className="DashboardHeading d-flex justify-content-between align-items-center">
             <h2>Tasks</h2>
             <div
               className={`addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none  ${filteredTasks.length}`}
-              onClick={() => {if(filteredTasks.length > 0){setShowAddTaskModal(true)}}}
-              title={filteredTasks.length > 0 ? '' : 'Not Part of any Job yet'}
+              onClick={() => {
+                if (filteredTasks.length > 0) {
+                  setShowAddTaskModal(true);
+                }
+              }}
+              title={filteredTasks.length > 0 ? "" : "Not Part of any Job yet"}
             >
               New Task{" "}
               <div className="UserImg" style={{ minWidth: "40px" }}>
                 <AddIcon />
               </div>
             </div>
-          </div>
+          </div> */}
           {/* <div className="DashboardHeading d-flex justify-content-end align-items-center position-relative">
             <div
               className="d-flex  align-items-baseline pe-md-4 addNewTaskDiv "
@@ -543,11 +934,29 @@ function ViewTaskPage() {
                   <div className="centerText">Stage</div>
                   <div className="centerText">Job No.</div>
                 </div>
-                <div className="listContent navMenuDiv p-0 bg-transparent shadow-none d-flex justify-content-end" >
-                  <div className="d-flex w-100 align-items-center gap-2 justify-content-end" style={{maxWidth:'375px'}}>
-                    <div className="centerText text-center" style={{flex:'1',maxWidth:'100px'}}>Status</div>
-                    <div className="centerText text-center" style={{flex:'1'}}>Due Date</div>
-                    <div className="centerText text-center" style={{flex:'1'}}>Days Left</div>
+                <div className="listContent navMenuDiv p-0 bg-transparent shadow-none d-flex justify-content-end">
+                  <div
+                    className="d-flex w-100 align-items-center gap-2 justify-content-end"
+                    style={{ maxWidth: "375px" }}
+                  >
+                    <div
+                      className="centerText text-center"
+                      style={{ flex: "1", maxWidth: "100px" }}
+                    >
+                      Status
+                    </div>
+                    <div
+                      className="centerText text-center"
+                      style={{ flex: "1" }}
+                    >
+                      Due Date
+                    </div>
+                    <div
+                      className="centerText text-center"
+                      style={{ flex: "1" }}
+                    >
+                      Days Left
+                    </div>
                   </div>
                 </div>
               </li>
@@ -582,14 +991,26 @@ function ViewTaskPage() {
                       </div>
                     </div>
                     <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                    <div className="d-flex w-100 align-items-center gap-2 justify-content-end" style={{maxWidth:'375px'}}>
-                        <div  style={{flex:'1',maxWidth:'100px'}} className={`centerText statusBtn m-0 ${task?.status}`}>
+                      <div
+                        className="d-flex w-100 align-items-center gap-2 justify-content-end"
+                        style={{ maxWidth: "375px" }}
+                      >
+                        <div
+                          style={{ flex: "1", maxWidth: "100px" }}
+                          className={`centerText statusBtn m-0 ${task?.status}`}
+                        >
                           {task?.status ? task?.status : "N/A"}
                         </div>
-                        <div style={{flex:'1'}}  className="text-center centerText">
+                        <div
+                          style={{ flex: "1" }}
+                          className="text-center centerText"
+                        >
                           {formatDate(task?.due_date)}
                         </div>
-                        <div style={{flex:'1'}}  className="text-center centerText">
+                        <div
+                          style={{ flex: "1" }}
+                          className="text-center centerText"
+                        >
                           {moment(task?.due_date)
                             .local()
                             .isBefore(moment(), "day")
@@ -599,7 +1020,7 @@ function ViewTaskPage() {
                                 .diff(moment(), "days")}{" "}
                           days
                         </div>
-                    </div>
+                      </div>
                     </div>
                   </li>
                 ))}

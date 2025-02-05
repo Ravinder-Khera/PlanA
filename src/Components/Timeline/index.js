@@ -2,7 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import moment from "moment";
 import { getJobs, getTimelineJobs } from "../../services/auth";
-import { AttachmentIcon, CommentIcon, FilterIcon, TaskIcon, User } from "../../assets/svg";
+import {
+  AttachmentIcon,
+  CommentIcon,
+  FilterIcon,
+  TaskIcon,
+  User,
+} from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
 import { formatJobNumber } from "../../pages/Jobs";
@@ -43,6 +49,8 @@ function Timeline({
   const [dateChanged, setDateChanged] = useState(false);
   const [applyFilter, setApplyFilter] = useState(false);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const controllerRef = useRef(null);
+  const controllerRef2 = useRef(null);
 
   const statusFilterData = [
     {
@@ -204,6 +212,12 @@ function Timeline({
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
+      // Abort previous request if exists
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+      }
+      controllerRef.current = new AbortController(); // Create a new controller
+      const signal = controllerRef.current.signal;
       const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toISOString().split("T")[0];
@@ -212,7 +226,8 @@ function Timeline({
         const res = await getTimelineJobs(
           formatDate(selectionRange.startDate),
           formatDate(selectionRange.endDate),
-          filterString.value
+          filterString.value,
+          signal
         );
         const data = res?.res?.jobs;
         if (data) {
@@ -227,64 +242,6 @@ function Timeline({
         setLoading(false);
       }
     };
-    const setSelectionRangeFromJobs = (jobs) => {
-      if (jobs.length === 0) return;
-      let minCreatedAt = new Date(jobs[0].created_at);
-      let maxDueDate = new Date(jobs[0].due_date);
-
-      jobs.forEach((job) => {
-        const createdAt = new Date(job.created_at);
-        const dueDate = new Date(job.due_date);
-
-        if (createdAt < minCreatedAt) {
-          minCreatedAt = createdAt;
-        }
-
-        if (dueDate > maxDueDate) {
-          maxDueDate = dueDate;
-        }
-      });
-
-      const currentDate = new Date();
-      const adjustedStartDate = new Date(currentDate);
-      const minsDaysAre =
-        timeFrame !== undefined && timeFrame === "weekly"
-          ? 3
-          : timeFrame === "monthly"
-          ? 7
-          : 3;
-      adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
-
-      // Adjust endDate to one month more
-      let adjustedEndDate = new Date(maxDueDate);
-      adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate);
-
-      const differenceInDays =
-        (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
-
-      if (timeFrame !== undefined && timeFrame === "weekly") {
-        if (differenceInDays < 10) {
-          adjustedEndDate = new Date(
-            adjustedEndDate.getTime() +
-              (10 - differenceInDays) * 24 * 60 * 60 * 1000
-          );
-        }
-      } else if (timeFrame !== undefined && timeFrame === "monthly") {
-        if (differenceInDays < 40) {
-          adjustedEndDate = new Date(
-            adjustedEndDate.getTime() +
-              (40 - differenceInDays) * 24 * 60 * 60 * 1000
-          );
-        }
-      }
-
-      // Set selectionRange
-      setSelectionRange({
-        startDate: adjustedStartDate,
-        endDate: adjustedEndDate,
-        key: "selection",
-      });
-    };
     try {
       fetchJobs();
     } catch (error) {
@@ -297,15 +254,22 @@ function Timeline({
         });
       }
     }
+
+  
   }, [
     excessCalendarDate,
-    setSelectionRangeFromJobs,
     timeFrame,
     dateChanged,
     applyFilter,
   ]);
 
   useEffect(() => {
+    // Abort previous request if exists
+ if (controllerRef2.current) {
+   controllerRef2.current.abort();
+ }
+ controllerRef2.current = new AbortController(); // Create a new controller
+ const signal = controllerRef2.current.signal;
     const fetchJobs = async () => {
       const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -314,29 +278,32 @@ function Timeline({
       try {
         const res = await getTimelineJobs(
           formatDate(selectionRange.startDate),
-          formatDate(selectionRange.endDate)
+          formatDate(selectionRange.endDate),
+          filterString.value,
+          signal
         );
         const data = res?.res?.jobs;
-        console.log("user jobs are - ", data);
         if (data) {
           if (selectedJob) {
             const filteredData = data.filter(
               (job) => job.id === selectedJob.id
             );
-            console.log("filteredData", filteredData);
             setSelectedJob(filteredData[0]);
           }
           setJobs(data);
           extractUsersFromStages(data);
           setSelectionRangeFromJobs(data);
-          console.log("data", data);
         }
       } catch (error) {
         console.log("error while fetching jobs", error);
       }
     };
     fetchJobs();
-  }, [reloadTask, selectedJob, selectionRange, setSelectedJob, setSelectionRangeFromJobs]);
+    
+  
+  }, [
+    reloadTask
+  ]);
 
   const formatDate = (date) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -457,7 +424,7 @@ function Timeline({
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear().toString().slice(-2);
-    return `${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`;
   };
 
   const formatJobDates = (date) => {
@@ -744,77 +711,84 @@ function Timeline({
                                         }}
                                       ></div>
                                       <div className="d-flex gap-2 align-items-start justify-content-between">
+                                        <div className="textDiv">
+                                          <span>
+                                            | {formatJobNumber(job.job_num)} |
+                                          </span>
+                                          <p>{job.title}</p>
+                                        </div>
+                                        <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                          <div className=" d-flex align-items-center justify-content-end">
+                                            <div className="collaboratorsBox justify-content-end">
+                                              <div className=" d-flex align-items-center justify-content-center">
+                                                {job?.collaborators?.length >
+                                                  0 && (
+                                                  <>
+                                                    {job?.collaborators
+                                                      .slice(0, 3)
+                                                      .map((user, index) => {
+                                                        const initials = user
+                                                          .split(" ")
+                                                          .map((part) =>
+                                                            part
+                                                              .charAt(0)
+                                                              .toUpperCase()
+                                                          )
+                                                          .join("");
 
-                                      <div className="textDiv">
-                                        <span>| {formatJobNumber(job.job_num)} |</span>
-                                        <p>{job.title}</p>
-                                      </div>
-                                      <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                                        <div className=" d-flex align-items-center justify-content-end">
-                                          <div className="collaboratorsBox justify-content-end">
-                                            <div className=" d-flex align-items-center justify-content-center">
-                                              {job?.collaborators?.length >
-                                                0 && (
-                                                <>
-                                                  {job?.collaborators
-                                                    .slice(0, 3)
-                                                    .map((user, index) => {
-                                                      const initials = user
-                                                        .split(" ")
-                                                        .map((part) =>
-                                                          part
-                                                            .charAt(0)
-                                                            .toUpperCase()
-                                                        )
-                                                        .join("");
+                                                        return (
+                                                          <div
+                                                            key={index}
+                                                            className={`collaboratorsBoxUser`}
+                                                            style={{
+                                                              minWidth: "40px",
+                                                              zIndex: index,
+                                                            }}
+                                                          >
+                                                            {initials}
+                                                          </div>
+                                                        );
+                                                      })}
 
-                                                      return (
-                                                        <div
-                                                          key={index}
-                                                          className={`collaboratorsBoxUser`}
-                                                          style={{
-                                                            minWidth: "40px",
-                                                            zIndex: index,
-                                                          }}
-                                                        >
-                                                          {initials}
-                                                        </div>
-                                                      );
-                                                    })}
-
-                                                  {job?.collaborators?.length >
-                                                    3 && (
-                                                    <div
-                                                      className={`collaboratorsBoxUser`}
-                                                      style={{
-                                                        minWidth: "40px",
-                                                        zIndex: 1,
-                                                      }}
-                                                    >
-                                                      +
-                                                      {job?.collaborators
-                                                        .length - 3}
-                                                    </div>
-                                                  )}
-                                                </>
-                                              )}
-                                              {job.collaborators?.length ===
-                                                0 && (
-                                                <div
-                                                  className="collaboratorsBoxUser disabled m-0"
-                                                  style={{ minWidth: "40px" }}
-                                                >
-                                                  N/A
-                                                </div>
-                                              )}
+                                                    {job?.collaborators
+                                                      ?.length > 3 && (
+                                                      <div
+                                                        className={`collaboratorsBoxUser`}
+                                                        style={{
+                                                          minWidth: "40px",
+                                                          zIndex: 1,
+                                                        }}
+                                                      >
+                                                        +
+                                                        {job?.collaborators
+                                                          .length - 3}
+                                                      </div>
+                                                    )}
+                                                  </>
+                                                )}
+                                                {job.collaborators?.length ===
+                                                  0 && (
+                                                  <div
+                                                    className="collaboratorsBoxUser disabled m-0"
+                                                    style={{ minWidth: "40px" }}
+                                                  >
+                                                    N/A
+                                                  </div>
+                                                )}
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
-                                      </div>
                                       <div className="d-flex gap-2 align-items-start justify-content-end w-100">
-                                        <div><AttachmentIcon /> <span>{job.attachments_count}</span></div> 
-                                        <div><CommentIcon /> <span>{job.messages_count}</span></div> 
+                                        <div>
+                                          <AttachmentIcon />{" "}
+                                          <span>{job.attachments_count}</span>
+                                        </div>
+                                        <div>
+                                          <CommentIcon />{" "}
+                                          <span>{job.messages_count}</span>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>

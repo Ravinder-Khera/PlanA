@@ -286,14 +286,16 @@ const Jobs = () => {
 
   const { state } = location;
   useEffect(() => {
-    if (state !== 1 && state?.id) {
+    if (state !== 1 && state?.key !== "new-task-job" && state) {
       localStorage.setItem("jobId", state?.id);
       setShowJobModal(true);
-      console.log("job id", filteredJobs, state?.id);
       setGetJob({
         data: state,
         stage: findNearestStage(state),
       });
+    }
+    if (state !== 1 && state?.key === "new-task-job" && state?.selectedJob) {
+      handleAddTaskClick(state?.selectedJob);
     }
     fetchJobs();
   }, [location, state]);
@@ -504,7 +506,7 @@ const Jobs = () => {
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear().toString();
 
-    return `${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`;
   };
 
   const handleFocus = () => {
@@ -558,7 +560,7 @@ const Jobs = () => {
           title: addJobName,
           collaborators: newJobCollaboratorsListId,
           due_date: selectedNewJobDueDate || formattedDueDate,
-          status: selectNewJobStatus || "",
+          status: selectNewJobStatus || "not-started",
         };
 
         console.log("reqBody", reqBody);
@@ -596,7 +598,7 @@ const Jobs = () => {
               title: addJobName,
               collaborators: newJobCollaboratorsList,
               due_date: selectedNewJobDueDate || formattedDueDate,
-              status: selectNewJobStatus || "",
+              status: selectNewJobStatus || "not-started",
             },
             ...prevJobs,
           ]);
@@ -634,7 +636,7 @@ const Jobs = () => {
           title: addJobName,
           collaborators: newJobCollaboratorsListId,
           due_date: selectedNewJobDueDate || formattedDueDate,
-          status: selectNewJobStatus || "",
+          status: selectNewJobStatus || "not-started",
         };
 
         console.log("reqBody", reqBody);
@@ -668,12 +670,12 @@ const Jobs = () => {
               title: addJobName,
               collaborators: newJobCollaboratorsListId,
               due_date: selectedNewJobDueDate || "",
-              status: selectNewJobStatus || "",
+              status: selectNewJobStatus || "not-started",
             },
             ...prevJobs,
           ]);
-          synchronizeRowHeights();
           handleAddNewJob();
+          synchronizeRowHeights();
           setShowNewJobModal(true);
         }
       }
@@ -890,6 +892,7 @@ const Jobs = () => {
 
     // Format the date as YYYY-MM-DD
     let formattedDueDate = `${year}-${month}-${day}`;
+
     setEditedJobDueDate(formattedDueDate);
 
     // Update the due_date in the filteredJobs array
@@ -1500,7 +1503,7 @@ const Jobs = () => {
 
       {showJobModal && (
         <NewJobModal
-          job={getJob.data}
+          job={getJob?.data}
           usersList={usersList}
           handleClose={async (isDeleting = false, description) => {
             setGetJob();
@@ -1541,7 +1544,13 @@ const Jobs = () => {
                   onClick={() => setShowSearchOptions(true)}
                   ref={searchBarRef}
                 >
-                  <div className="IconBox">
+                  <div
+                    className="IconBox"
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    onClick={handleSearchApply}
+                  >
                     <Search />
                   </div>
                   {showSearchOptions ? (
@@ -1735,6 +1744,9 @@ const Jobs = () => {
           <div className="d-flex align-items-center justify-content-start gap-3">
             <div className="delete-box">
               <div className="delete-item d-flex align-items-center flex-wrap gap-2">
+                {showSearchOptions && selectSearchOptions === "" && (
+                  <>Select which category you would like to search by.</>
+                )}
                 {showingSearchOptions ? (
                   <>Search Results For: '{showingSearchOptions}'</>
                 ) : selectSearchOptions ? (
@@ -1747,8 +1759,8 @@ const Jobs = () => {
                     )}
                     {selectSearchOptions === "title" && (
                       <>
-                        Enter the name of the ‘Job’ you would like to search
-                        for.
+                        Enter the name of the ‘Job Name’ you would like to
+                        search for.
                       </>
                     )}
                     {selectSearchOptions === "collaborator_name" && (
@@ -1797,6 +1809,8 @@ const Jobs = () => {
                     })}
                   </>
                 ) : (
+                  !showSearchOptions &&
+                  selectSearchOptions === "" &&
                   "Showing All Jobs"
                 )}
               </div>
@@ -1909,15 +1923,39 @@ const Jobs = () => {
                                 {addJobName}
                               </div>
                             ) : (
-                              <input
-                                className="clickBoxInput"
-                                placeholder="Enter Job Name"
-                                type="text"
-                                value={addJobName}
-                                onChange={(e) => setAddJobName(e.target.value)}
-                                onFocus={handleFocus}
-                                onKeyDown={handleKeyDown}
-                              />
+                              <>
+                                <input
+                                  className="clickBoxInput"
+                                  placeholder="Enter Job Name"
+                                  type="text"
+                                  value={addJobName}
+                                  onChange={(e) =>
+                                    setAddJobName(e.target.value)
+                                  }
+                                  onFocus={handleFocus}
+                                  onKeyDown={handleKeyDown}
+                                />
+                                {/* {addJobName?.trim() !== "" &&
+                                  newJobIdFilled &&
+                                  !newJobIdExist && (
+                                    <span
+                                      onClick={() => {
+                                        setActiveJob({
+                                          job_num: newJobIdNumber,
+                                          title: addJobName,
+                                          collaborators:
+                                            newJobCollaboratorsListId,
+                                          due_date: selectedNewJobDueDate || "",
+                                          status:
+                                            selectNewJobStatus || "not-started",
+                                        });
+                                        setShowNewJobModal(true);
+                                      }}
+                                    >
+                                      <ArrowRight />
+                                    </span>
+                                  )} */}
+                              </>
                             )}
                           </td>
                           <td
@@ -2414,13 +2452,18 @@ const Jobs = () => {
                               Math.floor(
                                 (new Date(selectedNewJobDueDate) - new Date()) /
                                   (1000 * 60 * 60 * 24)
-                              ) > 0
-                                ? Math.floor(
-                                    (new Date(selectedNewJobDueDate) -
-                                      new Date()) /
-                                      (1000 * 60 * 60 * 24)
-                                  ) + " days"
-                                : "0 days"}
+                              ) > 0 ? (
+                                Math.floor(
+                                  (new Date(selectedNewJobDueDate) -
+                                    new Date()) /
+                                    (1000 * 60 * 60 * 24)
+                                ) + " days"
+                              ) : (
+                                <div className="clickBox">
+                                  {" "}
+                                  <span className="clickBoxtext">N/A</span>
+                                </div>
+                              )}
                             </td>
                             <td
                               className={`px-3 clickBox ${
@@ -2439,7 +2482,7 @@ const Jobs = () => {
                                   }
                                 }}
                               >
-                                Add Tasks
+                                Add Task +
                               </div>
                             </td>
                             <td className="text-center "></td>
@@ -2530,7 +2573,7 @@ const Jobs = () => {
                                           handleStatusChange("completed");
                                         }}
                                       >
-                                        <div className="statusBox completed">
+                                        <div className="statusBox Completed">
                                           Completed
                                         </div>
                                       </div>
@@ -2543,7 +2586,9 @@ const Jobs = () => {
                                   style={{ cursor: "pointer", color: "#fff" }}
                                   onClick={() => handleDueDateClick(job)}
                                 >
-                                  {moment(job.due_date).local().format("L")}
+                                  {moment(job.due_date)
+                                    .local()
+                                    .format("DD/MM/YYYY")}
                                 </div>
                                 {activeJob?.id === job.id &&
                                   activeJobField === "DueDate" && (
@@ -2561,12 +2606,15 @@ const Jobs = () => {
                               </td>
                               <td className="text-center">
                                 {moment(job.due_date)
-                                  .local()
-                                  .isBefore(moment(), "day")
+                                  .startOf("day")
+                                  .isBefore(moment().startOf("day"))
                                   ? 0
                                   : moment(job.due_date)
-                                      .local()
-                                      .diff(moment(), "days")}{" "}
+                                      .startOf("day")
+                                      .diff(
+                                        moment().startOf("day"),
+                                        "days"
+                                      )}{" "}
                                 days
                               </td>
                               <td className="text-start d-flex align-items-center justify-content-between">
@@ -2612,12 +2660,12 @@ const Jobs = () => {
                                       className={`clickBoxtext`}
                                       onClick={() => handleAddTaskClick(job)}
                                     >
-                                      Add Tasks +
+                                      Add Task +
                                     </div>
                                   </div>
                                 </div>
                                 <div className="task-view-more">
-                                  {job?.tasks?.length > 3 && (
+                                  {job?.tasks?.length > 0 && (
                                     <div
                                       className={` mx-0 `}
                                       onClick={() => handleOpenJobWithTask(job)}
@@ -2632,7 +2680,9 @@ const Jobs = () => {
                               </td>
                               <td className="px-3">
                                 <div className="jobDescriptionTextDiv">
-                                  {renderComment(job?.latest_messages[0])}
+                                  {job?.latest_messages?.length > 0
+                                    ? renderComment(job?.latest_messages[0])
+                                    : renderComment(null)}
                                 </div>
                               </td>
                             </tr>

@@ -624,7 +624,7 @@ function RightSide() {
     <div className="RightSide " id="rightSCroll">
       {isLoggedIn ? (
         <>
-          {pathname.toLowerCase() !== "/jobs" && <NavMenu />}
+          {(pathname.toLowerCase() !== "/jobs" && pathname.toLowerCase() !== "/jobs/tasks" )  && <NavMenu />}
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard />} />

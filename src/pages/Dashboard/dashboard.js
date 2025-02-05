@@ -204,6 +204,11 @@ function Dashboard() {
    
   };
 
+
+  const handleCreateNewTask = () => {
+    navigate("/jobs", { state: {selectedJob, key:'new-task-job'} });
+  }
+
   return (
     <>
       {loading && (
@@ -407,7 +412,7 @@ function Dashboard() {
                     );
                   })}
               </div>
-              <div className="create_new_task_div">
+              <div className="create_new_task_div" onClick={handleCreateNewTask}>
                 <span><AddTaskGreyButton /> </span>
                 <p>Create New Task</p>
               </div>

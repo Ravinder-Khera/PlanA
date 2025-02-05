@@ -1421,6 +1421,19 @@ body {
     &.disabled {
       border: 1px solid #7f7f7f;
     }
+    &.disabled.new {
+      color: #616161 !important;
+      text-align: center !important;
+      font-family: Archivo !important;
+      font-size: 14px !important;
+      font-style: normal !important;
+      font-weight: 700 !important;
+      line-height: normal !important;
+      letter-spacing: -0.56px !important;
+      border: none !important;
+      background: none !important;
+      box-shadow: none !important;
+    }
   }
 }
 

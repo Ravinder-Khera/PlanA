@@ -1939,7 +1939,18 @@
               line-height: normal;
               letter-spacing: -0.56px;
             }
+            &.no-attachments{
+              .deletBg {
+                border-radius: 1px;
+                border: 1.5px solid #616161;
+                background: #616161;
+              }
+              .delete-item {
+                color: #616161;
+              }
+            }
           }
+          
           .jobTitle {
             padding: 30px 0;
             color: #e2e31f;
@@ -2318,6 +2329,19 @@
                       border: 1px solid #fff;
                       background: rgba(255, 255, 255, 0.25);
                     }
+
+                    &.stage_select {
+                      border: none !important;
+                      background: none !important;
+                      color: #fff;
+                      text-align: center;
+                      font-family: Archivo;
+                      font-size: 14px;
+                      font-style: normal;
+                      font-weight: 700;
+                      line-height: normal;
+                      letter-spacing: -0.56px;
+                    }
                   }
                 }
                 .taskJobBtn {
@@ -2558,6 +2582,11 @@
                 &.stage_undefined {
                   border: 1px solid #fff;
                   background: rgba(255, 255, 255, 0.25);
+                }
+
+                &.stage_select {
+                  border: none !important;
+                  background: none !important;
                 }
               }
             }
@@ -3178,6 +3207,23 @@
           gap: 8px;
           flex-wrap: nowrap;
           min-width: max-content;
+          position: relative;
+          &:hover {
+            .download-icon {
+              opacity: 1; /* Show download icon when hovered */
+              visibility: visible; /* Ensure visibility */
+            }
+          }
+          /* The download icon styling */
+          .download-icon {
+            position: absolute; /* Position it at the bottom-right */
+            bottom: 2px; /* Adjust the distance from the bottom */
+            right: 5px; /* Adjust the distance from the right */
+            opacity: 0; /* Hide it by default */
+            visibility: hidden; /* Hide it by default */
+            cursor: pointer;
+            transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition for appearance */
+          }
           .imgBox {
             background: #ffffff;
             width: 40px;
@@ -3215,14 +3261,13 @@
       }
     }
     .chats-content-sender-new {
-      display: flex
-      ;
-          justify-content: flex-end;
-          align-items: flex-start;
-          flex-direction: row-reverse;
-          gap: 12px;
-          width: 100%;
-          padding-right: 14px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      flex-direction: row-reverse;
+      gap: 12px;
+      width: 100%;
+      padding-right: 14px;
       .InitialsBoxUser {
         width: max-content;
         color: #fff;
@@ -3355,8 +3400,6 @@
         }
       }
     }
-
-
 
     // .chats-content-reciever {
     //   width: 100%;

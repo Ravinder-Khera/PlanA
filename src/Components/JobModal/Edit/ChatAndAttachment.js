@@ -990,8 +990,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
     }
   };
 
-  // Function to properly format name (capitalize first letters)
-  // Function to handle text extraction and rendering
+
     const renderMessage = (text) => {
       // Regular expression to match words enclosed in {}
       const regex = /{([^}]+)}/g;
@@ -1028,7 +1027,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
           onDragOver={handleDragOver}
         >
           <div
-            className="delete-box"
+            className={`delete-box ${attachments?.length == 0 && 'no-attachments'}`}
             style={{ cursor: "pointer", zIndex: 2, minWidth: "max-content" }}
             onClick={() => {
               if (attachmentRef.current) {
@@ -1149,6 +1148,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                     <>
                       {msg.user.name !== localStorage.getItem("user") && (
                         <div className="chats-content-reciever-new ">
+                            
                           <div
                             className={`InitialsBoxUser`}
                             style={{
@@ -1176,6 +1176,17 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                               </p>
                             </div>
                             <div className="attachments">
+                            <div
+                                className="download-icon"
+                                onClick={() =>
+                                  handleDownloadFile(
+                                    msg.filename,
+                                    msg.original_name
+                                  )
+                                }
+                              >
+                                <img src={download} alt="" className="" />
+                              </div>
                               <div className="imgBox">
                                 <img src={pngFIle} className="" alt="" />
                               </div>
