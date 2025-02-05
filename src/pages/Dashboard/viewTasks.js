@@ -95,11 +95,11 @@ function ViewTaskPage() {
   const [notificationDropDown, setNotificationDropDown] = useState(false);
   const [filteredString, setFilteredString] = useState([]);
   const [filteredQuery, setFilteredQuery] = useState([]);
-const [storageUpdated, setStorageUpdated] = useState(false);
-  const [userColors, setUserColors] = useState({}); 
- const [notifications, setNotifications] = useState([]);
+  const [storageUpdated, setStorageUpdated] = useState(false);
+  const [userColors, setUserColors] = useState({});
+  const [notifications, setNotifications] = useState([]);
   const notificationRef = useRef(null);
- useEffect(() => {
+  useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "notifications") {
         const updatedNotifications = JSON.parse(event.newValue);
@@ -128,7 +128,6 @@ const [storageUpdated, setStorageUpdated] = useState(false);
   }, [storageUpdated]);
 
   const handleRemoveNotification = (notificationToRemove) => {
-
     setNotifications((prevNotifications) =>
       prevNotifications.filter(
         (notification) => notification !== notificationToRemove
@@ -140,22 +139,22 @@ const [storageUpdated, setStorageUpdated] = useState(false);
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
   };
 
-   useEffect(() => {
-      let handler = (e) => {
-        if (
-          notificationRef.current &&
-          !notificationRef.current.contains(e.target)
-        ) {
-          setNotificationDropDown(false);
-        }
-      };
-  
-      document.addEventListener("mousedown", handler);
-  
-      return () => {
-        document.removeEventListener("mousedown", handler);
-      };
-    }, []);
+  useEffect(() => {
+    let handler = (e) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target)
+      ) {
+        setNotificationDropDown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
 
   useEffect(() => {
     let handler = (e) => {
@@ -361,7 +360,6 @@ const [storageUpdated, setStorageUpdated] = useState(false);
     };
   }, [selectSearchOptions]);
 
-
   const handleJobFilter = async () => {
     try {
       const response = await getTasksByUser();
@@ -381,8 +379,6 @@ const [storageUpdated, setStorageUpdated] = useState(false);
   useEffect(() => {
     handleJobFilter();
   }, []);
-
-
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
     setFilteredTasks((prevTasks) => [
@@ -522,56 +518,50 @@ const [storageUpdated, setStorageUpdated] = useState(false);
   };
 
   // Function to generate a random color
-    const getRandomColor = () => {
-      const letters = "0123456789ABCDEF";
-      let color = "#";
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  const handleRemoveFilter = async (value) => {
+    console.log("uupdated before removing", value);
+
+    const updatedQuery = {
+      ...filteredQuery,
+      stage_id: filteredQuery.stage_id?.filter((id) => id !== value.value),
+      status: filteredQuery.status?.filter((status) => status !== value.value),
+      due_this_week:undefined,
+      due_in_14_days: undefined,
     };
-  
-    const handleRemoveFilter = async (value) => {
-      const updatedQuery = {
-        ...filteredQuery,
-        stage: filteredQuery.stages?.filter(
-          (id) => id !== value.value
-        ),
-        status: filteredQuery.status?.filter(
-          (status) => status !== value.value
-        ),
-        due_this_week: filteredQuery.due_this_week?.filter(
-          (status) => status !== value.value
-        ),
-        due_in_14_days: filteredQuery.due_in_14_days?.filter(
-          (status) => status !== value.value
-        ),
-      };
-  
-      if (updatedQuery.stage?.length === 0)
-        delete updatedQuery.stage;
-      if (updatedQuery.status?.length === 0) delete updatedQuery.status;
-      if (updatedQuery.due_this_week?.length === 0) delete updatedQuery.due_this_week;
-      if (updatedQuery.due_in_14_days?.length === 0) delete updatedQuery.due_in_14_days;
-  
-      setFilteredQuery(updatedQuery);
-      setFilteredString((prevFiltered) =>
-        prevFiltered.filter((item) => item !== value)
-      );
-  
-      try {
-        setLoading(true);
-        const response = await getTasksByUser(updatedQuery);
-  
-        if (!response.error) {
-          setFilteredTasks(response?.res?.data);
-        }
-      } catch (error) {
-        console.error("Error in applying filter:", error);
-      } finally {
-        setLoading(false);
+
+    
+    if (!updatedQuery?.stage_id || updatedQuery.stage_id?.length === 0) delete updatedQuery.stage_id;
+    if (!updatedQuery.status || updatedQuery.status?.length === 0) delete updatedQuery.status;
+    if (!updatedQuery.due_this_week) delete updatedQuery.due_this_week;
+    if (!updatedQuery.due_in_14_days) delete updatedQuery.due_in_14_days;
+    console.log("uupdated", updatedQuery);
+    setFilteredQuery(updatedQuery);
+    setFilteredString((prevFiltered) =>
+      prevFiltered.filter((item) => item !== value)
+    );
+
+    try {
+      setLoading(true);
+      const response = await getTasksByUser(updatedQuery);
+
+      if (!response.error) {
+        setFilteredTasks(response?.res?.data);
       }
-    };
+    } catch (error) {
+      console.error("Error in applying filter:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -672,7 +662,7 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                     >
                       Job No.
                     </div>
-                 
+
                     {selectSearchOptions !== "" && (
                       <input
                         name="search"
@@ -714,7 +704,7 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                       setSearchedInput("");
                       setShowSearchOptions(false);
                       setShowingSearchOptions("");
-                      handleJobFilter()
+                      handleJobFilter();
                     }}
                   >
                     <CloseIcon />
@@ -828,22 +818,19 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                 <>Search Results For: '{showingSearchOptions}'</>
               ) : selectSearchOptions ? (
                 <>
-                   {selectSearchOptions === "task_name" && (
+                  {selectSearchOptions === "task_name" && (
                     <>
                       Enter the name of the ‘Task Name’ you would like to search
                       for.
                     </>
                   )}
                   {selectSearchOptions === "job_num" && (
-                    <>
-                      Enter the Job number  you would like to search
-                      for.
-                    </>
+                    <>Enter the Job number you would like to search for.</>
                   )}
-                  
-                  {!["task_name", "job_num"].includes(
-                    selectSearchOptions
-                  ) && <>Select which category you would like to search by.</>}
+
+                  {!["task_name", "job_num"].includes(selectSearchOptions) && (
+                    <>Select which category you would like to search by.</>
+                  )}
                 </>
               ) : filteredString.length > 0 ? (
                 <>
@@ -890,8 +877,6 @@ const [storageUpdated, setStorageUpdated] = useState(false);
 
       <div className="DashboardTopMenu">
         <div className="pagination-container justify-content-start">
-          
-
           <div className="taskContainer">
             <ul>
               <li key={"001"} className="heading">
@@ -941,15 +926,15 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                       }
                     }}
                   >
-                    <div className={`listContent listTitle justify-content-between`}>
+                    <div
+                      className={`listContent listTitle justify-content-between`}
+                    >
                       <p>
                         <span> {task?.title}</span>
                       </p>
-                      <p style={{marginRight: '30px', cursor:'pointer'}}>
-
-                         <ArrowRight />
+                      <p style={{ marginRight: "30px", cursor: "pointer" }}>
+                        <ArrowRight />
                       </p>
-
                     </div>
                     <div className="listContent centerContent">
                       <div
@@ -995,9 +980,12 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                     </div>
                   </li>
                 ))}
-                {filteredTasks.length === 0 && <div className="no-result"> <span >
-                              No Results Found
-                            </span></div>}
+              {filteredTasks.length === 0 && (
+                <div className="no-result">
+                  {" "}
+                  <span>No Results Found</span>
+                </div>
+              )}
             </ul>
           </div>
         </div>

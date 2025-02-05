@@ -622,10 +622,20 @@ export const getTasksByUser = async (reqData = {}) => {
   try {
     let url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date`;
 
-    // If reqData has values, convert them into query parameters
-    if (Object.keys(reqData).length > 0) {
-      const queryParams = new URLSearchParams(reqData).toString();
-      url += `&${queryParams}`;
+    console.log("Requesting tasks with params:", reqData);
+
+    // Convert reqData into query parameters manually
+    const queryParams = new URLSearchParams();
+
+    Object.entries(reqData).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        queryParams.append(key, value); // Convert array to [value1,value2]
+      } else {
+        queryParams.append(key, value);
+      }
+    });
+    if (queryParams.toString()) {
+      url += `&${queryParams.toString()}`;
     }
 
     let response = await fetch(url, requestOptions);

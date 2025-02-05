@@ -118,32 +118,32 @@ const TaskFilter = ({
   };
 
   const handleselectFilter = (type, value) => {
+    console.log('type, value', type, value);
     setFilterQuery((prevQuery) => {
       if (type === "status") {
         return {
           ...prevQuery,
-          status: [...(prevQuery.statuses || []), value],
+          status: [...(prevQuery.status || []), value],
         };
       }
       if (type === "due_this_week") {
         return {
           ...prevQuery,
-          due_this_week: [...(prevQuery.due_this_week || []), value],
+          due_this_week: value,
         };
       }
       if (type === "due_in_14_days") {
         return {
           ...prevQuery,
-          due_in_14_days: [...(prevQuery.due_in_14_days || []), value],
+          due_in_14_days: value,
         };
       }
-      if (type === "stage") {
+      if (type === "stage_id") {
         return {
           ...prevQuery,
-          stage: [...(prevQuery.statuses || []), value],
+          stage_id: [...(prevQuery.stage_id || []), value],
         };
       }
-
       return prevQuery;
     });
   };
@@ -153,23 +153,29 @@ const TaskFilter = ({
       if (type === "status") {
         return {
           ...prevQuery,
-          statuses: prevQuery.statuses?.filter((status) => status !== value),
+          status: prevQuery.status?.filter((status) => status !== value),
         };
       }
 
-      if (type === "collaborator_ids") {
+      if (type === "stage_id") {
         return {
           ...prevQuery,
-          collaborator_ids: prevQuery.collaborator_ids?.filter(
+          stage_id: prevQuery.stage_id?.filter(
             (id) => id !== value
           ),
         };
       }
 
-      if (type === "due") {
+      if (type === "due_in_14_days") {
         return {
           ...prevQuery,
-          due: prevQuery.due?.filter((item) => item !== value),
+          due_in_14_days: !value,
+        };
+      }
+      if (type === "due_this_week") {
+        return {
+          ...prevQuery,
+          due_this_week: !value,
         };
       }
 
@@ -205,6 +211,7 @@ const TaskFilter = ({
     try {
       setFilteredString(selectedFilters);
       setFilteredQuery(filterQuery);
+      console.log("filteredQuery", filterQuery);
       const response = await getTasksByUser(filterQuery);
       if (!response.error) {
         setFilteredTasks(response?.res?.data);
@@ -358,10 +365,10 @@ const TaskFilter = ({
                       handleFilterClick(
                         stage?.title,
                         `filterStatusBox stage_${stage?.title}`,
-                        "stage",
+                        "stage_id",
                         stage?.id
                       );
-                      handleselectFilter("stage", stage?.id);
+                      handleselectFilter("stage_id", stage?.id);
                     }}
                   >
                     {stage.title}
