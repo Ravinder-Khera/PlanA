@@ -47,8 +47,7 @@ import ErrorToast from "../../Components/ErrorToast";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 
 const renderComment = (message) => {
-
-  if(!message) return <p className="no-comment">No Comments</p>
+  if (!message) return <p className="no-comment">No Comments</p>;
   const renderMessage = (text) => {
     // Regular expression to match words enclosed in {}
     const regex = /{([^}]+)}/g;
@@ -87,13 +86,12 @@ const renderComment = (message) => {
                 .replace("minutes", "mins")}
         </p>
         <span></span>
-        <p className="name"> {message.user} :</p> 
+        <p className="name"> {message.user} :</p>
       </div>
       <p className="content">{renderMessage(message.body)}</p>
     </div>
   );
 };
-
 
 export const formatJobNumber = (jobNum) => {
   // Ensure jobNum is a number or a string
@@ -101,12 +99,10 @@ export const formatJobNumber = (jobNum) => {
 
   // Check if the job number has at least 5 digits for slicing
   if (jobStr && jobStr.length >= 5) {
-    return `${jobStr.slice(0,2)}-${jobStr.slice(-3)}`;
+    return `${jobStr.slice(0, 2)}-${jobStr.slice(-3)}`;
+  } else {
+    return jobStr;
   }
-  else{
-    return jobStr
-  }
-
 };
 const Jobs = () => {
   const containerRef = useRef(null);
@@ -149,7 +145,6 @@ const Jobs = () => {
   const [showNewJobAddTaskModal, setShowNewJobAddTaskModal] = useState(false);
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
   const [storageUpdated, setStorageUpdated] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [reloadTabs, setReloadTabs] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showAllTasks, setShowAllTasks] = useState(false);
@@ -275,7 +270,8 @@ const Jobs = () => {
 
   useEffect(() => {
     if (location.state === 1) {
-      setShowAddModal(true);
+      setShowAddJobRow(true);
+      handleAddJobScroll();
     }
   }, [location]);
 
@@ -290,7 +286,7 @@ const Jobs = () => {
 
   const { state } = location;
   useEffect(() => {
-    if (state) {
+    if (state !== 1 && state?.id) {
       localStorage.setItem("jobId", state?.id);
       setShowJobModal(true);
       console.log("job id", filteredJobs, state?.id);
@@ -1531,15 +1527,6 @@ const Jobs = () => {
         />
       )}
 
-      {showAddModal && (
-        <Add
-          fetchJobs={fetchJobs}
-          handleClose={() => {
-            setShowAddModal(false);
-          }}
-        />
-      )}
-
       <div className="jobsBg">
         <div
           className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap"
@@ -2093,7 +2080,8 @@ const Jobs = () => {
                             }`}
                           >
                             <td className="text-center">
-                              <span className={`jobNoBtn`}>{formatJobNumber(job?.job_num)}
+                              <span className={`jobNoBtn`}>
+                                {formatJobNumber(job?.job_num)}
                               </span>
                             </td>
                             <td
@@ -2482,10 +2470,16 @@ const Jobs = () => {
                             >
                               <td className={`text-center clickBox`}>
                                 <span
-                                  className={`statusBtn ${job.status != undefined ? job.status : 'not-started'}`}
+                                  className={`statusBtn ${
+                                    job.status != undefined
+                                      ? job.status
+                                      : "not-started"
+                                  }`}
                                   onClick={() => handleStatusClick(job)}
                                 >
-                                   {job.status != undefined ? StatusList[job.status]: 'Not Started'}
+                                  {job.status != undefined
+                                    ? StatusList[job.status]
+                                    : "Not Started"}
                                 </span>
                                 {activeJob?.id === job.id &&
                                   activeJobField === "Status" && (

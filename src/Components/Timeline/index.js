@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import moment from "moment";
 import { getJobs, getTimelineJobs } from "../../services/auth";
-import { FilterIcon, TaskIcon, User } from "../../assets/svg";
+import { AttachmentIcon, CommentIcon, FilterIcon, TaskIcon, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
 import { formatJobNumber } from "../../pages/Jobs";
@@ -736,13 +736,15 @@ function Timeline({
                                       }`,
                                     }}
                                   >
-                                    <div className="jobBox d-flex gap-2 align-items-start justify-content-between h-100 p-3">
+                                    <div className="jobBox d-flex gap-2 align-items-start justify-content-between flex-column h-100 p-3">
                                       <div
                                         className="jobProgressBg"
                                         style={{
                                           minWidth: `100%`,
                                         }}
                                       ></div>
+                                      <div className="d-flex gap-2 align-items-start justify-content-between">
+
                                       <div className="textDiv">
                                         <span>| {formatJobNumber(job.job_num)} |</span>
                                         <p>{job.title}</p>
@@ -808,6 +810,11 @@ function Timeline({
                                             </div>
                                           </div>
                                         </div>
+                                      </div>
+                                      </div>
+                                      <div className="d-flex gap-2 align-items-start justify-content-end w-100">
+                                        <div><AttachmentIcon /> <span>{job.attachments_count}</span></div> 
+                                        <div><CommentIcon /> <span>{job.messages_count}</span></div> 
                                       </div>
                                     </div>
                                   </div>

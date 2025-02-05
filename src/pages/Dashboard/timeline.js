@@ -6,6 +6,33 @@ import { updateTask } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 import { getMessages } from "../../services/chat_attachment";
 import { formatJobNumber } from "../Jobs";
+import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
+
+const renderMessage = (text) => {
+  // Regular expression to match words enclosed in {}
+  const regex = /{([^}]+)}/g;
+  let result = [];
+  let lastIndex = 0;
+  let match;
+
+  // Iterate through each match of text inside {}
+  while ((match = regex.exec(text)) !== null) {
+    // Push the text before the match (normal text)
+    if (match.index > lastIndex) {
+      result.push(text.slice(lastIndex, match.index));
+    }
+    // Push the name inside {} as TaggedUser component
+    result.push(<TaggedUser key={match.index} name={match[1]} />);
+    lastIndex = regex.lastIndex; // Update last matched index
+  }
+
+  // Push any remaining text after the last match
+  if (lastIndex < text.length) {
+    result.push(text.slice(lastIndex));
+  }
+
+  return result;
+};
 
 function TimelinePage() {
   const navigate = useNavigate();
@@ -325,7 +352,7 @@ function TimelinePage() {
                             <div className="chatTime">
                               | {formatJobNumber(selectedJob.id)} | {selectedJob.title}
                             </div>
-                            <div className="chatMsg">"{trimmedTitle}"</div>
+                            <div className="chatMsg">"{renderMessage(trimmedTitle)}"</div>
                           </div>
                         </div>
                         <div className="chatBtnDiv">
