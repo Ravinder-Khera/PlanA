@@ -4050,3 +4050,14 @@ button.rdrDay:has(.rdrStartEdge) .rdrDayNumber span {
 button.rdrDay.rdrDayPassive .rdrDayNumber span {
   color: #fff !important;
 }
+
+
+.rdrYearPicker select option, .rdrMonthPicker select option{
+  color: #000;
+}
+
+
+
+.rdrYearPicker select::-webkit-scrollbar-thumb, .rdrMonthPicker select::-webkit-scrollbar-thumb {
+  background-color: #e2e31f;
+}

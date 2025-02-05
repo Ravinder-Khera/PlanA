@@ -352,7 +352,7 @@ function TimelinePage() {
                             <div className="chatTime">
                               | {formatJobNumber(selectedJob.id)} | {selectedJob.title}
                             </div>
-                            <div className="chatMsg">"{renderMessage(trimmedTitle)}"</div>
+                            <div className="chatMsg">{renderMessage(trimmedTitle)}</div>
                           </div>
                         </div>
                         <div className="chatBtnDiv">
