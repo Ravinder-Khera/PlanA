@@ -5490,7 +5490,7 @@ export const CreateTaskModal = ({
                     </div>
                   </div>
                   <div className="innerScroll ">
-                    {newTask && (
+                    {newTask && !task?.job_num && (
                       <>
                         {" "}
                         <input
@@ -5553,7 +5553,7 @@ export const CreateTaskModal = ({
                         )}
                       </>
                     )}
-                    {(newTask && task.job_num) || !newTask &&
+                    {((newTask && task?.job_num) || !newTask) &&
                     <input
                       type="text"
                       className="jobTitle position-relative"
