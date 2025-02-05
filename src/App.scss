@@ -1355,6 +1355,37 @@ body {
   }
 }
 
+.create_new_task_div{
+  border-radius: 2px;
+  background: #353535;
+  padding: 13px 33px 16px 33px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 22px;
+  margin-top: 11px;  
+  cursor: pointer;
+  span{
+    svg{
+      rect{
+        fill: transparent;
+      }
+      path{
+        fill: #fff;
+      }
+    }
+  }
+  p{
+    margin: 0;
+    color: #FFF;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -0.64px;    
+  }
+}
+
 .collaboratorsBox {
   display: flex;
   align-items: center;

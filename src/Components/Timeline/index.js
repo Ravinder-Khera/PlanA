@@ -336,7 +336,7 @@ function Timeline({
       }
     };
     fetchJobs();
-  }, [reloadTask]);
+  }, [reloadTask, selectedJob, selectionRange, setSelectedJob, setSelectionRangeFromJobs]);
 
   const formatDate = (date) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
