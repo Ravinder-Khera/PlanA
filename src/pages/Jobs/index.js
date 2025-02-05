@@ -2309,7 +2309,7 @@ const Jobs = () => {
                 <div className="table-responsive right-side-table">
                   <div className="job_table_outer_div">
                     <table className="table table-borderless text-light">
-                      <thead className="sticky-header">
+                      <thead className="">
                         <tr>
                           <th scope="col">
                             <div className="headerDiv">Status</div>
