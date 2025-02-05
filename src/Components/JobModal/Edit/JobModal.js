@@ -3418,21 +3418,23 @@ export const NewJobModalWithTasks = ({
                           </tbody>
                         </table>
                       </div>
-                      <div
-                        className={`show-all-tasks ${
-                          showAllTasks ? "show-more" : ""
-                        }`}
-                        onClick={() => setShowAllTasks(!showAllTasks)}
-                      >
-                        <DownArrow
-                          className={`down-arrow-icon ${
-                            showAllTasks ? "rotate" : ""
+                      {jobTasks?.length > 0 && (
+                        <div
+                          className={`show-all-tasks ${
+                            showAllTasks ? "show-more" : ""
                           }`}
-                        />
-                        <span>
-                          {showAllTasks ? "Show Less" : "Show All Tasks"}
-                        </span>
-                      </div>
+                          onClick={() => setShowAllTasks(!showAllTasks)}
+                        >
+                          <DownArrow
+                            className={`down-arrow-icon ${
+                              showAllTasks ? "rotate" : ""
+                            }`}
+                          />
+                          <span>
+                            showAllTasks ? "Show Less Tasks" : "Show All Tasks"
+                          </span>
+                        </div>
+                      )}
 
                       <div className={`px-1 add-task`}>
                         <button
@@ -3495,7 +3497,7 @@ export const NewTaskModal = ({
   const inputRef = useRef(null);
   const [firstClick, setFirstClick] = useState(true);
   const popupRef = useRef(null);
-  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
 
   // Handle outside click to close the popup
   useEffect(() => {
@@ -3687,7 +3689,7 @@ export const NewTaskModal = ({
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-    setInputPlaceholder("Write Task Name...")
+    setInputPlaceholder("Write Task Name...");
     // Reset input and related states
     setTitle("");
     setStage(null);
@@ -4069,11 +4071,11 @@ export const NewTaskModal = ({
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
-                                    setTatskStatus("canceled");
+                                    setTatskStatus("pending");
                                   }}
                                 >
-                                  <div className="statusBox canceled">
-                                    Canceled
+                                  <div className="statusBox pending">
+                                    Pending
                                   </div>
                                 </div>
                               </div>
@@ -4088,7 +4090,11 @@ export const NewTaskModal = ({
                             }`}
                             onClick={() => setDueDateCalender(true)}
                           >
-                            {dueDate ? moment(dueDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "Select Date"}
+                            {dueDate
+                              ? moment(dueDate, "YYYY-MM-DD").format(
+                                  "DD/MM/YYYY"
+                                )
+                              : "Select Date"}
                             {dueDateCalender && (
                               <div
                                 className="datePickerDiv"
@@ -4109,7 +4115,9 @@ export const NewTaskModal = ({
                           <h3>Stage</h3>
                           <div className="position-relative">
                             <button
-                              className={`statusBox stageBox position-relative ${stage}`}
+                              className={`statusBox stageBox position-relative ${
+                                stage ? stage?.title : ""
+                              }`}
                               style={{
                                 border: `1px solid ${activeStageColor}`,
                                 background: "transparent",
@@ -4118,16 +4126,6 @@ export const NewTaskModal = ({
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
-                              <span
-                                className="position-absolute w-100 h-100"
-                                style={{
-                                  backgroundColor: activeStageColor,
-                                  opacity: "0.5",
-                                  top: "0",
-                                  left: "0",
-                                  zIndex: "-1",
-                                }}
-                              ></span>
                             </button>
                             {stageBox && (
                               <div
@@ -4327,7 +4325,7 @@ export const UpdateTaskModal = ({
   const inputRef = useRef(null);
   const popupRef = useRef(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
 
   const fetchUsers = async () => {
     try {
@@ -4542,7 +4540,7 @@ export const UpdateTaskModal = ({
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-    setInputPlaceholder("Write Task Name...")
+    setInputPlaceholder("Write Task Name...");
     // Reset input and related states
     setTitle("");
     setStage(null);
@@ -4919,11 +4917,11 @@ export const UpdateTaskModal = ({
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
-                                    setTatskStatus("canceled");
+                                    setTatskStatus("pending");
                                   }}
                                 >
-                                  <div className="statusBox canceled">
-                                    Canceled
+                                  <div className="statusBox pending">
+                                    Pending
                                   </div>
                                 </div>
                               </div>
@@ -4938,7 +4936,11 @@ export const UpdateTaskModal = ({
                             }`}
                             onClick={() => setDueDateCalender(true)}
                           >
-                           {dueDate ? moment(dueDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "Select Date"}
+                            {dueDate
+                              ? moment(dueDate, "YYYY-MM-DD").format(
+                                  "DD/MM/YYYY"
+                                )
+                              : "Select Date"}
                             {dueDateCalender && (
                               <div
                                 className="datePickerDiv"
@@ -4959,25 +4961,12 @@ export const UpdateTaskModal = ({
                           <h3>Stage</h3>
                           <div className="position-relative">
                             <button
-                              className={`statusBox stageBox position-relative ${stage ? stage: 'disabled'}`}
-                              style={{
-                                border: `1px solid ${activeStageColor}`,
-                                background: "transparent",
-                                zIndex: "1",
-                              }}
+                              className={`statusBox stageBox position-relative ${
+                                stage ? stage : "disabled"
+                              } stage_${stage?.title}`}
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
-                              <span
-                                className="position-absolute w-100 h-100"
-                                style={{
-                                  backgroundColor: activeStageColor,
-                                  opacity: "0.5",
-                                  top: "0",
-                                  left: "0",
-                                  zIndex: "-1",
-                                }}
-                              ></span>
                             </button>
                             {stageBox && (
                               <div
@@ -4997,22 +4986,11 @@ export const UpdateTaskModal = ({
                                         }}
                                       >
                                         <div
-                                          className={`statusBox position-relative`}
-                                          style={{
-                                            border: `1px solid ${colors[index]}`,
-                                          }}
+                                          className={`statusBox position-relative ${
+                                            stage ? `stage_${stage?.title}` : ""
+                                          }`}
                                         >
                                           {stage.title}
-                                          <span
-                                            className="position-absolute w-100 h-100"
-                                            style={{
-                                              backgroundColor: colors[index],
-                                              opacity: "0.5",
-                                              top: "0",
-                                              left: "0",
-                                              zIndex: "-1",
-                                            }}
-                                          ></span>
                                         </div>
                                       </div>
                                     );
@@ -5181,7 +5159,7 @@ export const CreateTaskModal = ({
   const jobSelectRef = useRef(null);
   const [firstClick, setFirstClick] = useState(true);
   const [jobNo, setJobNo] = useState(null);
-  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
 
   const handleInputClick = () => {
     setIsPopupOpen(true);
@@ -5440,7 +5418,7 @@ export const CreateTaskModal = ({
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-    setInputPlaceholder("Write Task Name...")
+    setInputPlaceholder("Write Task Name...");
     // Reset input and related states
     setTitle("");
     setStage(null);
@@ -5657,47 +5635,51 @@ export const CreateTaskModal = ({
                     </div>
 
                     {newTask ? (
-                    <div className="discriptionBox">
-                    <div className="d-flex align-items-center justify-content-start gap-1 mw-100">
-                        {newTask && task?.job_num && (
-                    <div style={{flex:'0.5'}}>
-                            <h3>Job No.</h3>
-                            <p className="textClass disabled">
-                              <button className="taskJobBtn">
-                                {task?.job_num}
-                              </button>
-                            </p>
+                      <div className="discriptionBox">
+                        <div className="d-flex align-items-center justify-content-start gap-1 mw-100">
+                          {newTask && task?.job_num && (
+                            <div style={{ flex: "0.5" }}>
+                              <h3>Job No.</h3>
+                              <p className="textClass disabled">
+                                <button className="taskJobBtn">
+                                  {task?.job_num}
+                                </button>
+                              </p>
+                            </div>
+                          )}
+                          <div style={{ flex: "1" }}>
+                            <h3>Days Left</h3>
+                            {dueDate &&
+                            Math.floor(
+                              (new Date(dueDate) - new Date()) /
+                                (1000 * 60 * 60 * 24)
+                            ) > 0 ? (
+                              Math.floor(
+                                (new Date(dueDate) - new Date()) /
+                                  (1000 * 60 * 60 * 24)
+                              ) + " days"
+                            ) : (
+                              <span style={{ color: "#616161" }}>No Data</span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                        )}
-                      <div style={{flex:'1'}}>
+                    ) : (
+                      <div className="discriptionBox">
                         <h3>Days Left</h3>
                         {dueDate &&
                         Math.floor(
                           (new Date(dueDate) - new Date()) /
                             (1000 * 60 * 60 * 24)
-                        ) > 0
-                          ? Math.floor(
-                              (new Date(dueDate) - new Date()) /
-                                (1000 * 60 * 60 * 24)
-                            ) + " days"
-                          : "No Data"}
-                      </div>
-                    </div>
-                  </div>
-                    ):(
-                      <div className="discriptionBox">
-                          <h3>Days Left</h3>
-                          {dueDate &&
+                        ) > 0 ? (
                           Math.floor(
                             (new Date(dueDate) - new Date()) /
                               (1000 * 60 * 60 * 24)
-                          ) > 0
-                            ? Math.floor(
-                                (new Date(dueDate) - new Date()) /
-                                  (1000 * 60 * 60 * 24)
-                              ) + " days"
-                            : "No Data"}
-                    </div>
+                          ) + " days"
+                        ) : (
+                          <span style={{ color: "#616161" }}>No Data</span>
+                        )}
+                      </div>
                     )}
 
                     <div className="discriptionBox">
@@ -5914,11 +5896,11 @@ export const CreateTaskModal = ({
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
-                                    setTatskStatus("canceled");
+                                    setTatskStatus("pending");
                                   }}
                                 >
-                                  <div className="statusBox canceled">
-                                    Canceled
+                                  <div className="statusBox pending">
+                                    Pending
                                   </div>
                                 </div>
                               </div>
@@ -5933,7 +5915,11 @@ export const CreateTaskModal = ({
                             }`}
                             onClick={() => setDueDateCalender(true)}
                           >
-                           {dueDate ? moment(dueDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "Select Date"}
+                            {dueDate
+                              ? moment(dueDate, "YYYY-MM-DD").format(
+                                  "DD/MM/YYYY"
+                                )
+                              : "Select Date"}
                             {dueDateCalender && (
                               <div
                                 className="datePickerDiv"
@@ -5954,20 +5940,12 @@ export const CreateTaskModal = ({
                           <h3>Stage</h3>
                           <div className="position-relative">
                             <button
-                              className={`statusBox stageBox position-relative ${!stage && 'disabled'} stage_${stage?.title}`}
+                              className={`statusBox stageBox position-relative ${
+                                !stage && "disabled"
+                              } stage_${stage?.title}`}
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
-                              <span
-                                className="position-absolute w-100 h-100"
-                                style={{
-                                  backgroundColor: activeStageColor,
-                                  opacity: "0.5",
-                                  top: "0",
-                                  left: "0",
-                                  zIndex: "-1",
-                                }}
-                              ></span>
                             </button>
                             {stageBox && (
                               <div
@@ -5983,7 +5961,6 @@ export const CreateTaskModal = ({
                                         onClick={() => {
                                           setStageBox(false);
                                           setStage(stage);
-                                          setActiveStageColor(colors[index]);
                                         }}
                                       >
                                         <div
@@ -5993,15 +5970,6 @@ export const CreateTaskModal = ({
                                           // }}
                                         >
                                           {stage.title}
-                                          <span
-                                            className="position-absolute w-100 h-100"
-                                            style={{
-                                              opacity: "0.5",
-                                              top: "0",
-                                              left: "0",
-                                              zIndex: "-1",
-                                            }}
-                                          ></span>
                                         </div>
                                       </div>
                                     );

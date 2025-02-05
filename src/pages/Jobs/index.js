@@ -167,6 +167,7 @@ const Jobs = () => {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [loadMorePage, setLoadMorePage] = useState(1);
+  const [loadTotalPage, setLoadTotalPage] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
 
   const [newJobId, setNewJobId] = useState(["", "", "", "", ""]);
@@ -431,12 +432,13 @@ const Jobs = () => {
     // Check if the container has been scrolled to the bottom
     if (
       container.scrollTop + container.clientHeight >= container.scrollHeight &&
-      filteredJobs.length >= 20
+      filteredJobs.length >= 20 && (loadTotalPage > loadMorePage || !loadTotalPage )
     ) {
       setLoading(true);
       try {
         const res = await getJobs(loadMorePage + 1);
         const data = res?.res?.data;
+        setLoadTotalPage(res?.res?.last_page)
         setFilteredJobs((prevJobs) => [...prevJobs, ...data]);
       } catch (error) {
         console.log("error while fetching jobs", error);
@@ -445,7 +447,7 @@ const Jobs = () => {
       }
       setLoadMorePage(loadMorePage + 1);
     }
-  }, [loadMorePage, filteredJobs]);
+  }, [loadMorePage, filteredJobs, loadTotalPage]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -1637,7 +1639,9 @@ const Jobs = () => {
                         setSearchedInput("");
                         setShowSearchOptions(false);
                         setShowingSearchOptions("");
-                        fetchJobs();
+                        if(searchedInput){
+                          fetchJobs();
+                        }
                       }}
                     >
                       <CloseIcon />
@@ -2152,7 +2156,8 @@ const Jobs = () => {
                               <span
                                 onClick={() => {
                                   setActiveJob(job);
-                                  setShowNewJobModal(true);
+                                  // setShowNewJobModal(true);
+                                  handleOpenJobWithTask(job);
                                 }}
                               >
                                 <ArrowRight />

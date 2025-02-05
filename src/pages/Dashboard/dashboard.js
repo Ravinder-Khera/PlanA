@@ -472,7 +472,7 @@ function Dashboard() {
                           <div>
                             <div className="chatHeading">{chat.user.name}</div>
                             <div className="chatTime">
-                              | {formatJobNumber(selectedJob.id)} | {selectedJob.title}
+                              | &nbsp; {formatJobNumber(selectedJob.id)} &nbsp; | &nbsp; {selectedJob.title}
                             </div>
                             <div className="chatMsg">{renderMessage(trimmedTitle)}</div>
                           </div>

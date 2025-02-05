@@ -397,7 +397,7 @@ function NavMenu() {
                   <div
                     className={`InitialsBoxUser active`}
                     style={{
-                      minWidth: "36px",
+                      minWidth: "41.6px",
                       minHeight: "36px",
                       display: "flex",
                       alignItems: "center",
@@ -405,7 +405,7 @@ function NavMenu() {
                     }}
                   >
                     {user === ""
-                      ? "U"
+                      ? "WU"
                       : user
                           .split(" ")
                           .map((part) => part.charAt(0).toUpperCase())

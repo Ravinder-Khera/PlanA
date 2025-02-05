@@ -29,7 +29,7 @@ function Timeline({
     value: "",
   });
   const excessCalendarDate =
-    timeFrame === "weekly" ? 6 : timeFrame === "monthly" ? 15 : 1;
+    timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1;
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: new Date(
@@ -170,10 +170,10 @@ function Timeline({
       const adjustedStartDate = new Date(currentDate);
       const minsDaysAre =
         timeFrame !== undefined && timeFrame === "weekly"
-          ? 3
+          ? 6
           : timeFrame === "monthly"
-          ? 7
-          : 3;
+          ? 15
+          : 6;
       adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
 
       // Adjust endDate to one month more
@@ -780,7 +780,7 @@ function Timeline({
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="d-flex gap-2 align-items-start justify-content-end w-100">
+                                      <div className="d-flex gap-2 align-items-start justify-content-end w-100 commentsBox">
                                         <div>
                                           <AttachmentIcon />{" "}
                                           <span>{job.attachments_count}</span>

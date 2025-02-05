@@ -2885,6 +2885,9 @@ body {
                       .listContent {
                         opacity: 1;
                       }
+                      .commentsBox{
+                        overflow: visible;
+                      }
                     }
                   }
                 }
@@ -2923,6 +2926,9 @@ body {
                     .listContent {
                       opacity: 0;
                     }
+                  }
+                  .commentsBox{
+                    overflow: hidden;
                   }
                 }
               }
