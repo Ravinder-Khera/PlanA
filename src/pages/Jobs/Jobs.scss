@@ -361,7 +361,8 @@
         &.pending {
           background: #1fb4e366;
           border: 1px solid #1fb4e3;
-          color: #1fb4e3;
+          // color: #1fb4e3;
+          color: #fff;
           .bar {
             background: #1fb4e3;
           }
@@ -375,7 +376,8 @@
         &.in-progress {
           background: #e3881f99;
           border: 1px solid #e3881f;
-          color: #e3881f;
+          // color: #e3881f;
+          color: #fff;
           .bar {
             background: #e3881f;
           }
@@ -389,7 +391,8 @@
         &.completed {
           background: #3b923999;
           border: 1px solid #3b9239;
-          color: #3b9239;
+          // color: #3b9239;
+          color: #fff;
           .bar {
             background: #3b9239;
           }
@@ -403,7 +406,8 @@
         &.not-started {
           background: #e31f1f80;
           border: 1px solid #e31f1f;
-          color: #e31f1f;
+          // color: #e31f1f;
+          color: #fff;
           svg {
             path {
               stroke: #e3881f;
@@ -414,7 +418,8 @@
         &.on-hold {
           background: #bababa99;
           border: 1px solid #ddd;
-          color: #ddd;
+          // color: #ddd;
+          color: #fff;
           .bar {
             background: #ddd;
           }
@@ -428,7 +433,8 @@
         &.to-do {
           background: #e3881f99;
           border: 1px solid #e3881f;
-          color: #e3881f;
+          // color: #e3881f;
+          color: #fff;
           .bar {
             background: #e3881f;
           }
