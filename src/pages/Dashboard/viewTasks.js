@@ -37,6 +37,8 @@ import {
 import moment from "moment";
 import Filter from "../../Components/Filter/Filter";
 import { NotificationComponent } from "../../Components/navMenu";
+import TaskFilter from "../../Components/Filter/TaskFilter";
+import { formatJobNumber } from "../Jobs";
 function ViewTaskPage() {
   const [loading, setLoading] = useState(true);
   const [taskTab, setTaskTab] = useState("to-do");
@@ -239,6 +241,10 @@ const [storageUpdated, setStorageUpdated] = useState(false);
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [activeTaskJob, setActiveTaskJob] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
+  const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: firstDayOfMonth,
@@ -356,30 +362,27 @@ const [storageUpdated, setStorageUpdated] = useState(false);
   }, [selectSearchOptions]);
 
 
-  useEffect(() => {
-    const handleJobFilter = async () => {
-      try {
-        const response = await getTasksByUser();
-        if (response.res) {
-          setActiveTaskJob(response?.res.data);
-          setFilteredTasks(response?.res?.data);
-          return response.res;
-        } else {
-          console.error("get task failed:", response.error);
-          toast.error(response.error?.message || "Failed to get the job");
-        }
-      } catch (error) {
-        console.error("Error getting job:", error);
-        toast.error("Error getting task");
+  const handleJobFilter = async () => {
+    try {
+      const response = await getTasksByUser();
+      if (response.res) {
+        setActiveTaskJob(response?.res.data);
+        setFilteredTasks(response?.res?.data);
+        return response.res;
+      } else {
+        console.error("get task failed:", response.error);
+        toast.error(response.error?.message || "Failed to get the job");
       }
-    };
+    } catch (error) {
+      console.error("Error getting job:", error);
+      toast.error("Error getting task");
+    }
+  };
+  useEffect(() => {
     handleJobFilter();
   }, []);
 
-  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-  const [activeTaskJob, setActiveTaskJob] = useState(null);
-  const [activeTask, setActiveTask] = useState(null);
-  const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
+
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
     setFilteredTasks((prevTasks) => [
@@ -507,11 +510,9 @@ const [storageUpdated, setStorageUpdated] = useState(false);
         [selectSearchOptions]: searchedInput,
       };
       setShowingSearchOptions(searchedInput);
-      const response = await getTasksByUser();
+      const response = await getTasksByUser(reqData);
       if (!response.error) {
-        // setFilteredJobs(response?.res?.data);
-        // setOriginalJobs(response?.res?.data);
-        // // console.log(response?.res?.data);
+        setFilteredTasks(response?.res?.data);
       }
     } catch (error) {
       console.log("error in applying filter", error);
@@ -533,17 +534,25 @@ const [storageUpdated, setStorageUpdated] = useState(false);
     const handleRemoveFilter = async (value) => {
       const updatedQuery = {
         ...filteredQuery,
-        collaborator_ids: filteredQuery.collaborator_ids?.filter(
+        stage: filteredQuery.stages?.filter(
           (id) => id !== value.value
         ),
-        statuses: filteredQuery.statuses?.filter(
+        status: filteredQuery.status?.filter(
+          (status) => status !== value.value
+        ),
+        due_this_week: filteredQuery.due_this_week?.filter(
+          (status) => status !== value.value
+        ),
+        due_in_14_days: filteredQuery.due_in_14_days?.filter(
           (status) => status !== value.value
         ),
       };
   
-      if (updatedQuery.collaborator_ids?.length === 0)
-        delete updatedQuery.collaborator_ids;
-      if (updatedQuery.statuses?.length === 0) delete updatedQuery.statuses;
+      if (updatedQuery.stage?.length === 0)
+        delete updatedQuery.stage;
+      if (updatedQuery.status?.length === 0) delete updatedQuery.status;
+      if (updatedQuery.due_this_week?.length === 0) delete updatedQuery.due_this_week;
+      if (updatedQuery.due_in_14_days?.length === 0) delete updatedQuery.due_in_14_days;
   
       setFilteredQuery(updatedQuery);
       setFilteredString((prevFiltered) =>
@@ -552,11 +561,11 @@ const [storageUpdated, setStorageUpdated] = useState(false);
   
       try {
         setLoading(true);
-        // const response = await FilterJobs(updatedQuery);
+        const response = await getTasksByUser(updatedQuery);
   
-        // if (!response.error) {
-        //   setFilteredJobs(response?.res?.data);
-        // }
+        if (!response.error) {
+          setFilteredTasks(response?.res?.data);
+        }
       } catch (error) {
         console.error("Error in applying filter:", error);
       } finally {
@@ -639,6 +648,19 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                   <div className="SearchOptionBox">
                     <div
                       className={`searchOptionBtn ${
+                        selectSearchOptions !== "task_name" &&
+                        selectSearchOptions !== ""
+                          ? "disable"
+                          : selectSearchOptions !== ""
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() => setSelectSearchOptions("task_name")}
+                    >
+                      Task Name
+                    </div>
+                    <div
+                      className={`searchOptionBtn ${
                         selectSearchOptions !== "job_num" &&
                         selectSearchOptions !== ""
                           ? "disable"
@@ -648,20 +670,7 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                       }`}
                       onClick={() => setSelectSearchOptions("job_num")}
                     >
-                      Task Name
-                    </div>
-                    <div
-                      className={`searchOptionBtn ${
-                        selectSearchOptions !== "title" &&
-                        selectSearchOptions !== ""
-                          ? "disable"
-                          : selectSearchOptions !== ""
-                          ? "active"
-                          : ""
-                      }`}
-                      onClick={() => setSelectSearchOptions("title")}
-                    >
-                      Job Name
+                      Job No.
                     </div>
                  
                     {selectSearchOptions !== "" && (
@@ -705,7 +714,7 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                       setSearchedInput("");
                       setShowSearchOptions(false);
                       setShowingSearchOptions("");
-                      // fetchJobs();
+                      handleJobFilter()
                     }}
                   >
                     <CloseIcon />
@@ -714,7 +723,7 @@ const [storageUpdated, setStorageUpdated] = useState(false);
               </div>
             </form>
           </div>
-          {/* <div
+          <div
             className="d-flex  align-items-baseline addNewTaskDiv position-relative"
             style={{ cursor: "pointer" }}
             ref={filterRef}
@@ -729,15 +738,15 @@ const [storageUpdated, setStorageUpdated] = useState(false);
               </p>
             </div>
             {showFilter && (
-              <Filter
+              <TaskFilter
                 setFilteredString={setFilteredString}
                 setFilteredQuery={setFilteredQuery}
-                setFilteredJobs={setFilteredTasks}
+                setFilteredTasks={setFilteredTasks}
                 setLoading={setLoading}
                 closeFilter={() => setShowFilter(false)}
               />
             )}
-          </div> */}
+          </div>
         </div>
         <div className="d-flex gap-3 flex-wrap align-items-center">
           <div className="addjobs addJobsMobile" style={{ gap: "16px" }}>
@@ -808,7 +817,7 @@ const [storageUpdated, setStorageUpdated] = useState(false);
           </div>
         </div>
       </div>
-      {/* <div className="JobsHeading d-flex align-items-center justify-content-between">
+      <div className="JobsHeading d-flex align-items-center justify-content-between">
         <div className="d-flex align-items-center justify-content-start gap-3">
           <div className="delete-box">
             <div className="delete-item d-flex align-items-center flex-wrap gap-2">
@@ -819,20 +828,20 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                 <>Search Results For: '{showingSearchOptions}'</>
               ) : selectSearchOptions ? (
                 <>
-                   {selectSearchOptions === "title" && (
+                   {selectSearchOptions === "task_name" && (
                     <>
                       Enter the name of the ‘Task Name’ you would like to search
                       for.
                     </>
                   )}
-                  {selectSearchOptions === "job_name" && (
+                  {selectSearchOptions === "job_num" && (
                     <>
-                      Enter the name of the ‘Job Name’ you would like to search
+                      Enter the Job number  you would like to search
                       for.
                     </>
                   )}
                   
-                  {!["title", "job_name"].includes(
+                  {!["task_name", "job_num"].includes(
                     selectSearchOptions
                   ) && <>Select which category you would like to search by.</>}
                 </>
@@ -877,55 +886,11 @@ const [storageUpdated, setStorageUpdated] = useState(false);
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
 
       <div className="DashboardTopMenu">
         <div className="pagination-container justify-content-start">
-          {/* <div className="DashboardHeading d-flex justify-content-between align-items-center">
-            <h2>Tasks</h2>
-            <div
-              className={`addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none  ${filteredTasks.length}`}
-              onClick={() => {
-                if (filteredTasks.length > 0) {
-                  setShowAddTaskModal(true);
-                }
-              }}
-              title={filteredTasks.length > 0 ? "" : "Not Part of any Job yet"}
-            >
-              New Task{" "}
-              <div className="UserImg" style={{ minWidth: "40px" }}>
-                <AddIcon />
-              </div>
-            </div>
-          </div> */}
-          {/* <div className="DashboardHeading d-flex justify-content-end align-items-center position-relative">
-            <div
-              className="d-flex  align-items-baseline pe-md-4 addNewTaskDiv "
-              style={{ cursor: "pointer", marginTop: "40px" }}
-              ref={filterRef}
-            >
-              <div
-                className="d-flex align-items-center gap-2  "
-                onClick={() => setShowFilter(!showFilter)}
-              >
-                <FilterIcon />
-                <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
-                  Filter
-                </p>
-              </div>
-              {showFilter && (
-                <FilterTask
-                  setFilteredTasks={setFilteredTasks}
-                  setFilteredTotalPages={setFilteredTotalPages}
-                  currentFilteredPage={currentFilteredPage}
-                  setFilteredPageUrls={setFilteredPageUrls}
-                  setLoading={setLoading}
-                  taskTab={taskTab}
-                  closeFilter={() => setShowFilter(false)}
-                />
-              )}
-            </div>
-          </div> */}
+          
 
           <div className="taskContainer">
             <ul>
@@ -993,7 +958,7 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                         {task?.stage?.title ? task?.stage?.title : "N/A"}
                       </div>
                       <div className={`JobBtn`}>
-                        {task?.job_num ? task?.job_num : "N/A"}
+                        {task?.job_num ? formatJobNumber(task?.job_num) : "N/A"}
                       </div>
                     </div>
                     <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
@@ -1030,6 +995,9 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                     </div>
                   </li>
                 ))}
+                {filteredTasks.length === 0 && <div className="no-result"> <span >
+                              No Results Found
+                            </span></div>}
             </ul>
           </div>
         </div>

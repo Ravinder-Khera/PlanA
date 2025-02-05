@@ -608,7 +608,7 @@ export const getJobByNum = async (id) => {
   }
 };
 
-export const getTasksByUser = async () => {
+export const getTasksByUser = async (reqData = {}) => {
   const authToken = localStorage.getItem("authToken");
   const requestOptions = {
     method: "GET",
@@ -618,16 +618,20 @@ export const getTasksByUser = async () => {
       Authorization: `Bearer ${authToken}`,
     },
   };
+
   try {
-    let response = await fetch(
-      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks`,
-      requestOptions
-    );
-    const isJson = response.headers
-      .get("content-type")
-      ?.includes("application/json");
+    let url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date`;
+
+    // If reqData has values, convert them into query parameters
+    if (Object.keys(reqData).length > 0) {
+      const queryParams = new URLSearchParams(reqData).toString();
+      url += `&${queryParams}`;
+    }
+
+    let response = await fetch(url, requestOptions);
+    const isJson = response.headers.get("content-type")?.includes("application/json");
     const data = isJson && (await response.json());
-    // console.log(response,data);
+
     if (response.status === 200) {
       return { res: data, error: null };
     } else {
@@ -638,6 +642,7 @@ export const getTasksByUser = async () => {
     return { res: null, error: error };
   }
 };
+
 
 export const getJobsNum = async (id) => {
   const authToken = localStorage.getItem("authToken");
