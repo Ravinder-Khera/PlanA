@@ -1674,7 +1674,7 @@ const Jobs = () => {
           <div className="d-flex gap-3 flex-wrap align-items-center">
             <div className="addjobs addJobsMobile" style={{ gap: "16px" }}>
               <div
-                className="d-flex align-items-center"
+                className={`d-flex align-items-center`}
                 style={{ gap: "8px", cursor: "pointer" }}
                 onClick={() => {
                   setShowAddJobRow(true);
@@ -1684,7 +1684,7 @@ const Jobs = () => {
                 <div className={`addJobIcon ${showAddJoRow && "active"}`}>
                   <AddIcon />
                 </div>
-                <span>Add Job</span>
+                <span style={{color:`${showAddJoRow ? "#fff" : '#e2e31f'}`}}>Add Job</span>
               </div>
               <div
                 className="d-flex align-items-center"
@@ -1924,37 +1924,39 @@ const Jobs = () => {
                               </div>
                             ) : (
                               <>
-                                <input
-                                  className="clickBoxInput"
-                                  placeholder="Enter Job Name"
-                                  type="text"
-                                  value={addJobName}
-                                  onChange={(e) =>
-                                    setAddJobName(e.target.value)
-                                  }
-                                  onFocus={handleFocus}
-                                  onKeyDown={handleKeyDown}
-                                />
-                                {/* {addJobName?.trim() !== "" &&
-                                  newJobIdFilled &&
-                                  !newJobIdExist && (
-                                    <span
-                                      onClick={() => {
-                                        setActiveJob({
-                                          job_num: newJobIdNumber,
-                                          title: addJobName,
-                                          collaborators:
-                                            newJobCollaboratorsListId,
-                                          due_date: selectedNewJobDueDate || "",
-                                          status:
-                                            selectNewJobStatus || "not-started",
-                                        });
-                                        setShowNewJobModal(true);
-                                      }}
-                                    >
-                                      <ArrowRight />
-                                    </span>
-                                  )} */}
+                              <div className="d-flex">
+                                  <input
+                                    className="clickBoxInput"
+                                    placeholder="Enter Job Name"
+                                    type="text"
+                                    value={addJobName}
+                                    onChange={(e) =>
+                                      setAddJobName(e.target.value)
+                                    }
+                                    onFocus={handleFocus}
+                                    onKeyDown={handleKeyDown}
+                                  />
+                                  {addJobName?.trim() !== "" &&
+                                    newJobIdFilled &&
+                                    !newJobIdExist && (
+                                      <span
+                                        onClick={() => {
+                                          setActiveJob({
+                                            job_num: newJobIdNumber,
+                                            title: addJobName,
+                                            collaborators:
+                                              newJobCollaboratorsListId,
+                                            due_date: selectedNewJobDueDate || "",
+                                            status:
+                                              selectNewJobStatus || "not-started",
+                                          });
+                                          setShowNewJobModal(true);
+                                        }}
+                                      >
+                                        <ArrowRight />
+                                      </span>
+                                    )}
+                              </div>
                               </>
                             )}
                           </td>
@@ -2024,7 +2026,7 @@ const Jobs = () => {
                               </div>
                             )}
                             {newJobActiveBoxLeft === "AddCollaborators" && (
-                              <div className={`newJobItemDropBox`}>
+                              <div className={`newJobItemDropBox`} style={{minWidth:'415px',maxWidth:'max-content'}}>
                                 {newJobCollaboratorsList.length > 0 && (
                                   <div className="addedCollabs">
                                     {newJobCollaboratorsList.map(
@@ -2213,7 +2215,7 @@ const Jobs = () => {
                               </div>
                               {activeJob?.id === job.id &&
                                 activeJobField === "Collaborators" && (
-                                  <div className={`newJobItemDropBox`}>
+                                  <div className={`newJobItemDropBox`} style={{minWidth:'415px',maxWidth:'max-content'}}>
                                     {newJobCollaboratorsList.length > 0 && (
                                       <div className="addedCollabs">
                                         {newJobCollaboratorsList.map(
@@ -2348,7 +2350,7 @@ const Jobs = () => {
                                 }}
                               >
                                 {selectNewJobStatus ? (
-                                  <div
+                                  <span
                                     className={`statusBox ${selectNewJobStatus.replace(
                                       /\s+/g,
                                       ""
@@ -2358,7 +2360,7 @@ const Jobs = () => {
                                     }}
                                   >
                                     {selectNewJobStatus}
-                                  </div>
+                                  </span>
                                 ) : (
                                   "Select Status"
                                 )}
