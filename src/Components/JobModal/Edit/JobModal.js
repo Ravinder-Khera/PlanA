@@ -5490,7 +5490,7 @@ export const CreateTaskModal = ({
                     </div>
                   </div>
                   <div className="innerScroll ">
-                    {newTask && (
+                    {newTask && !task?.job_num && (
                       <>
                         {" "}
                         <input
@@ -5553,6 +5553,7 @@ export const CreateTaskModal = ({
                         )}
                       </>
                     )}
+                    {((newTask && task?.job_num) || !newTask) &&
                     <input
                       type="text"
                       className="jobTitle position-relative"
@@ -5569,7 +5570,7 @@ export const CreateTaskModal = ({
                       placeholder="Select Task"
                       ref={inputRef}
                       autoFocus={!newTask && true}
-                    />
+                    />}
                     {isPopupOpen && (
                       <div
                         style={{
@@ -5651,7 +5652,7 @@ export const CreateTaskModal = ({
                             (new Date(dueDate) - new Date()) /
                               (1000 * 60 * 60 * 24)
                           ) + " days"
-                        : "0 days"}
+                        : "No Data"}
                     </div>
 
                     <div className="discriptionBox">
