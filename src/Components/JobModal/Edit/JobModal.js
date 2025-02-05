@@ -2789,7 +2789,7 @@ export const NewJobModal = ({
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const popUpRef = useRef(null);
 
   useEffect(() => {
@@ -2811,10 +2811,10 @@ export const NewJobModal = ({
 
   const handleModalClose = async () => {
     if (!isDeleting) {
-     job = {
-      ...job,
-      description: description ?? ""
-     }
+      job = {
+        ...job,
+        description: description ?? "",
+      };
     }
     await handleClose(isDeleting, description); // Pass the deletion flag to the parent
   };
@@ -2899,7 +2899,10 @@ export const NewJobModal = ({
                         placeholder="Add Description Here..."
                       />
                     </div>
-                    <AddNewJobChatAndAttachment JobId={job?.id} usersList={usersList} />
+                    <AddNewJobChatAndAttachment
+                      JobId={job?.id}
+                      usersList={usersList}
+                    />
                   </div>
                 </div>
               </div>
@@ -2916,7 +2919,7 @@ export const NewJobModalWithTasks = ({
   handleClose,
   reloadTabs,
   scrollRef,
-  usersList
+  usersList,
 }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
@@ -3441,7 +3444,10 @@ export const NewJobModalWithTasks = ({
                         </button>
                       </div>
                     </div>
-                    <AddNewJobChatAndAttachment JobId={job?.id} usersList={usersList} />
+                    <AddNewJobChatAndAttachment
+                      JobId={job?.id}
+                      usersList={usersList}
+                    />
                   </div>
                 </div>
               </div>
@@ -3488,9 +3494,9 @@ export const NewTaskModal = ({
   const stageBoxRef = useRef(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const inputRef = useRef(null);
-  const [firstClick, setFirstClick] = useState(true); 
+  const [firstClick, setFirstClick] = useState(true);
   const popupRef = useRef(null);
-  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
 
   // Handle outside click to close the popup
   useEffect(() => {
@@ -3510,7 +3516,7 @@ export const NewTaskModal = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
+
   const fetchUsers = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
@@ -3540,13 +3546,13 @@ export const NewTaskModal = ({
     }
   };
 
-  useEffect(() => {
-    const year = new Date().getFullYear();
-    const month = String(new Date().getMonth() + 1).padStart(2, "0");
-    const day = String(new Date().getDate()).padStart(2, "0");
-    let formattedDueDate = `${year}-${month}-${day}`;
-    setDueDate(formattedDueDate);
-  }, []);
+  // useEffect(() => {
+  //   const year = new Date().getFullYear();
+  //   const month = String(new Date().getMonth() + 1).padStart(2, "0");
+  //   const day = String(new Date().getDate()).padStart(2, "0");
+  //   let formattedDueDate = `${year}-${month}-${day}`;
+  //   setDueDate(formattedDueDate);
+  // }, []);
 
   useEffect(() => {
     fetchUsers();
@@ -3679,11 +3685,10 @@ export const NewTaskModal = ({
     }
   };
 
-
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-    setInputPlaceholder("Write Task Name...")
+    setInputPlaceholder("Write Task Name...");
     // Reset input and related states
     setTitle("");
     setStage(null);
@@ -3773,7 +3778,7 @@ export const NewTaskModal = ({
                       placeholder={inputPlaceholder ?? "Select Task"}
                       ref={inputRef}
                     />
-                     {isPopupOpen && (
+                    {isPopupOpen && (
                       <div
                         style={{
                           position: "absolute",
@@ -3854,7 +3859,7 @@ export const NewTaskModal = ({
                             (new Date(dueDate) - new Date()) /
                               (1000 * 60 * 60 * 24)
                           ) + " days"
-                        : "N/A"}
+                        : <span className="not-applicable">No Data</span>}
                     </div>
 
                     <div className="discriptionBox">
@@ -3863,7 +3868,9 @@ export const NewTaskModal = ({
                           <div className="editBoxInner">
                             <h3>Job No.</h3>
                             <p className="textClass disabled">
-                              <button className="taskJobBtn">{formatJobNumber(jobNum)}</button>
+                              <button className="taskJobBtn">
+                                {formatJobNumber(jobNum)}
+                              </button>
                             </p>
                           </div>
                           <div className="editBoxInner">
@@ -4083,7 +4090,11 @@ export const NewTaskModal = ({
                               }`}
                               onClick={() => setDueDateCalender(true)}
                             >
-                              {dueDate ? moment(dueDate, "YYYY-MM-DD").format("DD/MM/YYYY") : 'Select Date'}
+                              {dueDate
+                                ? moment(dueDate, "YYYY-MM-DD").format(
+                                    "DD/MM/YYYY"
+                                  )
+                                : "Select Date"}
                               {dueDateCalender && (
                                 <div
                                   className="datePickerDiv"
@@ -4103,7 +4114,9 @@ export const NewTaskModal = ({
                           <div className="editBoxInner position-relative">
                             <h3>Stage</h3>
                             <button
-                              className={`statusBox stageBox position-relative ${stage ? `stage_${stage.title}` : 'select'}`}
+                              className={`statusBox stageBox position-relative ${
+                                stage ? `stage_${stage.title}` : "select"
+                              }`}
                               style={{
                                 border: `1px solid ${activeStageColor}`,
                                 background: "transparent",
@@ -4112,7 +4125,6 @@ export const NewTaskModal = ({
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
-                              
                             </button>
                             {stageBox && (
                               <div
@@ -4132,10 +4144,8 @@ export const NewTaskModal = ({
                                       >
                                         <div
                                           className={`statusBox position-relative stage_${stage.title}`}
-                                          
                                         >
                                           {stage.title}
-                                        
                                         </div>
                                       </div>
                                     );
@@ -4242,7 +4252,10 @@ export const NewTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment JobId={jobNum} usersList={usersList}/>
+                    <AddNewJobChatAndAttachment
+                      JobId={jobNum}
+                      usersList={usersList}
+                    />
                   </div>
                 </div>
               </div>
@@ -4261,7 +4274,7 @@ export const UpdateTaskModal = ({
   reloadTabs,
   onUpdateTask,
   scrollRef,
-  usersList: suggestedUser
+  usersList: suggestedUser,
 }) => {
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState(task?.title || "");
@@ -4295,7 +4308,7 @@ export const UpdateTaskModal = ({
   const inputRef = useRef(null);
   const popupRef = useRef(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
 
   const fetchUsers = async () => {
     try {
@@ -4499,19 +4512,18 @@ export const UpdateTaskModal = ({
     }
   };
 
-   // Handle option selection
-   const handleOptionClick = (option) => {
+  // Handle option selection
+  const handleOptionClick = (option) => {
     setTitle(option.title);
     setStage({ id: option.id, title: option.stageTitle });
     setTatskStatus(option.status);
     setIsPopupOpen(false);
   };
 
-
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-    setInputPlaceholder("Write Task Name...")
+    setInputPlaceholder("Write Task Name...");
     // Reset input and related states
     setTitle("");
     setStage(null);
@@ -4594,7 +4606,7 @@ export const UpdateTaskModal = ({
                       placeholder={inputPlaceholder ?? "Select Task"}
                       ref={inputRef}
                     />
-                     {isPopupOpen && (
+                    {isPopupOpen && (
                       <div
                         style={{
                           position: "absolute",
@@ -4675,7 +4687,7 @@ export const UpdateTaskModal = ({
                             (new Date(dueDate) - new Date()) /
                               (1000 * 60 * 60 * 24)
                           ) + " days"
-                        : "N/A"}
+                        :  <span className="not-applicable">No Data</span>}
                     </div>
 
                     <div className="discriptionBox">
@@ -4906,7 +4918,11 @@ export const UpdateTaskModal = ({
                               }`}
                               onClick={() => setDueDateCalender(true)}
                             >
-                               {dueDate ? moment(dueDate, "YYYY-MM-DD").format("DD/MM/YYYY") : 'Select Date'}
+                              {dueDate
+                                ? moment(dueDate, "YYYY-MM-DD").format(
+                                    "DD/MM/YYYY"
+                                  )
+                                : "Select Date"}
                               {dueDateCalender && (
                                 <div
                                   className="datePickerDiv"
@@ -4926,12 +4942,12 @@ export const UpdateTaskModal = ({
                           <div className="editBoxInner position-relative">
                             <h3>Stage</h3>
                             <button
-                              className={`statusBox stageBox position-relative ${stage ? `stage_${stage?.title}` : 'select'}`}
-                              
+                              className={`statusBox stageBox position-relative ${
+                                stage ? `stage_${stage?.title}` : "select"
+                              }`}
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
-                              
                             </button>
                             {stageBox && (
                               <div
@@ -4951,10 +4967,8 @@ export const UpdateTaskModal = ({
                                       >
                                         <div
                                           className={`statusBox position-relative stage_${stage?.title}`}
-                                         
                                         >
                                           {stage.title}
-                                         
                                         </div>
                                       </div>
                                     );
@@ -5061,7 +5075,10 @@ export const UpdateTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment JobId={task?.job_id} usersList={suggestedUser} />
+                    <AddNewJobChatAndAttachment
+                      JobId={task?.job_id}
+                      usersList={suggestedUser}
+                    />
                   </div>
                 </div>
               </div>
@@ -5081,7 +5098,7 @@ export const CreateTaskModal = ({
   reloadTabs,
   scrollRef,
   newTask,
-  usersList: suggestedUser
+  usersList: suggestedUser,
 }) => {
   const [task, setTask] = useState(propTask);
   const [loader, setLoader] = useState(false);
@@ -5118,7 +5135,7 @@ export const CreateTaskModal = ({
   const jobSelectRef = useRef(null);
   const [firstClick, setFirstClick] = useState(true);
   const [jobNo, setJobNo] = useState(null);
-  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
 
   const handleInputClick = () => {
     setIsPopupOpen(true);
@@ -5223,13 +5240,13 @@ export const CreateTaskModal = ({
     }
   };
 
-  useEffect(() => {
-    const year = new Date().getFullYear();
-    const month = String(new Date().getMonth() + 1).padStart(2, "0");
-    const day = String(new Date().getDate()).padStart(2, "0");
-    let formattedDueDate = `${year}-${month}-${day}`;
-    setDueDate(formattedDueDate);
-  }, []);
+  // useEffect(() => {
+  //   const year = new Date().getFullYear();
+  //   const month = String(new Date().getMonth() + 1).padStart(2, "0");
+  //   const day = String(new Date().getDate()).padStart(2, "0");
+  //   let formattedDueDate = `${year}-${month}-${day}`;
+  //   setDueDate(formattedDueDate);
+  // }, []);
 
   useEffect(() => {
     fetchUsers();
@@ -5377,7 +5394,7 @@ export const CreateTaskModal = ({
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-    setInputPlaceholder("Write Task Name...")
+    setInputPlaceholder("Write Task Name...");
 
     // Reset input and related states
     setTitle("");
@@ -5441,7 +5458,7 @@ export const CreateTaskModal = ({
                     </div>
                   </div>
                   <div className="innerScroll ">
-                    {newTask && (
+                    {newTask && !task?.job_num && (
                       <>
                         {" "}
                         <input
@@ -5504,23 +5521,26 @@ export const CreateTaskModal = ({
                         )}
                       </>
                     )}
-                    <input
-                      type="text"
-                      className="jobTitle position-relative"
-                      name="title"
-                      value={title}
-                      onChange={(e) => {
-                        if (!firstClick) {
-                          setTitle(e.target.value);
-                        } else {
-                          e.preventDefault();
-                        }
-                      }}
-                      onClick={handleInputClick}
-                      placeholder={inputPlaceholder ?? "Select Task"}
-                      ref={inputRef}
-                      autoFocus={!newTask && true}
-                    />
+                    {((newTask && task?.job_num) || !newTask) && (
+                      <input
+                        type="text"
+                        className="jobTitle position-relative"
+                        name="title"
+                        value={title}
+                        onChange={(e) => {
+                          if (!firstClick) {
+                            setTitle(e.target.value);
+                          } else {
+                            e.preventDefault();
+                          }
+                        }}
+                        onClick={handleInputClick}
+                        placeholder={inputPlaceholder ?? "Select Task"}
+                        ref={inputRef}
+                        autoFocus={!newTask && true}
+                      />
+                    )}
+
                     {isPopupOpen && (
                       <div
                         style={{
@@ -5580,6 +5600,7 @@ export const CreateTaskModal = ({
                         </div>
                       </div>
                     )}
+
                     <div className="discriptionBox">
                       <h3>Description</h3>
                       <textarea
@@ -5592,31 +5613,67 @@ export const CreateTaskModal = ({
                       />
                     </div>
 
-
-                    <div className="discriptionBox">
-                      <h3>Days Left</h3>
-                      {dueDate &&
-                      Math.floor(
-                        (new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24)
-                      ) > 0
-                        ? Math.floor(
+                    {newTask ? (
+                      <div className="discriptionBox w-100 d-flex justify-content-start align-items-baseline gap-5">
+                        {task?.job_num && (
+                          <div style={{marginRight:'100px'}}>
+                            <h3>Job No.</h3>
+                            <p className="textClass disabled">
+                              <button className="taskJobBtn">
+                                {task?.job_num
+                                  ? formatJobNumber(task?.job_num)
+                                  : "N/A"}
+                              </button>
+                            </p>
+                          </div>
+                        )}
+                        <div>
+                          <h3>Days Left</h3>
+                          {dueDate &&
+                          Math.floor(
                             (new Date(dueDate) - new Date()) /
                               (1000 * 60 * 60 * 24)
-                          ) + " days"
-                        : "N/A"}
-                    </div>
+                          ) > 0 ? (
+                            Math.floor(
+                              (new Date(dueDate) - new Date()) /
+                                (1000 * 60 * 60 * 24)
+                            ) + " days"
+                          ) : (
+                            <span className="not-applicable">No Data</span>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="discriptionBox">
+                        <h3>Days Left</h3>
+                        {dueDate &&
+                        Math.floor(
+                          (new Date(dueDate) - new Date()) /
+                            (1000 * 60 * 60 * 24)
+                        ) > 0
+                          ? Math.floor(
+                              (new Date(dueDate) - new Date()) /
+                                (1000 * 60 * 60 * 24)
+                            ) + " days"
+                          :  <span className="not-applicable">No Data</span>}
+                      </div>
+                    )}
 
                     <div className="discriptionBox">
                       <div className="editBox">
                         <div className="editBoxContent">
-                        {!newTask &&  <div className="editBoxInner">
-                            <h3>Job No.</h3>
-                            <p className="textClass disabled">
-                              <button className="taskJobBtn">
-                                {task?.job_num ? formatJobNumber(task?.job_num):'N/A'}
-                              </button>
-                            </p>
-                          </div>}
+                          {!newTask && (
+                            <div className="editBoxInner">
+                              <h3>Job No.</h3>
+                              <p className="textClass disabled">
+                                <button className="taskJobBtn">
+                                  {task?.job_num
+                                    ? formatJobNumber(task?.job_num)
+                                    : "N/A"}
+                                </button>
+                              </p>
+                            </div>
+                          )}
                           <div className="editBoxInner">
                             <h3>Collaborators</h3>
                             <div className="textClass disabled collaboratorsBox justify-content-start position-relative">
@@ -5830,11 +5887,15 @@ export const CreateTaskModal = ({
                             <h3>Due Date</h3>
                             <div
                               className={`textClass pointer ${
-                                dueDate === task?.due_date && "disabled"
+                                !dueDate  && "disabled"
                               }`}
                               onClick={() => setDueDateCalender(true)}
                             >
-                               {dueDate ? moment(dueDate, "YYYY-MM-DD").format("DD/MM/YYYY") : 'Select Date'}
+                              {dueDate
+                                ? moment(dueDate, "YYYY-MM-DD").format(
+                                    "DD/MM/YYYY"
+                                  )
+                                : "Select Date"}
                               {dueDateCalender && (
                                 <div
                                   className="datePickerDiv"
@@ -5854,11 +5915,12 @@ export const CreateTaskModal = ({
                           <div className="editBoxInner position-relative">
                             <h3>Stage</h3>
                             <button
-                              className={`statusBox stageBox position-relative  ${stage ? `stage_${stage?.title}` : 'stage_select'}`}
+                              className={`statusBox stageBox position-relative  ${
+                                stage ? `stage_${stage?.title}` : "stage_select"
+                              }`}
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
-                              
                             </button>
                             {stageBox && (
                               <div
@@ -5878,10 +5940,8 @@ export const CreateTaskModal = ({
                                       >
                                         <div
                                           className={`statusBox position-relative stage_${stage?.title}`}
-                                          
                                         >
                                           {stage.title}
-                                         
                                         </div>
                                       </div>
                                     );
@@ -5988,7 +6048,10 @@ export const CreateTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment JobId={task?.id}  usersList={suggestedUser}/>
+                    <AddNewJobChatAndAttachment
+                      JobId={task?.id}
+                      usersList={suggestedUser}
+                    />
                   </div>
                 </div>
               </div>

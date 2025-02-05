@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import {
   AddIcon,
+  ArrowRight,
   BellIcon,
   CloseIcon,
   FilterCrossIcon,
@@ -975,10 +976,15 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                       }
                     }}
                   >
-                    <div className={`listContent listTitle `}>
+                    <div className={`listContent listTitle justify-content-between`}>
                       <p>
                         <span> {task?.title}</span>
                       </p>
+                      <p style={{marginRight: '30px', cursor:'pointer'}}>
+
+                         <ArrowRight />
+                      </p>
+
                     </div>
                     <div className="listContent centerContent">
                       <div
