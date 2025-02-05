@@ -3,7 +3,7 @@ import CountUp from "react-countup";
 import { Bars } from "react-loader-spinner";
 import { getDashboardSummary, updateTask } from "../../services/auth";
 import Timeline from "../../Components/Timeline";
-import { AddIcon, User } from "../../assets/svg";
+import { AddIcon, AddTaskGreyButton, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { getMessages } from "../../services/chat_attachment";
 import { formatJobNumber } from "../Jobs";
@@ -406,6 +406,10 @@ function Dashboard() {
                       </div>
                     );
                   })}
+              </div>
+              <div className="create_new_task_div">
+                <span><AddTaskGreyButton /> </span>
+                <p>Create New Task</p>
               </div>
               <div className="taskCount text-center mt-4">
                 <p
