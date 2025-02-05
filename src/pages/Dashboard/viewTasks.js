@@ -865,7 +865,7 @@ const [storageUpdated, setStorageUpdated] = useState(false);
                     const borderColor =
                       className === "user"
                         ? userColors[string.filter]
-                        : "currentColor";
+                        : "inherit";
                     return (
                       <span
                         className={`filterItemBox ${className}`}
