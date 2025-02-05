@@ -534,13 +534,14 @@ function ViewTaskPage() {
       ...filteredQuery,
       stage_id: filteredQuery.stage_id?.filter((id) => id !== value.value),
       status: filteredQuery.status?.filter((status) => status !== value.value),
-      due_this_week:undefined,
+      due_this_week: undefined,
       due_in_14_days: undefined,
     };
 
-    
-    if (!updatedQuery?.stage_id || updatedQuery.stage_id?.length === 0) delete updatedQuery.stage_id;
-    if (!updatedQuery.status || updatedQuery.status?.length === 0) delete updatedQuery.status;
+    if (!updatedQuery?.stage_id || updatedQuery.stage_id?.length === 0)
+      delete updatedQuery.stage_id;
+    if (!updatedQuery.status || updatedQuery.status?.length === 0)
+      delete updatedQuery.status;
     if (!updatedQuery.due_this_week) delete updatedQuery.due_this_week;
     if (!updatedQuery.due_in_14_days) delete updatedQuery.due_in_14_days;
     console.log("uupdated", updatedQuery);
