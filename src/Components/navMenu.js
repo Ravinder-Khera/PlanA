@@ -7,18 +7,20 @@ import { Link, useNavigate } from "react-router-dom";
 
 export function NotificationComponent({ notificationData, onRemove }) {
   const [removing, setRemoving] = useState(false);
-  
+
   const handleRemove = () => {
     setRemoving(true);
     setTimeout(() => {
-      setRemoving(false)
+      setRemoving(false);
       onRemove(notificationData);
     }, 500); // Wait for the animation to complete before removing
   };
   return (
-    <div  className={`notificationClass ${notificationData.class}-class ${
-      removing ? "slide-out" : ""
-    }`} >
+    <div
+      className={`notificationClass ${notificationData.class}-class ${
+        removing ? "slide-out" : ""
+      }`}
+    >
       <div className="notificationMsg">
         <div className="notificationIcon"></div>
         <div className="notificationText">
@@ -382,8 +384,14 @@ function NavMenu() {
                     className="d-flex flex-column justify-content-center"
                   >
                     <p>{[user]}</p>
-                    <span style={{ fontSize: "12px", fontWeight: "300", textTransform:'capitalize' }}>
-                      {[userDesignation]}{' '}
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "300",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {[userDesignation]}{" "}
                     </span>
                   </div>
                   <div
@@ -391,19 +399,20 @@ function NavMenu() {
                     style={{
                       minWidth: "36px",
                       minHeight: "36px",
-                      display:'flex',
+                      display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    {user === "" ? 'U' : user
-                      .split(" ")
-                      .map((part) => part.charAt(0).toUpperCase())
-                      .join("")}
+                    {user === ""
+                      ? "U"
+                      : user
+                          .split(" ")
+                          .map((part) => part.charAt(0).toUpperCase())
+                          .join("")}
                   </div>
                 </Link>
                 <div className="addNewTaskDiv d-flex align-items-center justify-content-center gap-2">
-                  
                   <div
                     className="bellIcon addTaskJobDiv"
                     style={{ cursor: "pointer" }}
@@ -414,7 +423,6 @@ function NavMenu() {
                       }
                     >
                       <BellIcon />
-                     
                     </div>
                     {notificationDropDown && (
                       <div
@@ -451,20 +459,23 @@ function NavMenu() {
                     )}
                   </div>
                   <div
-  style={{
-    color: "#E2E31F",
-    textAlign: "right",
-    fontFamily: "Archivo",
-    fontSize: "16px",
-    fontStyle: "normal",
-    fontWeight: "400",
-    lineHeight: "normal",
-    letterSpacing: "-0.56px",
-  }}
->
-  Notifications
-</div>
-
+                    style={{
+                      color: "#E2E31F",
+                      textAlign: "right",
+                      fontFamily: "Archivo",
+                      fontSize: "16px",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      lineHeight: "normal",
+                      letterSpacing: "-0.56px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() =>
+                      setNotificationDropDown(!notificationDropDown)
+                    }
+                  >
+                    Notifications
+                  </div>
                 </div>
               </div>
             </div>

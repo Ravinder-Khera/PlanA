@@ -3495,6 +3495,7 @@ export const NewTaskModal = ({
   const inputRef = useRef(null);
   const [firstClick, setFirstClick] = useState(true);
   const popupRef = useRef(null);
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
 
   // Handle outside click to close the popup
   useEffect(() => {
@@ -3686,7 +3687,7 @@ export const NewTaskModal = ({
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-
+    setInputPlaceholder("Write Task Name...")
     // Reset input and related states
     setTitle("");
     setStage(null);
@@ -3773,7 +3774,7 @@ export const NewTaskModal = ({
                         }
                       }}
                       onClick={handleInputClick}
-                      placeholder="Select Task"
+                      placeholder={inputPlaceholder ?? "Select Task"}
                       ref={inputRef}
                     />
                     {isPopupOpen && (
@@ -4326,6 +4327,7 @@ export const UpdateTaskModal = ({
   const inputRef = useRef(null);
   const popupRef = useRef(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
 
   const fetchUsers = async () => {
     try {
@@ -4540,7 +4542,7 @@ export const UpdateTaskModal = ({
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-
+    setInputPlaceholder("Write Task Name...")
     // Reset input and related states
     setTitle("");
     setStage(null);
@@ -4620,7 +4622,7 @@ export const UpdateTaskModal = ({
                         }
                       }}
                       onClick={handleInputClick}
-                      placeholder="Select Task"
+                      placeholder={inputPlaceholder ?? "Select Task"}
                       ref={inputRef}
                     />
                     {isPopupOpen && (
@@ -5179,6 +5181,7 @@ export const CreateTaskModal = ({
   const jobSelectRef = useRef(null);
   const [firstClick, setFirstClick] = useState(true);
   const [jobNo, setJobNo] = useState(null);
+  const [inputPlaceholder, setInputPlaceholder] = useState("Select Task")
 
   const handleInputClick = () => {
     setIsPopupOpen(true);
@@ -5437,7 +5440,7 @@ export const CreateTaskModal = ({
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
-
+    setInputPlaceholder("Write Task Name...")
     // Reset input and related states
     setTitle("");
     setStage(null);
@@ -5577,7 +5580,7 @@ export const CreateTaskModal = ({
                           }
                         }}
                         onClick={handleInputClick}
-                        placeholder="Select Task"
+                        placeholder={inputPlaceholder ?? "Select Task"}
                         ref={inputRef}
                         autoFocus={!newTask && true}
                       />
