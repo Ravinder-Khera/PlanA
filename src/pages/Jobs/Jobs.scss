@@ -1392,6 +1392,7 @@
             line-height: normal;
             letter-spacing: -0.48px;
             margin: 0 20px;
+            color: #ffffff;
             &.linkBtn {
               text-decoration: none;
               background: rgba(255, 255, 255, 0.5);
@@ -1404,7 +1405,7 @@
             &.pending {
               background: #1fb4e366;
               border: 1px solid #1fb4e3;
-              color: #1fb4e3;
+              // color: #1fb4e3;
               .bar {
                 background: #1fb4e3;
               }
@@ -1413,7 +1414,7 @@
             &.in-progress {
               background: #e3881f99;
               border: 1px solid #e3881f;
-              color: #e3881f;
+              // color: #e3881f;
               .bar {
                 background: #e3881f;
               }
@@ -1422,7 +1423,7 @@
             &.completed {
               background: #3b923999;
               border: 1px solid #3b9239;
-              color: #3b9239;
+              // color: #3b9239;
               .bar {
                 background: #3a923900;
               }
@@ -1431,13 +1432,13 @@
             &.not-started {
               background: #e31f1f80;
               border: 1px solid #e31f1f;
-              color: #e31f1f;
+              // color: #e31f1f;
             }
 
             &.on-hold {
               background: #bababa99;
               border: 1px solid #ddd;
-              color: #ddd;
+              // color: #ddd;
               .bar {
                 background: #ddd;
               }
@@ -1446,7 +1447,7 @@
             &.to-do {
               background: #e3881f99;
               border: 1px solid #e3881f;
-              color: #e3881f;
+              // color: #e3881f;
               .bar {
                 background: #e3881f;
               }
@@ -1455,7 +1456,7 @@
             &.canceled {
               background: transparent;
               border: 1px solid #bababa99;
-              color: #bababa99;
+              // color: #bababa99;
               .bar {
                 background: #bababa99;
               }

@@ -2237,126 +2237,130 @@
               row-gap: 20px;
               .editBoxContent {
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(4, 1fr);
                 max-width: max-content;
                 grid-column-gap: 60px;
                 grid-row-gap: 20px;
                 max-width: 515px;
+                align-items: center;
+                h3,
+                p {
+                  margin-bottom: 0;
+                }
+                h3{
+                  min-width: max-content;
+                }
+                .statusBox {
+                  border-radius: 4px;
+                  color: #fff;
+                  cursor: pointer;
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 700;
+                  line-height: normal;
+                  letter-spacing: -0.48px;
+                  min-height: 28px;
+                  align-content: center;
+                  min-width: max-content;
+                  padding: 7.5px 12px;
+                  border: 1px solid #fff;
+                  background: rgba(255, 255, 255, 0.25);
+
+                  &.pending {
+                    background: #1fb4e366;
+                    border: 1px solid #1fb4e3;
+                    color: #1fb4e3;
+                    .bar {
+                      background: #1fb4e3;
+                    }
+                  }
+
+                  &.in-progress {
+                    background: #e3881f99;
+                    border: 1px solid #e3881f;
+                    color: #e3881f;
+                    .bar {
+                      background: #e3881f;
+                    }
+                  }
+
+                  &.completed {
+                    background: #3b923999;
+                    border: 1px solid #3b9239;
+                    color: #3b9239;
+                    .bar {
+                      background: #3a923900;
+                    }
+                  }
+
+                  &.not-started {
+                    background: #e31f1f80;
+                    border: 1px solid #e31f1f;
+                    color: #e31f1f;
+                  }
+
+                  &.on-hold {
+                    background: #bababa99;
+                    border: 1px solid #ddd;
+                    color: #ddd;
+                    .bar {
+                      background: #ddd;
+                    }
+                  }
+
+                  &.stage_Application {
+                    border: 1px solid #3b9239;
+                    background: rgba(59, 146, 57, 0.6);
+                  }
+
+                  &.stage_Referral {
+                    border: 1px solid #1fb4e3;
+                    background: rgba(31, 180, 227, 0.4);
+                  }
+
+                  &.stage_Information,
+                  &.stage_Inform,
+                  &.stage_Info {
+                    border: 1px solid #8a50c5;
+                    background: rgba(138, 80, 197, 0.49);
+                  }
+
+                  &.stage_Public {
+                    border: 1px solid #ff5c00;
+                    background: rgba(255, 92, 0, 0.55);
+                  }
+
+                  &.stage_Decision {
+                    border: 1px solid #ff40be;
+                    background: rgba(255, 64, 190, 0.4);
+                  }
+
+                  &.stage_Unknown,
+                  &.stage_undefined {
+                    border: 1px solid #fff;
+                    background: rgba(255, 255, 255, 0.25);
+                  }
+
+                  &.stage_select {
+                    
+                    border: none !important;
+                    background: none !important;
+                    color: #616161 !important;
+                    text-align: center;
+                    font-family: Archivo;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 700;
+                    line-height: normal;
+                    letter-spacing: -0.56px;
+                  }
+                }
                 .editBoxInner {
                   display: flex;
                   align-items: center;
                   justify-content: flex-start;
                   width: max-content;
                   gap: 30px;
-                  h3,
-                  p {
-                    margin-bottom: 0;
-                  }
-                  .statusBox {
-                    border-radius: 4px;
-                    color: #fff;
-                    cursor: pointer;
-                    font-size: 12px;
-                    font-style: normal;
-                    font-weight: 700;
-                    line-height: normal;
-                    letter-spacing: -0.48px;
-                    min-height: 28px;
-                    align-content: center;
-                    min-width: max-content;
-                    padding: 7.5px 12px;
-                    border: 1px solid #fff;
-                    background: rgba(255, 255, 255, 0.25);
-
-                    &.pending {
-                      background: #1fb4e366;
-                      border: 1px solid #1fb4e3;
-                      color: #1fb4e3;
-                      .bar {
-                        background: #1fb4e3;
-                      }
-                    }
-
-                    &.in-progress {
-                      background: #e3881f99;
-                      border: 1px solid #e3881f;
-                      color: #e3881f;
-                      .bar {
-                        background: #e3881f;
-                      }
-                    }
-
-                    &.completed {
-                      background: #3b923999;
-                      border: 1px solid #3b9239;
-                      color: #3b9239;
-                      .bar {
-                        background: #3a923900;
-                      }
-                    }
-
-                    &.not-started {
-                      background: #e31f1f80;
-                      border: 1px solid #e31f1f;
-                      color: #e31f1f;
-                    }
-
-                    &.on-hold {
-                      background: #bababa99;
-                      border: 1px solid #ddd;
-                      color: #ddd;
-                      .bar {
-                        background: #ddd;
-                      }
-                    }
-
-                    &.stage_Application {
-                      border: 1px solid #3b9239;
-                      background: rgba(59, 146, 57, 0.6);
-                    }
-
-                    &.stage_Referral {
-                      border: 1px solid #1fb4e3;
-                      background: rgba(31, 180, 227, 0.4);
-                    }
-
-                    &.stage_Information,
-                    &.stage_Inform,
-                    &.stage_Info {
-                      border: 1px solid #8a50c5;
-                      background: rgba(138, 80, 197, 0.49);
-                    }
-
-                    &.stage_Public {
-                      border: 1px solid #ff5c00;
-                      background: rgba(255, 92, 0, 0.55);
-                    }
-
-                    &.stage_Decision {
-                      border: 1px solid #ff40be;
-                      background: rgba(255, 64, 190, 0.4);
-                    }
-
-                    &.stage_Unknown,
-                    &.stage_undefined {
-                      border: 1px solid #fff;
-                      background: rgba(255, 255, 255, 0.25);
-                    }
-
-                    &.stage_select {
-                      
-                      border: none !important;
-                      background: none !important;
-                      color: #616161 !important;
-                      text-align: center;
-                      font-family: Archivo;
-                      font-size: 14px;
-                      font-style: normal;
-                      font-weight: 700;
-                      line-height: normal;
-                      letter-spacing: -0.56px;
-                    }
-                  }
                 }
                 .taskJobBtn {
                   border-radius: 4px;
@@ -2403,6 +2407,7 @@
               line-height: normal;
               letter-spacing: -0.48px;
               margin: 0 20px;
+              color: #ffffff;
               &.linkBtn {
                 text-decoration: none;
                 background: rgba(255, 255, 255, 0.5);
@@ -2415,7 +2420,7 @@
               &.pending {
                 background: #1fb4e366;
                 border: 1px solid #1fb4e3;
-                color: #1fb4e3;
+                // color: #1fb4e3;
                 .bar {
                   background: #1fb4e3;
                 }
@@ -2424,7 +2429,7 @@
               &.in-progress {
                 background: #e3881f99;
                 border: 1px solid #e3881f;
-                color: #e3881f;
+                // color: #e3881f;
                 .bar {
                   background: #e3881f;
                 }
@@ -2433,7 +2438,7 @@
               &.completed {
                 background: #3b923999;
                 border: 1px solid #3b9239;
-                color: #3b9239;
+                // color: #3b9239;
                 .bar {
                   background: #3a923900;
                 }
@@ -2442,13 +2447,13 @@
               &.not-started {
                 background: #e31f1f80;
                 border: 1px solid #e31f1f;
-                color: #e31f1f;
+                // color: #e31f1f;
               }
 
               &.on-hold {
                 background: #bababa99;
                 border: 1px solid #ddd;
-                color: #ddd;
+                // color: #ddd;
                 .bar {
                   background: #ddd;
                 }
@@ -2457,7 +2462,7 @@
               &.to-do {
                 background: #e3881f99;
                 border: 1px solid #e3881f;
-                color: #e3881f;
+                // color: #e3881f;
                 .bar {
                   background: #e3881f;
                 }
