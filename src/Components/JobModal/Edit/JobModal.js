@@ -3431,7 +3431,7 @@ export const NewJobModalWithTasks = ({
                             }`}
                           />
                           <span>
-                            showAllTasks ? "Show Less Tasks" : "Show All Tasks"
+                           { showAllTasks ? "Show Less Tasks" : "Show All Tasks"}
                           </span>
                         </div>
                       )}

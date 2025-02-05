@@ -1846,7 +1846,7 @@ const Jobs = () => {
                     </thead>
                     <tbody className="table_left">
                       {showAddJoRow && (
-                        <tr className="addNewJobRow" ref={addJobRowRefLeft}>
+                        <tr className="addNewJobRow transition left" style={{borderRight:'none'}} ref={addJobRowRefLeft}>
                           <td
                             className={`text-center clickBox ${
                               newJobActiveBoxLeft === "jobId" && "active"
@@ -2340,12 +2340,13 @@ const Jobs = () => {
                       </thead>
                       <tbody className="table_right">
                         {showAddJoRow && (
-                          <tr className="addNewJobRow" ref={addJobRowRefRight}>
+                          <tr className="addNewJobRow transition right" style={{borderLeft:'none'}} ref={addJobRowRefRight}>
                             <td
                               className={`text-center clickBox ${
                                 newJobActiveBoxRight === "SelectStatus" &&
                                 "active"
                               }`}
+                              style={{borderLeft:'none'}}
                             >
                               <div
                                 className={`clickBoxtext`}

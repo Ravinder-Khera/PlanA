@@ -3308,7 +3308,7 @@ body {
   overflow: hidden;
   min-width: 450px;
   border-radius: 2px;
-  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
   &.slide-out {
     transform: translateX(-100%);
     opacity: 0;
