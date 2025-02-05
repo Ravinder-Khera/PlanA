@@ -2023,6 +2023,33 @@
               letter-spacing: -0.64px;
               &.disabled {
                 color: #616161;
+                .collaboratorsBoxUser {
+                  &.disabled {
+                    border: none;
+                    box-shadow: none;
+                    padding: 8px 0px;
+                    color: #616161;
+                    background: transparent;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 700;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                  }
+                  &.disabled.new {
+                    color: #616161 !important;
+                    text-align: center !important;
+                    font-family: Archivo !important;
+                    font-size: 14px !important;
+                    font-style: normal !important;
+                    font-weight: 700 !important;
+                    line-height: normal !important;
+                    letter-spacing: -0.56px !important;
+                    border: none !important;
+                    background: none !important;
+                    box-shadow: none !important;
+                  }
+                }
               }
               &.pointer {
                 cursor: pointer;
@@ -2045,23 +2072,24 @@
               line-height: normal;
               letter-spacing: -0.48px;
               border-radius: 4px;
+              color: #fff;
               &.not-started {
-                color: #ff4040;
+                // color: #ff4040;
                 border: 1px solid #e31f1f;
                 background: rgba(227, 31, 31, 0.5);
               }
               &.pending {
-                color: #72ddff;
+                // color: #72ddff;
                 border: 1px solid #1fb4e3;
                 background: rgba(31, 180, 227, 0.4);
               }
               &.in-progress {
-                color: #e3881f;
+                // color: #e3881f;
                 border: 1px solid #e3881f;
                 background: rgba(227, 136, 31, 0.6);
               }
               &.on-hold {
-                color: #ddd;
+                // color: #ddd;
                 border: 1px solid #ddd;
                 background: rgba(186, 186, 186, 0.6);
               }
@@ -2071,12 +2099,12 @@
                 background: rgb(221, 221, 221, 0.5);
               }
               &.completed {
-                color: #3b9239;
+                // color: #3b9239;
                 background: #3b923999;
                 border: 1px solid #3b9239;
               }
               &.canceled {
-                color: #ff4040;
+                // color: #ff4040;
                 border: 1px solid #e31f1f;
                 background: rgba(227, 31, 31, 0.5);
               }
@@ -2265,11 +2293,11 @@
                   padding: 7.5px 12px;
                   border: 1px solid #fff;
                   background: rgba(255, 255, 255, 0.25);
-
+                  color: #fff;
                   &.pending {
                     background: #1fb4e366;
                     border: 1px solid #1fb4e3;
-                    color: #1fb4e3;
+                    // color: #1fb4e3;
                     .bar {
                       background: #1fb4e3;
                     }
@@ -2278,7 +2306,7 @@
                   &.in-progress {
                     background: #e3881f99;
                     border: 1px solid #e3881f;
-                    color: #e3881f;
+                    // color: #e3881f;
                     .bar {
                       background: #e3881f;
                     }
@@ -2287,7 +2315,7 @@
                   &.completed {
                     background: #3b923999;
                     border: 1px solid #3b9239;
-                    color: #3b9239;
+                    // color: #3b9239;
                     .bar {
                       background: #3a923900;
                     }
@@ -2296,13 +2324,13 @@
                   &.not-started {
                     background: #e31f1f80;
                     border: 1px solid #e31f1f;
-                    color: #e31f1f;
+                    // color: #e31f1f;
                   }
 
                   &.on-hold {
                     background: #bababa99;
                     border: 1px solid #ddd;
-                    color: #ddd;
+                    // color: #ddd;
                     .bar {
                       background: #ddd;
                     }
@@ -2339,6 +2367,17 @@
                   &.stage_undefined {
                     border: 1px solid #fff;
                     background: rgba(255, 255, 255, 0.25);
+                    &.disabled{
+                      border: none;
+                      color: #616161;
+                      padding: 8px 0px;
+                      background: transparent;
+                      font-size: 16px;
+                      font-style: normal;
+                      font-weight: 700;
+                      line-height: normal;
+                      letter-spacing: -0.64px;
+                    }
                   }
 
                   &.stage_select {

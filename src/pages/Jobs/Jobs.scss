@@ -891,27 +891,28 @@
         line-height: normal;
         letter-spacing: -0.48px;
         border-radius: 4px;
+        color: #fff;
         &.NotStarted,
         &.not-started {
-          color: #ff4040;
+          // color: #ff4040;
           border: 1px solid #e31f1f;
           background: rgba(227, 31, 31, 0.5);
         }
         &.Pending,
         &.pending {
-          color: #72ddff;
+          // color: #72ddff;
           border: 1px solid #1fb4e3;
           background: rgba(31, 180, 227, 0.4);
         }
         &.InProgress,
         &.in-progress {
-          color: #e3881f;
+          // color: #e3881f;
           border: 1px solid #e3881f;
           background: rgba(227, 136, 31, 0.6);
         }
         &.OnHold,
         &.on-hold {
-          color: #ddd;
+          // color: #ddd;
           border: 1px solid #ddd;
           background: rgba(186, 186, 186, 0.6);
         }
@@ -919,7 +920,7 @@
         &.completed {
           background: rgba(59, 146, 57, 0.6);
           border: 1px solid #3b9239;
-          color: #3b9239;
+          // color: #3b9239;
         }
       }
       .progressBox {
