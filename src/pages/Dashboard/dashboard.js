@@ -99,14 +99,13 @@ function Dashboard() {
     } catch (error) {
       setChats([]);
       console.log("error in fetching messages");
-    } 
+    }
   };
 
   const handleSelectJobClose = () => {
     if (selectedJob) {
       const popUpSlide = selectedJobRef.current;
       popUpSlide.classList.remove("slideIn");
-
     }
     setTimeout(() => {
       setSelectedJob();
@@ -124,7 +123,6 @@ function Dashboard() {
       if (selectedJob) {
         const popUpSlide = selectedJobRef.current;
         popUpSlide.classList.add("slideIn");
-        
       }
     }, 1000);
   }, [selectedJob]);
@@ -134,11 +132,12 @@ function Dashboard() {
     const applicationTasks = selectedJob?.tasks;
     const sortedTasks =
       applicationTasks.length > 0 &&
-      applicationTasks?.filter((task) =>  task.status !== 'completed' )
+      applicationTasks
+        ?.filter((task) => task.status !== "completed")
         .map((task) => {
-            const dueDate = new Date(task.due_date);
-            const timeDiff = Math.abs(dueDate - currentDate);
-            return { ...task, timeDiff };
+          const dueDate = new Date(task.due_date);
+          const timeDiff = Math.abs(dueDate - currentDate);
+          return { ...task, timeDiff };
         })
         .sort((a, b) => a.timeDiff - b.timeDiff);
     const nearestTask =
@@ -184,30 +183,27 @@ function Dashboard() {
     return date.toLocaleDateString("en-GB", options);
   };
 
-
   const handleTaskUpdate = async (task) => {
-      let reqBody = {
-        status: "completed",
-      };
-      try {
-        const response = await updateTask({ updatedTask: reqBody }, task.id);
-        if (response.res) {
-          setReloadTask((prevValue) => !prevValue);
-          setTimeout(() => {
-            setUpdateTaskStatus(null);
-          }, 1000)
-          console.log("task status updated");
-        }
-      } catch (error) {
-        console.log("error while updating task", error);
+    let reqBody = {
+      status: "completed",
+    };
+    try {
+      const response = await updateTask({ updatedTask: reqBody }, task.id);
+      if (response.res) {
+        setReloadTask((prevValue) => !prevValue);
+        setTimeout(() => {
+          setUpdateTaskStatus(null);
+        }, 1000);
+        console.log("task status updated");
       }
-   
+    } catch (error) {
+      console.log("error while updating task", error);
+    }
   };
 
-
   const handleCreateNewTask = () => {
-    navigate("/jobs", { state: {selectedJob, key:'new-task-job'} });
-  }
+    navigate("/jobs", { state: { selectedJob, key: "new-task-job" } });
+  };
 
   return (
     <>
@@ -309,16 +305,22 @@ function Dashboard() {
               </div>
             </div>
             <div className={`dashboard_task`}>
-              <div className="taskCount">{taskCount} Tasks</div>
+              <div className="taskCount">
+                {taskCount ? (
+                  `${taskCount} Tasks`
+                ) : (
+                  <span className="no-tasks">No Task</span>
+                )}
+              </div>
               <div className="taskDetails">
-                {selectedJobTask && selectedJobTask?.length > 0 &&
+                {selectedJobTask &&
+                  selectedJobTask?.length > 0 &&
                   selectedJobTask.map((task, index) => {
                     const trimmedTitle =
                       task?.title?.length > 35
                         ? task?.title.substring(0, 35) + "..."
                         : task?.title;
-                    const isTaskUpdated =
-                      updateTaskStatus?.id === task.id
+                    const isTaskUpdated = updateTaskStatus?.id === task.id;
                     return (
                       <div
                         key={index}
@@ -336,8 +338,7 @@ function Dashboard() {
                           >
                             <div
                               className={`markTaskComplete ${
-                                (updateTaskStatus?.id === task?.id) &&
-                                "active"
+                                updateTaskStatus?.id === task?.id && "active"
                               }`}
                               onClick={() => {
                                 if (task.status === "completed") return;
@@ -412,8 +413,13 @@ function Dashboard() {
                     );
                   })}
               </div>
-              <div className="create_new_task_div" onClick={handleCreateNewTask}>
-                <span><AddTaskGreyButton /> </span>
+              <div
+                className="create_new_task_div"
+                onClick={handleCreateNewTask}
+              >
+                <span>
+                  <AddTaskGreyButton />{" "}
+                </span>
                 <p>Create New Task</p>
               </div>
               <div className="taskCount text-center mt-4">
@@ -453,7 +459,7 @@ function Dashboard() {
                           className="d-flex align-items-center justify-content-start"
                           style={{ gap: "19px" }}
                         >
-                          <div className="d-flex align-items-start gap-3" >
+                          <div className="d-flex align-items-start gap-3">
                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                               <div className=" d-flex align-items-center justify-content-end">
                                 <div
@@ -469,13 +475,18 @@ function Dashboard() {
                                 </div>
                               </div>
                             </div>
-                          <div>
-                            <div className="chatHeading">{chat.user.name}</div>
-                            <div className="chatTime">
-                              | &nbsp; {formatJobNumber(selectedJob.id)} &nbsp; | &nbsp; {selectedJob.title}
+                            <div>
+                              <div className="chatHeading">
+                                {chat.user.name}
+                              </div>
+                              <div className="chatTime">
+                                | &nbsp; {formatJobNumber(selectedJob.id)}{" "}
+                                &nbsp; | &nbsp; {selectedJob.title}
+                              </div>
+                              <div className="chatMsg">
+                                {renderMessage(trimmedTitle)}
+                              </div>
                             </div>
-                            <div className="chatMsg">{renderMessage(trimmedTitle)}</div>
-                          </div>
                           </div>
                         </div>
                         <div className="chatBtnDiv">

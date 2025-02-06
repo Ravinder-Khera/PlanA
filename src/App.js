@@ -608,6 +608,7 @@ function DashboardMenuList() {
 function RightSide() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { pathname } = useLocation();
+  
 
   useEffect(() => {
     const checkAuthToken = () => {
@@ -653,25 +654,30 @@ function RightSide() {
 
 function App() {
   useEffect(() => {
+    const id = localStorage.getItem("jobId");
+    if(!id) return
     const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
       cluster: process.env.REACT_APP_CLUSTER,
       encrypted: true,
     });
-    const id = localStorage.getItem("jobId");
-    console.log("job id", id);
-    const channel = pusher.subscribe(`job.${id}`);
-    channel.bind("message.created", (data) => {
-      console.log("data in messages", data);
+
+    const handleMessage = (data) => {
       const { message } = data;
       if (message > 0) {
         eventEmitter.emit("newMessage", message);
       }
-    });
+    };
+    console.log("Subscribing to job:", id);
+    console.log("job id", id);
+    const channel = pusher.subscribe(`job.${id}`);
+    channel.bind("message.created", handleMessage);
 
     return () => {
+      console.log("Unsubscribing from job:", id);
+      channel.unbind("message.created", handleMessage);
       pusher.unsubscribe(`job.${id}`);
     };
-  }, []);
+  }, [localStorage.getItem("jobId")]);
 
   return (
     <div className="App">

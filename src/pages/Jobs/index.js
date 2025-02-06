@@ -38,7 +38,7 @@ import JobModal, {
   NewTaskModal,
   UpdateTaskModal,
 } from "../../Components/JobModal/Edit/JobModal";
-import { StatusList } from "../../helper";
+import { MAX_CALENDAR_YEAR, StatusList } from "../../helper";
 import Add from "../../Components/JobModal/Add/Add";
 import { Link, useLocation } from "react-router-dom";
 import { NotificationComponent } from "../../Components/navMenu";
@@ -823,7 +823,7 @@ const Jobs = () => {
   const handleTitleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleTitleUpdate();
-      synchronizeRowHeights();
+      // synchronizeRowHeights();
     }
     return;
   };
@@ -1230,9 +1230,9 @@ const Jobs = () => {
     }
   };
 
-  useEffect(() => {
-    synchronizeRowHeights();
-  }, [filteredJobs]);
+  // useEffect(() => {
+  //   synchronizeRowHeights();
+  // }, [filteredJobs]);
 
   const handleAddJobScroll = () => {
     if (containerRef.current) {
@@ -1974,7 +1974,7 @@ const Jobs = () => {
                             )}
                           </td>
                           <td
-                            className={`text-center clickBox ${
+                            className={`text-center clickBox collab ${
                               newJobActiveBoxLeft === "AddCollaborators" &&
                               "active"
                             }`}
@@ -2040,7 +2040,7 @@ const Jobs = () => {
                             )}
                             {newJobActiveBoxLeft === "AddCollaborators" && (
                               <div
-                                className={`newJobItemDropBox`}
+                                className={`newJobItemDropBoxtwo`}
                                 style={{
                                   minWidth: "415px",
                                   maxWidth: "max-content",
@@ -2179,7 +2179,7 @@ const Jobs = () => {
                               </span>
                             </td>
                             <td
-                              className={`text-center clickBox`}
+                              className={`text-center clickBox collab`}
                               onClick={() => handleCollaboratorClick(job)}
                             >
                               <div className="collaboratorsBox">
@@ -2236,7 +2236,7 @@ const Jobs = () => {
                               {activeJob?.id === job.id &&
                                 activeJobField === "Collaborators" && (
                                   <div
-                                    className={`newJobItemDropBox`}
+                                    className={`newJobItemDropBoxtwo`}
                                     style={{
                                       minWidth: "415px",
                                       maxWidth: "max-content",
@@ -2332,10 +2332,10 @@ const Jobs = () => {
 
             <div className="right-side">
               <div className="first-table">
-                <div className="table-responsive right-side-table">
+                <div className="right-side-table">
                   <div className="job_table_outer_div">
                     <table className="table table-borderless text-light">
-                      <thead className="">
+                      <thead className="sticky-header-right">
                         <tr>
                           <th scope="col">
                             <div className="headerDiv">Status</div>
@@ -2476,6 +2476,14 @@ const Jobs = () => {
                                     calendarType="ISO 8601"
                                     minDate={new Date()}
                                     rangeColors={["#E2E31F"]}
+                                    maxDate={
+                                      new Date(
+                                        new Date().setFullYear(
+                                          new Date().getFullYear() +
+                                            MAX_CALENDAR_YEAR
+                                        )
+                                      )
+                                    }
                                   />
                                 </div>
                               )}
@@ -2631,8 +2639,16 @@ const Jobs = () => {
                                         onChange={handleDueDateChange}
                                         value={editedJobDueDate}
                                         calendarType="ISO 8601"
-                                        // minDate={new Date(job.due_date)}
                                         rangeColors={["#E2E31F"]}
+                                        minDate={new Date()}
+                                        maxDate={
+                                          new Date(
+                                            new Date().setFullYear(
+                                              new Date().getFullYear() +
+                                                MAX_CALENDAR_YEAR
+                                            )
+                                          )
+                                        }
                                       />
                                     </div>
                                   )}
@@ -2650,63 +2666,84 @@ const Jobs = () => {
                                       )}{" "}
                                 days
                               </td>
-                              <td className="text-start d-flex align-items-center justify-content-between">
-                                <div
-                                  className="d-flex align-items-center "
-                                  style={{ gap: "8px" }}
-                                >
-                                  {job?.tasks?.length > 0 && (
-                                    <>
-                                      {job?.tasks
-                                        .slice(
-                                          0,
-                                          showAllTasks ? job?.tasks.length : 3
-                                        )
-                                        .map((task, index) => {
-                                          return (
-                                            <span
-                                              key={index}
-                                              style={{ cursor: "pointer" }}
-                                              className={`statusBtn mx-0 ${task.status}`}
-                                              onClick={() => {
-                                                console.log(task);
-                                                if (!task.id) {
-                                                  console.log("not from db");
-                                                  handleCheckTask(
-                                                    job.id,
-                                                    index
-                                                  );
-                                                } else {
-                                                  setActiveTask(task);
-                                                  setShowUpdateTaskModal(true);
-                                                }
-                                              }}
-                                            >
-                                              {task.title}
-                                            </span>
-                                          );
-                                        })}
-                                    </>
-                                  )}
-                                  <div className={`px-3 clickBox`}>
-                                    <div
-                                      className={`clickBoxtext`}
-                                      onClick={() => handleAddTaskClick(job)}
-                                    >
-                                      Add Task +
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="task-view-more">
-                                  {job?.tasks?.length > 0 && (
-                                    <div
-                                      className={` mx-0 `}
-                                      onClick={() => handleOpenJobWithTask(job)}
-                                    >
-                                      View More <RightArrow color="#E2E31F" />
-                                    </div>
-                                  )}
-                                </div>
+                              <td className="text-start">
+                                <table style={{width: '100%'}}>
+                                  <tr>
+                                    <td style={{ borderRight: "none",   width: 'calc(100% - 110px)' }}>
+                                      <div
+                                        className="d-flex align-items-center "
+                                        style={{ gap: "8px" }}
+                                      >
+                                        {job?.tasks?.length > 0 && (
+                                          <>
+                                            {job?.tasks
+                                              .slice(
+                                                0,
+                                                showAllTasks
+                                                  ? job?.tasks.length
+                                                  : 3
+                                              )
+                                              .map((task, index) => {
+                                                return (
+                                                  <span
+                                                    key={index}
+                                                    style={{
+                                                      cursor: "pointer",
+                                                    }}
+                                                    className={`statusBtn mx-0 ${task.status}`}
+                                                    onClick={() => {
+                                                      console.log(task);
+                                                      if (!task.id) {
+                                                        console.log(
+                                                          "not from db"
+                                                        );
+                                                        handleCheckTask(
+                                                          job.id,
+                                                          index
+                                                        );
+                                                      } else {
+                                                        setActiveTask(task);
+                                                        setShowUpdateTaskModal(
+                                                          true
+                                                        );
+                                                      }
+                                                    }}
+                                                  >
+                                                    {task.title}
+                                                  </span>
+                                                );
+                                              })}
+                                          </>
+                                        )}
+                                        <div className={`px-3 clickBox`}>
+                                          <div
+                                            className={`clickBoxtext`}
+                                            onClick={() =>
+                                              handleAddTaskClick(job)
+                                            }
+                                          >
+                                            Add Task +
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td style={{width: '110px', textAlign:'center'}}>
+                                      <div className="task-view-more">
+                                        {job?.tasks?.length > 0 && (
+                                          <div
+                                            className={` mx-0 `}
+                                            onClick={() =>
+                                              handleOpenJobWithTask(job)
+                                            }
+                                          >
+                                            View More{" "}
+                                            <RightArrow color="#E2E31F" />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </table>
                               </td>
                               <td className="text-center ">
                                 {formatDate(job.updated_at)}

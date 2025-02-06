@@ -157,4 +157,6 @@ export const StageList = {
   "Decision": "Decision",
 }
 
+export const MIN_CALENDAR_YEAR = 5
 
+export const MAX_CALENDAR_YEAR = 5

@@ -930,9 +930,20 @@ function ViewTaskPage() {
                     <div
                       className={`listContent listTitle justify-content-between`}
                     >
-                      <p>
-                        <span> {task?.title}</span>
+                      <p title={task?.title}
+                        style={{
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 2,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "normal",
+                          maxWidth: "350px",
+                          
+                        }}
+                      >
+                       {task?.title}
                       </p>
+
                       <p style={{ marginRight: "30px", cursor: "pointer" }}>
                         <ArrowRight />
                       </p>

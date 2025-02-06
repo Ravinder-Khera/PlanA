@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
 import { formatJobNumber } from "../../pages/Jobs";
+import { CALENDAR_YEAR, MAX_CALENDAR_YEAR, MIN_CALENDAR_YEAR } from "../../helper";
 
 function Timeline({
   timeFrame,
@@ -505,6 +506,8 @@ function Timeline({
                 ranges={[selectionRange]}
                 onChange={handleSelect}
                 rangeColors={["#E2E31F"]}
+                minDate={new Date(new Date().setFullYear(new Date().getFullYear() - MIN_CALENDAR_YEAR))}
+                maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + MAX_CALENDAR_YEAR))}
               />
             </div>
           )}
