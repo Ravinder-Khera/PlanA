@@ -3431,7 +3431,9 @@ export const NewJobModalWithTasks = ({
                             }`}
                           />
                           <span>
-                           { showAllTasks ? "Show Less Tasks" : "Show All Tasks"}
+                            {showAllTasks
+                              ? "Show Less Tasks"
+                              : "Show All Tasks"}
                           </span>
                         </div>
                       )}
@@ -3852,15 +3854,29 @@ export const NewTaskModal = ({
 
                     <div className="discriptionBox">
                       <h3>Days Left</h3>
-                      {dueDate &&
-                      Math.floor(
-                        (new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24)
-                      ) > 0
-                        ? Math.floor(
-                            (new Date(dueDate) - new Date()) /
-                              (1000 * 60 * 60 * 24)
-                          ) + " days"
-                        : "0 days"}
+                      {dueDate ? (
+                        (() => {
+                          // Normalize both dates to midnight
+                          const dueDateObj = new Date(dueDate);
+                          const now = new Date();
+
+                          // Set both dates to midnight
+                          dueDateObj.setHours(0, 0, 0, 0);
+                          now.setHours(0, 0, 0, 0);
+
+                          const daysLeft = Math.floor(
+                            (dueDateObj - now) / (1000 * 60 * 60 * 24)
+                          );
+
+                          return daysLeft > 0 ? (
+                            `${daysLeft} days`
+                          ) : (
+                            <span style={{ color: "#616161" }}>No Data</span>
+                          );
+                        })()
+                      ) : (
+                        <span style={{ color: "#616161" }}>No Data</span>
+                      )}
                     </div>
 
                     <div className="discriptionBox">
@@ -4696,15 +4712,29 @@ export const UpdateTaskModal = ({
 
                     <div className="discriptionBox">
                       <h3>Days Left</h3>
-                      {dueDate &&
-                      Math.floor(
-                        (new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24)
-                      ) > 0
-                        ? Math.floor(
-                            (new Date(dueDate) - new Date()) /
-                              (1000 * 60 * 60 * 24)
-                          ) + " days"
-                        : "0 days"}
+                      {dueDate ? (
+                        (() => {
+                          // Normalize both dates to midnight
+                          const dueDateObj = new Date(dueDate);
+                          const now = new Date();
+
+                          // Set both dates to midnight
+                          dueDateObj.setHours(0, 0, 0, 0);
+                          now.setHours(0, 0, 0, 0);
+
+                          const daysLeft = Math.floor(
+                            (dueDateObj - now) / (1000 * 60 * 60 * 24)
+                          );
+
+                          return daysLeft > 0 ? (
+                            `${daysLeft} days`
+                          ) : (
+                            <span style={{ color: "#616161" }}>No Data</span>
+                          );
+                        })()
+                      ) : (
+                        <span style={{ color: "#616161" }}>No Data</span>
+                      )}
                     </div>
 
                     <div className="discriptionBox">
@@ -5649,15 +5679,28 @@ export const CreateTaskModal = ({
                           )}
                           <div style={{ flex: "1" }}>
                             <h3>Days Left</h3>
-                            {dueDate &&
-                            Math.floor(
-                              (new Date(dueDate) - new Date()) /
-                                (1000 * 60 * 60 * 24)
-                            ) > 0 ? (
-                              Math.floor(
-                                (new Date(dueDate) - new Date()) /
-                                  (1000 * 60 * 60 * 24)
-                              ) + " days"
+                            {dueDate ? (
+                              (() => {
+                                // Normalize both dates to midnight
+                                const dueDateObj = new Date(dueDate);
+                                const now = new Date();
+
+                                // Set both dates to midnight
+                                dueDateObj.setHours(0, 0, 0, 0);
+                                now.setHours(0, 0, 0, 0);
+
+                                const daysLeft = Math.floor(
+                                  (dueDateObj - now) / (1000 * 60 * 60 * 24)
+                                );
+
+                                return daysLeft > 0 ? (
+                                  `${daysLeft} days`
+                                ) : (
+                                  <span style={{ color: "#616161" }}>
+                                    No Data
+                                  </span>
+                                );
+                              })()
                             ) : (
                               <span style={{ color: "#616161" }}>No Data</span>
                             )}
@@ -5667,15 +5710,26 @@ export const CreateTaskModal = ({
                     ) : (
                       <div className="discriptionBox">
                         <h3>Days Left</h3>
-                        {dueDate &&
-                        Math.floor(
-                          (new Date(dueDate) - new Date()) /
-                            (1000 * 60 * 60 * 24)
-                        ) > 0 ? (
-                          Math.floor(
-                            (new Date(dueDate) - new Date()) /
-                              (1000 * 60 * 60 * 24)
-                          ) + " days"
+                        {dueDate ? (
+                          (() => {
+                            // Normalize both dates to midnight
+                            const dueDateObj = new Date(dueDate);
+                            const now = new Date();
+
+                            // Set both dates to midnight
+                            dueDateObj.setHours(0, 0, 0, 0);
+                            now.setHours(0, 0, 0, 0);
+
+                            const daysLeft = Math.floor(
+                              (dueDateObj - now) / (1000 * 60 * 60 * 24)
+                            );
+
+                            return daysLeft > 0 ? (
+                              `${daysLeft} days`
+                            ) : (
+                              <span style={{ color: "#616161" }}>No Data</span>
+                            );
+                          })()
                         ) : (
                           <span style={{ color: "#616161" }}>No Data</span>
                         )}

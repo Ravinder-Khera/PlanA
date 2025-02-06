@@ -707,6 +707,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
   const [chats, setChats] = useState(null);
   const [body, setBody] = useState("");
   const attachmentRef = useRef(null);
+  const attachmentRef2 = useRef(null);
   const [attachments, setAttachments] = useState([]);
   const [newMsg, setNewMsg] = useState({
     type: "",
@@ -895,12 +896,14 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
 
   const handleFileUpload = (e) => {
     if (!e.target.files) return;
+
     const selectedFile = e.target?.files[0];
     if (selectedFile && selectedFile.type.startsWith("image/")) {
       setNewMsg({
         type: "attachment",
         data: selectedFile,
       });
+      console.log("selectedFile: ", selectedFile)
       handleImageUpload(selectedFile);
     }
   };
@@ -947,6 +950,9 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
           type: "",
           data: "",
         });
+        if (attachmentRef.current) {
+          attachmentRef.current.value = ""; // Reset the input value
+        }
       }
     };
     reader.readAsDataURL(file);

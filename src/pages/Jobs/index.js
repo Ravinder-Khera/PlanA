@@ -432,13 +432,14 @@ const Jobs = () => {
     // Check if the container has been scrolled to the bottom
     if (
       container.scrollTop + container.clientHeight >= container.scrollHeight &&
-      filteredJobs.length >= 20 && (loadTotalPage > loadMorePage || !loadTotalPage )
+      filteredJobs.length >= 20 &&
+      (loadTotalPage > loadMorePage || !loadTotalPage)
     ) {
       setLoading(true);
       try {
         const res = await getJobs(loadMorePage + 1);
         const data = res?.res?.data;
-        setLoadTotalPage(res?.res?.last_page)
+        setLoadTotalPage(res?.res?.last_page);
         setFilteredJobs((prevJobs) => [...prevJobs, ...data]);
       } catch (error) {
         console.log("error while fetching jobs", error);
@@ -1639,7 +1640,7 @@ const Jobs = () => {
                         setSearchedInput("");
                         setShowSearchOptions(false);
                         setShowingSearchOptions("");
-                        if(searchedInput){
+                        if (searchedInput) {
                           fetchJobs();
                         }
                       }}
@@ -1688,7 +1689,9 @@ const Jobs = () => {
                 <div className={`addJobIcon ${showAddJoRow && "active"}`}>
                   <AddIcon />
                 </div>
-                <span style={{color:`${showAddJoRow ? "#fff" : '#e2e31f'}`}}>Add Job</span>
+                <span style={{ color: `${showAddJoRow ? "#fff" : "#e2e31f"}` }}>
+                  Add Job
+                </span>
               </div>
               <div
                 className="d-flex align-items-center"
@@ -1846,7 +1849,11 @@ const Jobs = () => {
                     </thead>
                     <tbody className="table_left">
                       {showAddJoRow && (
-                        <tr className="addNewJobRow transition left" style={{borderRight:'none'}} ref={addJobRowRefLeft}>
+                        <tr
+                          className="addNewJobRow transition left"
+                          style={{ borderRight: "none" }}
+                          ref={addJobRowRefLeft}
+                        >
                           <td
                             className={`text-center clickBox ${
                               newJobActiveBoxLeft === "jobId" && "active"
@@ -1928,7 +1935,7 @@ const Jobs = () => {
                               </div>
                             ) : (
                               <>
-                              <div className="d-flex">
+                                <div className="d-flex">
                                   <input
                                     className="clickBoxInput"
                                     placeholder="Enter Job Name"
@@ -1950,9 +1957,11 @@ const Jobs = () => {
                                             title: addJobName,
                                             collaborators:
                                               newJobCollaboratorsListId,
-                                            due_date: selectedNewJobDueDate || "",
+                                            due_date:
+                                              selectedNewJobDueDate || "",
                                             status:
-                                              selectNewJobStatus || "not-started",
+                                              selectNewJobStatus ||
+                                              "not-started",
                                           });
                                           setShowNewJobModal(true);
                                         }}
@@ -1960,7 +1969,7 @@ const Jobs = () => {
                                         <ArrowRight />
                                       </span>
                                     )}
-                              </div>
+                                </div>
                               </>
                             )}
                           </td>
@@ -2030,7 +2039,13 @@ const Jobs = () => {
                               </div>
                             )}
                             {newJobActiveBoxLeft === "AddCollaborators" && (
-                              <div className={`newJobItemDropBox`} style={{minWidth:'415px',maxWidth:'max-content'}}>
+                              <div
+                                className={`newJobItemDropBox`}
+                                style={{
+                                  minWidth: "415px",
+                                  maxWidth: "max-content",
+                                }}
+                              >
                                 {newJobCollaboratorsList.length > 0 && (
                                   <div className="addedCollabs">
                                     {newJobCollaboratorsList.map(
@@ -2220,7 +2235,13 @@ const Jobs = () => {
                               </div>
                               {activeJob?.id === job.id &&
                                 activeJobField === "Collaborators" && (
-                                  <div className={`newJobItemDropBox`} style={{minWidth:'415px',maxWidth:'max-content'}}>
+                                  <div
+                                    className={`newJobItemDropBox`}
+                                    style={{
+                                      minWidth: "415px",
+                                      maxWidth: "max-content",
+                                    }}
+                                  >
                                     {newJobCollaboratorsList.length > 0 && (
                                       <div className="addedCollabs">
                                         {newJobCollaboratorsList.map(
@@ -2340,13 +2361,17 @@ const Jobs = () => {
                       </thead>
                       <tbody className="table_right">
                         {showAddJoRow && (
-                          <tr className="addNewJobRow transition right" style={{borderLeft:'none'}} ref={addJobRowRefRight}>
+                          <tr
+                            className="addNewJobRow transition right"
+                            style={{ borderLeft: "none" }}
+                            ref={addJobRowRefRight}
+                          >
                             <td
                               className={`text-center clickBox ${
                                 newJobActiveBoxRight === "SelectStatus" &&
                                 "active"
                               }`}
-                              style={{borderLeft:'none'}}
+                              style={{ borderLeft: "none" }}
                             >
                               <div
                                 className={`clickBoxtext`}
@@ -2456,19 +2481,19 @@ const Jobs = () => {
                               )}
                             </td>
                             <td className="text-center">
-                              {selectedNewJobDueDate &&
-                              Math.floor(
-                                (new Date(selectedNewJobDueDate) - new Date()) /
-                                  (1000 * 60 * 60 * 24)
-                              ) > 0 ? (
-                                Math.floor(
-                                  (new Date(selectedNewJobDueDate) -
-                                    new Date()) /
-                                    (1000 * 60 * 60 * 24)
-                                ) + " days"
+                              {selectedNewJobDueDate ? (
+                                moment(selectedNewJobDueDate)
+                                  .startOf("day")
+                                  .isBefore(moment().startOf("day")) ? (
+                                  0
+                                ) : (
+                                  moment(selectedNewJobDueDate)
+                                    .startOf("day")
+                                    .diff(moment().startOf("day"), "days") +
+                                  " days"
+                                )
                               ) : (
                                 <div className="clickBox">
-                                  {" "}
                                   <span className="clickBoxtext">N/A</span>
                                 </div>
                               )}

@@ -969,12 +969,13 @@ function ViewTaskPage() {
                           className="text-center centerText"
                         >
                           {moment(task?.due_date)
-                            .local()
-                            .isBefore(moment(), "day")
+                            .startOf("day")
+                            .isBefore(moment().startOf("day"))
                             ? 0
                             : moment(task?.due_date)
-                                .local()
-                                .diff(moment(), "days")}{" "}
+                                .startOf("day")
+                                .diff(moment().startOf("day"), "days") +
+                              " days"}{" "}
                           days
                         </div>
                       </div>
