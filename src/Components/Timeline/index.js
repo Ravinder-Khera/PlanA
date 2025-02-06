@@ -29,8 +29,9 @@ function Timeline({
     label: "Select Filter",
     value: "",
   });
-  const excessCalendarDate =
-    timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1;
+  // const excessCalendarDate =
+  //   timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1;
+  const [excessCalendarDate, setExcessCalendarDate] = useState(timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1);
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: new Date(
@@ -84,6 +85,31 @@ function Timeline({
       }
     }
   }, [loadNo, scrollPerformed]);
+
+
+  useEffect(() => {
+    const updateExcessCalendarDate = () => {
+      const screenWidth = window.innerWidth;
+      
+      if (screenWidth > 2100) {
+        if (timeFrame === "weekly") {
+          setExcessCalendarDate(20);
+        } else if (timeFrame === "monthly") {
+          setExcessCalendarDate(30);
+        } else {
+          setExcessCalendarDate(1);
+        }
+      } else {
+        setExcessCalendarDate(timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1);
+      }
+    };
+    updateExcessCalendarDate();
+    window.addEventListener('resize', updateExcessCalendarDate);
+
+    return () => {
+      window.removeEventListener('resize', updateExcessCalendarDate);
+    };
+  }, [timeFrame]);
 
   useEffect(() => {
     let handler = (e) => {
