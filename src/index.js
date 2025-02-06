@@ -14,11 +14,11 @@ if (process.env.REACT_APP_NODE_ENV === "production") {
 }
 
 root.render(
-  // <React.StrictMode>
+  <React.StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  //  {/* </React.StrictMode>  */}
+  </React.StrictMode> 
 );
 
 
