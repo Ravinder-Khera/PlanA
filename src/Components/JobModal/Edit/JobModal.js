@@ -16,7 +16,12 @@ import {
   AddTaskGreyButton,
 } from "../../../assets/svg";
 import { Calendar } from "react-date-range";
-import { AllStages, StageList, StatusList } from "../../../helper";
+import {
+  AllStages,
+  MAX_CALENDAR_YEAR,
+  StageList,
+  StatusList,
+} from "../../../helper";
 import {
   createTask,
   createTaskStage,
@@ -34,8 +39,11 @@ import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import ChatAndAttachment, {
   AddNewJobChatAndAttachment,
+  ChatAndComment,
+  CommentBox,
 } from "./ChatAndAttachment";
 import moment from "moment";
+import { formatJobNumber } from "../../../pages/Jobs";
 
 const JobModal = ({
   job,
@@ -3185,7 +3193,8 @@ export const NewJobModalWithTasks = ({
                     </div>
                   </div>
                   <div className="innerScroll">
-                    <h2 className="jobTitle">{job?.title}</h2>
+                    <h2 className="jobTitle" title={job?.title}
+                      >{job?.title}</h2>
                     <div className="discriptionBox">
                       <h3>Description</h3>
                       <textarea
@@ -3447,7 +3456,11 @@ export const NewJobModalWithTasks = ({
                         </button>
                       </div>
                     </div>
-                    <AddNewJobChatAndAttachment
+                    {/* <AddNewJobChatAndAttachment
+                      JobId={job?.id}
+                      usersList={usersList}
+                    /> */}
+                    <ChatAndComment
                       JobId={job?.id}
                       usersList={usersList}
                     />
@@ -3765,6 +3778,7 @@ export const NewTaskModal = ({
                     </div>
                   </div>
                   <div className="innerScroll">
+                    
                     <input
                       type="text"
                       className="jobTitle"
@@ -4122,6 +4136,15 @@ export const NewTaskModal = ({
                                   value={new Date(dueDate)}
                                   calendarType="ISO 8601"
                                   rangeColors={["#E2E31F"]}
+                                  minDate={new Date()}
+                                  maxDate={
+                                    new Date(
+                                      new Date().setFullYear(
+                                        new Date().getFullYear() +
+                                          MAX_CALENDAR_YEAR
+                                      )
+                                    )
+                                  }
                                 />
                               </div>
                             )}
@@ -4982,6 +5005,15 @@ export const UpdateTaskModal = ({
                                   value={new Date(dueDate)}
                                   calendarType="ISO 8601"
                                   rangeColors={["#E2E31F"]}
+                                  minDate={new Date()}
+                                  maxDate={
+                                    new Date(
+                                      new Date().setFullYear(
+                                        new Date().getFullYear() +
+                                          MAX_CALENDAR_YEAR
+                                      )
+                                    )
+                                  }
                                 />
                               </div>
                             )}
@@ -5129,10 +5161,9 @@ export const UpdateTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment
-                      JobId={task?.job_id}
-                      usersList={suggestedUser}
-                    />
+                   
+                     <CommentBox JobId={task?.job_id}
+                      usersList={suggestedUser}/>
                   </div>
                 </div>
               </div>
@@ -5174,7 +5205,6 @@ export const CreateTaskModal = ({
   );
   const [addStageTitle, setAddStageTitle] = useState("");
   const [colors, setColors] = useState([]);
-  const [activeStageColor, setActiveStageColor] = useState("");
   const [usersList, setUsersList] = useState([]);
   const popUpRef = useRef(null);
   const popupRef = useRef(null);
@@ -5672,7 +5702,7 @@ export const CreateTaskModal = ({
                               <h3>Job No.</h3>
                               <p className="textClass disabled">
                                 <button className="taskJobBtn">
-                                  {task?.job_num}
+                                  {formatJobNumber(task?.job_num)}
                                 </button>
                               </p>
                             </div>
@@ -5744,7 +5774,7 @@ export const CreateTaskModal = ({
                               <h3>Job No.</h3>
                               <p className="textClass disabled">
                                 <button className="taskJobBtn">
-                                  {task?.job_num}
+                                {formatJobNumber(task?.job_num)}
                                 </button>
                               </p>
                             </>
@@ -5985,6 +6015,15 @@ export const CreateTaskModal = ({
                                   value={new Date(dueDate)}
                                   calendarType="ISO 8601"
                                   rangeColors={["#E2E31F"]}
+                                  minDate={new Date()}
+                                  maxDate={
+                                    new Date(
+                                      new Date().setFullYear(
+                                        new Date().getFullYear() +
+                                          MAX_CALENDAR_YEAR
+                                      )
+                                    )
+                                  }
                                 />
                               </div>
                             )}
@@ -6132,10 +6171,9 @@ export const CreateTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment
-                      JobId={task?.id}
-                      usersList={suggestedUser}
-                    />
+                   
+                    <CommentBox JobId={task?.id}
+                      usersList={suggestedUser}/>
                   </div>
                 </div>
               </div>

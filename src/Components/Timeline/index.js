@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
 import { formatJobNumber } from "../../pages/Jobs";
+import { CALENDAR_YEAR, MAX_CALENDAR_YEAR, MIN_CALENDAR_YEAR } from "../../helper";
 
 function Timeline({
   timeFrame,
@@ -28,8 +29,9 @@ function Timeline({
     label: "Select Filter",
     value: "",
   });
-  const excessCalendarDate =
-    timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1;
+  // const excessCalendarDate =
+  //   timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1;
+  const [excessCalendarDate, setExcessCalendarDate] = useState(timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1);
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: new Date(
@@ -83,6 +85,31 @@ function Timeline({
       }
     }
   }, [loadNo, scrollPerformed]);
+
+
+  useEffect(() => {
+    const updateExcessCalendarDate = () => {
+      const screenWidth = window.innerWidth;
+      
+      if (screenWidth > 2100) {
+        if (timeFrame === "weekly") {
+          setExcessCalendarDate(20);
+        } else if (timeFrame === "monthly") {
+          setExcessCalendarDate(30);
+        } else {
+          setExcessCalendarDate(1);
+        }
+      } else {
+        setExcessCalendarDate(timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1);
+      }
+    };
+    updateExcessCalendarDate();
+    window.addEventListener('resize', updateExcessCalendarDate);
+
+    return () => {
+      window.removeEventListener('resize', updateExcessCalendarDate);
+    };
+  }, [timeFrame]);
 
   useEffect(() => {
     let handler = (e) => {
@@ -505,6 +532,8 @@ function Timeline({
                 ranges={[selectionRange]}
                 onChange={handleSelect}
                 rangeColors={["#E2E31F"]}
+                minDate={new Date(new Date().setFullYear(new Date().getFullYear() - MIN_CALENDAR_YEAR))}
+                maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + MAX_CALENDAR_YEAR))}
               />
             </div>
           )}

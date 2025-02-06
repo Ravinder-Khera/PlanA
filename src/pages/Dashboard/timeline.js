@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import Timeline from "../../Components/Timeline";
-import { AddIcon } from "../../assets/svg";
+import { AddIcon, AddTaskGreyButton } from "../../assets/svg";
 import { updateTask } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 import { getMessages } from "../../services/chat_attachment";
@@ -57,33 +57,33 @@ function TimelinePage() {
     return date.toLocaleDateString("en-GB", options);
   };
 
+  const taskHandle = () => {
+    const currentDate = new Date();
+    const applicationTasks = selectedJob?.tasks;
+    const sortedTasks =
+      applicationTasks.length > 0 &&
+      applicationTasks
+        ?.filter((task) => task.status !== "completed")
+        .map((task) => {
+          const dueDate = new Date(task.due_date);
+          const timeDiff = Math.abs(dueDate - currentDate);
+          return { ...task, timeDiff };
+        })
+        .sort((a, b) => a.timeDiff - b.timeDiff);
+    const nearestTask =
+      sortedTasks?.length > 2 ? sortedTasks?.slice(0, 2) : sortedTasks;
+    setTaskCount(sortedTasks?.length);
+    console.log("nearestTask", nearestTask);
+    setSelectedJobTask(nearestTask);
+    fetchChats(selectedJob.id);
+  };
 
-    const taskHandle = () => {
-      const currentDate = new Date();
-      const applicationTasks = selectedJob?.tasks;
-      const sortedTasks =
-        applicationTasks.length > 0 &&
-        applicationTasks?.filter((task) =>  task.status !== 'completed' )
-          .map((task) => {
-              const dueDate = new Date(task.due_date);
-              const timeDiff = Math.abs(dueDate - currentDate);
-              return { ...task, timeDiff };
-          })
-          .sort((a, b) => a.timeDiff - b.timeDiff);
-      const nearestTask =
-        sortedTasks?.length > 2 ? sortedTasks?.slice(0, 2) : sortedTasks;
-      setTaskCount(sortedTasks?.length);
-      console.log("nearestTask", nearestTask);
-      setSelectedJobTask(nearestTask);
-      fetchChats(selectedJob.id);
-    };
-  
-    useEffect(() => {
-      if (selectedJob) {
-        taskHandle();
-      }
-    }, [selectedJob]);
- const fetchChats = async (jobId) => {
+  useEffect(() => {
+    if (selectedJob) {
+      taskHandle();
+    }
+  }, [selectedJob]);
+  const fetchChats = async (jobId) => {
     try {
       const response1 = await getMessages(jobId);
       if (!response1.error) {
@@ -104,7 +104,7 @@ function TimelinePage() {
     } catch (error) {
       setChats([]);
       console.log("error in fetching messages");
-    } 
+    }
   };
   useEffect(() => {
     const slideOverflow = overFlowRef.current;
@@ -148,7 +148,9 @@ function TimelinePage() {
       console.log("error while updating task", error);
     }
   };
-
+  const handleCreateNewTask = () => {
+    navigate("/jobs", { state: { selectedJob, key: "new-task-job" } });
+  };
   return (
     <>
       {loading && (
@@ -164,7 +166,10 @@ function TimelinePage() {
           />
         </div>
       )}
-      <div className="DashboardTopMenu DashboardBgLines position-relative"   ref={overFlowRef}>
+      <div
+        className="DashboardTopMenu DashboardBgLines position-relative"
+        ref={overFlowRef}
+      >
         <div className="DashboardHeading">
           <h2>Timeline</h2>
         </div>
@@ -191,7 +196,13 @@ function TimelinePage() {
               </div>
             </div>
             <div className={`dashboard_task`}>
-              <div className="taskCount">{taskCount} Tasks</div>
+              <div className="taskCount">
+                {taskCount ? (
+                  `${taskCount} Tasks`
+                ) : (
+                  <span className="no-tasks">No Task</span>
+                )}
+              </div>
               <div className="taskDetails">
                 {selectedJobTask &&
                   selectedJobTask?.length > 0 &&
@@ -293,6 +304,15 @@ function TimelinePage() {
                     );
                   })}
               </div>
+              <div
+                className="create_new_task_div"
+                onClick={handleCreateNewTask}
+              >
+                <span>
+                  <AddTaskGreyButton />{" "}
+                </span>
+                <p>Create New Task</p>
+              </div>
               <div className="taskCount text-center mt-4">
                 <p
                   onClick={() => {
@@ -330,7 +350,7 @@ function TimelinePage() {
                           className="d-flex align-items-center justify-content-start"
                           style={{ gap: "19px" }}
                         >
-                          <div>
+                          <div className="d-flex align-items-start gap-3">
                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                               <div className=" d-flex align-items-center justify-content-end">
                                 <div
@@ -346,13 +366,18 @@ function TimelinePage() {
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          <div>
-                            <div className="chatHeading">{chat.user.name}</div>
-                            <div className="chatTime">
-                              | &nbsp; {formatJobNumber(selectedJob.id)} &nbsp; | &nbsp; {selectedJob.title}
+                            <div>
+                              <div className="chatHeading">
+                                {chat.user.name}
+                              </div>
+                              <div className="chatTime">
+                                | &nbsp; {formatJobNumber(selectedJob.id)}{" "}
+                                &nbsp; | &nbsp; {selectedJob.title}
+                              </div>
+                              <div className="chatMsg">
+                                {renderMessage(trimmedTitle)}
+                              </div>
                             </div>
-                            <div className="chatMsg">{renderMessage(trimmedTitle)}</div>
                           </div>
                         </div>
                         <div className="chatBtnDiv">
