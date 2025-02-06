@@ -1556,6 +1556,54 @@
   }
 }
 
+// .JobsContainer {
+//   .left-side,
+//   .right-side {
+//     .first-table {
+//       .job_table_outer_div {
+//         tr {
+//           &.addNewJobRow {
+//             &.transition {
+//               opacity: 0;
+//               border: 1px solid transparent;
+//               &.left{
+//                 animation: opacityUpLeft 0.5s ease-in forwards;
+//               }
+//               &.right{
+//                 animation: opacityUpRight 0.5s ease-in forwards;
+//               }
+//             }
+//             @keyframes opacityUpLeft {
+//               0% {
+//                 opacity: 0;
+//                 border: 1px solid transparent;
+//                 border-right: none;
+//               }
+//               100% {
+//                 opacity: 1;
+//                 border: 1px solid #828282;
+//                 border-right: none;
+//               }
+//             }
+//             @keyframes opacityUpRight {
+//               0% {
+//                 opacity: 0;
+//                 border: 1px solid transparent;
+//                 border-left: none;
+//               }
+//               100% {
+//                 opacity: 1;
+//                 border: 1px solid #828282;
+//                 border-left: none;
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+
 .JobsContainer {
   .left-side,
   .right-side {
@@ -1564,37 +1612,41 @@
         tr {
           &.addNewJobRow {
             &.transition {
-              opacity: 0;
+              max-height: 0;
+              overflow: hidden;
               border: 1px solid transparent;
+
               &.left{
-                animation: opacityUpLeft 0.5s ease-in forwards;
+                animation: heightExpandLeft 0.5s ease-in-out forwards;
               }
-              &.right{
-                animation: opacityUpRight 0.5s ease-in forwards;
-              }
-            }
-            @keyframes opacityUpLeft {
-              0% {
-                opacity: 0;
-                border: 1px solid transparent;
-                border-right: none;
-              }
-              100% {
-                opacity: 1;
-                border: 1px solid #828282;
-                border-right: none;
+              &.right {
+                animation: heightExpandRight 0.5s ease-in-out forwards;
               }
             }
-            @keyframes opacityUpRight {
+
+            @keyframes heightExpandRight {
               0% {
-                opacity: 0;
-                border: 1px solid transparent;
-                border-left: none;
+                max-height: 0;
+                border-top: 0 solid transparent;
+                border-bottom: 0 solid transparent;
               }
               100% {
-                opacity: 1;
+                max-height: 100px;
                 border: 1px solid #828282;
                 border-left: none;
+              }
+            }
+            @keyframes heightExpandLeft {
+              0% {
+                max-height: 0;
+                border-top: 0 solid transparent;
+                border-bottom: 0 solid transparent;
+              }
+              100% {
+                max-height: 100px;
+               
+                border: 1px solid #828282;
+                border-right: none;
               }
             }
           }
@@ -1603,6 +1655,8 @@
     }
   }
 }
+
+
 
 .filterJobsDiv {
   position: absolute;
