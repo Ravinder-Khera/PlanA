@@ -7,8 +7,8 @@ const TaggedUser = ({ key, name }) => {
                         .join("");
   return (
     <div className="tag-container" key={key}>
-      <div className="tag-initials"><h4>{initials}</h4></div>
-      <div className="name">{name}</div>
+      {/* <div className="tag-initials"><h4>{initials}</h4></div> */}
+      <div className="name">@{name}</div>
     </div>
   );
 };

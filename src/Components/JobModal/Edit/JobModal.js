@@ -3148,6 +3148,7 @@ export const NewJobModalWithTasks = ({
 
       {showUpdateTaskModal && activeTask && (
         <UpdateTaskModal
+          returnToJob={true}
           task={activeTask}
           handleClose={handleCloseModal}
           onUpdateTask={handleUpdateTask}
@@ -4323,7 +4324,7 @@ export const NewTaskModal = ({
   );
 };
 
-export const UpdateTaskModal = ({
+export const UpdateTaskModal = ({ returnToJob,
   task,
   handleClose,
   handleDelete,
@@ -4332,6 +4333,7 @@ export const UpdateTaskModal = ({
   scrollRef,
   usersList: suggestedUser,
 }) => {
+  console.log("task in update", task)
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
@@ -4642,7 +4644,7 @@ export const UpdateTaskModal = ({
                       <div className="searchUserImg">
                         <OpenCloseIcon />
                       </div>
-                      <div className="delete-item">Collapse</div>
+                      <div className="delete-item">{returnToJob ? 'Return To Job' : 'Collapse'}</div>
                     </div>
                   </div>
                   <div className="innerScroll">
@@ -5162,7 +5164,7 @@ export const UpdateTaskModal = ({
                     </div>
 
                    
-                     <CommentBox JobId={task?.job_id}
+                     <CommentBox taskId={task?.id} JobId={task?.job_id}
                       usersList={suggestedUser}/>
                   </div>
                 </div>
@@ -6172,7 +6174,7 @@ export const CreateTaskModal = ({
                     </div>
 
                    
-                    <CommentBox JobId={task?.id}
+                    <CommentBox taskId={task?.id}  JobId={task?.id}
                       usersList={suggestedUser}/>
                   </div>
                 </div>

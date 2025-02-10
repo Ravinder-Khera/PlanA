@@ -24,6 +24,33 @@ export const sendMessage = async (jobId, data) => {
     }
 };
 
+export const sendComment = async (data) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${authToken}`, 
+        },
+        body: JSON.stringify(data),
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/comments`, requestOptions);
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+        console.log("zxczxczxczxc", data);  
+        if(response.status === 201 || response.status === 200){
+            return { res: data.comment, error: null } ;
+        }else{
+            return { res: null, error: data } ; 
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
 
 export const getMessages = async (jobId, {signal }={}) => {
     const authToken = localStorage.getItem('authToken');
@@ -50,6 +77,61 @@ export const getMessages = async (jobId, {signal }={}) => {
         return { res: null, error: error }
     }
 };
+
+export const getJobComments = async (jobId, {signal }={}) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${authToken}`, 
+        },
+        
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobs/${jobId}/comments`, requestOptions, {signal});
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
+export const getTaskComments = async (taskId, {signal }={}) => {
+    const authToken = localStorage.getItem('authToken');
+    const requestOptions = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${authToken}`, 
+        },
+        
+    };
+    try {
+        let response = await fetch(`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/tasks/${taskId}/comments`, requestOptions, {signal});
+        const isJson = response.headers.get("content-type")?.includes("application/json");
+        const data = isJson && (await response.json());
+
+        if(response.status === 200){
+            return { res: data, error: null } ;
+        }else{
+            return { res: null, error: data } ;
+        }
+    } catch (error) {
+        console.error("There was an error!", error);
+        return { res: null, error: error }
+    }
+};
+
 
 
 export const getAttachments = async (jobId, { signal }={}) => {

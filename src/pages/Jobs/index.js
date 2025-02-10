@@ -287,7 +287,7 @@ const Jobs = () => {
 
   const { state } = location;
   useEffect(() => {
-    if (state !== 1 && state?.key !== "new-task-job" && state) {
+    if (state !== 1 && state?.key !== "new-task-job" && state?.key !== "job-task" && state) {
       localStorage.setItem("jobId", state?.id);
       setShowJobModal(true);
       setGetJob({
@@ -297,6 +297,9 @@ const Jobs = () => {
     }
     if (state !== 1 && state?.key === "new-task-job" && state?.selectedJob) {
       handleAddTaskClick(state?.selectedJob);
+    }
+    if (state !== 1 && state?.key !== "new-task-job"  && state?.key == 'job-task' && state?.selectedJob) {
+      handleOpenJobWithTask(state?.selectedJob);
     }
     fetchJobs();
   }, [location, state]);
@@ -823,7 +826,7 @@ const Jobs = () => {
   const handleTitleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleTitleUpdate();
-      // synchronizeRowHeights();
+      synchronizeRowHeights();
     }
     return;
   };
@@ -1089,6 +1092,7 @@ const Jobs = () => {
     stage
   ) => {
     console.log(newData?.updatedTask?.title);
+    
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => ({
         ...job,
@@ -1187,6 +1191,7 @@ const Jobs = () => {
               : job
           )
         );
+        localStorage.setItem("taskId", updatedTask.id);
         setShowUpdateTaskModal(true);
       } else {
         console.error("get task failed:", response.error);
@@ -1230,9 +1235,9 @@ const Jobs = () => {
     }
   };
 
-  // useEffect(() => {
-  //   synchronizeRowHeights();
-  // }, [filteredJobs]);
+  useEffect(() => {
+    synchronizeRowHeights();
+  }, [filteredJobs]);
 
   const handleAddJobScroll = () => {
     if (containerRef.current) {

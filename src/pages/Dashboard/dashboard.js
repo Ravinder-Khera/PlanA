@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { getMessages } from "../../services/chat_attachment";
 import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
+import TaskCompletionPopup from "../../Components/dashboardTasks/TaskCompletionPopup";
+import moment from "moment";
 
 const renderMessage = (text) => {
   // Regular expression to match words enclosed in {}
@@ -48,6 +50,8 @@ function Dashboard() {
   const [selectedJob, setSelectedJob] = useState();
   const selectedJobRef = useRef(null);
   const overFlowRef = useRef(null);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [showTaskCompletionPopup, setShowTaskCompletionPopup] = useState(false);
 
   const findNearestStage = (data) => {
     let nearestStage = null;
@@ -220,6 +224,10 @@ function Dashboard() {
           />
         </div>
       )}
+      {showTaskCompletionPopup && <TaskCompletionPopup task={selectedTask}  handleClose={() => {
+        setShowTaskCompletionPopup(false);
+        setSelectedTask(null);
+      }}/>}
       <div
         className="DashboardTopMenu DashboardBgLines position-relative"
         ref={overFlowRef}
@@ -342,8 +350,10 @@ function Dashboard() {
                               }`}
                               onClick={() => {
                                 if (task.status === "completed") return;
-                                setUpdateTaskStatus(task);
-                                handleTaskUpdate(task);
+                                setSelectedTask(task)
+                                setShowTaskCompletionPopup(true)
+                                // setUpdateTaskStatus(task);
+                                // handleTaskUpdate(task);
                               }}
                             ></div>
                             <div>
@@ -351,7 +361,7 @@ function Dashboard() {
                               <div className="taskHeading">{trimmedTitle}</div>
                               <div className="taskDate">
                                 <span>Due Date</span>
-                                <span>{task.due_date}</span>
+                                <span>{moment(task.due_date).local().format('DD MMMM, YYYY')}</span>
                               </div>
                             </div>
                           </div>
@@ -437,7 +447,7 @@ function Dashboard() {
               <div
                 className="addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none"
                 onClick={() => {
-                  navigate("/jobs", { state: selectedJob });
+                  navigate("/jobs", { state: {selectedJob, key:'job-task'} });
                 }}
               >
                 <div className="taskCount text-center">

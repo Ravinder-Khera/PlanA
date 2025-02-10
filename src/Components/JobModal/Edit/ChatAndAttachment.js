@@ -16,7 +16,10 @@ import {
   addAttachments,
   deleteAttachments,
   getAttachments,
+  getJobComments,
   getMessages,
+  getTaskComments,
+  sendComment,
   sendMessage,
 } from "../../../services/chat_attachment";
 import moment from "moment";
@@ -1482,21 +1485,31 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const maxLength = 10;
   const [loading, setLoading] = useState(false);
   const [chats, setChats] = useState(null);
+  const [comments, setComments] = useState(null);
   const [body, setBody] = useState("");
+  const [commentBody, setCommentBody] = useState("");
   const attachmentRef = useRef(null);
-  const attachmentRef2 = useRef(null);
   const [attachments, setAttachments] = useState([]);
   const [newMsg, setNewMsg] = useState({
     type: "",
     data: "",
   });
+  const [newComment, setNewComment] = useState({
+    type: "",
+    data: "",
+  })
   const chatScroll = useRef();
+  const commentScroll = useRef();
   const [userDetails, setUserDetails] = useState();
   const abortControllerRef = useRef(null);
   const profileAbortControllerRef = useRef(null);
   const [showUserList, setShowUserList] = useState(false);
-  const [userIds, setUserIds] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState(usersList);
+  const [showUserList2, setShowUserList2] = useState(false);
+  const [filteredUsers2, setFilteredUsers2] = useState(usersList);
+  const [userIds, setUserIds] = useState([]);
+  const [userIds2, setUserIds2] = useState([]);
+
 
   const handleUserSelect = (user) => {
     // Find the last occurrence of '@' in the body
@@ -1527,6 +1540,35 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     setShowUserList(false);
   };
 
+  const handleUserSelect2 = (user) => {
+    // Find the last occurrence of '@' in the body
+    const lastAtIndex = commentBody.lastIndexOf("@");
+
+    // If '@' is found, replace the text from '@' to the next space or end of the string
+    if (lastAtIndex !== -1) {
+      const beforeAt = commentBody.slice(0, lastAtIndex); // Text before '@'
+      const afterAt = commentBody.slice(lastAtIndex); // Text after '@'
+
+      // Replace the old tag with the selected user's name
+      const newBody = `${beforeAt}@${user.name} ${afterAt.replace(
+        /@\S*$/,
+        ""
+      )}`; // Remove the old tag
+      setCommentBody(newBody);
+
+      // Update newMsg data
+      setNewComment(() => ({
+        type: "msg",
+        data: newBody,
+      }));
+
+      setUserIds2((prevValue) => {
+        return [...prevValue, user.id];
+      });
+    }
+    setShowUserList2(false);
+  };
+
   const fetchProfileData = async () => {
     try {
       if (profileAbortControllerRef.current) {
@@ -1549,6 +1591,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   useEffect(() => {
     fetchProfileData();
     throttledFetchChats();
+    throttledFetchComments()
   }, []);
 
   useEffect(() => {
@@ -1556,6 +1599,11 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       chatScroll.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chats]);
+  useEffect(() => {
+    if (commentScroll.current) {
+      commentScroll.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [comments]);
 
   useEffect(() => {
     const id = localStorage.getItem("jobId");
@@ -1592,9 +1640,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   eventEmitter.removeAllListeners("newMessage");
   eventEmitter.on("newMessage", (data) => {
     const tempChats = data;
-    console.log("tempChats before push", tempChats);
     tempChats?.push(message);
-    console.log("tempChats after push", tempChats);
     setChats(tempChats);
   });
 
@@ -1636,6 +1682,41 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     }
   };
 
+  const fetchComments = async () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort(); // Abort previous request
+    }
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
+    try {
+      setLoading(true);
+      const [response1] = await Promise.all([
+        getJobComments(JobId, { signal })
+      ]);
+      console.log("get comments", response1)
+      if (!response1.error) {
+        const combinedArray = [...response1.res];
+        const sortedMessages = combinedArray.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        );
+      
+
+        setComments(sortedMessages);
+        
+      } else {
+        setComments([]);
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Error fetching messages:", error);
+        setComments([]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const debouncedSendMessage = debounce(async (body) => {
     try {
       setLoading(true);
@@ -1669,6 +1750,45 @@ export const ChatAndComment = ({ JobId, usersList }) => {
 
   const throttledFetchChats = throttle(fetchChats, 1000); // 1 second throttle delay
 
+  const debouncedSendComment = debounce(async (commentBody) => {
+    try {
+      setLoading(true);
+      const response = await sendComment({ body: commentBody, job_id:JobId, ids: userIds2 });
+      console.log("comment response", response)
+      if (!response.error) {
+        fetchComments();
+        setNewComment({
+          type: "",
+          data: "",
+        })
+        setCommentBody("");
+        const notificationData = {
+          class: "user",
+          message: "New Comment: " + userDetails.name,
+        };
+        const existingNotifications = JSON.parse(
+          localStorage.getItem("notifications") || "[]"
+        );
+        existingNotifications.push(notificationData);
+        localStorage.setItem(
+          "notifications",
+          JSON.stringify(existingNotifications)
+        );
+     
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setLoading(false);
+      if (chatScroll.current) {
+        chatScroll.current.scrollIntoView({ behavior: "smooth" });
+      }
+      setNewComment({ type: "", data: "" });
+    }
+  }, 300);
+
+  const throttledFetchComments = throttle(fetchComments, 1000); 
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!body || body?.trim() === "") {
@@ -1677,6 +1797,16 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     }
     debouncedSendMessage(body);
   };
+
+  const handleSendComment = async (e) => {
+    e.preventDefault();
+    if (!commentBody || commentBody?.trim() === "") {
+      toast.error("Comment cannot be empty");
+      return;
+    }
+   debouncedSendComment(commentBody)
+  };
+
 
   const handleFileUpload = (e) => {
     if (!e.target.files) return;
@@ -1861,9 +1991,9 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       <div className="addJobPopUpAttachments">
         <div className="addJobPopUpAttachments ">
           <div className="chatsDiv">
-            {chats &&
-              chats?.length > 0 &&
-              chats?.map((msg) => {
+            {comments &&
+              comments?.length > 0 &&
+              comments?.map((msg) => {
                 return (
                   <>
                     {msg.body && (
@@ -1942,136 +2072,11 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                         )}
                       </>
                     )}
-                    {!msg.body && (
-                      <>
-                        {msg.user.name !== localStorage.getItem("user") && (
-                          <div className="chats-content-reciever-new ">
-                            <div
-                              className={`InitialsBoxUser`}
-                              style={{
-                                minWidth: "40px",
-                              }}
-                            >
-                              {msg.user?.name
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("")}
-                            </div>
-                            <div className="msg-body">
-                              <div className="msg">
-                                <p className="name"> {msg.user.name}</p>
-                                <span></span>
-                                <p className="time">
-                                  {" "}
-                                  {
-                                    moment(msg.created_at).isBefore(
-                                      moment().subtract(1, "hour")
-                                    )
-                                      ? moment(msg.created_at).format("h:mm a") // Show time if more than 1 hour ago
-                                      : moment(msg.created_at)
-                                          .fromNow()
-                                          .replace("minute", "min")
-                                          .replace("minutes", "mins") // Show relative time if within 1 hour
-                                  }
-                                </p>
-                              </div>
-                              <div className="attachments">
-                                <div
-                                  className="download-icon"
-                                  onClick={() =>
-                                    handleDownloadFile(
-                                      msg.filename,
-                                      msg.original_name
-                                    )
-                                  }
-                                >
-                                  <img src={download} alt="" className="" />
-                                </div>
-                                <div className="imgBox">
-                                  <img src={pngFIle} className="" alt="" />
-                                </div>
-                                <h5>
-                                  {msg.original_name.length > maxLength
-                                    ? `${msg.original_name.slice(
-                                        0,
-                                        maxLength
-                                      )}...`
-                                    : msg.original_name}
-                                </h5>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        {msg.user.name === localStorage.getItem("user") && (
-                          <div className="chats-content-sender-new ">
-                            <div
-                              className={`InitialsBoxUser`}
-                              style={{
-                                minWidth: "40px",
-                              }}
-                            >
-                              {msg.user?.name
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("")}
-                            </div>
-                            <div className="msg-body">
-                              <div className="msg">
-                                <p className="name"> You</p>
-                                <span></span>
-                                <p className="time">
-                                  {" "}
-                                  {
-                                    moment(msg.created_at).isBefore(
-                                      moment().subtract(1, "hour")
-                                    )
-                                      ? moment(msg.created_at).format("h:mm a") // Show time if more than 1 hour ago
-                                      : moment(msg.created_at)
-                                          .fromNow()
-                                          .replace("minute", "min")
-                                          .replace("minutes", "mins") // Show relative time if within 1 hour
-                                  }
-                                </p>
-                              </div>
-                              <div className="attachments">
-                                <div
-                                  className="download-icon"
-                                  onClick={() =>
-                                    handleDownloadFile(
-                                      msg.filename,
-                                      msg.original_name
-                                    )
-                                  }
-                                >
-                                  <img src={download} alt="" className="" />
-                                </div>
-                                <div className="imgBox">
-                                  <img src={pngFIle} className="" alt="" />
-                                </div>
-                                <h5>
-                                  {msg.original_name.length > maxLength
-                                    ? `${msg.original_name.slice(
-                                        0,
-                                        maxLength
-                                      )}...`
-                                    : msg.original_name}
-                                </h5>
-                                <span
-                                  onClick={() => handleDeleteAttachment(msg.id)}
-                                >
-                                  <CrossIcon />
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
                   </>
                 );
               })}
-            {loading && newMsg.type === "msg" && (
-              <div className="chats-content-sender-new " ref={chatScroll}>
+            {loading && newComment.type === "msg" && (
+              <div className="chats-content-sender-new " ref={commentScroll}>
                 <div
                   className={`InitialsBoxUser`}
                   style={{
@@ -2104,53 +2109,8 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                 </div>
               </div>
             )}
-            {loading && newMsg.type === "attachment" && (
-              <div className="chats-content-sender-new ">
-                <div
-                  className={`InitialsBoxUser`}
-                  style={{
-                    minWidth: "40px",
-                  }}
-                >
-                  {localStorage
-                    .getItem("user")
-                    ?.split(" ")
-                    .map((part) => part.charAt(0).toUpperCase())
-                    .join("")}
-                </div>
-                <div className="msg-body">
-                  <div className="msg">
-                    <p className="name"> You</p>
-                    <span></span>
-                    <p className="time">
-                      {" "}
-                      {
-                        moment().isBefore(moment().subtract(1, "hour"))
-                          ? moment().format("h:mm a") // Show time if more than 1 hour ago
-                          : moment()
-                              .fromNow()
-                              .replace("minute", "min")
-                              .replace("minutes", "mins") // Show relative time if within 1 hour
-                      }
-                    </p>
-                  </div>
-                  <div className="attachments">
-                    <div className="imgBox">
-                      <img src={pngFIle} className="" alt="" />
-                    </div>
-                    <h5>
-                      {newMsg.data?.name?.length > maxLength
-                        ? `${newMsg.data?.name?.slice(0, maxLength)}...`
-                        : newMsg.data?.name}{" "}
-                      sending
-                    </h5>
-                    <div></div>
-                  </div>
-                </div>
-              </div>
-            )}
-            {!chats && <p className="loading">Loading Comments...</p>}
-            {chats?.length === 0 && (
+            {!comments && <p className="loading">Loading Comments...</p>}
+            {comments?.length === 0 && (
               <p className="no-chats">No Comments Available.</p>
             )}
           </div>
@@ -2170,20 +2130,20 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               .join("")}
           </div>
           <div className="imgUploadArea addJobImgUploadArea2">
-            <form onSubmit={handleSendMessage} className="position-relative">
+            <form onSubmit={handleSendComment} className="position-relative">
               <input
                 type="text"
                 placeholder="Add a comment..."
                 onChange={(e) => {
                   const { value } = e.target;
-                  setBody(value);
-                  setNewMsg({
+                  setCommentBody(value);
+                  setNewComment({
                     type: "msg",
                     data: value,
                   });
                   if (e?.target?.value.endsWith("@")) {
-                    setFilteredUsers(usersList);
-                    setShowUserList(true);
+                    setFilteredUsers2(usersList);
+                    setShowUserList2(true);
                   } else if (value.includes("@")) {
                     // If there's an '@', filter the users based on the text after '@'
                     const searchTerm = value.split("@").pop().trim();
@@ -2192,18 +2152,18 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                         ?.toLowerCase()
                         .includes(searchTerm.toLowerCase())
                     );
-                    setFilteredUsers(filteredUsers);
+                    setFilteredUsers2(filteredUsers);
                   } else {
-                    setShowUserList(false);
+                    setShowUserList2(false);
                   }
                 }}
-                value={body}
+                value={commentBody}
               />
 
-              {showUserList && (
+              {showUserList2 && (
                 <div className="newJobItemDropBox chat-tag">
-                  {filteredUsers?.length > 0
-                    ? filteredUsers.map((user, index) => {
+                  {filteredUsers2?.length > 0
+                    ? filteredUsers2.map((user, index) => {
                         const initials = user.name
                           .split(" ")
                           .map((part) => part.charAt(0).toUpperCase())
@@ -2213,7 +2173,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                           <div
                             className="selectCollaboratorsBox"
                             key={index}
-                            onClick={() => handleUserSelect(user)}
+                            onClick={() => handleUserSelect2(user)}
                           >
                             <div
                               className={`collaboratorsBoxUser`}
@@ -2235,7 +2195,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
 
             <div
               className="d-flex gap-1 align-items-center justify-content-center comment-text cursor"
-              onClick={handleSendMessage}
+              onClick={handleSendComment}
             >
               <img src={comment} className="cursor" alt="Comment" />
               <span>Comment</span>
@@ -2639,13 +2599,12 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   );
 };
 
-export const CommentBox = ({ JobId, usersList }) => {
+export const CommentBox = ({ taskId, JobId, usersList }) => {
   const maxLength = 10;
   const [loading, setLoading] = useState(false);
   const [chats, setChats] = useState(null);
   const [body, setBody] = useState("");
   const attachmentRef = useRef(null);
-  const attachmentRef2 = useRef(null);
   const [attachments, setAttachments] = useState([]);
   const [newMsg, setNewMsg] = useState({
     type: "",
@@ -2718,37 +2677,7 @@ export const CommentBox = ({ JobId, usersList }) => {
     }
   }, [chats]);
 
-  useEffect(() => {
-    const id = localStorage.getItem("jobId");
-    if (!id) return;
 
-    const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
-      cluster: process.env.REACT_APP_CLUSTER,
-      encrypted: true,
-    });
-
-    const channel = pusher.subscribe(`job.${id}`);
-
-    const handleMessage = (data) => {
-      const { message } = data;
-      console.log("New message received:", message);
-
-      if (message) {
-        setChats((prevChats) => {
-          console.log("Previous chats:", prevChats);
-          return [...prevChats, message]; // Create a new array to trigger re-render
-        });
-      }
-    };
-
-    channel.bind("message.created", handleMessage);
-
-    return () => {
-      console.log("Unsubscribing from job:", id);
-      channel.unbind("message.created", handleMessage);
-      pusher.unsubscribe(`job.${id}`);
-    };
-  }, []);
 
   eventEmitter.removeAllListeners("newMessage");
   eventEmitter.on("newMessage", (data) => {
@@ -2769,19 +2698,16 @@ export const CommentBox = ({ JobId, usersList }) => {
     try {
       setLoading(true);
       const [response1, response2] = await Promise.all([
-        getMessages(JobId, { signal }),
+        getTaskComments(taskId, { signal }),
         getAttachments(JobId, { signal }),
       ]);
-
       if (!response1.error && !response2.error) {
-        const combinedArray = [...response1.res, ...response2.res];
-        const sortedMessages = combinedArray.sort(
+        const sortedMessages = response1.res.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
         const sortedAttachments = response2.res?.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
-
         setChats(sortedMessages);
         setAttachments(sortedAttachments);
       } else {
@@ -2800,7 +2726,7 @@ export const CommentBox = ({ JobId, usersList }) => {
   const debouncedSendMessage = debounce(async (body) => {
     try {
       setLoading(true);
-      const response = await sendMessage(JobId, { body, ids: userIds });
+      const response = await sendComment({ body, task_id:taskId, ids: userIds });
       if (!response.error) {
         fetchChats();
         const notificationData = {
@@ -2828,7 +2754,7 @@ export const CommentBox = ({ JobId, usersList }) => {
     }
   }, 300);
 
-  const throttledFetchChats = throttle(fetchChats, 1000); // 1 second throttle delay
+  const throttledFetchChats = throttle(fetchChats, 500); // 1 second throttle delay
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -3098,135 +3024,10 @@ export const CommentBox = ({ JobId, usersList }) => {
                       )}
                     </>
                   )}
-                  {!msg.body && (
-                    <>
-                      {msg.user.name !== localStorage.getItem("user") && (
-                        <div className="chats-content-reciever-new ">
-                          <div
-                            className={`InitialsBoxUser`}
-                            style={{
-                              minWidth: "40px",
-                            }}
-                          >
-                            {msg.user?.name
-                              .split(" ")
-                              .map((part) => part.charAt(0).toUpperCase())
-                              .join("")}
-                          </div>
-                          <div className="msg-body">
-                            <div className="msg">
-                              <p className="name"> {msg.user.name}</p>
-                              <span></span>
-                              <p className="time">
-                                {" "}
-                                {
-                                  moment(msg.created_at).isBefore(
-                                    moment().subtract(1, "hour")
-                                  )
-                                    ? moment(msg.created_at).format("h:mm a") // Show time if more than 1 hour ago
-                                    : moment(msg.created_at)
-                                        .fromNow()
-                                        .replace("minute", "min")
-                                        .replace("minutes", "mins") // Show relative time if within 1 hour
-                                }
-                              </p>
-                            </div>
-                            <div className="attachments">
-                              <div
-                                className="download-icon"
-                                onClick={() =>
-                                  handleDownloadFile(
-                                    msg.filename,
-                                    msg.original_name
-                                  )
-                                }
-                              >
-                                <img src={download} alt="" className="" />
-                              </div>
-                              <div className="imgBox">
-                                <img src={pngFIle} className="" alt="" />
-                              </div>
-                              <h5>
-                                {msg.original_name.length > maxLength
-                                  ? `${msg.original_name.slice(
-                                      0,
-                                      maxLength
-                                    )}...`
-                                  : msg.original_name}
-                              </h5>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {msg.user.name === localStorage.getItem("user") && (
-                        <div className="chats-content-sender-new ">
-                          <div
-                            className={`InitialsBoxUser`}
-                            style={{
-                              minWidth: "40px",
-                            }}
-                          >
-                            {msg.user?.name
-                              .split(" ")
-                              .map((part) => part.charAt(0).toUpperCase())
-                              .join("")}
-                          </div>
-                          <div className="msg-body">
-                            <div className="msg">
-                              <p className="name"> You</p>
-                              <span></span>
-                              <p className="time">
-                                {" "}
-                                {
-                                  moment(msg.created_at).isBefore(
-                                    moment().subtract(1, "hour")
-                                  )
-                                    ? moment(msg.created_at).format("h:mm a") // Show time if more than 1 hour ago
-                                    : moment(msg.created_at)
-                                        .fromNow()
-                                        .replace("minute", "min")
-                                        .replace("minutes", "mins") // Show relative time if within 1 hour
-                                }
-                              </p>
-                            </div>
-                            <div className="attachments">
-                              <div
-                                className="download-icon"
-                                onClick={() =>
-                                  handleDownloadFile(
-                                    msg.filename,
-                                    msg.original_name
-                                  )
-                                }
-                              >
-                                <img src={download} alt="" className="" />
-                              </div>
-                              <div className="imgBox">
-                                <img src={pngFIle} className="" alt="" />
-                              </div>
-                              <h5>
-                                {msg.original_name.length > maxLength
-                                  ? `${msg.original_name.slice(
-                                      0,
-                                      maxLength
-                                    )}...`
-                                  : msg.original_name}
-                              </h5>
-                              <span
-                                onClick={() => handleDeleteAttachment(msg.id)}
-                              >
-                                <CrossIcon />
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
                 </>
               );
             })}
-          {loading && newMsg.type === "msg" && (
+          {loading && newMsg?.type === "msg" && (
             <div className="chats-content-sender-new " ref={chatScroll}>
               <div
                 className={`InitialsBoxUser`}
@@ -3260,55 +3061,11 @@ export const CommentBox = ({ JobId, usersList }) => {
               </div>
             </div>
           )}
-          {loading && newMsg.type === "attachment" && (
-            <div className="chats-content-sender-new ">
-              <div
-                className={`InitialsBoxUser`}
-                style={{
-                  minWidth: "40px",
-                }}
-              >
-                {localStorage
-                  .getItem("user")
-                  ?.split(" ")
-                  .map((part) => part.charAt(0).toUpperCase())
-                  .join("")}
-              </div>
-              <div className="msg-body">
-                <div className="msg">
-                  <p className="name"> You</p>
-                  <span></span>
-                  <p className="time">
-                    {" "}
-                    {
-                      moment().isBefore(moment().subtract(1, "hour"))
-                        ? moment().format("h:mm a") // Show time if more than 1 hour ago
-                        : moment()
-                            .fromNow()
-                            .replace("minute", "min")
-                            .replace("minutes", "mins") // Show relative time if within 1 hour
-                    }
-                  </p>
-                </div>
-                <div className="attachments">
-                  <div className="imgBox">
-                    <img src={pngFIle} className="" alt="" />
-                  </div>
-                  <h5>
-                    {newMsg.data?.name?.length > maxLength
-                      ? `${newMsg.data?.name?.slice(0, maxLength)}...`
-                      : newMsg.data?.name}{" "}
-                    sending
-                  </h5>
-                  <div></div>
-                </div>
-              </div>
-            </div>
-          )}
           {!chats && <p className="loading">Loading Comments...</p>}
           {chats?.length === 0 && (
-            <p className="no-chats">No Comments Available.</p>
-          )}
+              <p className="no-chats">No Comments Available.</p>
+            )}
+            {console.log("chats", chats)}
         </div>
       </div>
 
@@ -3399,5 +3156,6 @@ export const CommentBox = ({ JobId, usersList }) => {
     </div>
   );
 };
+
 
 export default ChatAndAttachment;

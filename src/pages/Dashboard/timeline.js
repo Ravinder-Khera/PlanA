@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { getMessages } from "../../services/chat_attachment";
 import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
+import moment from "moment";
 
 const renderMessage = (text) => {
   // Regular expression to match words enclosed in {}
@@ -242,7 +243,7 @@ function TimelinePage() {
                               <div className="taskHeading">{trimmedTitle}</div>
                               <div className="taskDate">
                                 <span>Due Date</span>
-                                <span>{task.due_date}</span>
+                                <span>{moment(task.due_date).local().format('DD MMMM, YYYY')}</span>
                               </div>
                             </div>
                           </div>
@@ -328,7 +329,7 @@ function TimelinePage() {
               <div
                 className="addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none"
                 onClick={() => {
-                  navigate("/jobs", { state: selectedJob });
+                  navigate("/jobs", { state: {selectedJob, key:'job-task'} });
                 }}
               >
                 <div className="taskCount text-center">
