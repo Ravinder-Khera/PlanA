@@ -1,24 +1,29 @@
-import React, { useState, useRef } from "react";
-import { EditorState } from "draft-js";
+import React, { useState } from "react";
+import { EditorState, ContentState, convertFromHTML, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
+import draftToHtml from "draftjs-to-html"; // Convert EditorState to HTML
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
-const EditorComponent = () => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const editorRef = useRef(null); // Ref to access the Editor component
+const EditorComponent = ({ content, onContentChange }) => {
+  const initialHTML = content
+
+  // Convert initial HTML into ContentState
+  const blocksFromHTML = convertFromHTML(initialHTML);
+  const contentState = ContentState.createFromBlockArray(blocksFromHTML.contentBlocks);
+  const [editorState, setEditorState] = useState(EditorState.createWithContent(contentState));
 
   const onEditorStateChange = (newEditorState) => {
-    setEditorState(newEditorState);
-  };
-
-  const handleEditorClick = () => {
-    setEditorState(EditorState.moveFocusToEnd(editorState)); // Auto-focus on click
+    setEditorState(newEditorState);  
+    // Convert ContentState to raw format first
+    const rawContentState = convertToRaw(newEditorState.getCurrentContent());
+    const htmlContent = draftToHtml(rawContentState);
+  
+    onContentChange(htmlContent);
   };
 
   return (
-    <div className="editor-container" onClick={handleEditorClick}>
+    <div className="editor-container">
       <Editor
-        ref={editorRef}
         editorState={editorState}
         onEditorStateChange={onEditorStateChange}
         toolbarHidden={true} // ✅ Hides toolbar

@@ -112,10 +112,9 @@ const ChatAndAttachment = ({ JobId }) => {
   const fetchChats = async () => {
     try {
       setLoading(true);
-      console.log("chats", chats);
       const response1 = await getMessages(JobId);
       const response2 = await getAttachments(JobId);
-      // Combine both arrays
+
       if (!response1.error && !response2.error) {
         const combinedArray = [...response1.res, ...response2.res];
         const sortedMessages = combinedArray.sort((a, b) => {
@@ -784,37 +783,37 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
     }
   }, [chats]);
 
-  useEffect(() => {
-    const id = localStorage.getItem("jobId");
-    if (!id) return;
+  // useEffect(() => {
+  //   const id = localStorage.getItem("jobId");
+  //   if (!id) return;
 
-    const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
-      cluster: process.env.REACT_APP_CLUSTER,
-      encrypted: true,
-    });
+  //   const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
+  //     cluster: process.env.REACT_APP_CLUSTER,
+  //     encrypted: true,
+  //   });
 
-    const channel = pusher.subscribe(`job.${id}`);
+  //   const channel = pusher.subscribe(`job.${id}`);
 
-    const handleMessage = (data) => {
-      const { message } = data;
-      console.log("New message received:", message);
+  //   const handleMessage = (data) => {
+  //     const { message } = data;
+  //     console.log("New message received:", message);
 
-      if (message) {
-        setChats((prevChats) => {
-          console.log("Previous chats:", prevChats);
-          return [...prevChats, message]; // Create a new array to trigger re-render
-        });
-      }
-    };
+  //     if (message) {
+  //       setChats((prevChats) => {
+  //         console.log("Previous chats:", prevChats);
+  //         return [...prevChats, message]; // Create a new array to trigger re-render
+  //       });
+  //     }
+  //   };
 
-    channel.bind("message.created", handleMessage);
+  //   channel.bind("message.created", handleMessage);
 
-    return () => {
-      console.log("Unsubscribing from job:", id);
-      channel.unbind("message.created", handleMessage);
-      pusher.unsubscribe(`job.${id}`);
-    };
-  }, []);
+  //   return () => {
+  //     console.log("Unsubscribing from job:", id);
+  //     channel.unbind("message.created", handleMessage);
+  //     pusher.unsubscribe(`job.${id}`);
+  //   };
+  // }, []);
 
   eventEmitter.removeAllListeners("newMessage");
   eventEmitter.on("newMessage", (data) => {
@@ -1845,6 +1844,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     reader.onload = async () => {
       const formData = new FormData();
       formData.append("attachment", file);
+      // formData.append("type", 'job');
       try {
         setLoading(true);
         let response = await addAttachments(formData, JobId);
@@ -2758,6 +2758,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
+    if(!taskId) return
     if (!body || body?.trim() === "") {
       toast.error("Message cannot be empty");
       return;
@@ -2805,7 +2806,6 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
       try {
         setLoading(true);
         let response = await addAttachments(formData, JobId);
-        console.log("response 123--->", response);
         if (response.res) {
           toast.success(response.res?.message);
           throttledFetchChats();
@@ -3065,7 +3065,6 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
           {chats?.length === 0 && (
               <p className="no-chats">No Comments Available.</p>
             )}
-            {console.log("chats", chats)}
         </div>
       </div>
 
@@ -3108,7 +3107,9 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                   setShowUserList(false);
                 }
               }}
+              title={!taskId && 'Please add the task first.'}
               value={body}
+              disabled={!taskId}
             />
 
             {showUserList && (
@@ -3147,6 +3148,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
           <div
             className="d-flex gap-1 align-items-center justify-content-center comment-text cursor"
             onClick={handleSendMessage}
+            title={!taskId && 'Please add the task first.'}
           >
             <img src={comment} className="cursor" alt="Comment" />
             <span>Comment</span>

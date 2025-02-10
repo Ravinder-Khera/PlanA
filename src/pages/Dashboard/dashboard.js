@@ -350,10 +350,10 @@ function Dashboard() {
                               }`}
                               onClick={() => {
                                 if (task.status === "completed") return;
+                                setUpdateTaskStatus(task);
+                                handleTaskUpdate(task);
                                 setSelectedTask(task)
                                 setShowTaskCompletionPopup(true)
-                                // setUpdateTaskStatus(task);
-                                // handleTaskUpdate(task);
                               }}
                             ></div>
                             <div>

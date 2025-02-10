@@ -14,6 +14,7 @@ import {
   RightArrow,
   DownArrow,
   AddTaskGreyButton,
+  ModifiedRightArrow,
 } from "../../../assets/svg";
 import { Calendar } from "react-date-range";
 import {
@@ -44,6 +45,7 @@ import ChatAndAttachment, {
 } from "./ChatAndAttachment";
 import moment from "moment";
 import { formatJobNumber } from "../../../pages/Jobs";
+import AdhocTaskCompletionPopup from "../../dashboardTasks/AdhocTemplate";
 
 const JobModal = ({
   job,
@@ -3194,8 +3196,9 @@ export const NewJobModalWithTasks = ({
                     </div>
                   </div>
                   <div className="innerScroll">
-                    <h2 className="jobTitle" title={job?.title}
-                      >{job?.title}</h2>
+                    <h2 className="jobTitle" title={job?.title}>
+                      {job?.title}
+                    </h2>
                     <div className="discriptionBox">
                       <h3>Description</h3>
                       <textarea
@@ -3461,10 +3464,7 @@ export const NewJobModalWithTasks = ({
                       JobId={job?.id}
                       usersList={usersList}
                     /> */}
-                    <ChatAndComment
-                      JobId={job?.id}
-                      usersList={usersList}
-                    />
+                    <ChatAndComment JobId={job?.id} usersList={usersList} />
                   </div>
                 </div>
               </div>
@@ -3779,7 +3779,6 @@ export const NewTaskModal = ({
                     </div>
                   </div>
                   <div className="innerScroll">
-                    
                     <input
                       type="text"
                       className="jobTitle"
@@ -4324,7 +4323,8 @@ export const NewTaskModal = ({
   );
 };
 
-export const UpdateTaskModal = ({ returnToJob,
+export const UpdateTaskModal = ({
+  returnToJob,
   task,
   handleClose,
   handleDelete,
@@ -4333,7 +4333,6 @@ export const UpdateTaskModal = ({ returnToJob,
   scrollRef,
   usersList: suggestedUser,
 }) => {
-  console.log("task in update", task)
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
@@ -4354,6 +4353,7 @@ export const UpdateTaskModal = ({ returnToJob,
     []
   );
   const [addStageTitle, setAddStageTitle] = useState("");
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
   const [colors, setColors] = useState([]);
   const [activeStageColor, setActiveStageColor] = useState("");
   const [usersList, setUsersList] = useState([]);
@@ -4367,7 +4367,6 @@ export const UpdateTaskModal = ({ returnToJob,
   const popupRef = useRef(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
-
   const fetchUsers = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
@@ -4601,6 +4600,10 @@ export const UpdateTaskModal = ({ returnToJob,
     setIsPopupOpen(true);
   };
 
+  const handleSendEmail = () => {
+    setShowEmailPopup(true);
+  };
+
   return (
     <>
       {loader && (
@@ -4616,6 +4619,14 @@ export const UpdateTaskModal = ({ returnToJob,
           />
         </div>
       )}
+      {showEmailPopup && (
+        <AdhocTaskCompletionPopup
+          jobId={task?.job_id}
+          handleClose={() => {
+            setShowEmailPopup(false);
+          }}
+        />
+      )}
       <div className="loaderDiv2 mobile" style={{ zIndex: "1001" }}>
         <div className="pop-wrapper">
           <div className="wrapper">
@@ -4626,6 +4637,46 @@ export const UpdateTaskModal = ({ returnToJob,
               <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
                   <div className="topFlexDiv">
+                    {taskStatus == "completed" && (
+                      <div
+                        className="delete-box"
+                        style={{ cursor: "pointer", zIndex: 2 }}
+                        onClick={handleSendEmail}
+                      >
+                        <div className="deletBg">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="36"
+                            height="36"
+                            viewBox="0 0 36 36"
+                            fill="none"
+                          >
+                            <mask id="path-1-inside-1_4895_1898" fill="white">
+                              <rect width="36" height="36" rx="1" />
+                            </mask>
+                            <rect
+                              width="36"
+                              height="36"
+                              rx="1"
+                              fill="#E2E31F"
+                            />
+                            <rect
+                              width="36"
+                              height="36"
+                              rx="1"
+                              stroke="#E2E31F"
+                              stroke-width="3"
+                              mask="url(#path-1-inside-1_4895_1898)"
+                            />
+                            <path
+                              d="M25.7806 16.6394L12.7399 9.19799C12.4648 9.04385 12.1492 8.97719 11.8352 9.0069C11.5213 9.03661 11.2238 9.16126 10.9824 9.36427C10.7411 9.56727 10.5673 9.83899 10.4843 10.1432C10.4012 10.4475 10.4128 10.7698 10.5176 11.0673L12.8928 17.9896L10.5176 24.9305C10.4348 25.1645 10.4093 25.4149 10.4434 25.6608C10.4774 25.9067 10.5699 26.1408 10.7131 26.3435C10.8563 26.5462 11.046 26.7116 11.2664 26.8259C11.4867 26.9401 11.7313 26.9998 11.9795 27C12.2461 26.9994 12.5082 26.9305 12.7407 26.7998L12.7477 26.7951L25.7837 19.3405C26.0228 19.2052 26.2216 19.0089 26.3599 18.7716C26.4983 18.5344 26.5712 18.2646 26.5712 17.99C26.5712 17.7153 26.4983 17.4456 26.3599 17.2083C26.2216 16.971 26.0228 16.7747 25.7837 16.6394H25.7806ZM12.5413 24.7676L14.5401 18.93H18.8079C19.0548 18.93 19.2917 18.8319 19.4663 18.6573C19.6409 18.4827 19.739 18.2459 19.739 17.9989C19.739 17.7519 19.6409 17.5151 19.4663 17.3405C19.2917 17.1658 19.0548 17.0677 18.8079 17.0677H14.5456L12.542 11.2294L24.3901 17.9904L12.5413 24.7676Z"
+                              fill="black"
+                            />
+                          </svg>
+                        </div>
+                        <div className="delete-item">Send Email</div>
+                      </div>
+                    )}
                     <div
                       className="delete-box"
                       style={{ cursor: "pointer", zIndex: 2 }}
@@ -4644,7 +4695,9 @@ export const UpdateTaskModal = ({ returnToJob,
                       <div className="searchUserImg">
                         <OpenCloseIcon />
                       </div>
-                      <div className="delete-item">{returnToJob ? 'Return To Job' : 'Collapse'}</div>
+                      <div className="delete-item">
+                        {returnToJob ? "Return To Job" : "Collapse"}
+                      </div>
                     </div>
                   </div>
                   <div className="innerScroll">
@@ -5163,9 +5216,11 @@ export const UpdateTaskModal = ({ returnToJob,
                       </div>
                     </div>
 
-                   
-                     <CommentBox taskId={task?.id} JobId={task?.job_id}
-                      usersList={suggestedUser}/>
+                    <CommentBox
+                      taskId={task?.id}
+                      JobId={task?.job_id}
+                      usersList={suggestedUser}
+                    />
                   </div>
                 </div>
               </div>
@@ -5222,7 +5277,6 @@ export const CreateTaskModal = ({
   const [firstClick, setFirstClick] = useState(true);
   const [jobNo, setJobNo] = useState(null);
   const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
-
   const handleInputClick = () => {
     setIsPopupOpen(true);
   };
@@ -5776,7 +5830,7 @@ export const CreateTaskModal = ({
                               <h3>Job No.</h3>
                               <p className="textClass disabled">
                                 <button className="taskJobBtn">
-                                {formatJobNumber(task?.job_num)}
+                                  {formatJobNumber(task?.job_num)}
                                 </button>
                               </p>
                             </>
@@ -6173,9 +6227,11 @@ export const CreateTaskModal = ({
                       </div>
                     </div>
 
-                   
-                    <CommentBox taskId={task?.id}  JobId={task?.id}
-                      usersList={suggestedUser}/>
+                    <CommentBox
+                      taskId={null}
+                      JobId={task?.id}
+                      usersList={suggestedUser}
+                    />
                   </div>
                 </div>
               </div>

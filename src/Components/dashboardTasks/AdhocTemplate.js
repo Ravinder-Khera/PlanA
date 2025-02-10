@@ -1,29 +1,55 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  AttachmentIcon,
+  CommentIcon,
   EditIcon,
   ModifiedRightArrow,
   RightArrow,
   UploadIcon,
 } from "../../assets/svg";
 import pngFIle from "../../assets/common/pngFile.svg";
-import moment from "moment";
-import { getEmailsByStageAndTitle } from "../../helper";
+
+import { adHoc } from "../../helper";
 import EditorComponent from "./Editor";
 import { Bars } from "react-loader-spinner";
 import { sendEmail } from "../../services/chat_attachment";
+import { formatJobNumber } from "../../pages/Jobs";
+import { getSingleJob } from "../../services/auth";
+import { toast } from "react-toastify";
 
-const TaskCompletionPopup = ({ task, handleClose }) => {
+const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
   const [showDetails, setShowDetails] = useState(0);
   const [emailDetails, setEmailDetails] = useState(null);
   const [emailSuccess, setEmailSuccess] = useState(false);
-  const emailData = getEmailsByStageAndTitle(task?.stage, task?.title);
   const [requestBody, setRequestBody] = useState({});
   const [loading, setLoading] = useState(false);
-  const trimmedTitle =
-    task?.title?.length > 35
-      ? task?.title.substring(0, 35) + "..."
-      : task?.title;
+  const [job, setJob] = useState(null);
 
+  const fetchJob = async () => {
+    try {
+      const response = await getSingleJob(jobId);
+      if (response.res) {
+        console.log("job", response.res);
+        setJob(response.res);
+      } else {
+        console.error("get task failed:", response.error);
+        toast.error(response.error?.message || "Failed to get the job");
+      }
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (jobId) fetchJob();
+  }, []);
+
+  const handleReturn = () => {
+    handleClose();
+    setShowDetails(0);
+    setEmailSuccess(false);
+    setRequestBody({});
+  };
   const onSave = ({ subject, htmlContent, attachments }) => {
     setRequestBody({
       subject,
@@ -40,20 +66,20 @@ const TaskCompletionPopup = ({ task, handleClose }) => {
     try {
       setLoading(true);
       const formData = new FormData();
-      console.log("request body", requestBody)
+      console.log("request body", requestBody);
       formData.append("subject", requestBody?.subject);
       formData.append("body", requestBody?.body);
 
       requestBody?.to.forEach((to, index) => {
-        formData.append(`to[]`, to); 
+        formData.append(`to[]`, to);
       });
       requestBody?.cc.forEach((cc, index) => {
-        formData.append(`cc[]`, cc); 
+        formData.append(`cc[]`, cc);
       });
-      // Append attachments if available
+
       if (requestBody?.attachments && requestBody?.attachments?.length > 0) {
         requestBody?.attachments.forEach((file, index) => {
-          formData.append(`attachments[]`, file); 
+          formData.append(`attachments[]`, file);
         });
       }
       let response = await sendEmail(formData);
@@ -96,91 +122,86 @@ const TaskCompletionPopup = ({ task, handleClose }) => {
       {showDetails == 2 && <NotificationSent handleClose={handleClose} />}
       {!showDetails && (
         <div className="task-completion-overlay">
-          <div className="task-container">
-            <h4>Task Complete</h4>
+          <div className="task-container adhoc">
+            <h4>Send Email</h4>
             <p>
               You have successfully completed this task. Well done! Click to
               manage email notifications.
             </p>
-            <div className={`tasksDiv ${task.stage} `}>
-              <div
-                className="d-flex align-items-center justify-content-between"
-                style={{ gap: "20px" }}
-              >
-                <div
-                  className="d-flex align-items-center justify-content-between"
-                  style={{ gap: "20px" }}
-                >
-                  <div className={`markTaskComplete active `}></div>
-                  <div>
-                    <div className="taskHeading">| {task.id} |</div>
-                    <div className="taskHeading">{trimmedTitle}</div>
-                    <div className="taskDate">
-                      <span>Due Date</span>
-                      <span>
-                        {moment(task.due_date).local().format("DD MMMM, YYYY")}
-                      </span>
-                    </div>
-                  </div>
+            <div className="contentBox Application d-flex gap-2 align-items-start justify-content-between flex-column h-100 p-3">
+              <div className="w-100 d-flex gap-2 align-items-start justify-content-between">
+                <div className="textDiv">
+                  <span>| {formatJobNumber(job?.job_num)} |</span>
+                  <p className="job-title">{job?.title}</p>
                 </div>
-                <div>
-                  <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                    <div className=" d-flex align-items-center collaboratorsBox justify-content-end">
-                      {task?.collaborators?.length > 0 && (
-                        <>
-                          {task?.collaborators
-                            .slice(0, 3)
-                            .map((user, index) => {
-                              const initials = user
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("");
+                <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                  <div className=" d-flex align-items-center justify-content-end">
+                    <div className="collaboratorsBox justify-content-end">
+                      <div className=" d-flex align-items-center justify-content-center">
+                        {job?.collaborators?.length > 0 && (
+                          <>
+                            {job?.collaborators
+                              .slice(0, 3)
+                              .map((user, index) => {
+                                const initials = user?.name
+                                  ?.split(" ")
+                                  ?.map((part) => part.charAt(0).toUpperCase())
+                                  ?.join("");
 
-                              return (
-                                <div
-                                  key={index}
-                                  className={`collaboratorsBoxUser`}
-                                  style={{
-                                    minWidth: "40px",
-                                    zIndex: index,
-                                  }}
-                                >
-                                  {initials}
-                                </div>
-                              );
-                            })}
+                                return (
+                                  <div
+                                    key={index}
+                                    className={`collaboratorsBoxUser`}
+                                    style={{
+                                      minWidth: "40px",
+                                      zIndex: index,
+                                    }}
+                                  >
+                                    {initials}
+                                  </div>
+                                );
+                              })}
 
-                          {task?.collaborators?.length > 3 && (
-                            <div
-                              className={`collaboratorsBoxUser`}
-                              style={{
-                                minWidth: "40px",
-                                zIndex: 1,
-                              }}
-                            >
-                              +{task?.collaborators.length - 3}
-                            </div>
-                          )}
-                        </>
-                      )}
-                      {task.collaborators?.length === 0 && (
-                        <div
-                          className="collaboratorsBoxUser disabled m-0"
-                          style={{ minWidth: "40px" }}
-                        >
-                          N/A
-                        </div>
-                      )}
+                            {job?.collaborators?.length > 3 && (
+                              <div
+                                className={`collaboratorsBoxUser`}
+                                style={{
+                                  minWidth: "40px",
+                                  zIndex: 1,
+                                }}
+                              >
+                                +{job?.collaborators.length - 3}
+                              </div>
+                            )}
+                          </>
+                        )}
+                        {job?.collaborators?.length === 0 && (
+                          <div
+                            className="collaboratorsBoxUser disabled m-0"
+                            style={{ minWidth: "40px" }}
+                          >
+                            N/A
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+              <div className="d-flex gap-2 align-items-start justify-content-end w-100 commentsBox">
+                <div>
+                  <AttachmentIcon /> <span>{job?.attachments_count}</span>
+                </div>
+                <div>
+                  <CommentIcon /> <span>{job?.messages_count}</span>
+                </div>
+              </div>
             </div>
             <div className="email-container">
-              <h3>Customise Email Notifications:</h3>
+              <h3>Select Email:</h3>
               <div className="list">
                 <div className="innerscroll">
-                  {emailData.map((data, index) => (
+                  {adHoc.map((data, index) => (
                     <div
                       key={index}
                       className="list-row"
@@ -189,12 +210,6 @@ const TaskCompletionPopup = ({ task, handleClose }) => {
                         setEmailDetails(data);
                       }}
                     >
-                      <div className="edit-icon">
-                        <EditIcon />
-                      </div>
-                      <div className={`centerText stageBtn btn_${task.stage}`}>
-                        {task.stage}
-                      </div>
                       <div className="title">{data?.emailType}</div>
                     </div>
                   ))}
@@ -211,7 +226,7 @@ const TaskCompletionPopup = ({ task, handleClose }) => {
               </button>
             )}
             <p className="bottom-text">
-              Not ready to submit? <span onClick={handleClose}>Return</span>
+              <span onClick={handleReturn}>Return</span>
             </p>
           </div>
         </div>
@@ -400,8 +415,7 @@ export const NotificationSent = ({ handleClose }) => {
       <div className="task-container">
         <h4>Email Notification Sent</h4>
         <p>
-          Your selected recipients have been sent an email notifying them to
-          action the next steps<br/> in this job. Click to return.
+          This email has been sent to the selected recipients. Click to return.
         </p>
         <button type="button" className="save-email" onClick={handleClose}>
           Return <RightArrow color="#000" />
@@ -411,4 +425,4 @@ export const NotificationSent = ({ handleClose }) => {
   );
 };
 
-export default TaskCompletionPopup;
+export default AdhocTaskCompletionPopup;

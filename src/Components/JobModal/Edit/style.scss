@@ -1952,6 +1952,10 @@
           }
 
           .jobTitle {
+            position: sticky;
+            top: 0;
+            background: #252525;
+    z-index: 99;
             padding: 30px 0;
             color: #e2e31f;
             text-align: start;
@@ -1976,11 +1980,15 @@
 
           input {
             &.jobTitle {
+              position: sticky;
+              top: 0;
               width: 100%;
               background: transparent;
               border: none;
               outline: none;
               border-bottom: 1px solid #e2e31f26;
+              background: #252525;
+    z-index: 99;
             }
           }
           .discriptionBox {
