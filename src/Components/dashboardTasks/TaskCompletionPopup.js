@@ -414,6 +414,9 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
             type="button"
             className="save-email"
             onClick={handleSaveEmail}
+            style={{
+              margin:'24px 0 16px 0'
+            }}
           >
             Save Email <RightArrow color="#000" />
           </button>
