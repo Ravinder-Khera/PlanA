@@ -6,38 +6,32 @@ import {
   BellIcon,
   CloseIcon,
   FilterCrossIcon,
-  FilterIcon,
   NewFilterIcon,
-  Search,
+  Search
 } from "../../assets/svg";
-import "./viewTasks.scss";
 import {
   createTask,
   deleteTask,
-  getJobByNum,
   getJobIds,
   getSingleJob,
-  getTasksByFilter,
   getTasksByUser,
   getUserByRole,
-  updateTask,
+  updateTask
 } from "../../services/auth";
+import "./viewTasks.scss";
 
+import moment from "moment";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Complete from "../../Components/Popups/Complete";
-import filterIcon from "../../assets/icons/filterIcon.png";
-import { useNavigate, useParams } from "react-router-dom";
-import FilterTask from "../../Components/Filter/FilterTask";
+import { v4 as uuidv4 } from "uuid";
+import TaskFilter from "../../Components/Filter/TaskFilter";
 import {
   CreateTaskModal,
   UpdateTaskModal,
 } from "../../Components/JobModal/Edit/JobModal";
-import moment from "moment";
-import Filter from "../../Components/Filter/Filter";
 import { NotificationComponent } from "../../Components/navMenu";
-import TaskFilter from "../../Components/Filter/TaskFilter";
 import { formatJobNumber } from "../Jobs";
 function ViewTaskPage() {
   const [loading, setLoading] = useState(true);
@@ -102,9 +96,11 @@ function ViewTaskPage() {
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "notifications") {
-        const updatedNotifications = JSON.parse(event.newValue);
+        const updatedNotifications = JSON.parse(event.newValue)?.map((notif) => ({
+          ...notif,
+          id: uuidv4(), 
+        }));
         setNotifications(updatedNotifications);
-        console.log(updatedNotifications, "updatedNotifications");
         setStorageUpdated(true);
       }
     };
@@ -114,7 +110,11 @@ function ViewTaskPage() {
     const checkNotifications = () => {
       const existingNotificationsJSON = localStorage.getItem("notifications");
       if (existingNotificationsJSON) {
-        setNotifications(JSON.parse(existingNotificationsJSON));
+        const existingNotifications = JSON.parse(existingNotificationsJSON).map((notif) => ({
+          ...notif,
+          id: uuidv4(), 
+        }));
+        setNotifications(existingNotifications);
       }
     };
 
@@ -130,11 +130,11 @@ function ViewTaskPage() {
   const handleRemoveNotification = (notificationToRemove) => {
     setNotifications((prevNotifications) =>
       prevNotifications.filter(
-        (notification) => notification !== notificationToRemove
+        (notification) => notification.id !== notificationToRemove.id
       )
     );
     const updatedNotifications = notifications.filter(
-      (notification) => notification !== notificationToRemove
+      (notification) => notification.id !== notificationToRemove.id
     );
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
   };
@@ -145,6 +145,7 @@ function ViewTaskPage() {
         notificationRef.current &&
         !notificationRef.current.contains(e.target)
       ) {
+        console.log("triggerd  notification")
         setNotificationDropDown(false);
       }
     };
@@ -777,7 +778,7 @@ function ViewTaskPage() {
                             {notifications.length > 0 ? (
                               notifications.map((notification, index) => (
                                 <NotificationComponent
-                                  key={index}
+                                  key={notification.id}
                                   notificationData={notification}
                                   onRemove={handleRemoveNotification}
                                 />

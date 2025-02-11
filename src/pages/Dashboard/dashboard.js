@@ -126,6 +126,7 @@ function Dashboard() {
     setTimeout(() => {
       if (selectedJob) {
         const popUpSlide = selectedJobRef.current;
+        if(popUpSlide)
         popUpSlide.classList.add("slideIn");
       }
     }, 1000);
@@ -227,6 +228,11 @@ function Dashboard() {
       {showTaskCompletionPopup && <TaskCompletionPopup task={selectedTask}  handleClose={() => {
         setShowTaskCompletionPopup(false);
         setSelectedTask(null);
+      }} handleFinalClose={() => {
+          setUpdateTaskStatus(selectedTask);
+          handleTaskUpdate(selectedTask);
+          setShowTaskCompletionPopup(false);
+          setSelectedTask(null);
       }}/>}
       <div
         className="DashboardTopMenu DashboardBgLines position-relative"
@@ -350,8 +356,7 @@ function Dashboard() {
                               }`}
                               onClick={() => {
                                 if (task.status === "completed") return;
-                                setUpdateTaskStatus(task);
-                                handleTaskUpdate(task);
+                              
                                 setSelectedTask(task)
                                 setShowTaskCompletionPopup(true)
                               }}
@@ -435,7 +440,9 @@ function Dashboard() {
               <div className="taskCount text-center mt-4">
                 <p
                   onClick={() => {
-                    navigate("/jobs/tasks", { state: selectedJob });
+                    navigate("/jobs", {
+                      state: { selectedJob, key: "job-task" },
+                    });
                   }}
                 >
                   See All
@@ -500,11 +507,11 @@ function Dashboard() {
                           </div>
                         </div>
                         <div className="chatBtnDiv">
-                          <p>Lastest Update: {formatDate(chat.updated_at)}</p>
+                          <p>Lastest Update:  {moment(chat.updated_at).local().format("DD MMMM, YYYY")}</p>
                           <button
                             className="Btn"
                             onClick={() => {
-                              navigate("/jobs", { state: selectedJob });
+                              navigate("/jobs", { state: {selectedJob, key:'job-task'} });
                             }}
                           >
                             Reply

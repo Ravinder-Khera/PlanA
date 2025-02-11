@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from "react";
-import "./style.scss";
+import { useEffect, useRef, useState } from "react";
+import { DateRangePicker } from "react-date-range";
+import { toast } from "react-toastify";
+import assignImg from "../../assets/icons/Group 13.svg";
 import downArr from "../../assets/icons/Vector (1).svg";
 import swapImg from "../../assets/icons/Vector (2).svg";
-import assignImg from "../../assets/icons/Group 13.svg";
-import { DateRangePicker, Calendar } from "react-date-range";
 import {
   CrossIcon,
   FilterCrossIcon,
@@ -13,7 +13,7 @@ import {
 } from "../../assets/svg";
 import { StatusList } from "../../helper";
 import { FilterJobs, getJobsByFilter, getUserByRole } from "../../services/auth";
-import { toast } from "react-toastify";
+import "./style.scss";
 
 const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);

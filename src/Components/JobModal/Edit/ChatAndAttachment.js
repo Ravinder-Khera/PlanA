@@ -1989,8 +1989,9 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         </div>
       </div>
       <div className="addJobPopUpAttachments">
-        <div className="addJobPopUpAttachments ">
+        <div className="addJobPopUpAttachments border-bottom-0 ">
           <div className="chatsDiv">
+             <div className="inner-scroll">
             {comments &&
               comments?.length > 0 &&
               comments?.map((msg) => {
@@ -2114,6 +2115,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               <p className="no-chats">No Comments Available.</p>
             )}
           </div>
+          </div>
         </div>
 
         <div className="d-flex align-items-center justify-content-start comment-inputBox">
@@ -2207,6 +2209,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       <div className="addJobPopUpAttachments">
         <h3>Chat</h3>
         <div className="chatsDiv">
+        <div className="inner-scroll">
           {chats &&
             chats?.length > 0 &&
             chats?.map((msg) => {
@@ -2497,6 +2500,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               No chats currently. Type a message to start the chat.
             </p>
           )}
+        </div>
         </div>
       </div>
 
@@ -2947,6 +2951,8 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
       </div>
       <div className="addJobPopUpAttachments ">
         <div className="chatsDiv">
+          <div className="inner-scroll">
+
           {chats &&
             chats?.length > 0 &&
             chats?.map((msg) => {
@@ -3065,6 +3071,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
           {chats?.length === 0 && (
               <p className="no-chats">No Comments Available.</p>
             )}
+          </div>
         </div>
       </div>
 

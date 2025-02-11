@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { Bars } from 'react-loader-spinner';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { ClosedEye, ClosedLock, Email, OpenedEye, OpenedLock, User } from '../../../assets/svg';
 import { SignIn } from '../../../services/auth';
-import { useNavigate  } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { Bars } from 'react-loader-spinner'
 
 function SignUp() {
   const [password, setPassword] = useState('');

@@ -12,7 +12,7 @@ import EditorComponent from "./Editor";
 import { Bars } from "react-loader-spinner";
 import { sendEmail } from "../../services/chat_attachment";
 
-const TaskCompletionPopup = ({ task, handleClose }) => {
+const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
   const [showDetails, setShowDetails] = useState(0);
   const [emailDetails, setEmailDetails] = useState(null);
   const [emailSuccess, setEmailSuccess] = useState(false);
@@ -23,6 +23,21 @@ const TaskCompletionPopup = ({ task, handleClose }) => {
     task?.title?.length > 35
       ? task?.title.substring(0, 35) + "..."
       : task?.title;
+  const popupRef = useRef(null);
+
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const onSave = ({ subject, htmlContent, attachments }) => {
     setRequestBody({
@@ -40,20 +55,20 @@ const TaskCompletionPopup = ({ task, handleClose }) => {
     try {
       setLoading(true);
       const formData = new FormData();
-      console.log("request body", requestBody)
+      console.log("request body", requestBody);
       formData.append("subject", requestBody?.subject);
       formData.append("body", requestBody?.body);
 
       requestBody?.to.forEach((to, index) => {
-        formData.append(`to[]`, to); 
+        formData.append(`to[]`, to);
       });
       requestBody?.cc.forEach((cc, index) => {
-        formData.append(`cc[]`, cc); 
+        formData.append(`cc[]`, cc);
       });
       // Append attachments if available
       if (requestBody?.attachments && requestBody?.attachments?.length > 0) {
         requestBody?.attachments.forEach((file, index) => {
-          formData.append(`attachments[]`, file); 
+          formData.append(`attachments[]`, file);
         });
       }
       let response = await sendEmail(formData);
@@ -93,10 +108,10 @@ const TaskCompletionPopup = ({ task, handleClose }) => {
           onReturn={() => setShowDetails(0)}
         />
       )}
-      {showDetails == 2 && <NotificationSent handleClose={handleClose} />}
+      {showDetails == 2 && <NotificationSent handleClose={handleFinalClose} />}
       {!showDetails && (
         <div className="task-completion-overlay">
-          <div className="task-container">
+          <div className="task-container" ref={popupRef}>
             <h4>Task Complete</h4>
             <p>
               You have successfully completed this task. Well done! Click to
@@ -227,6 +242,21 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
 
   const [subject, setSubject] = useState("RE:" + emailType);
   const attachmentRef = useRef(null);
+  const popupRef = useRef(null);
+
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        onReturn();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -258,10 +288,6 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
     }
   };
 
-  useEffect(() => {
-    console.log(attachments);
-  }, [attachments]);
-
   const handleSaveEmail = () => {
     onSave({ subject, htmlContent, attachments });
   };
@@ -274,7 +300,11 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
   };
   return (
     <div className="task-completion-overlay">
-      <div className="task-container " style={{ width: "540px" }}>
+      <div
+        className="task-container "
+        style={{ width: "540px" }}
+        ref={popupRef}
+      >
         <h4>{emailType}</h4>
         <p>Customise this email message and the recipients.</p>
         <div className="scrollable-content">
@@ -395,13 +425,29 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
 };
 
 export const NotificationSent = ({ handleClose }) => {
+  const popupRef = useRef(null);
+
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <div className="task-completion-overlay">
-      <div className="task-container">
+      <div className="task-container" ref={popupRef}>
         <h4>Email Notification Sent</h4>
         <p>
           Your selected recipients have been sent an email notifying them to
-          action the next steps<br/> in this job. Click to return.
+          action the next steps
+          <br /> in this job. Click to return.
         </p>
         <button type="button" className="save-email" onClick={handleClose}>
           Return <RightArrow color="#000" />

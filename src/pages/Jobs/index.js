@@ -1,4 +1,10 @@
+import moment from "moment";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Calendar } from "react-date-range";
+import { Bars } from "react-loader-spinner";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 import {
   AddIcon,
   ArrowRight,
@@ -9,17 +15,25 @@ import {
   RightArrow,
   Search,
 } from "../../assets/svg";
-import "./Jobs.scss";
+import ErrorToast from "../../Components/ErrorToast";
+import Filter from "../../Components/Filter/Filter";
+import {
+  CreateTaskModal,
+  NewJobModal,
+  NewJobModalWithTasks,
+  NewTaskModal,
+  UpdateTaskModal,
+} from "../../Components/JobModal/Edit/JobModal";
+import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
+import { NotificationComponent } from "../../Components/navMenu";
+import { MAX_CALENDAR_YEAR, StatusList } from "../../helper";
 import {
   createJobs,
   createTask,
-  deleteJob,
-  deleteJobs,
   deleteTask,
   FilterJobs,
   getJobByNum,
   getJobs,
-  getJobsByFilter,
   getJobsNum,
   getSingleJob,
   getUserByRole,
@@ -27,25 +41,7 @@ import {
   updateJobs,
   updateTask,
 } from "../../services/auth";
-import { Bars } from "react-loader-spinner";
-import { toast } from "react-toastify";
-import moment from "moment";
-import Filter from "../../Components/Filter/Filter";
-import JobModal, {
-  CreateTaskModal,
-  NewJobModal,
-  NewJobModalWithTasks,
-  NewTaskModal,
-  UpdateTaskModal,
-} from "../../Components/JobModal/Edit/JobModal";
-import { MAX_CALENDAR_YEAR, StatusList } from "../../helper";
-import Add from "../../Components/JobModal/Add/Add";
-import { Link, useLocation } from "react-router-dom";
-import { NotificationComponent } from "../../Components/navMenu";
-import { Calendar } from "react-date-range";
-import ErrorToast from "../../Components/ErrorToast";
-import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
-
+import "./Jobs.scss";
 const renderComment = (message) => {
   if (!message) return <p className="no-comment">No Comments</p>;
   const renderMessage = (text) => {
@@ -188,9 +184,13 @@ const Jobs = () => {
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "notifications") {
-        const updatedNotifications = JSON.parse(event.newValue);
+        const updatedNotifications = JSON.parse(event.newValue)?.map(
+          (notif) => ({
+            ...notif,
+            id: uuidv4(),
+          })
+        );
         setNotifications(updatedNotifications);
-        console.log(updatedNotifications, "updatedNotifications");
         setStorageUpdated(true);
       }
     };
@@ -200,7 +200,13 @@ const Jobs = () => {
     const checkNotifications = () => {
       const existingNotificationsJSON = localStorage.getItem("notifications");
       if (existingNotificationsJSON) {
-        setNotifications(JSON.parse(existingNotificationsJSON));
+        const existingNotifications = JSON.parse(existingNotificationsJSON).map(
+          (notif) => ({
+            ...notif,
+            id: uuidv4(),
+          })
+        );
+        setNotifications(existingNotifications);
       }
     };
 
@@ -253,12 +259,12 @@ const Jobs = () => {
 
   const handleRemoveNotification = (notificationToRemove) => {
     setNotifications((prevNotifications) =>
-      prevNotifications.filter(
-        (notification) => notification !== notificationToRemove
+      prevNotifications?.filter(
+        (notification) => notification?.id !== notificationToRemove?.id
       )
     );
-    const updatedNotifications = notifications.filter(
-      (notification) => notification !== notificationToRemove
+    const updatedNotifications = notifications?.filter(
+      (notification) => notification?.id !== notificationToRemove?.id
     );
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
   };
@@ -287,7 +293,12 @@ const Jobs = () => {
 
   const { state } = location;
   useEffect(() => {
-    if (state !== 1 && state?.key !== "new-task-job" && state?.key !== "job-task" && state) {
+    if (
+      state !== 1 &&
+      state?.key !== "new-task-job" &&
+      state?.key !== "job-task" &&
+      state
+    ) {
       localStorage.setItem("jobId", state?.id);
       setShowJobModal(true);
       setGetJob({
@@ -298,7 +309,12 @@ const Jobs = () => {
     if (state !== 1 && state?.key === "new-task-job" && state?.selectedJob) {
       handleAddTaskClick(state?.selectedJob);
     }
-    if (state !== 1 && state?.key !== "new-task-job"  && state?.key == 'job-task' && state?.selectedJob) {
+    if (
+      state !== 1 &&
+      state?.key !== "new-task-job" &&
+      state?.key == "job-task" &&
+      state?.selectedJob
+    ) {
       handleOpenJobWithTask(state?.selectedJob);
     }
     fetchJobs();
@@ -918,11 +934,12 @@ const Jobs = () => {
   useEffect(() => {
     const handleUpdateJob = async (updatedJob) => {
       try {
+        let oldCollaboratorsId = updatedJob.collaborators?.map((collaborator) => collaborator.id)
         const reqBody = {
           job_id: updatedJob.id,
           dataObj: {
             title: updatedJob.title,
-            collaborators: newJobCollaboratorsListId,
+            collaborators:[...oldCollaboratorsId, ...newJobCollaboratorsListId],
             status: updatedJob.status,
             due_date: updatedJob.due_date,
           },
@@ -988,7 +1005,7 @@ const Jobs = () => {
           );
         };
 
-        console.log("isJobChanged -", isJobChanged(updatedJob, originalJob));
+        console.log("isJobChanged -",updatedJob, originalJob, isJobChanged(updatedJob, originalJob));
         if (isJobChanged(updatedJob, originalJob)) {
           handleUpdateJob(updatedJob);
           synchronizeRowHeights();
@@ -1092,7 +1109,7 @@ const Jobs = () => {
     stage
   ) => {
     console.log(newData?.updatedTask?.title);
-    
+
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => ({
         ...job,
@@ -1208,12 +1225,10 @@ const Jobs = () => {
   const synchronizeRowHeights = () => {
     const rightRows = document.querySelectorAll(".table_right .tableEntries");
     const leftRows = document.querySelectorAll(".table_left .tableEntries");
-    const rightColumns = document.querySelectorAll(".table_right tr td");
-    const leftColumns = document.querySelectorAll(".table_left tr td");
+   
 
-    console.log(rightRows.length , leftRows.length);
+    console.log(rightRows.length, leftRows.length);
     if (rightRows.length !== leftRows.length) {
-      
       console.error("Both tables must have the same number of rows.");
       return;
     }
@@ -1224,17 +1239,11 @@ const Jobs = () => {
       const rightHeight = rightRows[i].offsetHeight;
       const leftHeight = leftRows[i].offsetHeight;
       maxHeight = Math.max(rightHeight, leftHeight);
-      console.log(rightHeight,[i] , leftHeight,maxHeight);
 
       rightRows[i].style.height = `${maxHeight}px`;
       leftRows[i].style.height = `${maxHeight}px`;
     }
-    // for (let i = 0; i < rightColumns.length; i++) {
-    //   rightColumns[i].style.height = `${maxHeight}px`;
-    // }
-    // for (let i = 0; i < leftColumns.length; i++) {
-    //   leftColumns[i].style.height = `${maxHeight}px`;
-    // }
+  
   };
 
   useEffect(() => {
@@ -1267,7 +1276,6 @@ const Jobs = () => {
   };
 
   const handleAddNewJobWithTask = async (task) => {
-    console.log("clicked", task);
 
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => ({
@@ -1831,7 +1839,7 @@ const Jobs = () => {
             </div>
           </div>
         </div>
-        <div className="pagination-container">
+        <div className="pagination-container job-section">
           <div
             className="JobsContainer desktop"
             ref={containerRef}
@@ -1843,13 +1851,13 @@ const Jobs = () => {
                   <table className="table table-borderless text-light">
                     <thead className="sticky-header">
                       <tr>
-                        <th scope="col" style={{width:'135px'}}>
+                        <th scope="col" style={{ width: "135px" }}>
                           <div className="headerDiv">Job No.</div>
                         </th>
                         <th scope="col">
                           <div className="headerDiv">Job Name</div>
                         </th>
-                        <th scope="col" style={{width:'185px'}}>
+                        <th scope="col" style={{ width: "185px" }}>
                           <div className="headerDiv">Collaborators</div>
                         </th>
                       </tr>
@@ -2673,7 +2681,12 @@ const Jobs = () => {
                                       )}{" "}
                                 days
                               </td>
-                              <td style={{ borderRight: "none",   width: 'calc(100% - 110px)' }}>
+                              <td
+                                style={{
+                                  borderRight: "none",
+                                  width: "calc(100% - 110px)",
+                                }}
+                              >
                                 <div
                                   className="d-flex align-items-center "
                                   style={{ gap: "8px" }}
@@ -2683,9 +2696,7 @@ const Jobs = () => {
                                       {job?.tasks
                                         .slice(
                                           0,
-                                          showAllTasks
-                                            ? job?.tasks.length
-                                            : 3
+                                          showAllTasks ? job?.tasks.length : 3
                                         )
                                         .map((task, index) => {
                                           return (
@@ -2698,18 +2709,14 @@ const Jobs = () => {
                                               onClick={() => {
                                                 console.log(task);
                                                 if (!task.id) {
-                                                  console.log(
-                                                    "not from db"
-                                                  );
+                                                  console.log("not from db");
                                                   handleCheckTask(
                                                     job.id,
                                                     index
                                                   );
                                                 } else {
                                                   setActiveTask(task);
-                                                  setShowUpdateTaskModal(
-                                                    true
-                                                  );
+                                                  setShowUpdateTaskModal(true);
                                                 }
                                               }}
                                             >
@@ -2722,36 +2729,28 @@ const Jobs = () => {
                                   <div className={`px-3 clickBox`}>
                                     <div
                                       className={`clickBoxtext`}
-                                      onClick={() =>
-                                        handleAddTaskClick(job)
-                                      }
+                                      onClick={() => handleAddTaskClick(job)}
                                     >
                                       Add Task +
                                     </div>
                                   </div>
                                 </div>
                               </td>
-                              <td style={{width: '110px', textAlign:'center'}}>
+                              <td
+                                style={{ width: "110px", textAlign: "center" }}
+                              >
                                 <div className="task-view-more">
                                   {job?.tasks?.length > 0 && (
                                     <div
                                       className={` mx-0 `}
-                                      onClick={() =>
-                                        handleOpenJobWithTask(job)
-                                      }
+                                      onClick={() => handleOpenJobWithTask(job)}
                                     >
-                                      View More{" "}
-                                      <RightArrow color="#E2E31F" />
+                                      View More <RightArrow color="#E2E31F" />
                                     </div>
                                   )}
                                 </div>
                               </td>
-                              {/* <td className="text-start">
-                                <table style={{width: '100%'}}>
-                                  <tr>
-                                  </tr>
-                                </table>
-                              </td> */}
+                             
                               <td className="text-center ">
                                 {formatDate(job.updated_at)}
                               </td>

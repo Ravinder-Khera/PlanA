@@ -27,9 +27,9 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
 
   const fetchJob = async () => {
     try {
+      setLoading(true);
       const response = await getSingleJob(jobId);
       if (response.res) {
-        console.log("job", response.res);
         setJob(response.res);
       } else {
         console.error("get task failed:", response.error);
@@ -37,6 +37,8 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
       }
     } catch (error) {
       console.log("error:", error);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -128,6 +130,7 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
               You have successfully completed this task. Well done! Click to
               manage email notifications.
             </p>
+
             <div className="contentBox Application d-flex gap-2 align-items-start justify-content-between flex-column h-100 p-3">
               <div className="w-100 d-flex gap-2 align-items-start justify-content-between">
                 <div className="textDiv">

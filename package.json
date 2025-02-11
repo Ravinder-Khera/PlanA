@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@event-calendar/core": "^2.6.1",
-    "@event-calendar/time-grid": "^2.6.1"
+    "@event-calendar/time-grid": "^2.6.1",
+    "uuid": "^11.0.5"
   }
 }

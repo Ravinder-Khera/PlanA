@@ -197,13 +197,13 @@
                     }
 
                     &.card_Information,
-                
                     &.btn_Info {
                       border: 1px solid #8a50c5;
                       background: rgba(138, 80, 197, 0.49);
                     }
 
-                    &.btn_Inform, &.card_Public {
+                    &.btn_Inform,
+                    &.card_Public {
                       border: 1px solid #ff5c00;
                       background: rgba(255, 92, 0, 0.55);
                     }
@@ -351,13 +351,13 @@
                       }
 
                       &.btnn_Information,
-                   
                       &.btn_Info {
                         border: 1px solid #8a50c5;
                         background: rgba(138, 80, 197, 0.49);
                       }
 
-                      &.btn_Inform, &.btnn_Public {
+                      &.btn_Inform,
+                      &.btnn_Public {
                         border: 1px solid #ff5c00;
                         background: rgba(255, 92, 0, 0.55);
                       }
@@ -440,12 +440,12 @@
                         }
 
                         &.btnn_Information,
-                        
                         &.btnn_Info {
                           color: rgba(138, 80, 197);
                         }
 
-                        &.btnn_Inform, &.btnn_Public {
+                        &.btnn_Inform,
+                        &.btnn_Public {
                           color: rgba(255, 92, 0);
                         }
 
@@ -540,13 +540,13 @@
                 }
 
                 &.btn_Information,
-                
                 &.btn_Info {
                   border: 1px solid #8a50c5;
                   background: rgba(138, 80, 197, 0.49);
                 }
 
-                &.btn_Inform, &.btn_Public {
+                &.btn_Inform,
+                &.btn_Public {
                   border: 1px solid #ff5c00;
                   background: rgba(255, 92, 0, 0.55);
                 }
@@ -917,12 +917,12 @@
                         }
 
                         &.text_Information,
-                       
                         &.text_Info {
                           color: #8a50c5;
                         }
 
-                        &.text_Inform, &.text_Public {
+                        &.text_Inform,
+                        &.text_Public {
                           color: #ff5c00;
                         }
 
@@ -1102,13 +1102,13 @@
                                 }
 
                                 &.Information,
-                               
                                 &.Info {
                                   border: 1px solid #8a50c5;
                                   background: rgba(138, 80, 197, 0.49);
                                 }
 
-                                &.Inform, &.Public {
+                                &.Inform,
+                                &.Public {
                                   border: 1px solid #ff5c00;
                                   background: rgba(255, 92, 0, 0.55);
                                 }
@@ -1208,13 +1208,13 @@
                         }
 
                         &.btn_Information,
-                        
                         &.btn_Info {
                           border: 1px solid #8a50c5;
                           background: rgba(138, 80, 197, 0.49);
                         }
 
-                        &.btn_Inform, &.btn_Public {
+                        &.btn_Inform,
+                        &.btn_Public {
                           border: 1px solid #ff5c00;
                           background: rgba(255, 92, 0, 0.55);
                         }
@@ -1955,7 +1955,7 @@
             position: sticky;
             top: 0;
             background: #252525;
-    z-index: 99;
+            z-index: 99;
             padding: 30px 0;
             color: #e2e31f;
             text-align: start;
@@ -1988,7 +1988,7 @@
               outline: none;
               border-bottom: 1px solid #e2e31f26;
               background: #252525;
-    z-index: 99;
+              z-index: 99;
             }
           }
           .discriptionBox {
@@ -2366,13 +2366,13 @@
                   }
 
                   &.stage_Information,
-                  
                   &.stage_Info {
                     border: 1px solid #8a50c5;
                     background: rgba(138, 80, 197, 0.49);
                   }
 
-                  &.stage_Inform, &.stage_Public {
+                  &.stage_Inform,
+                  &.stage_Public {
                     border: 1px solid #ff5c00;
                     background: rgba(255, 92, 0, 0.55);
                   }
@@ -2601,7 +2601,8 @@
                 color: rgba(138, 80, 197);
               }
 
-              &.Inform, &.Public {
+              &.Inform,
+              &.Public {
                 color: rgba(255, 92, 0);
               }
 
@@ -2637,13 +2638,13 @@
                 }
 
                 &.stage_Information,
-                
                 &.stage_Info {
                   border: 1px solid #8a50c5;
                   background: rgba(138, 80, 197, 0.49);
                 }
 
-                &.stage_Inform, &.stage_Public {
+                &.stage_Inform,
+                &.stage_Public {
                   border: 1px solid #ff5c00;
                   background: rgba(255, 92, 0, 0.55);
                 }
@@ -2673,6 +2674,13 @@
             }
             .task-table td {
               padding: 8px 6px;
+              &.task-title {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 370px;
+                display: inline-block;
+              }
             }
             .task-table tr {
               background: transparent;
@@ -3144,7 +3152,7 @@
     padding: 10px;
     gap: 20px;
     margin-top: 30px;
-   
+
     .InitialsBoxUser {
       width: max-content;
       color: #fff;
@@ -3174,7 +3182,7 @@
         padding: 10px;
         gap: 30px;
         width: 100%;
-  
+
         form {
           width: 100%;
           display: flex;
@@ -3281,6 +3289,20 @@
     justify-content: flex-start;
     align-items: baseline;
     gap: 14px;
+    .inner-scroll {
+      max-height: 250px;
+      overflow-y: auto;
+      margin-right: 10px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: baseline;
+      gap: 14px;
+      &::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome, Safari */
+      }
+    }
     .no-chats {
       color: #616161;
       font-family: Archivo;
@@ -3565,12 +3587,8 @@
         }
       }
     }
-    
   }
 }
-
-
-
 
 .comment-box {
   .no-chats {
@@ -3582,7 +3600,6 @@
     line-height: normal;
     letter-spacing: -0.64px;
   }
-  
 
   .addJobImgUploadArea2 {
     &.imgUploadArea {
@@ -3748,7 +3765,8 @@
         color: rgba(138, 80, 197);
       }
 
-      &.Inform, &.Public {
+      &.Inform,
+      &.Public {
         color: rgba(255, 92, 0);
       }
 
@@ -3783,13 +3801,13 @@
       }
 
       &.stage_Information,
-      
       &.stage_Info {
         border: 1px solid #8a50c5;
         background: rgba(138, 80, 197, 0.49);
       }
 
-      &.stage_Inform, &.stage_Public {
+      &.stage_Inform,
+      &.stage_Public {
         border: 1px solid #ff5c00;
         background: rgba(255, 92, 0, 0.55);
       }
@@ -4044,13 +4062,13 @@
     }
   }
   div.name {
-    color: #68FFF0;
-font-family: Archivo;
-font-size: 15px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-letter-spacing: -0.6px;
+    color: #68fff0;
+    font-family: Archivo;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.6px;
   }
 }
 

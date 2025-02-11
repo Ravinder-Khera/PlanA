@@ -4,34 +4,37 @@ import { getJobs, getProfile, getTasks } from "../services/auth";
 import { Bars } from "react-loader-spinner";
 import eventEmitter from "../Event";
 import { Link, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+export const NotificationComponent = React.memo(
+  ({ notificationData, onRemove }) => {
+    const [removing, setRemoving] = useState(false);
+    const handleRemove = (e) => {
+      e.stopPropagation(); // Prevent the click from bubbling up
+      setRemoving(true);
+      setTimeout(() => {
+        onRemove(notificationData);
+        setRemoving(false);
+      }, 500); // Matches animation duration
+    };
 
-export function NotificationComponent({ notificationData, onRemove }) {
-  const [removing, setRemoving] = useState(false);
-
-  const handleRemove = () => {
-    setRemoving(true);
-    setTimeout(() => {
-      setRemoving(false);
-      onRemove(notificationData);
-    }, 500); // Wait for the animation to complete before removing
-  };
-  return (
-    <div
-      className={`notificationClass ${notificationData.class}-class ${
-        removing ? "slide-out" : ""
-      }`}
-    >
-      <div className="notificationMsg">
-        <div className="notificationIcon"></div>
-        <div className="notificationText">
-          {notificationData.message}
-          {notificationData?.span && <span>{notificationData.span}</span>}
+    return (
+      <div
+        className={`notificationClass ${notificationData.class}-class ${
+          removing ? "slide-out" : ""
+        }`}
+      >
+        <div className="notificationMsg">
+          <div className="notificationIcon"></div>
+          <div className="notificationText">{notificationData.message}</div>
         </div>
+        <button
+          className="notificationCloseBtn"
+          onClick={handleRemove}
+        ></button>
       </div>
-      <div className="notificationCloseBtn" onClick={handleRemove}></div>
-    </div>
-  );
-}
+    );
+  }
+);
 
 function NavMenu() {
   const [loading, setLoading] = useState(false);
@@ -56,9 +59,13 @@ function NavMenu() {
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "notifications") {
-        const updatedNotifications = JSON.parse(event.newValue);
+        const updatedNotifications = JSON.parse(event.newValue)?.map(
+          (notif) => ({
+            ...notif,
+            id: uuidv4(),
+          })
+        );
         setNotifications(updatedNotifications);
-        console.log(updatedNotifications, "updatedNotifications");
         setStorageUpdated(true);
       }
     };
@@ -68,7 +75,13 @@ function NavMenu() {
     const checkNotifications = () => {
       const existingNotificationsJSON = localStorage.getItem("notifications");
       if (existingNotificationsJSON) {
-        setNotifications(JSON.parse(existingNotificationsJSON));
+        const existingNotifications = JSON.parse(existingNotificationsJSON).map(
+          (notif) => ({
+            ...notif,
+            id: uuidv4(),
+          })
+        );
+        setNotifications(existingNotifications);
       }
     };
 
@@ -84,11 +97,11 @@ function NavMenu() {
   const handleRemoveNotification = (notificationToRemove) => {
     setNotifications((prevNotifications) =>
       prevNotifications.filter(
-        (notification) => notification !== notificationToRemove
+        (notification) => notification?.id !== notificationToRemove?.id
       )
     );
     const updatedNotifications = notifications.filter(
-      (notification) => notification !== notificationToRemove
+      (notification) => notification?.id !== notificationToRemove?.id
     );
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
   };

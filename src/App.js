@@ -1,5 +1,21 @@
+import Pusher from "pusher-js";
+import { useEffect, useRef, useState } from "react";
+import { Bars } from "react-loader-spinner";
+import {
+  Link,
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.scss";
+import NavMenu from "./Components/navMenu";
 import "./Components/toaster.scss";
+import eventEmitter from "./Event";
 import logo from "./assets/common/LOGO.png";
 import {
   DashboardIcon,
@@ -10,39 +26,21 @@ import {
   Lock,
   LogoutIcon,
   SettingsIcon,
-  TaskIcon,
   TaskIcon2,
   TimelineIcon,
-  User,
+  User
 } from "./assets/svg";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-  Navigate,
-  Link,
-  useNavigate,
-} from "react-router-dom";
+import Dashboard from "./pages/Dashboard/dashboard";
+import TimelinePage from "./pages/Dashboard/timeline";
+import ViewTaskPage from "./pages/Dashboard/viewTasks";
+import Invoice from "./pages/Invoicing/invoice";
+import Jobs from "./pages/Jobs";
 import Login from "./pages/LandingPages/LoginPage/login";
-import SignUp from "./pages/LandingPages/SignUp/signUp";
 import { ForgotPassword } from "./pages/LandingPages/Password/forgotPassword";
 import PasswordReset from "./pages/LandingPages/Password/passwordReset";
-import Dashboard from "./pages/Dashboard/dashboard";
-import { useEffect, useRef, useState } from "react";
-import NavMenu from "./Components/navMenu";
+import SignUp from "./pages/LandingPages/SignUp/signUp";
 import SettingsPage from "./pages/Settings/settings";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
-import Invoice from "./pages/Invoicing/invoice";
-import TaskPage from "./pages/Dashboard/tasks";
-import TimelinePage from "./pages/Dashboard/timeline";
-import Jobs from "./pages/Jobs";
-import Pusher from "pusher-js";
-import eventEmitter from "./Event";
 import { getProfile } from "./services/auth";
-import { Bars } from "react-loader-spinner";
-import ViewTaskPage from "./pages/Dashboard/viewTasks";
 
 function DashboardMenuList() {
   const location = useLocation();
@@ -568,7 +566,7 @@ function DashboardMenuList() {
                         <p>Login</p>
                       </Link>
                     </li>
-                    <li
+                    {/* <li
                       className={
                         location.pathname.includes("/signup") ? "active" : ""
                       }
@@ -579,7 +577,7 @@ function DashboardMenuList() {
                         </div>
                         <p>Sign Up</p>
                       </Link>
-                    </li>
+                    </li> */}
                   </ul>
                   <div
                     className={`forgotPasswordMenu mobile ${
@@ -642,7 +640,7 @@ function RightSide() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+          {/* <Route path="/signup" element={<SignUp />} /> */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<PasswordReset />} />
           <Route path="*" element={<Navigate to="/" replace />} />

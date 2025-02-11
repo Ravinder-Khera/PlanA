@@ -2940,9 +2940,8 @@ export const NewJobModalWithTasks = ({
   const [activeTaskJob, setActiveTaskJob] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAllTasks, setShowAllTasks] = useState(false);
-
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
   const popUpRef = useRef(null);
-
   useEffect(() => {
     if (scrollRef?.current) {
       scrollRef.current.scrollIntoView({
@@ -3119,6 +3118,10 @@ export const NewJobModalWithTasks = ({
       .replace(/\b\w/g, (char) => char.toUpperCase());
   }
 
+  const handleSendEmail = () => {
+    setShowEmailPopup(true);
+  };
+
   return (
     <>
       {loader && (
@@ -3144,6 +3147,14 @@ export const NewJobModalWithTasks = ({
           onCreateTask={handleCreateModalTask}
           handleDelete={() => {
             setShowAddTaskModal(false);
+          }}
+        />
+      )}
+       {showEmailPopup && (
+        <AdhocTaskCompletionPopup
+          jobId={job?.id}
+          handleClose={() => {
+            setShowEmailPopup(false);
           }}
         />
       )}
@@ -3174,6 +3185,46 @@ export const NewJobModalWithTasks = ({
               <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
                   <div className="topFlexDiv">
+                  {job?.status == "completed" && (
+                      <div
+                        className="delete-box"
+                        style={{ cursor: "pointer", zIndex: 2 }}
+                        onClick={handleSendEmail}
+                      >
+                        <div className="deletBg">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="36"
+                            height="36"
+                            viewBox="0 0 36 36"
+                            fill="none"
+                          >
+                            <mask id="path-1-inside-1_4895_1898" fill="white">
+                              <rect width="36" height="36" rx="1" />
+                            </mask>
+                            <rect
+                              width="36"
+                              height="36"
+                              rx="1"
+                              fill="#E2E31F"
+                            />
+                            <rect
+                              width="36"
+                              height="36"
+                              rx="1"
+                              stroke="#E2E31F"
+                              stroke-width="3"
+                              mask="url(#path-1-inside-1_4895_1898)"
+                            />
+                            <path
+                              d="M25.7806 16.6394L12.7399 9.19799C12.4648 9.04385 12.1492 8.97719 11.8352 9.0069C11.5213 9.03661 11.2238 9.16126 10.9824 9.36427C10.7411 9.56727 10.5673 9.83899 10.4843 10.1432C10.4012 10.4475 10.4128 10.7698 10.5176 11.0673L12.8928 17.9896L10.5176 24.9305C10.4348 25.1645 10.4093 25.4149 10.4434 25.6608C10.4774 25.9067 10.5699 26.1408 10.7131 26.3435C10.8563 26.5462 11.046 26.7116 11.2664 26.8259C11.4867 26.9401 11.7313 26.9998 11.9795 27C12.2461 26.9994 12.5082 26.9305 12.7407 26.7998L12.7477 26.7951L25.7837 19.3405C26.0228 19.2052 26.2216 19.0089 26.3599 18.7716C26.4983 18.5344 26.5712 18.2646 26.5712 17.99C26.5712 17.7153 26.4983 17.4456 26.3599 17.2083C26.2216 16.971 26.0228 16.7747 25.7837 16.6394H25.7806ZM12.5413 24.7676L14.5401 18.93H18.8079C19.0548 18.93 19.2917 18.8319 19.4663 18.6573C19.6409 18.4827 19.739 18.2459 19.739 17.9989C19.739 17.7519 19.6409 17.5151 19.4663 17.3405C19.2917 17.1658 19.0548 17.0677 18.8079 17.0677H14.5456L12.542 11.2294L24.3901 17.9904L12.5413 24.7676Z"
+                              fill="black"
+                            />
+                          </svg>
+                        </div>
+                        <div className="delete-item">Send Email</div>
+                      </div>
+                    )}
                     <div
                       className="delete-box"
                       style={{ cursor: "pointer", zIndex: 2 }}
@@ -3255,123 +3306,7 @@ export const NewJobModalWithTasks = ({
                     </div> */}
                     <div className="discriptionBox">
                       <h3>Tasks</h3>
-                      {/* <div
-                        className={`task-table-container ${
-                          showAllTasks ? "show-more" : ""
-                        }`}
-                      >
-                        <table className="task-table">
-                          <tbody>
-                            {jobTasks.map((task, index) => (
-                              <tr key={index}>
-                                <td
-                                  className={`task-title ${
-                                    task.stage?.title?.split(" ")[0]
-                                  }`}
-                                  style={{
-                                    whiteSpace: "nowrap",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    maxWidth: "180px",
-                                  }}
-                                  title={task?.title}
-                                >
-                                  {task?.title}
-                                </td>
-                                <td className="addNewTaskDiv text-center">
-                                  <span
-                                    className={`  addTaskJobBtn stage_${
-                                      task.stage?.title?.split(" ")[0]
-                                    }`}
-                                  >
-                                    {task.stage?.title
-                                      ? task.stage?.title
-                                      : "N/A"}
-                                  </span>
-                                </td>
-                                <td>
-                                  <div className=" d-flex align-items-center justify-content-center position-relative">
-                                    {task.users.length > 0 && (
-                                      <>
-                                        {task.users
-                                          .slice(0, 1)
-                                          .map((user, index) => {
-                                            const initials = user.name
-                                              .split(" ")
-                                              .map((part) =>
-                                                part.charAt(0).toUpperCase()
-                                              )
-                                              .join("");
-
-                                            return (
-                                              <div
-                                                key={index}
-                                                className={`collaboratorsBoxUser`}
-                                                style={{
-                                                  minWidth: "40px",
-                                                  zIndex: index,
-                                                }}
-                                              >
-                                                {initials}
-                                              </div>
-                                            );
-                                          })}
-
-                                        {task.users.length > 1 && (
-                                          <div
-                                            className={`collaboratorsBoxUser-nthuser`}
-                                            style={{
-                                              zIndex: "4",
-                                            }}
-                                          >
-                                            +{task.users.length - 1}
-                                          </div>
-                                        )}
-                                      </>
-                                    )}
-                                    {task.users.length === 0 && (
-                                      <div
-                                        className="collaboratorsBoxUser disabled m-0"
-                                        style={{
-                                          minWidth: "40px",
-                                        }}
-                                      >
-                                        N/A
-                                      </div>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="due-date">
-                                  Due Date:{" "}
-                                  <span>
-                                    {moment(task.due_date).format("MM/DD/YYYY")}
-                                  </span>
-                                </td>
-                                <td>
-                                  <span className={`statusBox ${task.status}`}>
-                                    {formatStatus(task.status)}
-                                  </span>
-                                </td>
-                                <td>
-                                  <div
-                                    className="view-more"
-                                    onClick={() => {
-                                      if (!task.id) {
-                                        handleCheckTask(job.id, index);
-                                      } else {
-                                        setActiveTask(task);
-                                        setShowUpdateTaskModal(true);
-                                      }
-                                    }}
-                                  >
-                                     <RightArrow />
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div> */}
+                    
                       <div
                         className={`task-table-container job-task-table-container ${
                           showAllTasks ? "show-more" : ""
@@ -3431,7 +3366,7 @@ export const NewJobModalWithTasks = ({
                           </tbody>
                         </table>
                       </div>
-                      {jobTasks?.length > 0 && (
+                      {jobTasks?.length > 4 && (
                         <div
                           className={`show-all-tasks ${
                             showAllTasks ? "show-more" : ""
@@ -3726,6 +3661,7 @@ export const NewTaskModal = ({
     setStage({ id: option.id, title: option.stageTitle });
     setTatskStatus(option.status);
     setIsPopupOpen(false);
+    setFirstClick(true)
   };
 
   const handleInputClick = () => {
@@ -3963,7 +3899,11 @@ export const NewTaskModal = ({
                             {collaboratorsBox && (
                               <div
                                 className={`newJobItemDropBox`}
-                                style={{ left: "11px" }}
+                                style={{   right: "10px",
+                                  minWidth: "415px",
+                                  maxWidth: "max-content",
+                                  left:0,
+                                  top: 'calc(100% + 11px)' }}
                                 ref={newCollaboratorBoxRef}
                               >
                                 {newJobCollaboratorsList.length > 0 && (
@@ -4353,7 +4293,7 @@ export const UpdateTaskModal = ({
     []
   );
   const [addStageTitle, setAddStageTitle] = useState("");
-  const [showEmailPopup, setShowEmailPopup] = useState(false);
+
   const [colors, setColors] = useState([]);
   const [activeStageColor, setActiveStageColor] = useState("");
   const [usersList, setUsersList] = useState([]);
@@ -4575,6 +4515,7 @@ export const UpdateTaskModal = ({
     setStage({ id: option.id, title: option.stageTitle });
     setTatskStatus(option.status);
     setIsPopupOpen(false);
+    setFirstClick(true)
   };
 
   const handleCreateCustomTask = () => {
@@ -4600,9 +4541,7 @@ export const UpdateTaskModal = ({
     setIsPopupOpen(true);
   };
 
-  const handleSendEmail = () => {
-    setShowEmailPopup(true);
-  };
+ 
 
   return (
     <>
@@ -4619,14 +4558,7 @@ export const UpdateTaskModal = ({
           />
         </div>
       )}
-      {showEmailPopup && (
-        <AdhocTaskCompletionPopup
-          jobId={task?.job_id}
-          handleClose={() => {
-            setShowEmailPopup(false);
-          }}
-        />
-      )}
+     
       <div className="loaderDiv2 mobile" style={{ zIndex: "1001" }}>
         <div className="pop-wrapper">
           <div className="wrapper">
@@ -4637,46 +4569,7 @@ export const UpdateTaskModal = ({
               <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
                   <div className="topFlexDiv">
-                    {taskStatus == "completed" && (
-                      <div
-                        className="delete-box"
-                        style={{ cursor: "pointer", zIndex: 2 }}
-                        onClick={handleSendEmail}
-                      >
-                        <div className="deletBg">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="36"
-                            height="36"
-                            viewBox="0 0 36 36"
-                            fill="none"
-                          >
-                            <mask id="path-1-inside-1_4895_1898" fill="white">
-                              <rect width="36" height="36" rx="1" />
-                            </mask>
-                            <rect
-                              width="36"
-                              height="36"
-                              rx="1"
-                              fill="#E2E31F"
-                            />
-                            <rect
-                              width="36"
-                              height="36"
-                              rx="1"
-                              stroke="#E2E31F"
-                              stroke-width="3"
-                              mask="url(#path-1-inside-1_4895_1898)"
-                            />
-                            <path
-                              d="M25.7806 16.6394L12.7399 9.19799C12.4648 9.04385 12.1492 8.97719 11.8352 9.0069C11.5213 9.03661 11.2238 9.16126 10.9824 9.36427C10.7411 9.56727 10.5673 9.83899 10.4843 10.1432C10.4012 10.4475 10.4128 10.7698 10.5176 11.0673L12.8928 17.9896L10.5176 24.9305C10.4348 25.1645 10.4093 25.4149 10.4434 25.6608C10.4774 25.9067 10.5699 26.1408 10.7131 26.3435C10.8563 26.5462 11.046 26.7116 11.2664 26.8259C11.4867 26.9401 11.7313 26.9998 11.9795 27C12.2461 26.9994 12.5082 26.9305 12.7407 26.7998L12.7477 26.7951L25.7837 19.3405C26.0228 19.2052 26.2216 19.0089 26.3599 18.7716C26.4983 18.5344 26.5712 18.2646 26.5712 17.99C26.5712 17.7153 26.4983 17.4456 26.3599 17.2083C26.2216 16.971 26.0228 16.7747 25.7837 16.6394H25.7806ZM12.5413 24.7676L14.5401 18.93H18.8079C19.0548 18.93 19.2917 18.8319 19.4663 18.6573C19.6409 18.4827 19.739 18.2459 19.739 17.9989C19.739 17.7519 19.6409 17.5151 19.4663 17.3405C19.2917 17.1658 19.0548 17.0677 18.8079 17.0677H14.5456L12.542 11.2294L24.3901 17.9904L12.5413 24.7676Z"
-                              fill="black"
-                            />
-                          </svg>
-                        </div>
-                        <div className="delete-item">Send Email</div>
-                      </div>
-                    )}
+                   
                     <div
                       className="delete-box"
                       style={{ cursor: "pointer", zIndex: 2 }}
@@ -4887,7 +4780,12 @@ export const UpdateTaskModal = ({
                             {collaboratorsBox && (
                               <div
                                 className={`newJobItemDropBox`}
-                                style={{ left: "11px" }}
+                                style={{
+                                  right: "10px",
+                                  minWidth: "415px",
+                                  maxWidth: "max-content",
+                                  top: 'calc(100% + 11px)'
+                                }}
                                 ref={newCollaboratorBoxRef}
                               >
                                 {newJobCollaboratorsList.length > 0 && (
@@ -5328,6 +5226,7 @@ export const CreateTaskModal = ({
     setStage({ id: option.id, title: option.stageTitle });
     setTatskStatus(option.status);
     setIsPopupOpen(false);
+    setFirstClick(true)
   };
 
   const handleJobOptionClick = (job) => {
@@ -5898,7 +5797,12 @@ export const CreateTaskModal = ({
                             {collaboratorsBox && (
                               <div
                                 className={`newJobItemDropBox`}
-                                style={{ left: "11px" }}
+                                style={{
+                                  right: "10px",
+                                  minWidth: "415px",
+                                  maxWidth: "max-content",
+                                  top: 'calc(100% + 11px)'
+                                }}
                                 ref={newCollaboratorBoxRef}
                               >
                                 {newJobCollaboratorsList.length > 0 && (
