@@ -3315,18 +3315,19 @@ body {
   overflow: hidden;
   min-width: 450px;
   border-radius: 2px;
-  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, height 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out,
+    height 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
 
-    &.slide-out {
-      transform: translateY(-20px);  /* Adjust to avoid immediate removal effect */
-      opacity: 0;
-      height: auto; /* Allow natural collapse */
-      max-height: 0;
-      padding: 0;
-      margin-bottom: 0;
-      overflow: hidden;
-    }
-  
+  &.slide-out {
+    transform: translateY(-20px); /* Adjust to avoid immediate removal effect */
+    opacity: 0;
+    height: auto; /* Allow natural collapse */
+    max-height: 0;
+    padding: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+  }
+
   @media screen and (max-width: 992px) {
     width: 100%;
     min-width: 300px;
@@ -3739,6 +3740,7 @@ body {
   justify-content: space-between;
   position: relative;
   z-index: 1;
+  padding-right: 12px;
   &::after {
     position: absolute;
     content: "";
@@ -3755,7 +3757,7 @@ body {
     width: 30px;
     height: 100%;
     top: 0px;
-    right: 4px;
+    right: 16px;
     background: linear-gradient(-90deg, #252525 0%, rgba(0, 0, 0, 0) 100%);
     z-index: 1;
   }
@@ -4205,7 +4207,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
     border-radius: 22px;
     background: #444;
     display: inline-flex;
-    padding: 20px;
+    padding: 20px 10px;
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
@@ -4238,6 +4240,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       line-height: normal;
       letter-spacing: -0.72px;
       text-transform: capitalize;
+      margin-bottom: 6px;
     }
     p {
       align-self: stretch;
@@ -4249,11 +4252,12 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       font-weight: 300;
       line-height: normal;
       letter-spacing: -0.56px;
+      margin-bottom: 6px;
     }
     .tasksDiv {
       width: 100%;
       border-radius: 2px;
-      padding: 20px 27px;
+      padding: 15px 27px 14px 30px;
       transition: all 0.5s ease;
       &.update {
         transform: translateX(-150%);
@@ -4266,6 +4270,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         font-weight: 600;
         line-height: normal;
         letter-spacing: -0.64px;
+        max-width: 190px;
       }
       .taskDate {
         margin-top: 11px;
@@ -4312,7 +4317,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       }
     }
     .email-container {
-      margin: 24px 0;
+      margin: 14px 0;
       width: 100%;
       h3 {
         color: #fff;
@@ -4327,7 +4332,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         cursor: pointer;
         width: 100%;
         display: flex;
-        padding: 20px;
+        padding: 14px 20px 14px 12px;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
@@ -4337,7 +4342,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         background: #252525;
         .innerscroll {
           overflow-y: auto;
-          max-height: 100px;
+          max-height: 130px;
           width: 100%;
           padding-right: 10px;
           &::-webkit-scrollbar {
@@ -4363,8 +4368,8 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
             }
             .edit-icon {
               cursor: pointer;
-              height: 40px;
-              width: 40px;
+              height: 28px;
+              width: 28px;
               transition: all 0.5s ease;
               background-color: #e2e31f;
               border: 1px solid #e2e31f;
@@ -4384,7 +4389,8 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
                 line-height: 15.26px;
                 letter-spacing: -4%;
                 border-radius: 4px;
-                height: 40px;
+                // height: 28px;
+                padding: 8px 13px;
 
                 &.btn_Application {
                   border: 1px solid #3b9239;
@@ -4442,7 +4448,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       }
     }
     .email-subject {
-      margin: 24px 0 12px 0;
+      margin: 8px 0 0px 0;
       width: 100%;
       h3 {
         color: #fff;
@@ -4452,6 +4458,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         font-weight: 600;
         line-height: normal;
         letter-spacing: -0.6px;
+        margin-bottom: 12px;
       }
       .subject-input {
         width: 100%;
@@ -4474,7 +4481,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       }
     }
     .email-details {
-      margin: 24px 0 12px 0;
+      margin: 12px 0 12px 0;
       width: 100%;
       h3 {
         color: #fff;
@@ -4484,12 +4491,13 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         font-weight: 600;
         line-height: normal;
         letter-spacing: -0.6px;
+        margin-bottom: 0px;
       }
       .wrapperClassName {
         min-height: 200px;
         max-height: 300px;
         display: flex;
-        padding: 20px;
+        padding: 8px 20px 20px 20px;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
@@ -4534,6 +4542,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         font-weight: 600;
         line-height: normal;
         letter-spacing: -0.6px;
+        margin-bottom: 16px;
       }
       .attachmentsBox {
         display: flex;
@@ -4577,7 +4586,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
           gap: 8px;
           max-width: calc(100% - 160px);
           overflow-x: auto;
-          padding-bottom: 8px;
+          padding-bottom: 16px;
           .attachments {
             border: 1px solid #fff;
             display: inline-flex;
@@ -4624,7 +4633,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       }
     }
     .send-to {
-      margin: 24px 0 12px 0;
+      margin: 24px 0 0px 0;
       width: 100%;
       h3 {
         color: #fff;
@@ -4634,10 +4643,11 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         font-weight: 600;
         line-height: normal;
         letter-spacing: -0.6px;
+        margin-bottom: 12px;
       }
       .send-to-email {
         display: flex;
-        padding: 20px;
+        padding: 15px 20px 15px 14px;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
@@ -4668,7 +4678,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
             align-items: center;
             justify-content: flex-start;
             gap: 8px;
-            padding: 6px;
+            padding: 5px 0px 6px 6px;
 
             width: 100%;
             &:hover {
@@ -4676,8 +4686,8 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
             }
             .checkbox {
               cursor: pointer;
-              height: 40px;
-              width: 40px;
+              height: 28px;
+              width: 28px;
               border: 1px solid #fff;
               transition: all 0.5s ease;
               border-radius: 1px;
@@ -4706,7 +4716,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
               background: #353535;
               box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
               padding: 8px 10px;
-              height: 40px;
+              height: 28px;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -4768,7 +4778,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       font-weight: 500;
       line-height: normal;
       letter-spacing: -0.64px;
-      margin: 16px 0;
+      margin: 2px 0 8px 0;
     }
     .bottom-text {
       color: #fff;
@@ -4779,6 +4789,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       font-weight: 300;
       line-height: normal;
       letter-spacing: -0.56px;
+      margin-bottom: 0px !important;
       span {
         cursor: pointer;
         color: #fff;
@@ -4795,10 +4806,24 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         width: 100%;
         border-radius: 8px;
         background: rgba(226, 227, 31, 0.6);
-        
+        .textDiv {
+          span {
+            color: #fff;
+            font-family: Archivo;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: normal;
+            letter-spacing: -0.48px;
+          }
+          .job-title{
+            max-width: 250px;
+            width: '100%'
+          }
+        }
       }
       .email-container {
-        margin: 24px 0;
+        margin: 14px 0;
         width: 100%;
         h3 {
           color: #fff;
@@ -4813,7 +4838,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
           cursor: pointer;
           width: 100%;
           display: flex;
-          padding: 20px;
+          padding: 14px 20px 14px 12px;
           flex-direction: column;
           align-items: flex-start;
           gap: 10px;
@@ -4823,7 +4848,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
           background: #252525;
           .innerscroll {
             overflow-y: auto;
-            max-height: 100px;
+            max-height: 118px;
             width: 100%;
             padding-right: 10px;
             &::-webkit-scrollbar {
@@ -4842,7 +4867,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
               display: flex;
               align-items: center;
               justify-content: flex-start;
-              padding: 10px 15px;
+              padding:12px 8px;
               &:hover {
                 background: #353535;
               }

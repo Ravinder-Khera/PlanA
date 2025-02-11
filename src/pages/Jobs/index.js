@@ -458,6 +458,7 @@ const Jobs = () => {
       try {
         const res = await getJobs(loadMorePage + 1);
         const data = res?.res?.data;
+        console.log(res.res, "filtered jobs")
         setLoadTotalPage(res?.res?.last_page);
         setFilteredJobs((prevJobs) => [...prevJobs, ...data]);
       } catch (error) {
@@ -646,38 +647,54 @@ const Jobs = () => {
     fetchJobs,
   ]);
 
-  useEffect(() => {
-    const handleAddNewJob = async () => {
-      try {
-        const year = new Date().getFullYear();
-        const month = String(new Date().getMonth() + 1).padStart(2, "0");
-        const day = String(new Date().getDate()).padStart(2, "0");
-        let formattedDueDate = `${year}-${month}-${day}`;
-        const reqBody = {
-          job_num: newJobIdNumber,
-          title: addJobName,
-          collaborators: newJobCollaboratorsListId,
-          due_date: selectedNewJobDueDate || formattedDueDate,
-          status: selectNewJobStatus || "not-started",
-        };
 
-        console.log("reqBody", reqBody);
+  const createNewJobRequest = () => {
+    setFilteredJobs((prevJobs) => [
+      {
+        job_num: newJobIdNumber,
+        title: addJobName,
+        collaborators: newJobCollaboratorsListId,
+        due_date: selectedNewJobDueDate || "",
+        status: selectNewJobStatus || "not-started",
+      },
+      ...prevJobs,
+    ]);
+    handleAddNewJob();
+    synchronizeRowHeights();
+    setShowNewJobModal(true);
+  }
 
-        // API call to create job
-        const response = await createJobs(reqBody);
-        console.log("request body for create job", response);
 
-        if (response?.res?.message) {
-          console.log(`${response.res.message}`);
-        } else {
-          toast.error(`${response?.error?.message || "Error occurred"}`);
-        }
-      } catch (error) {
-        console.log("error in updating jobs", error);
-      } finally {
-        handleCancelAddJob(); // Reset state after action
+  const handleAddNewJob = async () => {
+    try {
+      const year = new Date().getFullYear();
+      const month = String(new Date().getMonth() + 1).padStart(2, "0");
+      const day = String(new Date().getDate()).padStart(2, "0");
+      let formattedDueDate = `${year}-${month}-${day}`;
+      const reqBody = {
+        job_num: newJobIdNumber,
+        title: addJobName,
+        collaborators: newJobCollaboratorsListId,
+        due_date: selectedNewJobDueDate || formattedDueDate,
+        status: selectNewJobStatus || "not-started",
+      };
+
+      // API call to create job
+      const response = await createJobs(reqBody);
+      console.log("request body for create job", response);
+
+      if (response?.res?.message) {
+        console.log(`${response.res.message}`);
+      } else {
+        toast.error(`${response?.error?.message || "Error occurred"}`);
       }
-    };
+    } catch (error) {
+      console.log("error in updating jobs", error);
+    } finally {
+      handleCancelAddJob(); // Reset state after action
+    }
+  };
+  useEffect(() => {
     const handleDoubleClick = (event) => {
       if (
         addJobRowRefLeft.current &&
@@ -686,19 +703,7 @@ const Jobs = () => {
         if (newJobIdNumber === 0 || !addJobName) {
           return;
         } else {
-          setFilteredJobs((prevJobs) => [
-            {
-              job_num: newJobIdNumber,
-              title: addJobName,
-              collaborators: newJobCollaboratorsListId,
-              due_date: selectedNewJobDueDate || "",
-              status: selectNewJobStatus || "not-started",
-            },
-            ...prevJobs,
-          ]);
-          handleAddNewJob();
-          synchronizeRowHeights();
-          setShowNewJobModal(true);
+          createNewJobRequest()
         }
       }
       if (
@@ -708,19 +713,7 @@ const Jobs = () => {
         if (newJobIdNumber === 0 || !addJobName) {
           return;
         } else {
-          setFilteredJobs((prevJobs) => [
-            {
-              job_num: newJobIdNumber,
-              title: addJobName,
-              collaborators: newJobCollaboratorsListId,
-              due_date: selectedNewJobDueDate || "",
-              status: selectNewJobStatus || "not-started",
-            },
-            ...prevJobs,
-          ]);
-          synchronizeRowHeights();
-          handleAddNewJob();
-          setShowNewJobModal(true);
+          createNewJobRequest()
         }
       }
     };
@@ -1108,7 +1101,6 @@ const Jobs = () => {
     newJobCollaboratorsList,
     stage
   ) => {
-    console.log(newData?.updatedTask?.title);
 
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => ({
@@ -1154,9 +1146,9 @@ const Jobs = () => {
                   status: newData.newTask.status,
                   description: newData.newTask.description,
                 },
-                ...job.tasks,
+                ...job?.tasks,
               ]
-            : job.tasks,
+            : job?.tasks,
       }))
     );
     setShowAddTaskModal(false);
@@ -1375,6 +1367,45 @@ const Jobs = () => {
     setNewJobId(["", "", "", "", ""]);
     setNewJobIdExist(false);
   };
+
+
+  const handleJobOpenWhileCreating = async () => {
+    try {
+      setLoading(true)
+      const year = new Date().getFullYear();
+      const month = String(new Date().getMonth() + 1).padStart(2, "0");
+      const day = String(new Date().getDate()).padStart(2, "0");
+      let formattedDueDate = `${year}-${month}-${day}`;
+      const reqBody = {
+        job_num: newJobIdNumber,
+        title: addJobName,
+        collaborators: newJobCollaboratorsListId,
+        due_date: selectedNewJobDueDate || formattedDueDate,
+        status: selectNewJobStatus || "not-started",
+      };
+
+      // API call to create job
+      const response = await createJobs(reqBody);
+      console.log("request body for create job", response);
+
+      if (response?.res?.message) {
+        console.log(`${response.res.message}`);
+        const { job } = response.res;
+        handleOpenJobWithTask(job);
+        setFilteredJobs((prevJobs) => [
+          job,
+          ...prevJobs,
+        ]);
+      } else {
+        toast.error(`${response?.error?.message || "Error occurred"}`);
+      }
+    } catch (error) {
+      console.log("error in updating jobs", error);
+    } finally {
+      handleCancelAddJob(); // Reset state after action
+      setLoading(false)
+    }
+  }
 
   return (
     <>
@@ -1967,18 +1998,8 @@ const Jobs = () => {
                                     !newJobIdExist && (
                                       <span
                                         onClick={() => {
-                                          setActiveJob({
-                                            job_num: newJobIdNumber,
-                                            title: addJobName,
-                                            collaborators:
-                                              newJobCollaboratorsListId,
-                                            due_date:
-                                              selectedNewJobDueDate || "",
-                                            status:
-                                              selectNewJobStatus ||
-                                              "not-started",
-                                          });
-                                          setShowNewJobModal(true);
+                                          handleJobOpenWhileCreating()
+                                          
                                         }}
                                       >
                                         <ArrowRight />
@@ -2705,9 +2726,9 @@ const Jobs = () => {
                                               style={{
                                                 cursor: "pointer",
                                               }}
-                                              className={`statusBtn mx-0 ${task.status}`}
+                                              className={`statusBtn mx-0  ${task?.stage?.title ? task?.stage?.title : 'Undefined'}`}
                                               onClick={() => {
-                                                console.log(task);
+                                                console.log("job index.js", task);
                                                 if (!task.id) {
                                                   console.log("not from db");
                                                   handleCheckTask(

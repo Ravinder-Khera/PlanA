@@ -880,8 +880,17 @@ function ViewTaskPage() {
       <div className="DashboardTopMenu">
         <div className="pagination-container justify-content-start">
           <div className="taskContainer">
-            <ul>
-              <li key={"001"} className="heading">
+            <ul style={{
+               position: "relative",
+               overflowY: "auto", 
+               maxHeight: "800px",
+               zIndex: '1',
+               paddingRight: '10px',
+               scrollBehavior: 'smooth'
+            }}>
+              <li key={"001"} style={{
+                position:'sticky', top: 0, zIndex: 200
+              }} className="heading">
                 <div className="listContent">Title</div>
                 <div className="listContent centerContent">
                   <div className="centerText">Stage</div>

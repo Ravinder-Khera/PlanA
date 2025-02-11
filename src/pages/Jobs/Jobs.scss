@@ -898,6 +898,7 @@
         letter-spacing: -0.48px;
         border-radius: 4px;
         color: #fff;
+        
         &.NotStarted,
         &.not-started {
           // color: #ff4040;
@@ -1506,6 +1507,40 @@
             letter-spacing: -0.48px;
             margin: 0 20px;
             color: #ffffff;
+            &.Application {
+              border: 1px solid #3b9239;
+              background: rgba(59, 146, 57, 0.6);
+            }
+        
+            &.Referral {
+              border: 1px solid #1fb4e3;
+              background: rgba(31, 180, 227, 0.4);
+            }
+        
+            &.Information,
+            &.Info {
+              border: 1px solid #8a50c5;
+              background: rgba(138, 80, 197, 0.49);
+            }
+        
+            &.Public,
+            &.Inform {
+              border: 1px solid #ff5c00;
+              background: rgba(255, 92, 0, 0.55);
+            }
+        
+            &.Decision {
+              border: 1px solid #ff40be;
+              background: rgba(255, 64, 190, 0.4);
+            }
+            &.Undefined {
+              background: transparent;
+              border: 1px solid #bababa99;
+              // color: #bababa99;
+              .bar {
+                background: #bababa99;
+              }
+            }
             &.linkBtn {
               text-decoration: none;
               background: rgba(255, 255, 255, 0.5);

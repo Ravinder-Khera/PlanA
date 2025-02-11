@@ -303,7 +303,7 @@ function TimelinePage() {
                                         className={`collaboratorsBoxUser`}
                                         style={{
                                           minWidth: "40px",
-                                          zIndex: 1,
+                                          zIndex: task?.collaborators?.length,
                                         }}
                                       >
                                         +{task?.collaborators.length - 3}

@@ -75,7 +75,7 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
       setLoading(true);
       const requestBody = {
         subject,
-        body: htmlContent,
+        body: htmlContent ? htmlContent : emailDetails?.content,
         to: ["client@yopmail.com"],
         cc: ["cc-client@yopmail.com"],
         attachments,
@@ -137,18 +137,18 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
       {showDetails == 2 && <NotificationSent handleClose={handleClose} />}
       {!showDetails && (
         <div className="task-completion-overlay">
-          <div className="task-container adhoc" ref={popupRef}>
+          <div className="task-container adhoc" ref={popupRef}  style={{ width: "100%", maxWidth:'546px', padding:'20px' }}>
             <h4>Send Email</h4>
             <p>
               You have successfully completed this task. Well done! Click to
               manage email notifications.
             </p>
         
-            <div className="contentBox Application d-flex gap-2 align-items-start justify-content-between flex-column h-100 p-3">
+            <div className="contentBox Application d-flex align-items-start justify-content-between flex-column h-100" style={{padding:'19px 18px 8px 19px'}}>
               <div className="w-100 d-flex gap-2 align-items-start justify-content-between">
               {job?.job_num ? <div className="textDiv">
-                  <span>| {formatJobNumber(job?.job_num)} |</span>
-                  <p className="job-title">{job?.title}</p>
+                  <span >| {formatJobNumber(job?.job_num)} |</span>
+                  <p className="job-title text-start mb-0">{job?.title}</p>
                 </div> : 'Loading...'}
                 <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                   <div className=" d-flex align-items-center justify-content-end">
@@ -419,6 +419,7 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
             type="button"
             className="save-email"
             onClick={handleSaveEmail}
+            style={{margin:'24px 0 16px 0'}}
           >
             Send Email <ModifiedRightArrow color="#000" />
           </button>
@@ -449,12 +450,12 @@ export const NotificationSent = ({ handleClose }) => {
   }, []);
   return (
     <div className="task-completion-overlay">
-      <div className="task-container" ref={popupRef} style={{ width: "540px" }}>
+      <div className="task-container" ref={popupRef} style={{ maxWidth: "546px", width:'100%',  padding:'20px' }}>
         <h4>Email Notification Sent</h4>
         <p>
           This email has been sent to the selected recipients. Click to return.
         </p>
-        <button type="button" className="save-email" onClick={handleClose}>
+        <button type="button" className="save-email" onClick={handleClose} style={{margin: '8px 0 0 0 '}}>
           Return <RightArrow color="#000" />
         </button>
       </div>

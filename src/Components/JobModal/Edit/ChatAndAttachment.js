@@ -1509,7 +1509,31 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const [userIds, setUserIds] = useState([]);
   const [userIds2, setUserIds2] = useState([]);
 
+  const userRef = useRef(null)
+  const userRef2 = useRef(null)
 
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        userRef.current &&
+        !userRef.current.contains(event.target) 
+      ) {
+        setShowUserList(false);
+      }
+      if (
+        userRef2.current &&
+        !userRef2.current.contains(event.target) 
+      ) {
+        setShowUserList2(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const handleUserSelect = (user) => {
     // Find the last occurrence of '@' in the body
     const lastAtIndex = body.lastIndexOf("@");
@@ -1988,7 +2012,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         </div>
       </div>
       <div className="addJobPopUpAttachments">
-        <div className="addJobPopUpAttachments border-bottom-0 ">
+        <div className="addJobPopUpAttachments border-bottom-0 p-0">
           <div className="chatsDiv">
              <div className="inner-scroll">
             {comments &&
@@ -2162,7 +2186,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               />
 
               {showUserList2 && (
-                <div className="newJobItemDropBox chat-tag">
+                <div className="newJobItemDropBox chat-tag" ref={userRef2}>
                   {filteredUsers2?.length > 0
                     ? filteredUsers2.map((user, index) => {
                         const initials = user.name
@@ -2539,7 +2563,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
             />
 
             {showUserList && (
-              <div className="newJobItemDropBox chat-tag">
+              <div className="newJobItemDropBox chat-tag" ref={userRef}>
                 {filteredUsers?.length > 0
                   ? filteredUsers.map((user, index) => {
                       const initials = user.name
@@ -2620,6 +2644,25 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
   const [showUserList, setShowUserList] = useState(false);
   const [userIds, setUserIds] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState(usersList);
+  const userRef = useRef(null)
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        userRef.current &&
+        !userRef.current.contains(event.target) 
+      ) {
+        setShowUserList(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
 
   const handleUserSelect = (user) => {
     // Find the last occurrence of '@' in the body
@@ -3119,7 +3162,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
             />
 
             {showUserList && (
-              <div className="newJobItemDropBox chat-tag">
+              <div className="newJobItemDropBox chat-tag" ref={userRef}>
                 {filteredUsers?.length > 0
                   ? filteredUsers.map((user, index) => {
                       const initials = user.name

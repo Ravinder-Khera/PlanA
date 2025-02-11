@@ -3185,7 +3185,7 @@ export const NewJobModalWithTasks = ({
               <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
                   <div className="topFlexDiv">
-                  {job?.status == "completed" && (
+                 
                       <div
                         className="delete-box"
                         style={{ cursor: "pointer", zIndex: 2 }}
@@ -3224,7 +3224,7 @@ export const NewJobModalWithTasks = ({
                         </div>
                         <div className="delete-item">Send Email</div>
                       </div>
-                    )}
+                    
                     <div
                       className="delete-box"
                       style={{ cursor: "pointer", zIndex: 2 }}
@@ -4095,17 +4095,14 @@ export const NewTaskModal = ({
                           <div className="position-relative">
                             <button
                               className={`statusBox stageBox position-relative ${
-                                stage ? stage?.title : ""
-                              }`}
-                              style={{
-                                border: `1px solid ${activeStageColor}`,
-                                background: "transparent",
-                                zIndex: "1",
-                              }}
+                                stage ? stage : "disabled"
+                              } stage_${stage?.title}`}
+                              
                               onClick={() => setStageBox(true)}
                             >
                               {stage ? stage.title : "Select Stage"}
                             </button>
+                           
                             {stageBox && (
                               <div
                                 className={`newJobItemDropBox stageBox`}
@@ -4124,28 +4121,17 @@ export const NewTaskModal = ({
                                         }}
                                       >
                                         <div
-                                          className={`statusBox position-relative`}
-                                          style={{
-                                            border: `1px solid ${colors[index]}`,
-                                          }}
+                                          className={`statusBox position-relative ${
+                                            stage ? `stage_${stage?.title}` : ""
+                                          }`}
                                         >
                                           {stage.title}
-                                          <span
-                                            className="position-absolute w-100 h-100"
-                                            style={{
-                                              backgroundColor: colors[index],
-                                              opacity: "0.5",
-                                              top: "0",
-                                              left: "0",
-                                              zIndex: "-1",
-                                            }}
-                                          ></span>
                                         </div>
                                       </div>
                                     );
                                   })}
                                 </div>
-                                {!addStageBox ? (
+                                {/* {!addStageBox ? (
                                   <div className="editBoxIcon pt-4">
                                     <div
                                       className="delete-box justify-content-start"
@@ -4227,7 +4213,7 @@ export const NewTaskModal = ({
                                       </div>
                                     </div>
                                   </div>
-                                )}
+                                )} */}
                               </div>
                             )}
                           </div>
@@ -4783,7 +4769,8 @@ export const UpdateTaskModal = ({
                                   right: "10px",
                                   minWidth: "415px",
                                   maxWidth: "max-content",
-                                  top: 'calc(100% + 11px)'
+                                  top: 'calc(100% + 11px)',
+                                  left: 0
                                 }}
                                 ref={newCollaboratorBoxRef}
                               >
@@ -5800,7 +5787,8 @@ export const CreateTaskModal = ({
                                   right: "10px",
                                   minWidth: "415px",
                                   maxWidth: "max-content",
-                                  top: 'calc(100% + 11px)'
+                                  top: 'calc(100% + 11px)',
+                                  left:0
                                 }}
                                 ref={newCollaboratorBoxRef}
                               >
@@ -5992,7 +5980,7 @@ export const CreateTaskModal = ({
                           <h3>Stage</h3>
                           <div className="position-relative">
                             <button
-                              className={`statusBox stageBox position-relative ${
+                              className={`statusBox stageBox  position-relative ${
                                 !stage && "disabled"
                               } stage_${stage?.title}`}
                               onClick={() => setStageBox(true)}

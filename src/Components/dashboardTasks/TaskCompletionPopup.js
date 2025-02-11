@@ -42,7 +42,7 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
   const onSave = ({ subject, htmlContent, attachments }) => {
     setRequestBody({
       subject,
-      body: htmlContent,
+      body: htmlContent ? htmlContent : emailDetails?.content,
       to: ["client@yopmail.com"],
       cc: ["cc-client@yopmail.com"],
       attachments,
@@ -111,7 +111,9 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
       {showDetails == 2 && <NotificationSent handleClose={handleFinalClose} />}
       {!showDetails && (
         <div className="task-completion-overlay">
-          <div className="task-container" ref={popupRef}>
+          <div className="task-container" ref={popupRef} style={{
+            padding:'20px'
+          }}>
             <h4>Task Complete</h4>
             <p>
               You have successfully completed this task. Well done! Click to
@@ -120,7 +122,7 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
             <div className={`tasksDiv ${task.stage} `}>
               <div
                 className="d-flex align-items-center justify-content-between"
-                style={{ gap: "20px" }}
+                style={{ gap: "32px" }}
               >
                 <div
                   className="d-flex align-items-center justify-content-between"
@@ -170,7 +172,7 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
                               className={`collaboratorsBoxUser`}
                               style={{
                                 minWidth: "40px",
-                                zIndex: 1,
+                                zIndex: task?.collaborators?.length,
                               }}
                             >
                               +{task?.collaborators.length - 3}
@@ -302,7 +304,7 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
     <div className="task-completion-overlay">
       <div
         className="task-container "
-        style={{ width: "540px" }}
+        style={{ width: "100%", maxWidth:'546px' }}
         ref={popupRef}
       >
         <h4>{emailType}</h4>
@@ -442,14 +444,16 @@ export const NotificationSent = ({ handleClose }) => {
   }, []);
   return (
     <div className="task-completion-overlay">
-      <div className="task-container" ref={popupRef}>
+      <div className="task-container" ref={popupRef} style={{padding: '20px', maxWidth: '546px', width: '100%'}}>
         <h4>Email Notification Sent</h4>
         <p>
           Your selected recipients have been sent an email notifying them to
           action the next steps
           <br /> in this job. Click to return.
         </p>
-        <button type="button" className="save-email" onClick={handleClose}>
+        <button type="button" className="save-email" onClick={handleClose} style={{
+          margin:'8px 0 0px 0'
+        }}>
           Return <RightArrow color="#000" />
         </button>
       </div>
