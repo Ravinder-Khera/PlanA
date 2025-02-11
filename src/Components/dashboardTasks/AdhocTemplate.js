@@ -24,6 +24,22 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
   const [requestBody, setRequestBody] = useState({});
   const [loading, setLoading] = useState(false);
   const [job, setJob] = useState(null);
+  const popupRef = useRef(null);
+  
+    // Handle outside click to close the popup
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (popupRef.current && !popupRef.current.contains(event.target)) {
+          handleClose();
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+
 
   const fetchJob = async () => {
     try {
@@ -52,21 +68,18 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
     setEmailSuccess(false);
     setRequestBody({});
   };
-  const onSave = ({ subject, htmlContent, attachments }) => {
-    setRequestBody({
-      subject,
-      body: htmlContent,
-      to: ["client@yopmail.com"],
-      cc: ["cc-client@yopmail.com"],
-      attachments,
-    });
-    setShowDetails(0);
-    setEmailSuccess(true);
-  };
 
-  const handleSubmitEmail = async () => {
+
+  const onSave = async ({ subject, htmlContent, attachments }) => {
     try {
       setLoading(true);
+      const requestBody = {
+        subject,
+        body: htmlContent,
+        to: ["client@yopmail.com"],
+        cc: ["cc-client@yopmail.com"],
+        attachments,
+      }
       const formData = new FormData();
       console.log("request body", requestBody);
       formData.append("subject", requestBody?.subject);
@@ -124,19 +137,19 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
       {showDetails == 2 && <NotificationSent handleClose={handleClose} />}
       {!showDetails && (
         <div className="task-completion-overlay">
-          <div className="task-container adhoc">
+          <div className="task-container adhoc" ref={popupRef}>
             <h4>Send Email</h4>
             <p>
               You have successfully completed this task. Well done! Click to
               manage email notifications.
             </p>
-
+        
             <div className="contentBox Application d-flex gap-2 align-items-start justify-content-between flex-column h-100 p-3">
               <div className="w-100 d-flex gap-2 align-items-start justify-content-between">
-                <div className="textDiv">
+              {job?.job_num ? <div className="textDiv">
                   <span>| {formatJobNumber(job?.job_num)} |</span>
                   <p className="job-title">{job?.title}</p>
-                </div>
+                </div> : 'Loading...'}
                 <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                   <div className=" d-flex align-items-center justify-content-end">
                     <div className="collaboratorsBox justify-content-end">
@@ -219,15 +232,6 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
                 </div>
               </div>
             </div>
-            {emailSuccess && (
-              <button
-                type="button"
-                className="save-email"
-                onClick={handleSubmitEmail}
-              >
-                Submit & Notify <ModifiedRightArrow color="#000" />
-              </button>
-            )}
             <p className="bottom-text">
               <span onClick={handleReturn}>Return</span>
             </p>
@@ -245,6 +249,21 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
 
   const [subject, setSubject] = useState("RE:" + emailType);
   const attachmentRef = useRef(null);
+  const popupRef = useRef(null);
+  
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        handleReturn();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -292,7 +311,7 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
   };
   return (
     <div className="task-completion-overlay">
-      <div className="task-container " style={{ width: "540px" }}>
+      <div className="task-container " style={{ width: "540px" }} ref={popupRef}>
         <h4>{emailType}</h4>
         <p>Customise this email message and the recipients.</p>
         <div className="scrollable-content">
@@ -401,10 +420,10 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
             className="save-email"
             onClick={handleSaveEmail}
           >
-            Save Email <RightArrow color="#000" />
+            Send Email <ModifiedRightArrow color="#000" />
           </button>
           <p className="bottom-text">
-            Not ready to submit? <span onClick={handleReturn}>Return</span>
+            <span onClick={handleReturn}>Return</span>
           </p>
         </div>
       </div>
@@ -413,9 +432,24 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
 };
 
 export const NotificationSent = ({ handleClose }) => {
+  const popupRef = useRef(null);
+  
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <div className="task-completion-overlay">
-      <div className="task-container">
+      <div className="task-container" ref={popupRef} style={{ width: "540px" }}>
         <h4>Email Notification Sent</h4>
         <p>
           This email has been sent to the selected recipients. Click to return.

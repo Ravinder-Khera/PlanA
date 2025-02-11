@@ -476,9 +476,8 @@ function Dashboard() {
                           className="d-flex align-items-center justify-content-start"
                           style={{ gap: "19px" }}
                         >
-                          <div className="d-flex align-items-start gap-3">
-                            <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                              <div className=" d-flex align-items-center justify-content-end">
+                          <div className="d-flex align-items-start gap-3 w-100">
+                            <div className="w-100 listContent d-flex align-items-start gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                                 <div
                                   className={`InitialsBoxUser`}
                                   style={{
@@ -490,8 +489,7 @@ function Dashboard() {
                                     .map((part) => part.charAt(0).toUpperCase())
                                     .join("")}
                                 </div>
-                              </div>
-                            </div>
+                              <div className="w-100 d-flex align-items-start justify-content-end flex-column">
                             <div>
                               <div className="chatHeading">
                                 {chat.user.name}
@@ -504,9 +502,7 @@ function Dashboard() {
                                 {renderMessage(trimmedTitle)}
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        <div className="chatBtnDiv">
+                        <div className="chatBtnDiv ">
                           <p>Lastest Update:  {moment(chat.updated_at).local().format("DD MMMM, YYYY")}</p>
                           <button
                             className="Btn"
@@ -516,6 +512,10 @@ function Dashboard() {
                           >
                             Reply
                           </button>
+                        </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );

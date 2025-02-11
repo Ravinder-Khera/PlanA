@@ -4390,9 +4390,8 @@ export const UpdateTaskModal = ({
     const month = String(new Date().getMonth() + 1).padStart(2, "0");
     const day = String(new Date().getDate()).padStart(2, "0");
     let formattedDueDate = `${year}-${month}-${day}`;
-    console.log(newJobCollaboratorsListId, task.assignee_ids);
     const updatedTask = {
-      title: title,
+      title: title ? title : task.title,
       due_date: dueDate ? dueDate : formattedDueDate,
       status: taskStatus,
       assignee_ids: newJobCollaboratorsListId,

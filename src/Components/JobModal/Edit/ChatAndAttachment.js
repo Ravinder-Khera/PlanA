@@ -1605,15 +1605,14 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   }, [comments]);
 
   useEffect(() => {
-    const id = localStorage.getItem("jobId");
-    if (!id) return;
+   
 
     const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
       cluster: process.env.REACT_APP_CLUSTER,
       encrypted: true,
     });
 
-    const channel = pusher.subscribe(`job.${id}`);
+    const channel = pusher.subscribe(`job.${JobId}`);
 
     const handleMessage = (data) => {
       const { message } = data;
@@ -1630,9 +1629,9 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     channel.bind("message.created", handleMessage);
 
     return () => {
-      console.log("Unsubscribing from job:", id);
+      console.log("Unsubscribing from job:", JobId);
       channel.unbind("message.created", handleMessage);
-      pusher.unsubscribe(`job.${id}`);
+      pusher.unsubscribe(`job.${JobId}`);
     };
   }, []);
 
