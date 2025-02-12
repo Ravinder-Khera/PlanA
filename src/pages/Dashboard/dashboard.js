@@ -5,7 +5,7 @@ import { getDashboardSummary, updateTask } from "../../services/auth";
 import Timeline from "../../Components/Timeline";
 import { AddIcon, AddTaskGreyButton, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
-import { getMessages } from "../../services/chat_attachment";
+import { getJobComments, getMessages } from "../../services/chat_attachment";
 import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import TaskCompletionPopup from "../../Components/dashboardTasks/TaskCompletionPopup";
@@ -84,9 +84,10 @@ function Dashboard() {
 
   const fetchChats = async (jobId) => {
     try {
-      const response1 = await getMessages(jobId);
+      const response1 = await getJobComments(jobId);
       if (!response1.error) {
         const combinedArray = [...response1.res];
+        console.log("combined array: " + combinedArray)
         const sortedMessages = combinedArray.sort((a, b) => {
           const dateA = new Date(a.created_at);
           const dateB = new Date(b.created_at);
@@ -182,11 +183,7 @@ function Dashboard() {
     navigate("/jobs", { state: 1 });
   };
 
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "2-digit" };
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", options);
-  };
+
 
   const handleTaskUpdate = async (task) => {
     let reqBody = {
@@ -228,6 +225,7 @@ function Dashboard() {
       {showTaskCompletionPopup && <TaskCompletionPopup task={selectedTask}  handleClose={() => {
         setShowTaskCompletionPopup(false);
         setSelectedTask(null);
+       
       }} handleFinalClose={() => {
           setUpdateTaskStatus(selectedTask);
           handleTaskUpdate(selectedTask);
@@ -338,7 +336,7 @@ function Dashboard() {
                     return (
                       <div
                         key={index}
-                        className={`tasksDiv ${task.stage} ${
+                        className={`tasksDiv ${task.stage?.title} ${
                           isTaskUpdated ? "update" : ""
                         }`}
                       >
@@ -356,7 +354,6 @@ function Dashboard() {
                               }`}
                               onClick={() => {
                                 if (task.status === "completed") return;
-                              
                                 setSelectedTask(task)
                                 setShowTaskCompletionPopup(true)
                               }}
@@ -366,20 +363,20 @@ function Dashboard() {
                               <div className="taskHeading">{trimmedTitle}</div>
                               <div className="taskDate">
                                 <span>Due Date</span>
-                                <span>{moment(task.due_date).local().format('DD MMMM, YYYY')}</span>
+                                <span>{moment(task.due_date || new Date()).local().format('DD MMMM, YYYY')}</span>
                               </div>
                             </div>
                           </div>
                           <div>
                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                               <div className=" d-flex align-items-center collaboratorsBox justify-content-end">
-                                {task?.collaborators?.length > 0 && (
+                                {task?.users?.length > 0 && (
                                   <>
-                                    {task?.collaborators
+                                    {task?.users
                                       .slice(0, 3)
                                       .map((user, index) => {
-                                        const initials = user
-                                          .split(" ")
+                                        const initials = user?.name
+                                          ?.split(" ")
                                           .map((part) =>
                                             part.charAt(0).toUpperCase()
                                           )
@@ -399,20 +396,20 @@ function Dashboard() {
                                         );
                                       })}
 
-                                    {task?.collaborators?.length > 3 && (
+                                    {task?.users?.length > 3 && (
                                       <div
                                         className={`collaboratorsBoxUser`}
                                         style={{
                                           minWidth: "40px",
-                                          zIndex: task?.collaborators?.length,
+                                          zIndex: task?.users?.length,
                                         }}
                                       >
-                                        +{task?.collaborators.length - 3}
+                                        +{task?.users.length - 3}
                                       </div>
                                     )}
                                   </>
                                 )}
-                                {task.collaborators?.length === 0 && (
+                                {task.users?.length === 0 && (
                                   <div
                                     className="collaboratorsBoxUser disabled m-0"
                                     style={{ minWidth: "40px" }}
@@ -484,8 +481,8 @@ function Dashboard() {
                                     minWidth: "40px",
                                   }}
                                 >
-                                  {chat.user.name
-                                    .split(" ")
+                                  {chat.user?.name
+                                    ?.split(" ")
                                     .map((part) => part.charAt(0).toUpperCase())
                                     .join("")}
                                 </div>

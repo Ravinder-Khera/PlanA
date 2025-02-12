@@ -1,14 +1,12 @@
-import { useEffect, useState, useRef } from "react";
-import "./style.scss";
+import { useEffect, useRef, useState } from "react";
 import { CrossIcon, FilterCrossIcon, TickIcon } from "../../assets/svg";
-import { StatusList } from "../../helper";
+import { StageListMapFromDB, StatusList } from "../../helper";
 import {
-  FilterJobs,
   getJobsByFilter,
   getTasksByUser,
-  getTaskStages,
-  getUserByRole,
+  getTaskStages
 } from "../../services/auth";
+import "./style.scss";
 
 const TaskFilter = ({
   setFilteredTasks,
@@ -16,6 +14,7 @@ const TaskFilter = ({
   setFilteredQuery,
   setLoading,
   closeFilter,
+  isOn
 }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
@@ -44,8 +43,10 @@ const TaskFilter = ({
       let response = await getTaskStages(authToken);
 
       if (response.res) {
-        setStageList(response.res);
-        console.log("stages", response);
+        console.log(response.res)
+        let tempArray = response.res?.map(res => ({...res, title: StageListMapFromDB[res.title]}))
+        console.log(tempArray)
+        setStageList(tempArray);
       } else {
         console.error("Failed to fetch Users:", response.error);
       }
@@ -201,18 +202,14 @@ const TaskFilter = ({
     }
   };
 
-  useEffect(() => {
-    console.log("Filter Query:", filterQuery);
-    console.log("Selected Filters:", selectedFilters);
-  }, [filterQuery, selectedFilters]);
+
 
   const handleFilterApply = async () => {
     setLoading(true);
     try {
       setFilteredString(selectedFilters);
       setFilteredQuery(filterQuery);
-      console.log("filteredQuery", filterQuery);
-      const response = await getTasksByUser(filterQuery);
+      const response = await getTasksByUser(filterQuery,isOn ? 'completed=true':'non_completed=true');
       if (!response.error) {
         setFilteredTasks(response?.res?.data);
         closeFilter();
@@ -253,6 +250,7 @@ const TaskFilter = ({
             </>
           )}
           <div className="FilterBoxes selectFilters">
+          {!isOn && <>
             <div
               className="filterStatusBox NotStarted"
               onClick={() => {
@@ -267,20 +265,7 @@ const TaskFilter = ({
             >
               Not Started
             </div>
-            <div
-              className="filterStatusBox Pending"
-              onClick={() => {
-                handleFilterClick(
-                  "Pending",
-                  "filterStatusBox Pending",
-                  "status",
-                  "pending"
-                );
-                handleselectFilter("status", "pending");
-              }}
-            >
-              Pending
-            </div>
+           
             <div
               className="filterStatusBox InProgress"
               onClick={() => {
@@ -294,8 +279,9 @@ const TaskFilter = ({
               }}
             >
               In Progress
-            </div>
-            <div
+            </div></>
+}
+            {/* <div
               className="filterStatusBox OnHold"
               onClick={() => {
                 handleFilterClick(
@@ -308,7 +294,8 @@ const TaskFilter = ({
               }}
             >
               On Hold
-            </div>
+            </div> */}
+            {isOn &&
             <div
               className="filterStatusBox Completed"
               onClick={() => {
@@ -322,9 +309,29 @@ const TaskFilter = ({
               }}
             >
               Completed
-            </div>
+            </div>}
 
-            <div
+           
+            {stageList?.length > 0 &&
+              stageList?.map((stage) => {
+                return (
+                  <div
+                    className={`filterStatusBox stage_${stage?.title}`}
+                    onClick={() => {
+                      handleFilterClick(
+                        stage?.title,
+                        `filterStatusBox stage_${stage?.title}`,
+                        "stage_id",
+                        stage?.id
+                      );
+                      handleselectFilter("stage_id", stage?.id);
+                    }}
+                  >
+                    {stage.title}
+                  </div>
+                );
+              })}
+               <div
               className="filterProgressBox InProgress"
               onClick={() => {
                 const tempValue = !dueThisWeek;
@@ -356,25 +363,6 @@ const TaskFilter = ({
             >
               {"<"}14 Days Left
             </div>
-            {stageList?.length > 0 &&
-              stageList?.map((stage) => {
-                return (
-                  <div
-                    className={`filterStatusBox stage_${stage?.title}`}
-                    onClick={() => {
-                      handleFilterClick(
-                        stage?.title,
-                        `filterStatusBox stage_${stage?.title}`,
-                        "stage_id",
-                        stage?.id
-                      );
-                      handleselectFilter("stage_id", stage?.id);
-                    }}
-                  >
-                    {stage.title}
-                  </div>
-                );
-              })}
           </div>
           {filtersSeleted && (
             <>

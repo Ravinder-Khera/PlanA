@@ -7,7 +7,7 @@ import {
   CloseIcon,
   FilterCrossIcon,
   NewFilterIcon,
-  Search
+  Search,
 } from "../../assets/svg";
 import {
   createTask,
@@ -16,7 +16,7 @@ import {
   getSingleJob,
   getTasksByUser,
   getUserByRole,
-  updateTask
+  updateTask,
 } from "../../services/auth";
 import "./viewTasks.scss";
 
@@ -33,6 +33,7 @@ import {
 } from "../../Components/JobModal/Edit/JobModal";
 import { NotificationComponent } from "../../Components/navMenu";
 import { formatJobNumber } from "../Jobs";
+import ToggleButton from "../../Components/ToggleButton";
 function ViewTaskPage() {
   const [loading, setLoading] = useState(true);
   const [taskTab, setTaskTab] = useState("to-do");
@@ -92,14 +93,17 @@ function ViewTaskPage() {
   const [storageUpdated, setStorageUpdated] = useState(false);
   const [userColors, setUserColors] = useState({});
   const [notifications, setNotifications] = useState([]);
+  const [isOn, setIsOn] = useState(false);
   const notificationRef = useRef(null);
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "notifications") {
-        const updatedNotifications = JSON.parse(event.newValue)?.map((notif) => ({
-          ...notif,
-          id: uuidv4(), 
-        }));
+        const updatedNotifications = JSON.parse(event.newValue)?.map(
+          (notif) => ({
+            ...notif,
+            id: uuidv4(),
+          })
+        );
         setNotifications(updatedNotifications);
         setStorageUpdated(true);
       }
@@ -110,10 +114,12 @@ function ViewTaskPage() {
     const checkNotifications = () => {
       const existingNotificationsJSON = localStorage.getItem("notifications");
       if (existingNotificationsJSON) {
-        const existingNotifications = JSON.parse(existingNotificationsJSON).map((notif) => ({
-          ...notif,
-          id: uuidv4(), 
-        }));
+        const existingNotifications = JSON.parse(existingNotificationsJSON).map(
+          (notif) => ({
+            ...notif,
+            id: uuidv4(),
+          })
+        );
         setNotifications(existingNotifications);
       }
     };
@@ -145,7 +151,7 @@ function ViewTaskPage() {
         notificationRef.current &&
         !notificationRef.current.contains(e.target)
       ) {
-        console.log("triggerd  notification")
+        console.log("triggerd  notification");
         setNotificationDropDown(false);
       }
     };
@@ -363,7 +369,10 @@ function ViewTaskPage() {
 
   const handleJobFilter = async () => {
     try {
-      const response = await getTasksByUser();
+      const response = await getTasksByUser(
+        {},
+        isOn ? "completed=true" : "non_completed=true"
+      );
       if (response.res) {
         setActiveTaskJob(response?.res.data);
         setFilteredTasks(response?.res?.data);
@@ -379,7 +388,7 @@ function ViewTaskPage() {
   };
   useEffect(() => {
     handleJobFilter();
-  }, []);
+  }, [isOn]);
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
     setFilteredTasks((prevTasks) => [
@@ -496,7 +505,7 @@ function ViewTaskPage() {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
+    const date = dateString ? new Date(dateString) : new Date();
     return date.toLocaleDateString("en-GB"); // DD/MM/YYYY format
   };
 
@@ -507,7 +516,10 @@ function ViewTaskPage() {
         [selectSearchOptions]: searchedInput,
       };
       setShowingSearchOptions(searchedInput);
-      const response = await getTasksByUser(reqData);
+      const response = await getTasksByUser(
+        reqData,
+        isOn ? "completed=true" : "non_completed=true"
+      );
       if (!response.error) {
         setFilteredTasks(response?.res?.data);
       }
@@ -529,8 +541,6 @@ function ViewTaskPage() {
   };
 
   const handleRemoveFilter = async (value) => {
-    console.log("uupdated before removing", value);
-
     const updatedQuery = {
       ...filteredQuery,
       stage_id: filteredQuery.stage_id?.filter((id) => id !== value.value),
@@ -553,7 +563,10 @@ function ViewTaskPage() {
 
     try {
       setLoading(true);
-      const response = await getTasksByUser(updatedQuery);
+      const response = await getTasksByUser(
+        updatedQuery,
+        isOn ? "completed=true" : "non_completed=true"
+      );
 
       if (!response.error) {
         setFilteredTasks(response?.res?.data);
@@ -736,6 +749,7 @@ function ViewTaskPage() {
                 setFilteredTasks={setFilteredTasks}
                 setLoading={setLoading}
                 closeFilter={() => setShowFilter(false)}
+                isOn={isOn}
               />
             )}
           </div>
@@ -878,19 +892,31 @@ function ViewTaskPage() {
       </div>
 
       <div className="DashboardTopMenu">
+        <div className="d-flex align-items-center justify-content-start gap-2">
+          <ToggleButton isOn={isOn} setIsOn={setIsOn} />{" "}
+          <div className="task-toggle-text"> Completed Tasks</div>
+        </div>
         <div className="pagination-container justify-content-start">
           <div className="taskContainer">
-            <ul style={{
-               position: "relative",
-               overflowY: "auto", 
-               maxHeight: "800px",
-               zIndex: '1',
-               paddingRight: '10px',
-               scrollBehavior: 'smooth'
-            }}>
-              <li key={"001"} style={{
-                position:'sticky', top: 0, zIndex: 200
-              }} className="heading">
+            <ul
+              style={{
+                position: "relative",
+                overflowY: "auto",
+                maxHeight: "800px",
+                zIndex: "1",
+                paddingRight: "10px",
+                scrollBehavior: "smooth",
+              }}
+            >
+              <li
+                key={"001"}
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 200,
+                }}
+                className="heading"
+              >
                 <div className="listContent">Title</div>
                 <div className="listContent centerContent">
                   <div className="centerText">Stage</div>
@@ -940,7 +966,8 @@ function ViewTaskPage() {
                     <div
                       className={`listContent listTitle justify-content-between`}
                     >
-                      <p title={task?.title}
+                      <p
+                        title={task?.title}
                         style={{
                           WebkitBoxOrient: "vertical",
                           WebkitLineClamp: 2,
@@ -948,10 +975,9 @@ function ViewTaskPage() {
                           textOverflow: "ellipsis",
                           whiteSpace: "normal",
                           maxWidth: "350px",
-                          
                         }}
                       >
-                       {task?.title}
+                        {task?.title}
                       </p>
 
                       <p style={{ marginRight: "30px", cursor: "pointer" }}>
@@ -989,15 +1015,17 @@ function ViewTaskPage() {
                           style={{ flex: "1" }}
                           className="text-center centerText"
                         >
-                          {moment(task?.due_date)
+                          {moment(task?.due_date || new Date())
                             .startOf("day")
                             .isBefore(moment().startOf("day"))
-                            ? 0
-                            : moment(task?.due_date)
-                                .startOf("day")
-                                .diff(moment().startOf("day"), "days") +
-                              " days"}{" "}
-                          days
+                            ? "0 days"
+                            : (() => {
+                                const diff =
+                                  moment(task?.due_date || new Date())
+                                    .startOf("day")
+                                    .diff(moment().startOf("day"), "days");
+                                return `${diff} day${diff === 1 ? "" : "s"}`;
+                              })()}
                         </div>
                       </div>
                     </div>

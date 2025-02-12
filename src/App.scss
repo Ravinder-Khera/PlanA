@@ -4071,7 +4071,7 @@ body {
           display: flex;
           width: 100%;
           justify-content: space-between;
-          align-items: center;
+          align-items: end;
           padding-top: 27px;
           p {
             color: #fff;
@@ -4530,6 +4530,9 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         &::-webkit-scrollbar-track {
           background: #353535; /* Background of the scrollbar track */
         }
+        .editor-class{
+          width: 100%;
+        }
       }
     }
     .email-addJobPopUpAttachments {
@@ -4816,9 +4819,16 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
             line-height: normal;
             letter-spacing: -0.48px;
           }
-          .job-title{
+          .job-title {
             max-width: 250px;
-            width: '100%'
+            width: 100%;
+            color: #fff;
+            font-family: Archivo;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: -0.64px;
           }
         }
       }
@@ -4867,7 +4877,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
               display: flex;
               align-items: center;
               justify-content: flex-start;
-              padding:12px 8px;
+              padding: 12px 8px;
               &:hover {
                 background: #353535;
               }
@@ -4953,4 +4963,57 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
       }
     }
   }
+}
+
+.toggle-container {
+  width: 50px;
+  height: 25px;
+  background-color:#353535 ;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  &.on{
+    background-color:#e2e31f ;
+  }
+  &.off {
+    background-color:#353535 ;
+  }
+}
+
+.toggle-circle {
+  width: 18px;
+  height: 18px;
+  background-color: #e2e31f;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  &.on {
+    transform: translateX(10px);
+    background-color: #353535;
+  }
+  &.off {
+    transform: translateX(-10px);
+  }
+}
+
+.task-toggle-text{
+  color: #E2E31F;
+font-family: Archivo;
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+letter-spacing: -0.64px;
+}
+
+
+.yellow-edit-button{
+  border-radius: 1px;
+  border: 1px solid #e2e31f;
+  background: #e2e31f;
+  padding: 6px;
+  margin: 0 10px;
+  cursor: pointer;
 }

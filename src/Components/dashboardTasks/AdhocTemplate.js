@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   AttachmentIcon,
   CommentIcon,
+  CrossIcon,
   EditIcon,
   ModifiedRightArrow,
   RightArrow,
@@ -140,8 +141,7 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
           <div className="task-container adhoc" ref={popupRef}  style={{ width: "100%", maxWidth:'546px', padding:'20px' }}>
             <h4>Send Email</h4>
             <p>
-              You have successfully completed this task. Well done! Click to
-              manage email notifications.
+            Select which ad-hoc email you would like to send in relation to this job.
             </p>
         
             <div className="contentBox Application d-flex align-items-start justify-content-between flex-column h-100" style={{padding:'19px 18px 8px 19px'}}>
@@ -209,7 +209,7 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
                   <AttachmentIcon /> <span>{job?.attachments_count}</span>
                 </div>
                 <div>
-                  <CommentIcon /> <span>{job?.messages_count}</span>
+                  <CommentIcon /> <span>{job?.comments_count}</span>
                 </div>
               </div>
             </div>
@@ -309,6 +309,11 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
   const handleContentChange = (updatedHtml) => {
     setHtmlContent(updatedHtml);
   };
+
+  const handleDeleteAttachment = (index) => {
+    setAttachments((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="task-completion-overlay">
       <div className="task-container " style={{ width: "540px" }} ref={popupRef}>
@@ -382,6 +387,9 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
                             )}`
                           : msg.name}
                       </h5>
+                       <span onClick={() => handleDeleteAttachment(i)}>
+                                                                <CrossIcon />
+                                                              </span>
                     </div>
                   ))}
               </div>

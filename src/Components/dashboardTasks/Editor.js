@@ -29,6 +29,7 @@ const EditorComponent = ({ content, onContentChange }) => {
         toolbarHidden={true} // ✅ Hides toolbar
         wrapperClassName="wrapperClassName"
         editorClassName="editor-class"
+        placeholder="Write your content here..."
       />
     </div>
   );

@@ -608,7 +608,52 @@ export const getJobByNum = async (id) => {
   }
 };
 
-export const getTasksByUser = async (reqData = {}) => {
+// export const getTasksByUser = async (reqData = {}, status = ['in-progress', 'not-started']) => {
+//   const authToken = localStorage.getItem("authToken");
+//   const requestOptions = {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Accept: "application/json",
+//       Authorization: `Bearer ${authToken}`,
+//     },
+//   };
+
+//   try {
+//     let url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date`;
+
+//     console.log("Requesting tasks with params:", reqData);
+
+//     // Convert reqData into query parameters manually
+//     const queryParams = new URLSearchParams();
+
+//     Object.entries({ ...reqData, status }).forEach(([key, value]) => {
+//       if (Array.isArray(value)) {
+//         value.forEach((item) => queryParams.append(key + "[]", item)); // Append array elements properly
+//       } else {
+//         queryParams.append(key, value);
+//       }
+//     });
+
+//     if (queryParams.toString()) {
+//       url += `&${queryParams.toString()}`;
+//     }
+
+//     let response = await fetch(url, requestOptions);
+//     const isJson = response.headers.get("content-type")?.includes("application/json");
+//     const data = isJson && (await response.json());
+
+//     if (response.status === 200) {
+//       return { res: data, error: null };
+//     } else {
+//       return { res: null, error: data };
+//     }
+//   } catch (error) {
+//     console.error("There was an error!", error);
+//     return { res: null, error: error };
+//   }
+// };
+export const getTasksByUser = async (reqData = {}, status = 'non_completed=true') => {
   const authToken = localStorage.getItem("authToken");
   const requestOptions = {
     method: "GET",
@@ -620,7 +665,13 @@ export const getTasksByUser = async (reqData = {}) => {
   };
 
   try {
-    let url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date`;
+    let url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date&${status}`
+    if(status === 'non_completed=true'){
+      url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date&${status}`;
+    }else{
+      url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/completed-tasks?sort=due_date`;
+    }
+    
 
     console.log("Requesting tasks with params:", reqData);
 
@@ -629,11 +680,12 @@ export const getTasksByUser = async (reqData = {}) => {
 
     Object.entries(reqData).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        queryParams.append(key, value); // Convert array to [value1,value2]
+        value.forEach((item) => queryParams.append(key + "[]", item)); // Append array elements properly
       } else {
         queryParams.append(key, value);
       }
     });
+
     if (queryParams.toString()) {
       url += `&${queryParams.toString()}`;
     }

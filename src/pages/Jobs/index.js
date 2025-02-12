@@ -26,7 +26,7 @@ import {
 } from "../../Components/JobModal/Edit/JobModal";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import { NotificationComponent } from "../../Components/navMenu";
-import { MAX_CALENDAR_YEAR, StatusList } from "../../helper";
+import { arraysEqualById, MAX_CALENDAR_YEAR, StatusList } from "../../helper";
 import {
   createJobs,
   createTask,
@@ -82,7 +82,7 @@ const renderComment = (message) => {
                 .replace("minutes", "mins")}
         </p>
         <span></span>
-        <p className="name"> {message.user} :</p>
+        <p className="name"> {message.user?.name} :</p>
       </div>
       <p className="content">{renderMessage(message.body)}</p>
     </div>
@@ -112,7 +112,7 @@ const Jobs = () => {
   const tableActiveRowLeftRef = useRef(null);
   const tableActiveRowRightRef = useRef(null);
   const searchBarRef = useRef(null);
-
+  const [newJob, setNewJob] = useState(false)
   const location = useLocation();
 
   const [filteredJobs, setFilteredJobs] = useState("");
@@ -180,6 +180,7 @@ const Jobs = () => {
 
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
   const [editedJobDueDate, setEditedJobDueDate] = useState(null);
+  const [collabChanged, setCollabChanged] = useState(false);
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -236,8 +237,12 @@ const Jobs = () => {
 
     if (newOtp.every((digit) => digit !== "")) {
       const target = newOtp.join("");
+      if(target == '00000'){
+        toast.error("Job number cannot be zero.")
+        return
+      }
       const exists = await getJobsNum(target);
-      console.log("exists", exists);
+
       if (exists.res?.exists) {
         setNewJobIdExist(true);
         return;
@@ -572,37 +577,7 @@ const Jobs = () => {
   };
 
   useEffect(() => {
-    const handleAddNewJob = async () => {
-      try {
-        const year = new Date().getFullYear();
-        const month = String(new Date().getMonth() + 1).padStart(2, "0");
-        const day = String(new Date().getDate()).padStart(2, "0");
-        let formattedDueDate = `${year}-${month}-${day}`;
-        const reqBody = {
-          job_num: newJobIdNumber,
-          title: addJobName,
-          collaborators: newJobCollaboratorsListId,
-          due_date: selectedNewJobDueDate || formattedDueDate,
-          status: selectNewJobStatus || "not-started",
-        };
-
-        console.log("reqBody", reqBody);
-
-        // API call to create job
-        const response = await createJobs(reqBody);
-        console.log("request body for create job", response);
-
-        if (response?.res?.message) {
-          console.log(`${response.res.message}`);
-        } else {
-          toast.error(`${response?.error?.message || "Error occurred"}`);
-        }
-      } catch (error) {
-        console.log("error in adding job", error);
-      } finally {
-        handleCancelAddJob();
-      }
-    };
+   
 
     const handleClickOutside = (event) => {
       if (
@@ -614,20 +589,7 @@ const Jobs = () => {
         if (newJobIdNumber === 0 || !addJobName) {
           handleCancelAddJob();
         } else {
-          const formattedDueDate = new Date().toISOString().split("T")[0];
-          setFilteredJobs((prevJobs) => [
-            {
-              job_num: newJobIdNumber,
-              title: addJobName,
-              collaborators: newJobCollaboratorsList,
-              due_date: selectedNewJobDueDate || formattedDueDate,
-              status: selectNewJobStatus || "not-started",
-            },
-            ...prevJobs,
-          ]);
-          synchronizeRowHeights();
-          setShowAddJobRow(false);
-          handleAddNewJob();
+          createNewJobRequest(false)
         }
       }
     };
@@ -648,19 +610,21 @@ const Jobs = () => {
   ]);
 
 
-  const createNewJobRequest = () => {
+  const createNewJobRequest = (showPopup=true) => {
+    const formattedDueDate = new Date().toISOString()?.split("T")[0];
     setFilteredJobs((prevJobs) => [
       {
         job_num: newJobIdNumber,
         title: addJobName,
         collaborators: newJobCollaboratorsListId,
-        due_date: selectedNewJobDueDate || "",
+        due_date: selectedNewJobDueDate || formattedDueDate,
         status: selectNewJobStatus || "not-started",
       },
       ...prevJobs,
     ]);
     handleAddNewJob();
     synchronizeRowHeights();
+    if(showPopup)
     setShowNewJobModal(true);
   }
 
@@ -682,8 +646,13 @@ const Jobs = () => {
       // API call to create job
       const response = await createJobs(reqBody);
       console.log("request body for create job", response);
-
-      if (response?.res?.message) {
+      if (response?.res) {
+        const { job } = response?.res
+        // remove the temp job num details
+        let tempJobs = filteredJobs.filter((job) => job !== newJobIdNumber);
+        tempJobs = [job,...tempJobs]
+        console.log("temp jobs", tempJobs)
+        setFilteredJobs(tempJobs);
         console.log(`${response.res.message}`);
       } else {
         toast.error(`${response?.error?.message || "Error occurred"}`);
@@ -914,7 +883,7 @@ const Jobs = () => {
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
         job.id === activeJob?.id
-          ? { ...job, due_date: utcDate.toISOString().split("T")[0] }
+          ? { ...job, due_date: utcDate.toISOString()?.split("T")[0] }
           : job
       )
     );
@@ -932,7 +901,7 @@ const Jobs = () => {
           job_id: updatedJob.id,
           dataObj: {
             title: updatedJob.title,
-            collaborators:[...oldCollaboratorsId, ...newJobCollaboratorsListId],
+            collaborators: collabChanged ? newJobCollaboratorsListId : oldCollaboratorsId,
             status: updatedJob.status,
             due_date: updatedJob.due_date,
           },
@@ -973,12 +942,7 @@ const Jobs = () => {
         const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
         const originalJob = originalJobs.find((job) => job.id === updateJobId);
 
-        console.log(
-          "updatedJob -",
-          updatedJob,
-          originalJob,
-          !showNewJobModal || !showNewJobModalWithTasks
-        );
+        
 
         const isJobChanged = (updatedJob, originalJob) => {
           if (!updatedJob || !originalJob) {
@@ -988,17 +952,15 @@ const Jobs = () => {
             );
             return false;
           }
-
+          setCollabChanged(arraysEqualById(updatedJob?.collaborators || [], originalJob?.collaborators || []))
           return (
-            (updatedJob?.title || "") !== (originalJob?.title || "") ||
-            (updatedJob?.collaborators || []) !==
-              (originalJob?.collaborators || []) ||
+            (updatedJob?.title || "") !== (originalJob?.title || "") || !arraysEqualById(updatedJob?.collaborators || [], originalJob?.collaborators || [])
+            ||
             (updatedJob?.status || "") !== (originalJob?.status || "") ||
             (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
           );
         };
 
-        console.log("isJobChanged -",updatedJob, originalJob, isJobChanged(updatedJob, originalJob));
         if (isJobChanged(updatedJob, originalJob)) {
           handleUpdateJob(updatedJob);
           synchronizeRowHeights();
@@ -1134,32 +1096,72 @@ const Jobs = () => {
 
   const handleCreateTask = async (newData, taskId) => {
     console.log(newData?.newTask?.title);
+  
+    // Temporarily add the task to the UI
     setFilteredJobs((prevJobs) =>
-      prevJobs.map((job) => ({
-        ...job,
-        tasks:
-          job.id === taskId
-            ? [
+      prevJobs.map((job) =>
+        job.id === taskId
+          ? {
+              ...job,
+              tasks: [
                 {
+                  id: "temp", // Temporary ID to identify the record
                   title: newData.newTask.title,
                   due_date: newData.newTask.due_date,
                   status: newData.newTask.status,
                   description: newData.newTask.description,
                 },
                 ...job?.tasks,
-              ]
-            : job?.tasks,
-      }))
+              ],
+            }
+          : job
+      )
     );
+  
     setShowAddTaskModal(false);
-    var response = await createTask(newData.newTask, taskId);
-    if (response.res) {
-      console.log("Task create successful", response.res);
-    } else {
-      console.error("Task create failed:", response.error);
-      toast.error(response.error?.message || "Failed to add the task");
+  
+    // Send API request to create task
+    try {
+      const response = await createTask(newData.newTask, taskId);
+  
+      if (response.res) {
+        const { task } = response.res;
+  
+        // Remove temporary task and add the actual task from API response
+        setFilteredJobs((prevJobs) =>
+          prevJobs.map((job) =>
+            job.id === taskId
+              ? {
+                  ...job,
+                  tasks: [
+                    task, // Add actual task from API
+                    ...job.tasks.filter((t) => t.id !== "temp"), // Remove temporary task
+                  ],
+                }
+              : job
+          )
+        );
+  
+        console.log("Task create successful", response.res);
+        toast.success("Task added successfully!");
+      } else {
+        throw new Error(response.error?.message || "Failed to add the task");
+      }
+    } catch (error) {
+      console.error("Task create failed:", error.message);
+      toast.error(error.message);
+  
+      // Rollback: Remove the temporary task if API fails
+      setFilteredJobs((prevJobs) =>
+        prevJobs.map((job) =>
+          job.id === taskId
+            ? { ...job, tasks: job.tasks.filter((t) => t.id !== "temp") }
+            : job
+        )
+      );
     }
   };
+  
 
   const handleTaskDelete = async (task) => {
     try {
@@ -1185,11 +1187,11 @@ const Jobs = () => {
         var updatedTask = response.res.tasks[index];
         setFilteredJobs((prevJobs) =>
           prevJobs.map((job) =>
-            job.tasks.some((task) => task.id === updatedTask.id)
+            job.tasks.some((task) => task?.id === updatedTask?.id)
               ? {
                   ...job,
                   tasks: job.tasks.map((task) =>
-                    task.id === updatedTask.id
+                    task?.id === updatedTask?.id
                       ? {
                           ...task,
                           title: updatedTask?.title,
@@ -1200,7 +1202,6 @@ const Jobs = () => {
               : job
           )
         );
-        localStorage.setItem("taskId", updatedTask.id);
         setShowUpdateTaskModal(true);
       } else {
         console.error("get task failed:", response.error);
@@ -1219,7 +1220,7 @@ const Jobs = () => {
     const leftRows = document.querySelectorAll(".table_left .tableEntries");
    
 
-    console.log(rightRows.length, leftRows.length);
+   
     if (rightRows.length !== leftRows.length) {
       console.error("Both tables must have the same number of rows.");
       return;
@@ -1391,6 +1392,7 @@ const Jobs = () => {
       if (response?.res?.message) {
         console.log(`${response.res.message}`);
         const { job } = response.res;
+        setNewJob(true)
         handleOpenJobWithTask(job);
         setFilteredJobs((prevJobs) => [
           job,
@@ -1456,6 +1458,7 @@ const Jobs = () => {
         <NewJobModalWithTasks
           usersList={usersList}
           job={activeJob}
+          newJob={newJob}
           handleClose={async (isDeleting = false) => {
             setGetJob();
             setActiveJob(null);
@@ -1472,6 +1475,7 @@ const Jobs = () => {
                 prevJobs.filter((job) => job.id !== activeJob.id)
               );
             }
+            setNewJob(false)
           }}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
@@ -1508,6 +1512,7 @@ const Jobs = () => {
           handleClose={async () => {
             setGetJob();
             setShowAddTaskModal(false);
+
           }}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
@@ -2026,8 +2031,8 @@ const Jobs = () => {
                                     {newJobCollaboratorsList
                                       .slice(0, 3)
                                       .map((user, index) => {
-                                        const initials = user.name
-                                          .split(" ")
+                                        const initials = user?.name
+                                          ?.split(" ")
                                           .map((part) =>
                                             part.charAt(0).toUpperCase()
                                           )
@@ -2086,8 +2091,8 @@ const Jobs = () => {
                                   <div className="addedCollabs">
                                     {newJobCollaboratorsList.map(
                                       (user, index) => {
-                                        const initials = user.name
-                                          .split(" ")
+                                        const initials = user?.name
+                                          ?.split(" ")
                                           .map((part) =>
                                             part.charAt(0).toUpperCase()
                                           )
@@ -2117,8 +2122,8 @@ const Jobs = () => {
                                 )}
                                 {usersList
                                   ? usersList.map((user, index) => {
-                                      const initials = user.name
-                                        .split(" ")
+                                      const initials = user?.name
+                                        ?.split(" ")
                                         .map((part) =>
                                           part.charAt(0).toUpperCase()
                                         )
@@ -2225,8 +2230,8 @@ const Jobs = () => {
                                       {job?.collaborators
                                         .slice(0, 3)
                                         .map((user, index) => {
-                                          const initials = user.name
-                                            .split(" ")
+                                          const initials = user?.name
+                                            ?.split(" ")
                                             .map((part) =>
                                               part.charAt(0).toUpperCase()
                                             )
@@ -2282,8 +2287,8 @@ const Jobs = () => {
                                       <div className="addedCollabs">
                                         {newJobCollaboratorsList.map(
                                           (user, index) => {
-                                            const initials = user.name
-                                              .split(" ")
+                                            const initials = user?.name
+                                              ?.split(" ")
                                               .map((part) =>
                                                 part.charAt(0).toUpperCase()
                                               )
@@ -2313,8 +2318,8 @@ const Jobs = () => {
                                     )}
                                     {usersList
                                       ? usersList.map((user, index) => {
-                                          const initials = user.name
-                                            .split(" ")
+                                          const initials = user?.name
+                                            ?.split(" ")
                                             .map((part) =>
                                               part.charAt(0).toUpperCase()
                                             )
@@ -2478,6 +2483,17 @@ const Jobs = () => {
                                       On Hold
                                     </div>
                                   </div>
+                                  <div
+                                    className="selectCollaboratorsBox"
+                                    onClick={() => {
+                                      setNewJobActiveBoxRight("");
+                                      setSelectNewJobStatus("completed");
+                                    }}
+                                  >
+                                    <div className="statusBox Completed">
+                                      Completed
+                                    </div>
+                                  </div>
                                 </div>
                               )}
                             </td>
@@ -2527,15 +2543,17 @@ const Jobs = () => {
                             <td className="text-center">
                               {selectedNewJobDueDate ? (
                                 moment(selectedNewJobDueDate)
-                                  .startOf("day")
-                                  .isBefore(moment().startOf("day")) ? (
-                                  0
-                                ) : (
-                                  moment(selectedNewJobDueDate)
-                                    .startOf("day")
-                                    .diff(moment().startOf("day"), "days") +
-                                  " days"
-                                )
+                                                            .startOf("day")
+                                                            .isBefore(moment().startOf("day"))
+                                                            ? "0 days"
+                                                            : (() => {
+                                                                const diff =
+                                                                  moment(selectedNewJobDueDate)
+                                                                    .startOf("day")
+                                                                    .diff(moment().startOf("day"), "days");
+                                                                return `${diff} day${diff === 1 ? "" : "s"}`;
+                                                              })()
+                                
                               ) : (
                                 <div className="clickBox">
                                   <span className="clickBoxtext">N/A</span>
@@ -2690,17 +2708,19 @@ const Jobs = () => {
                                   )}
                               </td>
                               <td className="text-center">
-                                {moment(job.due_date)
-                                  .startOf("day")
-                                  .isBefore(moment().startOf("day"))
-                                  ? 0
-                                  : moment(job.due_date)
-                                      .startOf("day")
-                                      .diff(
-                                        moment().startOf("day"),
-                                        "days"
-                                      )}{" "}
-                                days
+                               
+                                      {moment(job?.due_date || new Date())
+                                                                  .startOf("day")
+                                                                  .isBefore(moment().startOf("day"))
+                                                                  ? "0 days"
+                                                                  : (() => {
+                                                                      const diff =
+                                                                        moment(job?.due_date || new Date())
+                                                                          .startOf("day")
+                                                                          .diff(moment().startOf("day"), "days");
+                                                                      return `${diff} day${diff === 1 ? "" : "s"}`;
+                                                                    })()}
+                               
                               </td>
                               <td
                                 style={{
@@ -2726,11 +2746,9 @@ const Jobs = () => {
                                               style={{
                                                 cursor: "pointer",
                                               }}
-                                              className={`statusBtn mx-0  ${task?.stage?.title ? task?.stage?.title : 'Undefined'}`}
+                                              className={`statusBtn mx-0 ${task.status}`}
                                               onClick={() => {
-                                                console.log("job index.js", task);
                                                 if (!task.id) {
-                                                  console.log("not from db");
                                                   handleCheckTask(
                                                     job.id,
                                                     index
@@ -2777,9 +2795,10 @@ const Jobs = () => {
                               </td>
                               <td className="px-3">
                                 <div className="jobDescriptionTextDiv">
-                                  {job?.latest_messages?.length > 0
-                                    ? renderComment(job?.latest_messages[0])
+                                  {job?.comments?.length > 0
+                                    ? renderComment(job?.comments[0])
                                     : renderComment(null)}
+                                    
                                 </div>
                               </td>
                             </tr>

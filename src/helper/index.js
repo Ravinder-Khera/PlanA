@@ -1,3 +1,11 @@
+import _ from "lodash";
+
+export const arraysEqualById = (arr1, arr2) => {
+  const ids1 = _.sortBy(arr1.map((obj) => obj.id));
+  const ids2 = _.sortBy(arr2.map((obj) => obj.id));
+  console.log(ids1, ids2);
+  return _.isEqual(ids1, ids2);
+};
 export const StatusList = {
   "in-progress": "In Progress",
   completed: "Completed",
@@ -152,6 +160,14 @@ export const StageList = {
   "Information Request": "Info Request",
   Referral: "Referral",
   "Public Notification": "Inform Public",
+  Decision: "Decision",
+};
+
+export const StageListMapFromDB = {
+  Application: "Application",
+  "Info Request": "Information Request",
+  Referral: "Referral",
+  "Inform Public": "Public Notification",
   Decision: "Decision",
 };
 
@@ -326,36 +342,50 @@ export const emailConfig = {
 
 export const adHoc = [
   {
-      "emailType": "Advice",
-      "receiver": "Client",
-      "subject": "Advice",
-      "content": "<p>IMPORTANT – TAILOR THIS TO SUIT YOUR AUDIENCE AND THE QUESTION BEING ASKED</p><p>Dear X<p>We have reviewed this site for you.</p><p>We provide the following basic information below as an overview of the planning considerations for the site.</p><p>Site Address: xxxx</p><p>RPD: xxxx</p><p>Site Area: xxxx</p><p>Current Land Use: xxxx</p><p>Local Government: xxxx</p><p>Planning Scheme Requirements:</p><p>Planning Scheme: xxxx</p><p>Zoning: xxxx</p><p>Overlays: xxxx</p><p>Neighbourhood / Local Plan: xxxx</p><p>Neighbourhood / Local Plan Precinct: xxxx</p><p>We understand you are seeking to develop the site for the purpose of a xxxx land use.</p><h4>Level of Assessment</h4><p>Development for a Multiple Dwelling in the Character Residential Zone ((CR1) Character) is Impact Assessable. Impact Assessable applications require public notification and any submitters gain a right of appeal to the Planning and Environment Court.</p><h4>Key Planning Parameters</h4><p>The maximum height for Multiple Dwellings is prescribed as 2 storeys and 9.5m. Site cover is prescribed at a maximum 45% and there is a requirement for 10% of the site area to be dedicated as deep planting. Car parking is also required at the following rate:</p><ul><li>1 space per 1 bedroom dwelling</li><li>2 spaces per 2/3 bedroom dwelling</li><li>0.25 spaces per visitors</li></ul><p>We are able to provide a more detailed list of the relevant planning parameters as required should you wish to prepare concept layouts.</p><h4>Important Overlays</h4><p>The site is located within the Traditional Building Character Overlay. This will require new development on the site to be considerate of pre-1946 construction, both in design and materials used.</p><h4>Services</h4><p>The site slopes towards the street and stormwater would be directed to the street. There is a sewer pipe which runs through the rear of the site which would need to be considered.</p><h4>Other relevant considerations</h4><ul><li>Easements</li><li>Referrals</li><li>Vegetation protection outside overlays (e.g. NALL)</li>    <li>Existing approvals</li><li>Trunk infrastructure</li><li>Road widening</li><li>Practical issues you may see</li></ul>"
+    emailType: "Advice",
+    receiver: "Client",
+    subject: "Advice",
+    content:
+      "<p><strong>IMPORTANT – TAILOR THIS TO SUIT YOUR AUDIENCE AND THE QUESTION BEING ASKED</strong></p><p>Dear X,</p><p>We have reviewed this site for you. We provide the following basic information below as an overview of the planning considerations for the site.</p><p><strong>Site Address:</strong> xxxx</p><p><strong>RPD:</strong> xxxx</p><p><strong>Site Area:</strong> xxxx</p><p><strong>Current Land Use:</strong> xxxx</p><p><strong>Local Government:</strong> xxxx</p><p><strong>Planning Scheme Requirements:</strong></p><p><strong>Planning Scheme:</strong> xxxx</p><p><strong>Zoning:</strong> xxxx</p><p><strong>Overlays:</strong> xxxx</p><p><strong>Neighbourhood / Local Plan:</strong> xxxx</p><p><strong>Neighbourhood / Local Plan Precinct:</strong> xxxx</p><p>We understand you are seeking to develop the site for the purpose of a xxxx land use.</p><p><strong>Level of Assessment:</strong></p><p>Development for a Multiple Dwelling in the Character Residential Zone (CR1 Character) is Impact Assessable. Impact Assessable applications require public notification and any submitters gain a right of appeal to the Planning and Environment Court.</p><p><strong>Key Planning Parameters:</strong></p><p>The maximum height for Multiple Dwellings is prescribed as 2 storeys and 9.5m. Site cover is prescribed at a maximum 45% and there is a requirement for 10% of the site area to be dedicated as deep planting. Car parking is also required at the following rate:</p><ul><li>1 space per 1-bedroom dwelling</li><li>2 spaces per 2/3-bedroom dwelling</li><li>0.25 spaces per visitors</li></ul><p>We are able to provide a more detailed list of the relevant planning parameters as required should you wish to prepare concept layouts.</p><p><strong>Important Overlays:</strong></p><p>The site is located within the Traditional Building Character Overlay. This will require new development on the site to be considerate of pre-1946 construction, both in design and materials used.</p><p><strong>Services:</strong></p><p>The site slopes towards the street and stormwater would be directed to the street. There is a sewer pipe which runs through the rear of the site which would need to be considered.</p><p><strong>Other relevant considerations:</strong></p><ul><li>Easements</li><li>Referrals</li><li>Vegetation protection outside overlays (e.g. NALL)</li><li>Existing approvals</li><li>Trunk infrastructure</li><li>Road widening</li><li>Practical issues you may see</li></ul><p><strong>Summary & Strategy</strong></p>",
   },
   {
-      "emailType": "Fee Proposal",
-      "receiver": "Client",
-      "subject": "Fee Proposal",
-      "content": "<p>Hi xxxx,</p><p>Please see attached a fee proposal for the development of the above land.</p><p>Could you please complete and return the attached authorisation if you are happy to proceed and we can commence works immediately.</p><p>We look forward to the opportunity to work with you on this project.</p>"
+    emailType: "Fee Proposal",
+    receiver: "Client",
+    subject: "Fee Proposal",
+    content:
+      "<p>Hi xxxx,</p><p>Please see attached a fee proposal for the development of the above land.</p><p>Could you please complete and return the attached authorisation if you are happy to proceed and we can commence works immediately.</p><p>We look forward to the opportunity to work with you on this project.</p>",
   },
   {
-      "emailType": "Owners Consent",
-      "receiver": "Client",
-      "subject": "Owners Consent",
-      "content": "<p>Hi xxxx,</p><p>Please see attached an owners consent to permit us to lodge on your behalfover the above land.</p><p>We note that all property owners must sign the consent.</p><p>As the owner of the land is a company, the consent will need to be signed by either two directors or a director and a company secretary. If the company has a sole director, please provide a copy of documentation confirming.</p><p>If the owner is a body corporate, the signed document will need to be signed under seal and accompanied by a copy of the meeting minutes to which the consent was agreed.</p><p>If the consent is signed under Power of Attorney, we will require a copy of the accompanying Power of Attorney document.</p><p>Should you have any queries or concerns please contact the office.</p>"
+    emailType: "Owners Consent",
+    receiver: "Client",
+    subject: "Owners Consent",
+    content:
+      "<p>Hi xxxx,</p><p>Please see attached an owners consent to permit us to lodge on your behalf over the above land.</p><p><strong>DELETE WHICH DOESN’T APPLY</strong></p><p>We note that all property owners must sign the consent.</p><p>As the owner of the land is a company, the consent will need to be signed by either two directors or a director and a company secretary. If the company has a sole director, please provide a copy of documentation confirming.</p><p>If the owner is a body corporate, the signed document will need to be signed under seal and accompanied by a copy of the meeting minutes to which the consent was agreed.</p><p>If the consent is signed under Power of Attorney, we will require a copy of the accompanying Power of Attorney document.</p><p>Should you have any queries or concerns please contact the office.</p>",
   },
   {
-      "emailType": "Revival of DA Variable",
-      "receiver": "Council",
-      "subject": "Revival of DA Variable",
-      "content": "<p>Dear XXXX</p><p>Please see attached notice under section 31.2 of the DA Rules to revive the lapsed application at XXXX reference XXXX.</p><p>The applicant has now undertaken the actions under section 31.1 of the DA Rules and this email represents our notice to the assessment manager advising that the relevant actions under section 31.1 have been undertaken.</p>"
-  }
-]
-
-
+    emailType: "Weekly Review Email",
+    receiver: "Client",
+    subject: "Weekly Review Email",
+    content: "",
+  },
+  {
+    emailType: "Revival of DA Variable",
+    receiver: "Council",
+    subject: "Revival of DA Variable",
+    content:
+      "<p>Dear XXXX,</p><p>Please see attached notice under section 31.2 of the DA Rules to revive the lapsed application at XXXX reference XXXX.</p><p>The applicant has now undertaken the actions under section 31.1 of the DA Rules and this email represents our notice to the assessment manager advising that the relevant actions under section 31.1 have been undertaken.</p>",
+  },
+  {
+    emailType: "Request for stop the clock",
+    receiver: "Client",
+    subject: "Request for stop the clock",
+    content: "",
+  },
+];
 
 export function getEmailsByStageAndTitle(stage, title) {
   const stageEmails = emailConfig[stage];
-  console.log(stageEmails)
+  console.log(stageEmails);
   if (!stageEmails) return []; // Return an empty array if stage is not found
 
   if (title && stageEmails[title]) {

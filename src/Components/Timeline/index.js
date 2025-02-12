@@ -12,7 +12,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "react-date-range";
 import { formatJobNumber } from "../../pages/Jobs";
-import { CALENDAR_YEAR, MAX_CALENDAR_YEAR, MIN_CALENDAR_YEAR } from "../../helper";
+import {
+  CALENDAR_YEAR,
+  MAX_CALENDAR_YEAR,
+  MIN_CALENDAR_YEAR,
+} from "../../helper";
 
 function Timeline({
   timeFrame,
@@ -31,7 +35,9 @@ function Timeline({
   });
   // const excessCalendarDate =
   //   timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1;
-  const [excessCalendarDate, setExcessCalendarDate] = useState(timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1);
+  const [excessCalendarDate, setExcessCalendarDate] = useState(
+    timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1
+  );
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: new Date(
@@ -53,6 +59,7 @@ function Timeline({
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const controllerRef = useRef(null);
   const controllerRef2 = useRef(null);
+  const [applyClicked, setApplyClicked] = useState(false);
 
   const statusFilterData = [
     {
@@ -86,11 +93,10 @@ function Timeline({
     }
   }, [loadNo, scrollPerformed]);
 
-
   useEffect(() => {
     const updateExcessCalendarDate = () => {
       const screenWidth = window.innerWidth;
-      
+
       if (screenWidth > 2100) {
         if (timeFrame === "weekly") {
           setExcessCalendarDate(20);
@@ -100,14 +106,16 @@ function Timeline({
           setExcessCalendarDate(1);
         }
       } else {
-        setExcessCalendarDate(timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1);
+        setExcessCalendarDate(
+          timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1
+        );
       }
     };
     updateExcessCalendarDate();
-    window.addEventListener('resize', updateExcessCalendarDate);
+    window.addEventListener("resize", updateExcessCalendarDate);
 
     return () => {
-      window.removeEventListener('resize', updateExcessCalendarDate);
+      window.removeEventListener("resize", updateExcessCalendarDate);
     };
   }, [timeFrame]);
 
@@ -218,10 +226,10 @@ function Timeline({
           );
         }
       } else if (timeFrame !== undefined && timeFrame === "monthly") {
-        if (differenceInDays < 40) {
+        if (differenceInDays < 60) {
           adjustedEndDate = new Date(
             adjustedEndDate.getTime() +
-              (40 - differenceInDays) * 24 * 60 * 60 * 1000
+              (60 - differenceInDays) * 24 * 60 * 60 * 1000
           );
         }
       }
@@ -281,22 +289,15 @@ function Timeline({
         });
       }
     }
-
-  
-  }, [
-    excessCalendarDate,
-    timeFrame,
-    dateChanged,
-    applyFilter,
-  ]);
+  }, [excessCalendarDate, timeFrame, dateChanged, applyFilter]);
 
   useEffect(() => {
     // Abort previous request if exists
- if (controllerRef2.current) {
-   controllerRef2.current.abort();
- }
- controllerRef2.current = new AbortController(); // Create a new controller
- const signal = controllerRef2.current.signal;
+    if (controllerRef2.current) {
+      controllerRef2.current.abort();
+    }
+    controllerRef2.current = new AbortController(); // Create a new controller
+    const signal = controllerRef2.current.signal;
     const fetchJobs = async () => {
       const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -326,11 +327,7 @@ function Timeline({
       }
     };
     fetchJobs();
-    
-  
-  }, [
-    reloadTask
-  ]);
+  }, [reloadTask]);
 
   const formatDate = (date) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -497,8 +494,18 @@ function Timeline({
   };
 
   const handleApplyFilter = () => {
+    setApplyClicked(true);
     setApplyFilter((prevValue) => !prevValue);
     setShowFilter(false);
+  };
+
+  const handleCancelFilter = () => {
+    if (applyClicked) setApplyFilter((prevValue) => !prevValue);
+    setShowFilter(false);
+    setfilterString({
+      label: "Select Filter",
+      value: "",
+    });
   };
 
   return (
@@ -532,8 +539,20 @@ function Timeline({
                 ranges={[selectionRange]}
                 onChange={handleSelect}
                 rangeColors={["#E2E31F"]}
-                minDate={new Date(new Date().setFullYear(new Date().getFullYear() - MIN_CALENDAR_YEAR))}
-                maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + MAX_CALENDAR_YEAR))}
+                minDate={
+                  new Date(
+                    new Date().setFullYear(
+                      new Date().getFullYear() - MIN_CALENDAR_YEAR
+                    )
+                  )
+                }
+                maxDate={
+                  new Date(
+                    new Date().setFullYear(
+                      new Date().getFullYear() + MAX_CALENDAR_YEAR
+                    )
+                  )
+                }
               />
             </div>
           )}
@@ -545,6 +564,11 @@ function Timeline({
             <div
               className="d-flex align-items-center gap-2  "
               onClick={() => {
+                if (filterString?.value) {
+                  setApplyClicked(true);
+                } else {
+                  setApplyClicked(false);
+                }
                 setShowFilterDropdown(true);
                 setShowFilter(!showFilter);
               }}
@@ -566,6 +590,9 @@ function Timeline({
                     >
                       <div className="selectBox">{filterString.label}</div>
                       <button onClick={handleApplyFilter}>Apply</button>
+                      {filterString?.value !== "" && (
+                        <button onClick={handleCancelFilter}>Clear</button>
+                      )}
                     </div>
                     {showFilterDropdown && (
                       <div className="filterOptionsDiv">
@@ -615,7 +642,7 @@ function Timeline({
           <div className="timeLineFixedTop">
             <div className="timelineHeader timelineMonthsRow">
               {Object.entries(datesByMonthCount).map(([monthKey, count]) => {
-                const [year, month] = monthKey.split("-");
+                const [year, month] = monthKey?.split("-");
                 const monthName = new Date(year, month, 1).toLocaleString(
                   "default",
                   { month: "long" }
@@ -754,10 +781,10 @@ function Timeline({
                                                   0 && (
                                                   <>
                                                     {job?.collaborators
-                                                      .slice(0, 3)
+                                                      ?.slice(0, 3)
                                                       .map((user, index) => {
                                                         const initials = user
-                                                          .split(" ")
+                                                          ?.split(" ")
                                                           .map((part) =>
                                                             part
                                                               .charAt(0)
@@ -816,7 +843,7 @@ function Timeline({
                                         </div>
                                         <div>
                                           <CommentIcon />{" "}
-                                          <span>{job.messages_count}</span>
+                                          <span>{job.comments_count}</span>
                                         </div>
                                       </div>
                                     </div>

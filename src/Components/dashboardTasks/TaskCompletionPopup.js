@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  CrossIcon,
   EditIcon,
   ModifiedRightArrow,
   RightArrow,
@@ -16,8 +17,11 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
   const [showDetails, setShowDetails] = useState(0);
   const [emailDetails, setEmailDetails] = useState(null);
   const [emailSuccess, setEmailSuccess] = useState(false);
-  const emailData = getEmailsByStageAndTitle(task?.stage, task?.title);
+  const emailData = useMemo(() => {
+    return getEmailsByStageAndTitle(task?.stage?.title, task?.title);
+  }, [task?.stage?.title, task?.title]);
   const [requestBody, setRequestBody] = useState({});
+  const [emailRead, setEmailRead] = useState(1);
   const [loading, setLoading] = useState(false);
   const trimmedTitle =
     task?.title?.length > 35
@@ -39,6 +43,21 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (emailData?.length) {
+      setEmailRead(new Array(emailData.length).fill(false));
+    }
+  }, [emailData]);
+
+  // Check if all values in emailRead are true
+useEffect(() => {
+  if (emailRead.length > 0 && emailRead.every(Boolean)) {
+    setEmailSuccess(true);
+  } else {
+    setEmailSuccess(false);
+  }
+}, [emailRead]);
+
   const onSave = ({ subject, htmlContent, attachments }) => {
     setRequestBody({
       subject,
@@ -48,7 +67,6 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
       attachments,
     });
     setShowDetails(0);
-    setEmailSuccess(true);
   };
 
   const handleSubmitEmail = async () => {
@@ -111,15 +129,19 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
       {showDetails == 2 && <NotificationSent handleClose={handleFinalClose} />}
       {!showDetails && (
         <div className="task-completion-overlay">
-          <div className="task-container" ref={popupRef} style={{
-            padding:'20px'
-          }}>
+          <div
+            className="task-container"
+            ref={popupRef}
+            style={{
+              padding: "20px",
+            }}
+          >
             <h4>Task Complete</h4>
             <p>
               You have successfully completed this task. Well done! Click to
               manage email notifications.
             </p>
-            <div className={`tasksDiv ${task.stage} `}>
+            <div className={`tasksDiv ${task?.stage?.title} `}>
               <div
                 className="d-flex align-items-center justify-content-between"
                 style={{ gap: "32px" }}
@@ -143,44 +165,42 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
                 <div>
                   <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                     <div className=" d-flex align-items-center collaboratorsBox justify-content-end">
-                      {task?.collaborators?.length > 0 && (
+                      {task?.users?.length > 0 && (
                         <>
-                          {task?.collaborators
-                            .slice(0, 3)
-                            .map((user, index) => {
-                              const initials = user
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("");
+                          {task?.users.slice(0, 3).map((user, index) => {
+                            const initials = user?.name
+                              .split(" ")
+                              .map((part) => part.charAt(0).toUpperCase())
+                              .join("");
 
-                              return (
-                                <div
-                                  key={index}
-                                  className={`collaboratorsBoxUser`}
-                                  style={{
-                                    minWidth: "40px",
-                                    zIndex: index,
-                                  }}
-                                >
-                                  {initials}
-                                </div>
-                              );
-                            })}
+                            return (
+                              <div
+                                key={index}
+                                className={`collaboratorsBoxUser`}
+                                style={{
+                                  minWidth: "40px",
+                                  zIndex: index,
+                                }}
+                              >
+                                {initials}
+                              </div>
+                            );
+                          })}
 
                           {task?.collaborators?.length > 3 && (
                             <div
                               className={`collaboratorsBoxUser`}
                               style={{
                                 minWidth: "40px",
-                                zIndex: task?.collaborators?.length,
+                                zIndex: task?.users?.length,
                               }}
                             >
-                              +{task?.collaborators.length - 3}
+                              +{task?.users.length - 3}
                             </div>
                           )}
                         </>
                       )}
-                      {task.collaborators?.length === 0 && (
+                      {task.users?.length === 0 && (
                         <div
                           className="collaboratorsBoxUser disabled m-0"
                           style={{ minWidth: "40px" }}
@@ -202,6 +222,11 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
                       key={index}
                       className="list-row"
                       onClick={() => {
+                        setEmailRead((prev) => {
+                          const updatedRead = [...prev]; // Create a shallow copy
+                          updatedRead[index] = true; // Update the specific index
+                          return updatedRead;
+                        });
                         setShowDetails(1);
                         setEmailDetails(data);
                       }}
@@ -209,8 +234,10 @@ const TaskCompletionPopup = ({ task, handleClose, handleFinalClose }) => {
                       <div className="edit-icon">
                         <EditIcon />
                       </div>
-                      <div className={`centerText stageBtn btn_${task.stage}`}>
-                        {task.stage}
+                      <div
+                        className={`centerText stageBtn btn_${task.stage?.title}`}
+                      >
+                        {task.stage?.title}
                       </div>
                       <div className="title">{data?.emailType}</div>
                     </div>
@@ -266,7 +293,6 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer?.files[0];
-    console.log("dropped file " + droppedFile);
     if (droppedFile && droppedFile.type.startsWith("image/")) {
       setAttachments((prevFiles) => [...(prevFiles || []), droppedFile]); // Ensure prevFiles is always an array
     }
@@ -300,11 +326,16 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
   const handleContentChange = (updatedHtml) => {
     setHtmlContent(updatedHtml);
   };
+
+  const handleDeleteAttachment = (index) => {
+    setAttachments((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="task-completion-overlay">
       <div
         className="task-container "
-        style={{ width: "100%", maxWidth:'546px' }}
+        style={{ width: "100%", maxWidth: "546px" }}
         ref={popupRef}
       >
         <h4>{emailType}</h4>
@@ -377,6 +408,9 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
                             )}`
                           : msg.name}
                       </h5>
+                      <span onClick={() => handleDeleteAttachment(i)}>
+                        <CrossIcon />
+                      </span>
                     </div>
                   ))}
               </div>
@@ -415,7 +449,7 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
             className="save-email"
             onClick={handleSaveEmail}
             style={{
-              margin:'24px 0 16px 0'
+              margin: "24px 0 16px 0",
             }}
           >
             Save Email <RightArrow color="#000" />
@@ -447,16 +481,25 @@ export const NotificationSent = ({ handleClose }) => {
   }, []);
   return (
     <div className="task-completion-overlay">
-      <div className="task-container" ref={popupRef} style={{padding: '20px', maxWidth: '546px', width: '100%'}}>
+      <div
+        className="task-container"
+        ref={popupRef}
+        style={{ padding: "20px", maxWidth: "546px", width: "100%" }}
+      >
         <h4>Email Notification Sent</h4>
         <p>
           Your selected recipients have been sent an email notifying them to
           action the next steps
           <br /> in this job. Click to return.
         </p>
-        <button type="button" className="save-email" onClick={handleClose} style={{
-          margin:'8px 0 0px 0'
-        }}>
+        <button
+          type="button"
+          className="save-email"
+          onClick={handleClose}
+          style={{
+            margin: "8px 0 0px 0",
+          }}
+        >
           Return <RightArrow color="#000" />
         </button>
       </div>

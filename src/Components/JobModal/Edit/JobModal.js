@@ -46,6 +46,7 @@ import ChatAndAttachment, {
 import moment from "moment";
 import { formatJobNumber } from "../../../pages/Jobs";
 import AdhocTaskCompletionPopup from "../../dashboardTasks/AdhocTemplate";
+import TaskCompletionPopup from "../../dashboardTasks/TaskCompletionPopup";
 
 const JobModal = ({
   job,
@@ -2881,7 +2882,7 @@ export const NewJobModal = ({
                       <div className="deletBg">
                         <DeleteIcon />
                       </div>
-                      <div className="delete-item">Delete Job</div>
+                      <div className="delete-item">Cancel Job</div>
                     </div>
                     <div
                       className="delete-box"
@@ -2929,11 +2930,12 @@ export const NewJobModalWithTasks = ({
   reloadTabs,
   scrollRef,
   usersList,
+  newJob
 }) => {
+  console.log("job in NewJobModalWithTasks", job)
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
-
   const [jobTasks, setJobTasks] = useState(job?.tasks || []);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
@@ -3184,8 +3186,9 @@ export const NewJobModalWithTasks = ({
             >
               <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
+
                   <div className="topFlexDiv">
-                 
+                  {!newJob && 
                       <div
                         className="delete-box"
                         style={{ cursor: "pointer", zIndex: 2 }}
@@ -3223,7 +3226,7 @@ export const NewJobModalWithTasks = ({
                           </svg>
                         </div>
                         <div className="delete-item">Send Email</div>
-                      </div>
+                      </div> }
                     
                     <div
                       className="delete-box"
@@ -3233,7 +3236,7 @@ export const NewJobModalWithTasks = ({
                       <div className="deletBg">
                         <DeleteIcon />
                       </div>
-                      <div className="delete-item">Delete Job</div>
+                      <div className="delete-item">Cancel Job</div>
                     </div>
                     <div
                       className="delete-box"
@@ -3314,7 +3317,8 @@ export const NewJobModalWithTasks = ({
                       >
                         <table className="task-table">
                           <tbody>
-                            {jobTasks.map((task, index) => (
+                            {jobTasks?.length > 0 && jobTasks?.map((task, index) => (
+                              
                               <tr key={index} className="task-row">
                                 <td
                                   className={`task-title text-left   ${
@@ -3327,18 +3331,18 @@ export const NewJobModalWithTasks = ({
                                 <td className="addNewTaskDiv text-center">
                                   <span
                                     className={`addTaskJobBtn stage_${
-                                      task.stage?.title?.split(" ")[0]
+                                      task?.stage?.title?.split(" ")[0]
                                     }`}
                                   >
-                                    {task.stage?.title
-                                      ? task.stage?.title
+                                    {task?.stage?.title
+                                      ? task?.stage?.title
                                       : "N/A"}
                                   </span>
                                 </td>
                                 <td className="due-date">
                                   Due Date:{" "}
                                   <span>
-                                    {moment(task.due_date).format("DD/MM/YYYY")}
+                                  {moment(task.due_date || new Date()).format("DD/MM/YYYY")}
                                   </span>
                                 </td>
                                 <td>
@@ -3535,6 +3539,10 @@ export const NewTaskModal = ({
       description: description,
     };
     if (title !== "") {
+      if(!stage?.id){
+        toast.error('Error: Stage must be selected before saving.');
+        return
+      }
       onCreateTask(newTask);
     } else {
       handleClose();
@@ -3701,7 +3709,7 @@ export const NewTaskModal = ({
                       <div className="deletBg">
                         <DeleteIcon />
                       </div>
-                      <div className="delete-item">Delete Task</div>
+                      <div className="delete-item">Cancel Task</div>
                     </div>
                     <div
                       className="delete-box"
@@ -3715,7 +3723,10 @@ export const NewTaskModal = ({
                     </div>
                   </div>
                   <div className="innerScroll">
-                    <input
+                  <div className="d-flex justify-content-between align-items-center" style={{
+                      borderBottom: '1px solid rgba(226, 227, 31, 0.1490196078)'
+                     }}>
+                     <input
                       type="text"
                       className="jobTitle"
                       name="title"
@@ -3731,6 +3742,12 @@ export const NewTaskModal = ({
                       placeholder={inputPlaceholder ?? "Select Task"}
                       ref={inputRef}
                     />
+                      <div className="yellow-edit-button" onClick={() => setIsPopupOpen(true)}>
+
+                      <EditIcon />
+                      </div>
+                     </div>
+                    
                     {isPopupOpen && (
                       <div
                         style={{
@@ -3819,7 +3836,7 @@ export const NewTaskModal = ({
                           );
 
                           return daysLeft > 0 ? (
-                            `${daysLeft} days`
+                            `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
                           ) : (
                             <span style={{ color: "#616161" }}>No Data</span>
                           );
@@ -3848,10 +3865,10 @@ export const NewTaskModal = ({
                               {newJobCollaboratorsList.length > 0 && (
                                 <>
                                   {newJobCollaboratorsList
-                                    .slice(0, 3)
+                                    ?.slice(0, 3)
                                     .map((user, index) => {
                                       const initials = user.name
-                                        .split(" ")
+                                        ?.split(" ")
                                         .map((part) =>
                                           part.charAt(0).toUpperCase()
                                         )
@@ -3911,7 +3928,7 @@ export const NewTaskModal = ({
                                     {newJobCollaboratorsList.map(
                                       (user, index) => {
                                         const initials = user.name
-                                          .split(" ")
+                                          ?.split(" ")
                                           .map((part) =>
                                             part.charAt(0).toUpperCase()
                                           )
@@ -3942,7 +3959,7 @@ export const NewTaskModal = ({
                                 {usersList
                                   ? usersList.map((user, index) => {
                                       const initials = user.name
-                                        .split(" ")
+                                        ?.split(" ")
                                         .map((part) =>
                                           part.charAt(0).toUpperCase()
                                         )
@@ -4007,18 +4024,6 @@ export const NewTaskModal = ({
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
-                                    setTatskStatus("completed");
-                                  }}
-                                >
-                                  <div className="statusBox completed">
-                                    Completed
-                                  </div>
-                                </div>
-
-                                <div
-                                  className="selectCollaboratorsBox"
-                                  onClick={() => {
-                                    setStatusBox(false);
                                     setTatskStatus("in-progress");
                                   }}
                                 >
@@ -4027,6 +4032,19 @@ export const NewTaskModal = ({
                                   </div>
                                 </div>
                                 <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("completed");
+                                  }}
+                                >
+                                  <div className="statusBox completed">
+                                    Completed
+                                  </div>
+                                </div>
+
+                                
+                                {/* <div
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
@@ -4047,7 +4065,7 @@ export const NewTaskModal = ({
                                   <div className="statusBox pending">
                                     Pending
                                   </div>
-                                </div>
+                                </div> */}
                               </div>
                             )}
                           </div>
@@ -4098,7 +4116,9 @@ export const NewTaskModal = ({
                                 stage ? stage : "disabled"
                               } stage_${stage?.title}`}
                               
-                              onClick={() => setStageBox(true)}
+                              onClick={() =>{
+                                if(firstClick) return
+                                setStageBox(true)}}
                             >
                               {stage ? stage.title : "Select Stage"}
                             </button>
@@ -4131,89 +4151,7 @@ export const NewTaskModal = ({
                                     );
                                   })}
                                 </div>
-                                {/* {!addStageBox ? (
-                                  <div className="editBoxIcon pt-4">
-                                    <div
-                                      className="delete-box justify-content-start"
-                                      style={{ cursor: "pointer", zIndex: 2 }}
-                                      onClick={() => setAddStageBox(true)}
-                                    >
-                                      <div
-                                        className="deletBg d-flex align-items-center justify-content-center"
-                                        style={{
-                                          padding: "6px",
-                                          width: "36px",
-                                          height: "36px",
-                                        }}
-                                      >
-                                        <AddIcon />
-                                      </div>
-                                      <div className="delete-item">
-                                        Create New Stage
-                                      </div>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="AddStageBox">
-                                    <input
-                                      type="text"
-                                      className="AddStageInput"
-                                      name="title"
-                                      value={addStageTitle}
-                                      onChange={(e) => {
-                                        setAddStageTitle(e.target.value);
-                                      }}
-                                      placeholder="Write New Stage Name Here..."
-                                    />
-                                    <div className="editBoxIcon">
-                                      <div
-                                        className="delete-box justify-content-start"
-                                        style={{ cursor: "pointer", zIndex: 2 }}
-                                        onClick={() =>
-                                          handleCreateStage(addStageTitle)
-                                        }
-                                      >
-                                        <div
-                                          className="deletBg d-flex align-items-center justify-content-center"
-                                          style={{
-                                            padding: "6px",
-                                            width: "36px",
-                                            height: "36px",
-                                          }}
-                                        >
-                                          <TickIcon />
-                                        </div>
-                                        <div className="delete-item">
-                                          Confirm New Stage
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="editBoxIcon">
-                                      <div
-                                        className="delete-box justify-content-start"
-                                        style={{ cursor: "pointer", zIndex: 2 }}
-                                        onClick={() => {
-                                          setAddStageBox(false);
-                                          setAddStageTitle("");
-                                        }}
-                                      >
-                                        <div
-                                          className="cancelBg d-flex align-items-center justify-content-center"
-                                          style={{
-                                            padding: "6px",
-                                            width: "36px",
-                                            height: "36px",
-                                          }}
-                                        >
-                                          <CrossIcon />
-                                        </div>
-                                        <div className="cancelBg-item">
-                                          Cancel
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )} */}
+                            
                               </div>
                             )}
                           </div>
@@ -4293,6 +4231,8 @@ export const UpdateTaskModal = ({
   const popupRef = useRef(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
+
   const fetchUsers = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
@@ -4377,7 +4317,7 @@ export const UpdateTaskModal = ({
     const day = String(new Date().getDate()).padStart(2, "0");
     let formattedDueDate = `${year}-${month}-${day}`;
     const updatedTask = {
-      title: title ? title : task.title,
+      title: title ? title : task?.title,
       due_date: dueDate ? dueDate : formattedDueDate,
       status: taskStatus,
       assignee_ids: newJobCollaboratorsListId,
@@ -4477,22 +4417,7 @@ export const UpdateTaskModal = ({
     setColors(generatedColors);
   }, [stageList?.length]);
 
-  const handleCreateStage = async (stageName) => {
-    const newStage = {
-      name: stageName,
-    };
-    setStageList((prevList) => [...prevList, newStage]);
-    setAddStageBox(false);
-    setAddStageTitle("");
 
-    const response = await createTaskStage(newStage);
-
-    if (response?.res?.message) {
-      console.log(`${response.res.message}`);
-    } else {
-      toast.error(`${response?.error?.message || "Error occurred"}`);
-    }
-  };
 
   // Handle option selection
   const handleOptionClick = (option) => {
@@ -4526,7 +4451,6 @@ export const UpdateTaskModal = ({
     setIsPopupOpen(true);
   };
 
- 
 
   return (
     <>
@@ -4543,7 +4467,19 @@ export const UpdateTaskModal = ({
           />
         </div>
       )}
-     
+      {showEmailPopup && (
+        <TaskCompletionPopup
+        task={task}
+        handleClose={() => {
+          setShowEmailPopup(false);
+          setTatskStatus(task?.status)
+        }}
+        handleFinalClose={() => {
+          setShowEmailPopup(false);
+          handleModalClose()
+        }}
+      />
+      )}
       <div className="loaderDiv2 mobile" style={{ zIndex: "1001" }}>
         <div className="pop-wrapper">
           <div className="wrapper">
@@ -4554,7 +4490,44 @@ export const UpdateTaskModal = ({
               <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
                   <div className="topFlexDiv">
-                   
+                  {/* <div
+                        className="delete-box"
+                        style={{ cursor: "pointer", zIndex: 2 }}
+                        onClick={handleSendEmail}
+                      >
+                        <div className="deletBg">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="36"
+                            height="36"
+                            viewBox="0 0 36 36"
+                            fill="none"
+                          >
+                            <mask id="path-1-inside-1_4895_1898" fill="white">
+                              <rect width="36" height="36" rx="1" />
+                            </mask>
+                            <rect
+                              width="36"
+                              height="36"
+                              rx="1"
+                              fill="#E2E31F"
+                            />
+                            <rect
+                              width="36"
+                              height="36"
+                              rx="1"
+                              stroke="#E2E31F"
+                              stroke-width="3"
+                              mask="url(#path-1-inside-1_4895_1898)"
+                            />
+                            <path
+                              d="M25.7806 16.6394L12.7399 9.19799C12.4648 9.04385 12.1492 8.97719 11.8352 9.0069C11.5213 9.03661 11.2238 9.16126 10.9824 9.36427C10.7411 9.56727 10.5673 9.83899 10.4843 10.1432C10.4012 10.4475 10.4128 10.7698 10.5176 11.0673L12.8928 17.9896L10.5176 24.9305C10.4348 25.1645 10.4093 25.4149 10.4434 25.6608C10.4774 25.9067 10.5699 26.1408 10.7131 26.3435C10.8563 26.5462 11.046 26.7116 11.2664 26.8259C11.4867 26.9401 11.7313 26.9998 11.9795 27C12.2461 26.9994 12.5082 26.9305 12.7407 26.7998L12.7477 26.7951L25.7837 19.3405C26.0228 19.2052 26.2216 19.0089 26.3599 18.7716C26.4983 18.5344 26.5712 18.2646 26.5712 17.99C26.5712 17.7153 26.4983 17.4456 26.3599 17.2083C26.2216 16.971 26.0228 16.7747 25.7837 16.6394H25.7806ZM12.5413 24.7676L14.5401 18.93H18.8079C19.0548 18.93 19.2917 18.8319 19.4663 18.6573C19.6409 18.4827 19.739 18.2459 19.739 17.9989C19.739 17.7519 19.6409 17.5151 19.4663 17.3405C19.2917 17.1658 19.0548 17.0677 18.8079 17.0677H14.5456L12.542 11.2294L24.3901 17.9904L12.5413 24.7676Z"
+                              fill="black"
+                            />
+                          </svg>
+                        </div>
+                        <div className="delete-item">Send Email</div>
+                      </div> */}
                     <div
                       className="delete-box"
                       style={{ cursor: "pointer", zIndex: 2 }}
@@ -4563,7 +4536,7 @@ export const UpdateTaskModal = ({
                       <div className="deletBg">
                         <DeleteIcon />
                       </div>
-                      <div className="delete-item">Delete Task</div>
+                      <div className="delete-item">Cancel Task</div>
                     </div>
                     <div
                       className="delete-box"
@@ -4579,7 +4552,11 @@ export const UpdateTaskModal = ({
                     </div>
                   </div>
                   <div className="innerScroll">
-                    <input
+                   
+                     <div className="d-flex justify-content-between align-items-center" style={{
+                      borderBottom: '1px solid rgba(226, 227, 31, 0.1490196078)'
+                     }}>
+                     <input
                       type="text"
                       className="jobTitle"
                       name="title"
@@ -4595,6 +4572,11 @@ export const UpdateTaskModal = ({
                       placeholder={inputPlaceholder ?? "Select Task"}
                       ref={inputRef}
                     />
+                      <div className="yellow-edit-button" onClick={() => setIsPopupOpen(true)}>
+
+                      <EditIcon />
+                      </div>
+                     </div>
                     {isPopupOpen && (
                       <div
                         style={{
@@ -4683,7 +4665,7 @@ export const UpdateTaskModal = ({
                           );
 
                           return daysLeft > 0 ? (
-                            `${daysLeft} days`
+                            `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
                           ) : (
                             <span style={{ color: "#616161" }}>No Data</span>
                           );
@@ -4717,7 +4699,7 @@ export const UpdateTaskModal = ({
                                     .slice(0, 3)
                                     .map((user, index) => {
                                       const initials = user.name
-                                        .split(" ")
+                                        ?.split(" ")
                                         .map((part) =>
                                           part.charAt(0).toUpperCase()
                                         )
@@ -4779,7 +4761,7 @@ export const UpdateTaskModal = ({
                                     {newJobCollaboratorsList.map(
                                       (user, index) => {
                                         const initials = user.name
-                                          .split(" ")
+                                          ?.split(" ")
                                           .map((part) =>
                                             part.charAt(0).toUpperCase()
                                           )
@@ -4810,7 +4792,7 @@ export const UpdateTaskModal = ({
                                 {usersList
                                   ? usersList.map((user, index) => {
                                       const initials = user.name
-                                        .split(" ")
+                                        ?.split(" ")
                                         .map((part) =>
                                           part.charAt(0).toUpperCase()
                                         )
@@ -4875,18 +4857,6 @@ export const UpdateTaskModal = ({
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
-                                    setTatskStatus("completed");
-                                  }}
-                                >
-                                  <div className="statusBox completed">
-                                    Completed
-                                  </div>
-                                </div>
-
-                                <div
-                                  className="selectCollaboratorsBox"
-                                  onClick={() => {
-                                    setStatusBox(false);
                                     setTatskStatus("in-progress");
                                   }}
                                 >
@@ -4895,6 +4865,20 @@ export const UpdateTaskModal = ({
                                   </div>
                                 </div>
                                 <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("completed");
+                                    setShowEmailPopup(true)
+                                  }}
+                                >
+                                  <div className="statusBox completed">
+                                    Completed
+                                  </div>
+                                </div>
+
+                                
+                                {/* <div
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
@@ -4915,7 +4899,7 @@ export const UpdateTaskModal = ({
                                   <div className="statusBox pending">
                                     Pending
                                   </div>
-                                </div>
+                                </div> */}
                               </div>
                             )}
                           </div>
@@ -4965,7 +4949,9 @@ export const UpdateTaskModal = ({
                               className={`statusBox stageBox position-relative ${
                                 stage ? stage : "disabled"
                               } stage_${stage?.title}`}
-                              onClick={() => setStageBox(true)}
+                              onClick={() =>{
+                                if(firstClick) return
+                                setStageBox(true)}}
                             >
                               {stage ? stage.title : "Select Stage"}
                             </button>
@@ -4997,89 +4983,7 @@ export const UpdateTaskModal = ({
                                     );
                                   })}
                                 </div>
-                                {!addStageBox ? (
-                                  <div className="editBoxIcon pt-4">
-                                    <div
-                                      className="delete-box justify-content-start"
-                                      style={{ cursor: "pointer", zIndex: 2 }}
-                                      onClick={() => setAddStageBox(true)}
-                                    >
-                                      <div
-                                        className="deletBg d-flex align-items-center justify-content-center"
-                                        style={{
-                                          padding: "6px",
-                                          width: "36px",
-                                          height: "36px",
-                                        }}
-                                      >
-                                        <AddIcon />
-                                      </div>
-                                      <div className="delete-item">
-                                        Create New Stage
-                                      </div>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="AddStageBox">
-                                    <input
-                                      type="text"
-                                      className="AddStageInput"
-                                      name="title"
-                                      value={addStageTitle}
-                                      onChange={(e) => {
-                                        setAddStageTitle(e.target.value);
-                                      }}
-                                      placeholder="Write New Stage Name Here..."
-                                    />
-                                    <div className="editBoxIcon">
-                                      <div
-                                        className="delete-box justify-content-start"
-                                        style={{ cursor: "pointer", zIndex: 2 }}
-                                        onClick={() =>
-                                          handleCreateStage(addStageTitle)
-                                        }
-                                      >
-                                        <div
-                                          className="deletBg d-flex align-items-center justify-content-center"
-                                          style={{
-                                            padding: "6px",
-                                            width: "36px",
-                                            height: "36px",
-                                          }}
-                                        >
-                                          <TickIcon />
-                                        </div>
-                                        <div className="delete-item">
-                                          Confirm New Stage
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="editBoxIcon">
-                                      <div
-                                        className="delete-box justify-content-start"
-                                        style={{ cursor: "pointer", zIndex: 2 }}
-                                        onClick={() => {
-                                          setAddStageBox(false);
-                                          setAddStageTitle("");
-                                        }}
-                                      >
-                                        <div
-                                          className="cancelBg d-flex align-items-center justify-content-center"
-                                          style={{
-                                            padding: "6px",
-                                            width: "36px",
-                                            height: "36px",
-                                          }}
-                                        >
-                                          <CrossIcon />
-                                        </div>
-                                        <div className="cancelBg-item">
-                                          Cancel
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
+                               
                               </div>
                             )}
                           </div>
@@ -5265,13 +5169,7 @@ export const CreateTaskModal = ({
     }
   };
 
-  // useEffect(() => {
-  //   const year = new Date().getFullYear();
-  //   const month = String(new Date().getMonth() + 1).padStart(2, "0");
-  //   const day = String(new Date().getDate()).padStart(2, "0");
-  //   let formattedDueDate = `${year}-${month}-${day}`;
-  //   setDueDate(formattedDueDate);
-  // }, []);
+
 
   useEffect(() => {
     fetchUsers();
@@ -5309,6 +5207,10 @@ export const CreateTaskModal = ({
       (title !== "" && !newTask) ||
       (title !== "" && newTask && task && task?.job_num)
     ) {
+      if(!stage?.id){
+        toast.error('Error: Stage must be selected before saving.');
+        return
+      }
       onCreateTask(
         { newTask: newTaskData },
         task.id,
@@ -5468,7 +5370,7 @@ export const CreateTaskModal = ({
                       <div className="deletBg">
                         <DeleteIcon />
                       </div>
-                      <div className="delete-item">Delete Task</div>
+                      <div className="delete-item">Cancel Task</div>
                     </div>
                     <div
                       className="delete-box"
@@ -5546,6 +5448,9 @@ export const CreateTaskModal = ({
                       </>
                     )}
                     {((newTask && task?.job_num) || !newTask) && (
+                     <div className="d-flex justify-content-between align-items-center" style={{
+                      borderBottom: '1px solid rgba(226, 227, 31, 0.1490196078)'
+                     }}>
                       <input
                         type="text"
                         className="jobTitle position-relative"
@@ -5563,6 +5468,11 @@ export const CreateTaskModal = ({
                         ref={inputRef}
                         autoFocus={!newTask && true}
                       />
+                      <div className="yellow-edit-button" onClick={() => setIsPopupOpen(true)}>
+
+                      <EditIcon />
+                      </div>
+                     </div>
                     )}
                     {isPopupOpen && (
                       <div
@@ -5665,11 +5575,9 @@ export const CreateTaskModal = ({
                                 );
 
                                 return daysLeft > 0 ? (
-                                  `${daysLeft} days`
+                                  `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
                                 ) : (
-                                  <span style={{ color: "#616161" }}>
-                                    No Data
-                                  </span>
+                                  <span style={{ color: "#616161" }}>No Data</span>
                                 );
                               })()
                             ) : (
@@ -5696,7 +5604,7 @@ export const CreateTaskModal = ({
                             );
 
                             return daysLeft > 0 ? (
-                              `${daysLeft} days`
+                              `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
                             ) : (
                               <span style={{ color: "#616161" }}>No Data</span>
                             );
@@ -5735,7 +5643,7 @@ export const CreateTaskModal = ({
                                     .slice(0, 3)
                                     .map((user, index) => {
                                       const initials = user.name
-                                        .split(" ")
+                                        ?.split(" ")
                                         .map((part) =>
                                           part.charAt(0).toUpperCase()
                                         )
@@ -5797,7 +5705,7 @@ export const CreateTaskModal = ({
                                     {newJobCollaboratorsList.map(
                                       (user, index) => {
                                         const initials = user.name
-                                          .split(" ")
+                                          ?.split(" ")
                                           .map((part) =>
                                             part.charAt(0).toUpperCase()
                                           )
@@ -5828,7 +5736,7 @@ export const CreateTaskModal = ({
                                 {usersList
                                   ? usersList.map((user, index) => {
                                       const initials = user.name
-                                        .split(" ")
+                                        ?.split(" ")
                                         .map((part) =>
                                           part.charAt(0).toUpperCase()
                                         )
@@ -5889,17 +5797,7 @@ export const CreateTaskModal = ({
                                     Not Started
                                   </div>
                                 </div>
-                                <div
-                                  className="selectCollaboratorsBox"
-                                  onClick={() => {
-                                    setStatusBox(false);
-                                    setTatskStatus("completed");
-                                  }}
-                                >
-                                  <div className="statusBox completed">
-                                    Completed
-                                  </div>
-                                </div>
+                               
 
                                 <div
                                   className="selectCollaboratorsBox"
@@ -5913,6 +5811,17 @@ export const CreateTaskModal = ({
                                   </div>
                                 </div>
                                 <div
+                                  className="selectCollaboratorsBox"
+                                  onClick={() => {
+                                    setStatusBox(false);
+                                    setTatskStatus("completed");
+                                  }}
+                                >
+                                  <div className="statusBox completed">
+                                    Completed
+                                  </div>
+                                </div>
+                                {/* <div
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
@@ -5933,7 +5842,7 @@ export const CreateTaskModal = ({
                                   <div className="statusBox pending">
                                     Pending
                                   </div>
-                                </div>
+                                </div> */}
                               </div>
                             )}
                             {/* <div className="editBoxInner position-relative">
@@ -5983,13 +5892,15 @@ export const CreateTaskModal = ({
                               className={`statusBox stageBox  position-relative ${
                                 !stage && "disabled"
                               } stage_${stage?.title}`}
-                              onClick={() => setStageBox(true)}
+                              onClick={() =>{ 
+                                  if(firstClick) return
+                                setStageBox(true)}}
                             >
                               {stage ? stage.title : "Select Stage"}
                             </button>
                             {stageBox && (
                               <div
-                                className={`newJobItemDropBox stageBox`}
+                                className={`newJobItemDropBox ${newTask && 'create-task-modal'} stageBox`}
                                 ref={stageBoxRef}
                               >
                                 <div className="stageListBox">
@@ -6015,89 +5926,7 @@ export const CreateTaskModal = ({
                                     );
                                   })}
                                 </div>
-                                {/* {!addStageBox ? (
-                                    <div className="editBoxIcon pt-4">
-                                      <div
-                                        className="delete-box justify-content-start"
-                                        style={{ cursor: "pointer", zIndex: 2 }}
-                                        onClick={() => setAddStageBox(true)}
-                                      >
-                                        <div
-                                          className="deletBg d-flex align-items-center justify-content-center"
-                                          style={{
-                                            padding: "6px",
-                                            width: "36px",
-                                            height: "36px",
-                                          }}
-                                        >
-                                          <AddIcon />
-                                        </div>
-                                        <div className="delete-item">
-                                          Create New Stage
-                                        </div>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="AddStageBox">
-                                      <input
-                                        type="text"
-                                        className="AddStageInput"
-                                        name="title"
-                                        value={addStageTitle}
-                                        onChange={(e) => {
-                                          setAddStageTitle(e.target.value);
-                                        }}
-                                        placeholder="Write New Stage Name Here..."
-                                      />
-                                      <div className="editBoxIcon">
-                                        <div
-                                          className="delete-box justify-content-start"
-                                          style={{ cursor: "pointer", zIndex: 2 }}
-                                          onClick={() =>
-                                            handleCreateStage(addStageTitle)
-                                          }
-                                        >
-                                          <div
-                                            className="deletBg d-flex align-items-center justify-content-center"
-                                            style={{
-                                              padding: "6px",
-                                              width: "36px",
-                                              height: "36px",
-                                            }}
-                                          >
-                                            <TickIcon />
-                                          </div>
-                                          <div className="delete-item">
-                                            Confirm New Stage
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="editBoxIcon">
-                                        <div
-                                          className="delete-box justify-content-start"
-                                          style={{ cursor: "pointer", zIndex: 2 }}
-                                          onClick={() => {
-                                            setAddStageBox(false);
-                                            setAddStageTitle("");
-                                          }}
-                                        >
-                                          <div
-                                            className="cancelBg d-flex align-items-center justify-content-center"
-                                            style={{
-                                              padding: "6px",
-                                              width: "36px",
-                                              height: "36px",
-                                            }}
-                                          >
-                                            <CrossIcon />
-                                          </div>
-                                          <div className="cancelBg-item">
-                                            Cancel
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )} */}
+                                
                               </div>
                             )}
                           </div>

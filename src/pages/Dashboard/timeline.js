@@ -4,7 +4,7 @@ import Timeline from "../../Components/Timeline";
 import { AddIcon, AddTaskGreyButton } from "../../assets/svg";
 import { updateTask } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
-import { getMessages } from "../../services/chat_attachment";
+import { getJobComments, getMessages } from "../../services/chat_attachment";
 import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import moment from "moment";
@@ -55,11 +55,7 @@ function TimelinePage() {
     const newRandomNumber = Math.floor(Math.random() * 100);
     setRandomNumber(newRandomNumber);
   }, []);
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "2-digit" };
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", options);
-  };
+ 
 
   const taskHandle = () => {
     const currentDate = new Date();
@@ -89,7 +85,7 @@ function TimelinePage() {
   }, [selectedJob]);
   const fetchChats = async (jobId) => {
     try {
-      const response1 = await getMessages(jobId);
+      const response1 = await getJobComments(jobId);
       if (!response1.error) {
         const combinedArray = [...response1.res];
         const sortedMessages = combinedArray.sort((a, b) => {
@@ -234,7 +230,7 @@ function TimelinePage() {
                     return (
                       <div
                         key={index}
-                        className={`tasksDiv ${task.stage} ${
+                        className={`tasksDiv ${task.stage?.title} ${
                           isTaskUpdated ? "update" : ""
                         }`}
                       >
@@ -262,7 +258,7 @@ function TimelinePage() {
                               <div className="taskDate">
                                 <span>Due Date</span>
                                 <span>
-                                  {moment(task.due_date)
+                                  {moment(task.due_date || new Date())
                                     .local()
                                     .format("DD MMMM, YYYY")}
                                 </span>
@@ -272,13 +268,13 @@ function TimelinePage() {
                           <div>
                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                               <div className=" d-flex align-items-center collaboratorsBox justify-content-end">
-                                {task?.collaborators?.length > 0 && (
+                                {task?.users?.length > 0 && (
                                   <>
-                                    {task?.collaborators
+                                    {task?.users
                                       .slice(0, 3)
                                       .map((user, index) => {
-                                        const initials = user
-                                          .split(" ")
+                                        const initials = user?.name
+                                          ?.split(" ")
                                           .map((part) =>
                                             part.charAt(0).toUpperCase()
                                           )
@@ -298,20 +294,20 @@ function TimelinePage() {
                                         );
                                       })}
 
-                                    {task?.collaborators?.length > 3 && (
+                                    {task?.users?.length > 3 && (
                                       <div
                                         className={`collaboratorsBoxUser`}
                                         style={{
                                           minWidth: "40px",
-                                          zIndex: task?.collaborators?.length,
+                                          zIndex: task?.users?.length,
                                         }}
                                       >
-                                        +{task?.collaborators.length - 3}
+                                        +{task?.users.length - 3}
                                       </div>
                                     )}
                                   </>
                                 )}
-                                {task.collaborators?.length === 0 && (
+                                {task.users?.length === 0 && (
                                   <div
                                     className="collaboratorsBoxUser disabled m-0"
                                     style={{ minWidth: "40px" }}

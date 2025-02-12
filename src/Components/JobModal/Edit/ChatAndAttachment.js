@@ -2813,7 +2813,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
   };
 
   const handleFileUpload = (e) => {
-    if (!e.target.files) return;
+    if (!e.target.files || !JobId) return;
 
     const selectedFile = e.target?.files[0];
     if (selectedFile && selectedFile.type.startsWith("image/")) {
@@ -2828,6 +2828,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
 
   const handleDrop = (e) => {
     e.preventDefault();
+    if(!JobId) return
     const droppedFile = e.dataTransfer.files[0];
 
     if (droppedFile && droppedFile.type.startsWith("image/")) {
@@ -2954,10 +2955,12 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
             }`}
             style={{ cursor: "pointer", zIndex: 2, minWidth: "max-content" }}
             onClick={() => {
+              if(!JobId) return
               if (attachmentRef.current) {
                 attachmentRef.current.click();
               }
             }}
+            title={!JobId && 'Please add the task first'}
           >
             <input
               type="file"
