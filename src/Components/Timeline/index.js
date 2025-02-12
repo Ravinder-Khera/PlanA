@@ -101,7 +101,7 @@ function Timeline({
         if (timeFrame === "weekly") {
           setExcessCalendarDate(20);
         } else if (timeFrame === "monthly") {
-          setExcessCalendarDate(30);
+          setExcessCalendarDate(60);
         } else {
           setExcessCalendarDate(1);
         }
@@ -182,25 +182,106 @@ function Timeline({
     return nearestStage ? nearestStage.title : "default";
   };
 
+  // const setSelectionRangeFromJobs = useCallback(
+  //   (jobs) => {
+  //     if (jobs.length === 0) return;
+  //     let minCreatedAt = new Date(jobs[0].created_at);
+  //     let maxDueDate = new Date(jobs[0].due_date);
+
+  //     jobs.forEach((job) => {
+  //       const createdAt = new Date(job.created_at);
+  //       const dueDate = new Date(job.due_date);
+
+  //       if (createdAt < minCreatedAt) {
+  //         minCreatedAt = createdAt;
+  //       }
+
+  //       if (dueDate > maxDueDate) {
+  //         maxDueDate = dueDate;
+  //       }
+  //     });
+
+  //     const currentDate = new Date();
+  //     const adjustedStartDate = new Date(currentDate);
+  //     const minsDaysAre =
+  //       timeFrame !== undefined && timeFrame === "weekly"
+  //         ? 6
+  //         : timeFrame === "monthly"
+  //         ? 15
+  //         : 6;
+  //     adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
+
+  //     // Adjust endDate to one month more
+  //     let adjustedEndDate = new Date(maxDueDate);
+  //     adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate);
+
+  //     const differenceInDays =
+  //       (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
+
+  //     if (timeFrame !== undefined && timeFrame === "weekly") {
+  //       if (differenceInDays < 10) {
+  //         adjustedEndDate = new Date(
+  //           adjustedEndDate.getTime() +
+  //             (10 - differenceInDays) * 24 * 60 * 60 * 1000
+  //         );
+  //       }
+  //     } else if (timeFrame !== undefined && timeFrame === "monthly") {
+  //       if (differenceInDays < 60) {
+  //         adjustedEndDate = new Date(
+  //           adjustedEndDate.getTime() +
+  //             (60 - differenceInDays) * 24 * 60 * 60 * 1000
+  //         );
+  //       }
+  //     }
+
+  //     // Set selectionRange
+  //     setSelectionRange({
+  //       startDate: adjustedStartDate,
+  //       endDate: adjustedEndDate,
+  //       key: "selection",
+  //     });
+  //   },
+  //   [excessCalendarDate, timeFrame]
+  // );
+
+
   const setSelectionRangeFromJobs = useCallback(
     (jobs) => {
-      if (jobs.length === 0) return;
-      let minCreatedAt = new Date(jobs[0].created_at);
-      let maxDueDate = new Date(jobs[0].due_date);
-
-      jobs.forEach((job) => {
-        const createdAt = new Date(job.created_at);
-        const dueDate = new Date(job.due_date);
-
-        if (createdAt < minCreatedAt) {
-          minCreatedAt = createdAt;
-        }
-
-        if (dueDate > maxDueDate) {
-          maxDueDate = dueDate;
-        }
-      });
-
+      let minCreatedAt, maxDueDate;
+  
+      if (jobs.length > 0) {
+        minCreatedAt = new Date(jobs[0].created_at);
+        maxDueDate = new Date(jobs[0].due_date);
+  
+        jobs.forEach((job) => {
+          const createdAt = new Date(job.created_at);
+          const dueDate = new Date(job.due_date);
+  
+          if (createdAt < minCreatedAt) {
+            minCreatedAt = createdAt;
+          }
+  
+          if (dueDate > maxDueDate) {
+            maxDueDate = dueDate;
+          }
+        });
+      } else {
+        // No jobs case: Set default range from (current date - 7) to (current date + 60)
+        const today = new Date();
+        const defaultStartDate = new Date(today);
+        defaultStartDate.setDate(today.getDate() - 7);
+  
+        const defaultEndDate = new Date(today);
+        defaultEndDate.setDate(today.getDate() + 60);
+  
+        setSelectionRange({
+          startDate: defaultStartDate,
+          endDate: defaultEndDate,
+          key: "selection",
+        });
+        return;
+      }
+  
       const currentDate = new Date();
       const adjustedStartDate = new Date(currentDate);
       const minsDaysAre =
@@ -210,14 +291,14 @@ function Timeline({
           ? 15
           : 6;
       adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
-
+  
       // Adjust endDate to one month more
       let adjustedEndDate = new Date(maxDueDate);
       adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate);
-
+  
       const differenceInDays =
         (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
-
+  
       if (timeFrame !== undefined && timeFrame === "weekly") {
         if (differenceInDays < 10) {
           adjustedEndDate = new Date(
@@ -233,7 +314,7 @@ function Timeline({
           );
         }
       }
-
+  
       // Set selectionRange
       setSelectionRange({
         startDate: adjustedStartDate,
@@ -243,6 +324,7 @@ function Timeline({
     },
     [excessCalendarDate, timeFrame]
   );
+  
 
   useEffect(() => {
     const fetchJobs = async () => {
