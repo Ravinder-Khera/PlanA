@@ -314,7 +314,7 @@ export const emailConfig = {
         id:14,
         emailType: "Response to Information Request",
         receiver: "Council",
-        subject:'RE: To SARA/Referral Agency - Extend Information Request Response Period',
+        subject:'RE: To Council - Response to Information Request',
         content:
           "<p>Hi Xxxx,</p><p>In accordance with Section 13.2 of the DA Rules of the Planning Act 2016, we hereby submit a response to Council’s Information Request dated XXXX for XXXX (Council Reference: ).</p><p>The material provided represents a response to all of the information requested by Council. We trust the information provided is sufficient for Council to proceed with the assessment of the application.",
       },
@@ -393,6 +393,13 @@ export const emailConfig = {
         subject:'RE: To Council - Waive Appeal Period - 99 XXXXX Street, XXXXXX',
         content:
           "<p>Hi xxxx,</p><p>We refer to Council’s Decision Notice dated xxxx.</p><p>We hereby confirm we will not be appealing the conditions of the Decision Notice under Section 22.2(a)(i) of the DA Rules under the Planning Act 2016.</p><p>Please notify the submitters of their appeal period.</p>",
+      },
+      {
+        id:26,
+        emailType: "Submit NDN representations to Council",
+        receiver: "Council",
+        subject:'RE: To Council - "Submit NDN representations to Council"',
+        content:"",
       },
       {
         id:23,
