@@ -92,6 +92,7 @@ const TaskCompletionPopup = React.forwardRef(
           cc: data.cc,
           body: data.content,
         }));
+        console.log("requesting attachments", requestBody)
 
         setLoading(true);
 
@@ -101,16 +102,16 @@ const TaskCompletionPopup = React.forwardRef(
           formData.append("subject", email.subject);
           formData.append("body", email.body);
 
-          email.to.forEach((to) => {
+          email?.to.forEach((to) => {
             formData.append("to[]", to);
           });
-          email.cc.forEach((cc) => {
+          email?.cc.forEach((cc) => {
             formData.append("cc[]", cc);
           });
 
           // Append attachments if available
-          if (email.attachments && email.attachments.length > 0) {
-            email.attachments.forEach((file) => {
+          if (email?.attachments && email?.attachments?.length > 0) {
+            email?.attachments.forEach((file) => {
               formData.append("attachments[]", file);
             });
           }
@@ -404,7 +405,6 @@ export const ExpandedTaskPopup = React.forwardRef(
     const handleSaveEmail = () => {
       const to = selectedSendTo?.map((to) => to.email);
       const cc = selectedCC?.map((cc) => cc.email);
-      onSave({ subject, htmlContent, attachments, to, cc });
       onSave({ subject, htmlContent, attachments, to, cc });
     };
     const handleReturn = () => {
