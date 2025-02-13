@@ -393,6 +393,7 @@ function ViewTaskPage() {
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
     setFilteredTasks((prevTasks) => [
       {
+        id: "temp",
         title: newData?.newTask?.title,
         description: newData?.newTask?.description,
         stage_id: newData?.newTask?.stage_id,
@@ -409,10 +410,17 @@ function ViewTaskPage() {
     setShowAddTaskModal(false);
     var response = await createTask(newData.newTask, taskId);
     if (response.res) {
+      const { task } = response.res;
+      // Update the filteredTasks to replace the temporary task with the actual task
+      setFilteredTasks((prevTasks) =>
+        prevTasks.map((t) => (t.id === "temp" ? task : t))
+      );
       console.log("Task create successful", response.res);
     } else {
       console.error("Task create failed:", response.error);
       toast.error(response.error?.message || "Failed to add the task");
+      // Optionally, remove the temporary task if the creation fails
+      setFilteredTasks((prevTasks) => prevTasks.filter((t) => t.id !== "temp"));
     }
   };
 
@@ -423,7 +431,6 @@ function ViewTaskPage() {
       const response = await getSingleJob(jobId);
       if (response.res) {
         setActiveTask(response.res.tasks[index]);
-        var updatedTask = response.res.tasks[index];
 
         setShowUpdateTaskModal(true);
       } else {
@@ -618,6 +625,7 @@ function ViewTaskPage() {
           scrollRef={taskMobileScrollRef}
           onUpdateTask={handleUpdateTask}
           handleDelete={() => {
+            console.log("task to be deleted", filteredTasks, activeTask);
             setFilteredTasks((prevTask) =>
               prevTask.filter((task) => task.id !== activeTask.id)
             );
@@ -1020,10 +1028,11 @@ function ViewTaskPage() {
                             .isBefore(moment().startOf("day"))
                             ? "0 days"
                             : (() => {
-                                const diff =
-                                  moment(task?.due_date || new Date())
-                                    .startOf("day")
-                                    .diff(moment().startOf("day"), "days");
+                                const diff = moment(
+                                  task?.due_date || new Date()
+                                )
+                                  .startOf("day")
+                                  .diff(moment().startOf("day"), "days");
                                 return `${diff} day${diff === 1 ? "" : "s"}`;
                               })()}
                         </div>

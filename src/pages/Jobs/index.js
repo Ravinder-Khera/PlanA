@@ -112,7 +112,7 @@ const Jobs = () => {
   const tableActiveRowLeftRef = useRef(null);
   const tableActiveRowRightRef = useRef(null);
   const searchBarRef = useRef(null);
-  const [newJob, setNewJob] = useState(false)
+  const [newJob, setNewJob] = useState(false);
   const location = useLocation();
 
   const [filteredJobs, setFilteredJobs] = useState("");
@@ -237,9 +237,9 @@ const Jobs = () => {
 
     if (newOtp.every((digit) => digit !== "")) {
       const target = newOtp.join("");
-      if(target == '00000'){
-        toast.error("Job number cannot be zero.")
-        return
+      if (target == "00000") {
+        toast.error("Job number cannot be zero.");
+        return;
       }
       const exists = await getJobsNum(target);
 
@@ -463,7 +463,7 @@ const Jobs = () => {
       try {
         const res = await getJobs(loadMorePage + 1);
         const data = res?.res?.data;
-        console.log(res.res, "filtered jobs")
+        console.log(res.res, "filtered jobs");
         setLoadTotalPage(res?.res?.last_page);
         setFilteredJobs((prevJobs) => [...prevJobs, ...data]);
       } catch (error) {
@@ -577,8 +577,6 @@ const Jobs = () => {
   };
 
   useEffect(() => {
-   
-
     const handleClickOutside = (event) => {
       if (
         addJobRowRefLeft.current &&
@@ -589,7 +587,7 @@ const Jobs = () => {
         if (newJobIdNumber === 0 || !addJobName) {
           handleCancelAddJob();
         } else {
-          createNewJobRequest(false)
+          createNewJobRequest(false);
         }
       }
     };
@@ -609,8 +607,7 @@ const Jobs = () => {
     fetchJobs,
   ]);
 
-
-  const createNewJobRequest = (showPopup=true) => {
+  const createNewJobRequest = (showPopup = true) => {
     const formattedDueDate = new Date().toISOString()?.split("T")[0];
     setFilteredJobs((prevJobs) => [
       {
@@ -624,10 +621,8 @@ const Jobs = () => {
     ]);
     handleAddNewJob();
     synchronizeRowHeights();
-    if(showPopup)
-    setShowNewJobModal(true);
-  }
-
+    if (showPopup) setShowNewJobModal(true);
+  };
 
   const handleAddNewJob = async () => {
     try {
@@ -647,11 +642,11 @@ const Jobs = () => {
       const response = await createJobs(reqBody);
       console.log("request body for create job", response);
       if (response?.res) {
-        const { job } = response?.res
+        const { job } = response?.res;
         // remove the temp job num details
         let tempJobs = filteredJobs.filter((job) => job !== newJobIdNumber);
-        tempJobs = [job,...tempJobs]
-        console.log("temp jobs", tempJobs)
+        tempJobs = [job, ...tempJobs];
+        console.log("temp jobs", tempJobs);
         setFilteredJobs(tempJobs);
         console.log(`${response.res.message}`);
       } else {
@@ -672,7 +667,7 @@ const Jobs = () => {
         if (newJobIdNumber === 0 || !addJobName) {
           return;
         } else {
-          createNewJobRequest()
+          createNewJobRequest();
         }
       }
       if (
@@ -682,7 +677,7 @@ const Jobs = () => {
         if (newJobIdNumber === 0 || !addJobName) {
           return;
         } else {
-          createNewJobRequest()
+          createNewJobRequest();
         }
       }
     };
@@ -896,12 +891,16 @@ const Jobs = () => {
   useEffect(() => {
     const handleUpdateJob = async (updatedJob) => {
       try {
-        let oldCollaboratorsId = updatedJob.collaborators?.map((collaborator) => collaborator.id)
+        let oldCollaboratorsId = updatedJob.collaborators?.map(
+          (collaborator) => collaborator.id
+        );
         const reqBody = {
           job_id: updatedJob.id,
           dataObj: {
             title: updatedJob.title,
-            collaborators: collabChanged ? newJobCollaboratorsListId : oldCollaboratorsId,
+            collaborators: collabChanged
+              ? newJobCollaboratorsListId
+              : oldCollaboratorsId,
             status: updatedJob.status,
             due_date: updatedJob.due_date,
           },
@@ -942,8 +941,6 @@ const Jobs = () => {
         const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
         const originalJob = originalJobs.find((job) => job.id === updateJobId);
 
-        
-
         const isJobChanged = (updatedJob, originalJob) => {
           if (!updatedJob || !originalJob) {
             console.error(
@@ -952,10 +949,18 @@ const Jobs = () => {
             );
             return false;
           }
-          setCollabChanged(arraysEqualById(updatedJob?.collaborators || [], originalJob?.collaborators || []))
+          setCollabChanged(
+            arraysEqualById(
+              updatedJob?.collaborators || [],
+              originalJob?.collaborators || []
+            )
+          );
           return (
-            (updatedJob?.title || "") !== (originalJob?.title || "") || !arraysEqualById(updatedJob?.collaborators || [], originalJob?.collaborators || [])
-            ||
+            (updatedJob?.title || "") !== (originalJob?.title || "") ||
+            !arraysEqualById(
+              updatedJob?.collaborators || [],
+              originalJob?.collaborators || []
+            ) ||
             (updatedJob?.status || "") !== (originalJob?.status || "") ||
             (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
           );
@@ -994,6 +999,7 @@ const Jobs = () => {
         tableActiveRowLeftRef.current &&
         tableActiveRowLeftRef.current.contains(event.target)
       ) {
+        console.log("table", getJob);
         setShowNewJobModal(true);
       }
       if (
@@ -1053,17 +1059,12 @@ const Jobs = () => {
     }
   };
 
-  const toggleShowAllTasks = () => {
-    setShowAllTasks((prev) => !prev);
-  };
-
   const handleUpdateTask = async (
     newData,
     taskId,
     newJobCollaboratorsList,
     stage
   ) => {
-
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => ({
         ...job,
@@ -1096,7 +1097,7 @@ const Jobs = () => {
 
   const handleCreateTask = async (newData, taskId) => {
     console.log(newData?.newTask?.title);
-  
+
     // Temporarily add the task to the UI
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
@@ -1117,16 +1118,16 @@ const Jobs = () => {
           : job
       )
     );
-  
+
     setShowAddTaskModal(false);
-  
+
     // Send API request to create task
     try {
       const response = await createTask(newData.newTask, taskId);
-  
+
       if (response.res) {
         const { task } = response.res;
-  
+
         // Remove temporary task and add the actual task from API response
         setFilteredJobs((prevJobs) =>
           prevJobs.map((job) =>
@@ -1141,7 +1142,7 @@ const Jobs = () => {
               : job
           )
         );
-  
+
         console.log("Task create successful", response.res);
         toast.success("Task added successfully!");
       } else {
@@ -1150,7 +1151,7 @@ const Jobs = () => {
     } catch (error) {
       console.error("Task create failed:", error.message);
       toast.error(error.message);
-  
+
       // Rollback: Remove the temporary task if API fails
       setFilteredJobs((prevJobs) =>
         prevJobs.map((job) =>
@@ -1161,7 +1162,6 @@ const Jobs = () => {
       );
     }
   };
-  
 
   const handleTaskDelete = async (task) => {
     try {
@@ -1218,9 +1218,7 @@ const Jobs = () => {
   const synchronizeRowHeights = () => {
     const rightRows = document.querySelectorAll(".table_right .tableEntries");
     const leftRows = document.querySelectorAll(".table_left .tableEntries");
-   
 
-   
     if (rightRows.length !== leftRows.length) {
       console.error("Both tables must have the same number of rows.");
       return;
@@ -1236,7 +1234,6 @@ const Jobs = () => {
       rightRows[i].style.height = `${maxHeight}px`;
       leftRows[i].style.height = `${maxHeight}px`;
     }
-  
   };
 
   useEffect(() => {
@@ -1269,7 +1266,6 @@ const Jobs = () => {
   };
 
   const handleAddNewJobWithTask = async (task) => {
-
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => ({
         ...job,
@@ -1369,10 +1365,9 @@ const Jobs = () => {
     setNewJobIdExist(false);
   };
 
-
   const handleJobOpenWhileCreating = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const year = new Date().getFullYear();
       const month = String(new Date().getMonth() + 1).padStart(2, "0");
       const day = String(new Date().getDate()).padStart(2, "0");
@@ -1392,12 +1387,9 @@ const Jobs = () => {
       if (response?.res?.message) {
         console.log(`${response.res.message}`);
         const { job } = response.res;
-        setNewJob(true)
+        setNewJob(true);
         handleOpenJobWithTask(job);
-        setFilteredJobs((prevJobs) => [
-          job,
-          ...prevJobs,
-        ]);
+        setFilteredJobs((prevJobs) => [job, ...prevJobs]);
       } else {
         toast.error(`${response?.error?.message || "Error occurred"}`);
       }
@@ -1405,9 +1397,9 @@ const Jobs = () => {
       console.log("error in updating jobs", error);
     } finally {
       handleCancelAddJob(); // Reset state after action
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -1475,7 +1467,7 @@ const Jobs = () => {
                 prevJobs.filter((job) => job.id !== activeJob.id)
               );
             }
-            setNewJob(false)
+            setNewJob(false);
           }}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
@@ -1512,7 +1504,6 @@ const Jobs = () => {
           handleClose={async () => {
             setGetJob();
             setShowAddTaskModal(false);
-
           }}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
@@ -2003,8 +1994,7 @@ const Jobs = () => {
                                     !newJobIdExist && (
                                       <span
                                         onClick={() => {
-                                          handleJobOpenWhileCreating()
-                                          
+                                          handleJobOpenWhileCreating();
                                         }}
                                       >
                                         <ArrowRight />
@@ -2543,17 +2533,19 @@ const Jobs = () => {
                             <td className="text-center">
                               {selectedNewJobDueDate ? (
                                 moment(selectedNewJobDueDate)
-                                                            .startOf("day")
-                                                            .isBefore(moment().startOf("day"))
-                                                            ? "0 days"
-                                                            : (() => {
-                                                                const diff =
-                                                                  moment(selectedNewJobDueDate)
-                                                                    .startOf("day")
-                                                                    .diff(moment().startOf("day"), "days");
-                                                                return `${diff} day${diff === 1 ? "" : "s"}`;
-                                                              })()
-                                
+                                  .startOf("day")
+                                  .isBefore(moment().startOf("day")) ? (
+                                  "0 days"
+                                ) : (
+                                  (() => {
+                                    const diff = moment(selectedNewJobDueDate)
+                                      .startOf("day")
+                                      .diff(moment().startOf("day"), "days");
+                                    return `${diff} day${
+                                      diff === 1 ? "" : "s"
+                                    }`;
+                                  })()
+                                )
                               ) : (
                                 <div className="clickBox">
                                   <span className="clickBoxtext">N/A</span>
@@ -2708,19 +2700,20 @@ const Jobs = () => {
                                   )}
                               </td>
                               <td className="text-center">
-                               
-                                      {moment(job?.due_date || new Date())
-                                                                  .startOf("day")
-                                                                  .isBefore(moment().startOf("day"))
-                                                                  ? "0 days"
-                                                                  : (() => {
-                                                                      const diff =
-                                                                        moment(job?.due_date || new Date())
-                                                                          .startOf("day")
-                                                                          .diff(moment().startOf("day"), "days");
-                                                                      return `${diff} day${diff === 1 ? "" : "s"}`;
-                                                                    })()}
-                               
+                                {moment(job?.due_date || new Date())
+                                  .startOf("day")
+                                  .isBefore(moment().startOf("day"))
+                                  ? "0 days"
+                                  : (() => {
+                                      const diff = moment(
+                                        job?.due_date || new Date()
+                                      )
+                                        .startOf("day")
+                                        .diff(moment().startOf("day"), "days");
+                                      return `${diff} day${
+                                        diff === 1 ? "" : "s"
+                                      }`;
+                                    })()}
                               </td>
                               <td
                                 style={{
@@ -2789,16 +2782,17 @@ const Jobs = () => {
                                   )}
                                 </div>
                               </td>
-                             
+
                               <td className="text-center ">
                                 {formatDate(job.updated_at)}
                               </td>
                               <td className="px-3">
                                 <div className="jobDescriptionTextDiv">
                                   {job?.comments?.length > 0
-                                    ? renderComment(job?.comments[0])
+                                    ? renderComment(
+                                        job?.comments[job?.comments?.length - 1]
+                                      )
                                     : renderComment(null)}
-                                    
                                 </div>
                               </td>
                             </tr>

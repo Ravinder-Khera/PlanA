@@ -15,72 +15,45 @@ import EditorComponent from "./Editor";
 import { Bars } from "react-loader-spinner";
 import { sendEmail } from "../../services/chat_attachment";
 import { formatJobNumber } from "../../pages/Jobs";
-import { getSingleJob } from "../../services/auth";
-import { toast } from "react-toastify";
 
-const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
+
+const AdhocTaskCompletionPopup = React.forwardRef(({ job, handleClose }, ref) => {
   const [showDetails, setShowDetails] = useState(0);
   const [emailDetails, setEmailDetails] = useState(null);
-  const [emailSuccess, setEmailSuccess] = useState(false);
-  const [requestBody, setRequestBody] = useState({});
   const [loading, setLoading] = useState(false);
-  const [job, setJob] = useState(null);
   const popupRef = useRef(null);
-  
-    // Handle outside click to close the popup
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (popupRef.current && !popupRef.current.contains(event.target)) {
-          handleClose();
-        }
-      };
-  
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
 
-
-  const fetchJob = async () => {
-    try {
-      setLoading(true);
-      const response = await getSingleJob(jobId);
-      if (response.res) {
-        setJob(response.res);
-      } else {
-        console.error("get task failed:", response.error);
-        toast.error(response.error?.message || "Failed to get the job");
-      }
-    } catch (error) {
-      console.log("error:", error);
-    }finally{
-      setLoading(false);
-    }
-  };
-
+  // Handle outside click to close the popup
   useEffect(() => {
-    if (jobId) fetchJob();
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  const handleReturn = () => {
+
+
+  const handleReturn = (e) => {
     handleClose();
     setShowDetails(0);
-    setEmailSuccess(false);
-    setRequestBody({});
   };
 
-
-  const onSave = async ({ subject, htmlContent, attachments }) => {
+  const onSave = async ({ subject, htmlContent, attachments, to, cc }) => {
     try {
       setLoading(true);
       const requestBody = {
         subject,
         body: htmlContent ? htmlContent : emailDetails?.content,
-        to: ["client@yopmail.com"],
-        cc: ["cc-client@yopmail.com"],
+        to,
+        cc,
         attachments,
-      }
+      };
       const formData = new FormData();
       console.log("request body", requestBody);
       formData.append("subject", requestBody?.subject);
@@ -133,23 +106,36 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
           emailDetails={emailDetails}
           onSave={onSave}
           onReturn={() => setShowDetails(0)}
+          ref={ref}
         />
       )}
-      {showDetails == 2 && <NotificationSent handleClose={handleClose} />}
+      {showDetails == 2 && <NotificationSent handleClose={handleClose} ref={ref} />}
       {!showDetails && (
-        <div className="task-completion-overlay">
-          <div className="task-container adhoc" ref={popupRef}  style={{ width: "100%", maxWidth:'546px', padding:'20px' }}>
+        <div className="task-completion-overlay" ref={ref} onClick={(e) => e.stopPropagation()}>
+          <div
+            className="task-container adhoc"
+            ref={popupRef}
+            style={{ width: "100%", maxWidth: "546px", padding: "20px" }}
+          >
             <h4>Send Email</h4>
             <p>
-            Select which ad-hoc email you would like to send in relation to this job.
+              Select which ad-hoc email you would like to send in relation to
+              this job.
             </p>
-        
-            <div className="contentBox Application d-flex align-items-start justify-content-between flex-column h-100" style={{padding:'19px 18px 8px 19px'}}>
+
+            <div
+              className="contentBox Application d-flex align-items-start justify-content-between flex-column h-100"
+              style={{ padding: "19px 18px 8px 19px" }}
+            >
               <div className="w-100 d-flex gap-2 align-items-start justify-content-between">
-              {job?.job_num ? <div className="textDiv">
-                  <span >| {formatJobNumber(job?.job_num)} |</span>
-                  <p className="job-title text-start mb-0">{job?.title}</p>
-                </div> : 'Loading...'}
+                {job?.job_num ? (
+                  <div className="textDiv">
+                    <span>| {formatJobNumber(job?.job_num)} |</span>
+                    <p className="job-title text-start mb-0">{job?.title}</p>
+                  </div>
+                ) : (
+                  "Loading..."
+                )}
                 <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                   <div className=" d-flex align-items-center justify-content-end">
                     <div className="collaboratorsBox justify-content-end">
@@ -157,7 +143,7 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
                         {job?.collaborators?.length > 0 && (
                           <>
                             {job?.collaborators
-                              .slice(0, 3)
+                              ?.slice(0, 3)
                               .map((user, index) => {
                                 const initials = user?.name
                                   ?.split(" ")
@@ -206,10 +192,10 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
               </div>
               <div className="d-flex gap-2 align-items-start justify-content-end w-100 commentsBox">
                 <div>
-                  <AttachmentIcon /> <span>{job?.attachments_count}</span>
+                  <AttachmentIcon /> <span>{job?.attachments_count || 0}</span>
                 </div>
                 <div>
-                  <CommentIcon /> <span>{job?.comments_count}</span>
+                  <CommentIcon /> <span>{job?.comments_count || 0}</span>
                 </div>
               </div>
             </div>
@@ -240,9 +226,9 @@ const AdhocTaskCompletionPopup = ({ jobId, handleClose }) => {
       )}
     </>
   );
-};
+});
 
-export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
+export const ExpandedTaskPopup = React.forwardRef(({ emailDetails, onSave, onReturn }, ref) => {
   const { emailType, receiver, content } = emailDetails;
   const [attachments, setAttachments] = useState([]);
   const [htmlContent, setHtmlContent] = useState("");
@@ -250,7 +236,55 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
   const [subject, setSubject] = useState("RE:" + emailType);
   const attachmentRef = useRef(null);
   const popupRef = useRef(null);
-  
+
+  const generateEmailAddresses = (receiver) => {
+    const emailMap = {
+      Client: "client@yopmail.com",
+      Council: "council@yopmail.com",
+    };
+
+    const sendToEmail = emailMap[receiver] || emailMap["Client"];
+    const ccEmail = sendToEmail.replace("@yopmail.com", "-cc@yopmail.com");
+
+    const initials = receiver
+      .split(" ")
+      .map((name) => name.charAt(0))
+      .join("");
+
+    return {
+      sendTo: [
+        { name: receiver, email: sendToEmail, initials, selected: true },
+      ],
+      cc: [
+        {
+          name: `${receiver} CC`,
+          email: ccEmail,
+          initials: `${initials}C`,
+          selected: true,
+        },
+      ],
+    };
+  };
+
+  const { sendTo, cc } = generateEmailAddresses(receiver);
+  const [selectedSendTo, setSelectedSendTo] = useState(sendTo);
+  const [selectedCC, setSelectedCC] = useState(cc);
+  const toggleSelectRecipient = (index, type) => {
+    if (type === "sendTo") {
+      setSelectedSendTo((prev) => {
+        const newSendTo = [...prev];
+        newSendTo[index].selected = !newSendTo[index].selected;
+        return newSendTo;
+      });
+    } else if (type === "cc") {
+      setSelectedCC((prev) => {
+        const newCC = [...prev];
+        newCC[index].selected = !newCC[index].selected;
+        return newCC;
+      });
+    }
+  };
+
   // Handle outside click to close the popup
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -300,7 +334,9 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
   }, [attachments]);
 
   const handleSaveEmail = () => {
-    onSave({ subject, htmlContent, attachments });
+    const to = selectedSendTo?.map((to) => to.email)
+    const cc = selectedCC?.map((cc) => cc.email)
+    onSave({ subject, htmlContent, attachments, to, cc });
   };
   const handleReturn = () => {
     onReturn();
@@ -315,8 +351,12 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
   };
 
   return (
-    <div className="task-completion-overlay">
-      <div className="task-container " style={{ width: "540px" }} ref={popupRef}>
+    <div className="task-completion-overlay" ref={ref}>
+      <div
+        className="task-container "
+        style={{ width: "540px" }}
+        ref={popupRef}
+      >
         <h4>{emailType}</h4>
         <p>Customise this email message and the recipients.</p>
         <div className="scrollable-content">
@@ -387,9 +427,9 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
                             )}`
                           : msg.name}
                       </h5>
-                       <span onClick={() => handleDeleteAttachment(i)}>
-                                                                <CrossIcon />
-                                                              </span>
+                      <span onClick={() => handleDeleteAttachment(i)}>
+                        <CrossIcon />
+                      </span>
                     </div>
                   ))}
               </div>
@@ -399,13 +439,24 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
             <h3>Send To:</h3>
             <div className="send-to-email">
               <div className="innerscroll">
-                <div className="list-row">
-                  <div className="checkbox active"></div>
-                  <div className="initials">WA</div>
-                  <div className="title">
-                    Client <span>client@yopmail.com</span>
-                  </div>
-                </div>
+                {selectedSendTo?.length > 0 &&
+                  selectedSendTo?.map((to, index) => {
+                    const isSelected = to?.selected
+                    return (
+                      <div className="list-row" key={index}>
+                        <div
+                          className={`checkbox ${isSelected ? 'active' : ''}`}
+                          // onClick={() => toggleSelectRecipient(index, "sendTo")}
+                        >
+                         
+                        </div>
+                        <div className="initials">{to?.initials}</div>
+                        <div className="title">
+                          {to?.name} <span>{to?.email}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           </div>
@@ -413,13 +464,24 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
             <h3>CC:</h3>
             <div className="send-to-email">
               <div className="innerscroll">
-                <div className="list-row">
-                  <div className="checkbox active"></div>
-                  <div className="initials">WA</div>
-                  <div className="title">
-                    Client <span>client.cc@yopmail.com</span>
-                  </div>
-                </div>
+                {selectedCC?.length > 0 &&
+                  selectedCC?.map((to, index) => {
+                    const isSelected = to?.selected
+                    return (
+                      <div className="list-row" key={index}>
+                        
+                        <div
+                          className={`checkbox ${isSelected ? 'active' : ''}`}
+                          // onClick={() => toggleSelectRecipient(index, "cc")}
+                        >
+                        </div>
+                        <div className="initials">{to?.initials}</div>
+                        <div className="title">
+                          {to?.name} <span>{to?.email}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           </div>
@@ -427,7 +489,7 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
             type="button"
             className="save-email"
             onClick={handleSaveEmail}
-            style={{margin:'24px 0 16px 0'}}
+            style={{ margin: "24px 0 16px 0" }}
           >
             Send Email <ModifiedRightArrow color="#000" />
           </button>
@@ -438,11 +500,11 @@ export const ExpandedTaskPopup = ({ emailDetails, onSave, onReturn }) => {
       </div>
     </div>
   );
-};
+});
 
-export const NotificationSent = ({ handleClose }) => {
+export const NotificationSent = React.forwardRef(({ handleClose }, ref) => {
   const popupRef = useRef(null);
-  
+
   // Handle outside click to close the popup
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -457,18 +519,27 @@ export const NotificationSent = ({ handleClose }) => {
     };
   }, []);
   return (
-    <div className="task-completion-overlay">
-      <div className="task-container" ref={popupRef} style={{ maxWidth: "546px", width:'100%',  padding:'20px' }}>
+    <div className="task-completion-overlay" ref={ref}>
+      <div
+        className="task-container"
+        ref={popupRef}
+        style={{ maxWidth: "546px", width: "100%", padding: "20px" }}
+      >
         <h4>Email Notification Sent</h4>
         <p>
           This email has been sent to the selected recipients. Click to return.
         </p>
-        <button type="button" className="save-email" onClick={handleClose} style={{margin: '8px 0 0 0 '}}>
+        <button
+          type="button"
+          className="save-email"
+          onClick={handleClose}
+          style={{ margin: "8px 0 0 0 " }}
+        >
           Return <RightArrow color="#000" />
         </button>
       </div>
     </div>
   );
-};
+});
 
 export default AdhocTaskCompletionPopup;
