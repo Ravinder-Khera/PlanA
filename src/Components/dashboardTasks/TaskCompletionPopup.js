@@ -53,7 +53,6 @@ const TaskCompletionPopup = React.forwardRef(
 
     // Check if all values in emailRead are true
     useEffect(() => {
-      console.log("emailRead", emailRead);
       if (emailRead.length > 0 && emailRead.every(Boolean)) {
         setEmailSuccess(true);
       } else {
@@ -408,6 +407,9 @@ export const ExpandedTaskPopup = React.forwardRef(
       onSave({ subject, htmlContent, attachments, to, cc });
     };
     const handleReturn = () => {
+      const to = selectedSendTo?.map((to) => to.email);
+      const cc = selectedCC?.map((cc) => cc.email);
+      onSave({ subject, htmlContent, attachments, to, cc });
       onReturn();
     };
 
