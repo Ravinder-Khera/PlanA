@@ -25,7 +25,7 @@ const renderMessage = (text) => {
       result.push(text.slice(lastIndex, match.index));
     }
     // Push the name inside {} as TaggedUser component
-    result.push(<TaggedUser key={match.index} name={match[1]} />);
+    result.push(<TaggedUser userKey={match.index} name={match[1]} />);
     lastIndex = regex.lastIndex; // Update last matched index
   }
 

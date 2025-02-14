@@ -3,7 +3,6 @@ import _ from "lodash";
 export const arraysEqualById = (arr1, arr2) => {
   const ids1 = _.sortBy(arr1.map((obj) => obj.id));
   const ids2 = _.sortBy(arr2.map((obj) => obj.id));
-  console.log(ids1, ids2);
   return _.isEqual(ids1, ids2);
 };
 
@@ -12,6 +11,10 @@ export const arraysEqualByIdV2 = (arr1, arr2) => {
   const ids2 = _.sortBy(arr2);
   return _.isEqual(ids1, ids2);
 };
+
+export const compareTaskArray = (arr1, arr2) => {
+  return _.isEqual(arr1, arr2);
+}
 
 export const StatusList = {
   "in-progress": "In Progress",

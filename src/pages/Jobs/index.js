@@ -58,7 +58,7 @@ const renderComment = (message) => {
         result.push(text.slice(lastIndex, match.index));
       }
       // Push the name inside {} as TaggedUser component
-      result.push(<TaggedUser key={match.index} name={match[1]} />);
+      result.push(<TaggedUser userKey={match.index} name={match[1]} />);
       lastIndex = regex.lastIndex; // Update last matched index
     }
 
@@ -955,6 +955,17 @@ const Jobs = () => {
               originalJob?.collaborators || []
             )
           );
+          console.log(
+            "job data comparison",
+            (updatedJob?.title || "") !== (originalJob?.title || "") ||
+              !arraysEqualById(
+                updatedJob?.collaborators || [],
+                originalJob?.collaborators || []
+              ) ||
+              (updatedJob?.status || "") !== (originalJob?.status || "") ||
+              (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
+          );
+
           return (
             (updatedJob?.title || "") !== (originalJob?.title || "") ||
             !arraysEqualById(
@@ -1271,7 +1282,7 @@ const Jobs = () => {
         ...job,
         tasks:
           job.job_num === task.job_num
-            ? [...(job.tasks || []), task]
+            ? [...(job.tasks || []), {...task, id:'temp'}]
             : job.tasks,
       }))
     );
@@ -1280,6 +1291,16 @@ const Jobs = () => {
     const taskToUpdate = { ...task, job_id: jobToUpdate?.id };
     var response = await createTask(taskToUpdate, jobToUpdate?.id);
     if (response.res) {
+      const { task } = response.res;
+      setFilteredJobs((prevJobs) =>
+        prevJobs.map((job) => ({
+          ...job,
+          tasks:
+            job.job_num === task.job_num
+              ? job.tasks.map((t) => (t.id === "temp" ? task : t)) // Replace temp task
+              : job.tasks,
+        }))
+      );
       console.log("Task create successful", response.res);
     } else {
       console.error("Task create failed:", response.error);
@@ -1421,16 +1442,15 @@ const Jobs = () => {
         <NewJobModal
           job={activeJob}
           usersList={usersList}
-          handleClose={async (isDeleting = false, description) => {
+          handleClose={async (isUpdateRequired) => {
             setGetJob();
             setActiveJob(null);
             setShowNewJobModal(false);
-            if (!isDeleting && activeJob) {
-              await handleUpdateJobDesc(activeJob?.id, description);
-            }
-            if (isDeleting) {
-              setFilteredJobs((prevJobs) =>
-                prevJobs.filter((job) => job.id !== activeJob.id)
+            if (isUpdateRequired && activeJob) {
+              await handleUpdateJobDesc(
+                activeJob.id,
+                activeJob.description,
+                activeJob.tasks
               );
             }
           }}
@@ -1441,7 +1461,9 @@ const Jobs = () => {
             setFilteredJobs((prevJobs) =>
               prevJobs.filter((job) => job.id !== activeJob.id)
             );
-            setIsDeleting(true);
+            setGetJob();
+            setActiveJob(null);
+            setShowNewJobModal(false);
           }}
         />
       )}
@@ -1451,32 +1473,32 @@ const Jobs = () => {
           usersList={usersList}
           job={activeJob}
           newJob={newJob}
-          handleClose={async (isDeleting = false) => {
+          handleClose={async (isUpdateRequired = false) => {
             setGetJob();
             setActiveJob(null);
             setShowNewJobModalWithTasks(false);
-            if (!isDeleting && activeJob) {
+            if (isUpdateRequired && activeJob) {
               await handleUpdateJobDesc(
                 activeJob.id,
                 activeJob.description,
                 activeJob.tasks
               );
             }
-            if (isDeleting) {
-              setFilteredJobs((prevJobs) =>
-                prevJobs.filter((job) => job.id !== activeJob.id)
-              );
-            }
+            
             setNewJob(false);
           }}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
           handleDelete={() => {
+            console.log("active job id to be deleted", activeJob)
             setFilteredJobs((prevJobs) =>
               prevJobs.filter((job) => job.id !== activeJob.id)
             );
-            setIsDeleting(true);
+            setGetJob();
+            setActiveJob(null);
+            setShowNewJobModalWithTasks(false);
+            setNewJob(false);
           }}
         />
       )}

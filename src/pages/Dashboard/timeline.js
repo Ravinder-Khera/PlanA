@@ -24,7 +24,7 @@ const renderMessage = (text) => {
       result.push(text.slice(lastIndex, match.index));
     }
     // Push the name inside {} as TaggedUser component
-    result.push(<TaggedUser key={match.index} name={match[1]} />);
+    result.push(<TaggedUser userKey={match.index} name={match[1]} />);
     lastIndex = regex.lastIndex; // Update last matched index
   }
 
@@ -361,69 +361,67 @@ function TimelinePage() {
             </div>
             <div className={`dashboard_task`}>
               <div className="taskDetails">
-                {chats && chats.length > 0 ? (
-                  chats.map((chat, index) => {
-                    const trimmedTitle =
-                      chat.body.length > 100
-                        ? chat.body.substring(0, 100) + "..."
-                        : chat.body;
-                    return (
-                      <div key={index} className={`chatDiv `}>
-                        <div
-                          className="d-flex align-items-center justify-content-start"
-                          style={{ gap: "19px" }}
-                        >
-                          <div className="d-flex align-items-start gap-3">
-                            <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                              <div className=" d-flex align-items-center justify-content-end">
-                                <div
-                                  className={`InitialsBoxUser`}
-                                  style={{
-                                    minWidth: "40px",
-                                  }}
-                                >
-                                  {chat.user.name
-                                    .split(" ")
-                                    .map((part) => part.charAt(0).toUpperCase())
-                                    .join("")}
-                                </div>
-                              </div>
-                            </div>
-                            <div>
-                              <div className="chatHeading">
-                                {chat.user.name}
-                              </div>
-                              <div className="chatTime">
-                                | &nbsp; {formatJobNumber(selectedJob.id)}{" "}
-                                &nbsp; | &nbsp; {selectedJob.title}
-                              </div>
-                              <div className="chatMsg">
-                                {renderMessage(trimmedTitle)}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="chatBtnDiv">
-                          <p>Lastest Update:  {moment(chat.updated_at).local().format("DD MMMM, YYYY")}</p>
-                          <button
-                            className="Btn"
-                            onClick={() => {
-                              navigate("/jobs", {
-                                state: { selectedJob, key: "job-task" },
-                              });
-                            }}
-                          >
-                            Reply
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="taskCount text-center">
-                    <p>No Comments</p>
-                  </div>
-                )}
+                  {chats && chats.length > 0 ? (
+                                 chats.map((chat, index) => {
+                                   const trimmedTitle =
+                                     chat.body.length > 100
+                                       ? chat.body.substring(0, 100) + "..."
+                                       : chat.body;
+                                   return (
+                                     <div key={index} className={`chatDiv `}>
+                                       <div
+                                         className="d-flex align-items-center justify-content-start"
+                                         style={{ gap: "19px" }}
+                                       >
+                                         <div className="d-flex align-items-start gap-3 w-100">
+                                           <div className="w-100 listContent d-flex align-items-start gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                               <div
+                                                 className={`InitialsBoxUser`}
+                                                 style={{
+                                                   minWidth: "40px",
+                                                 }}
+                                               >
+                                                 {chat.user?.name
+                                                   ?.split(" ")
+                                                   .map((part) => part.charAt(0).toUpperCase())
+                                                   .join("")}
+                                               </div>
+                                             <div className="w-100 d-flex align-items-start justify-content-end flex-column">
+                                           <div>
+                                             <div className="chatHeading">
+                                               {chat.user.name}
+                                             </div>
+                                             <div className="chatTime">
+                                               | &nbsp; {formatJobNumber(selectedJob.id)}{" "}
+                                               &nbsp; | &nbsp; {selectedJob.title}
+                                             </div>
+                                             <div className="chatMsg">
+                                               {renderMessage(trimmedTitle)}
+                                             </div>
+                                           </div>
+                                       <div className="chatBtnDiv ">
+                                         <p>Lastest Update:  {moment(chat.updated_at).local().format("DD MMMM, YYYY")}</p>
+                                         <button
+                                           className="Btn"
+                                           onClick={() => {
+                                             navigate("/jobs", { state: {selectedJob, key:'job-task'} });
+                                           }}
+                                         >
+                                           Reply
+                                         </button>
+                                       </div>
+                                             </div>
+                                           </div>
+                                         </div>
+                                       </div>
+                                     </div>
+                                   );
+                                 })
+                               ) : (
+                                 <div className="taskCount text-center">
+                                   <p>No Comments</p>
+                                 </div>
+                               )}
               </div>
             </div>
           </div>

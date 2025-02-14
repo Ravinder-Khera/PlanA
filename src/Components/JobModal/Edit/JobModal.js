@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { Calendar } from "react-date-range";
 import { Bars } from "react-loader-spinner";
 import Slider from "react-slick";
@@ -19,6 +19,7 @@ import {
 import {
   AllStages,
   arraysEqualByIdV2,
+  compareTaskArray,
   MAX_CALENDAR_YEAR,
   StageList,
   StatusList,
@@ -44,7 +45,6 @@ import ChatAndAttachment, {
   CommentBox,
 } from "./ChatAndAttachment";
 import "./style.scss";
-import { current } from "@reduxjs/toolkit";
 
 const JobModal = ({
   job,
@@ -2794,6 +2794,7 @@ export const NewJobModal = ({
   scrollRef,
   usersList,
   newJob,
+  handleDelete: handleDeleteProp
 }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
@@ -2809,10 +2810,10 @@ export const NewJobModal = ({
   const createTaskModalRef = useRef(null);
   const emailPopupRef = useRef(null);
   const updateTaskModalRef = useRef(null);
+  const nestedChildRef = useRef(null);
 
   const descRef = useRef(null);
   const jobTaskRef = useRef(null);
-  
 
   useEffect(() => {
     descRef.current = description;
@@ -2823,36 +2824,45 @@ export const NewJobModal = ({
   }, [jobTasks]);
 
   // Handle outside click to close the popup
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (popUpRef.current && !popUpRef.current.contains(event.target)) {
-  //       // Check if the click is on the email popup
-  //       const isEmailPopup =
-  //         emailPopupRef.current && emailPopupRef.current.contains(event.target);
-  //       // Check if the click is on the update task modal
-  //       const isUpdateTaskModal =
-  //         updateTaskModalRef.current &&
-  //         updateTaskModalRef.current.contains(event.target);
-  //         const isCreateTaskModal =
-  //         createTaskModalRef.current &&
-  //         createTaskModalRef.current.contains(event.target);
-  //       // Check if the click target is not the toast
-  //       const isToast =
-  //         document.querySelector(".Toastify__toast") &&
-  //         document.querySelector(".Toastify__toast").contains(event.target);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popUpRef.current && !popUpRef.current.contains(event.target)) {
+        // Check if the click is on the email popup
+        const isEmailPopup =
+          emailPopupRef.current && emailPopupRef.current.contains(event.target);
+        // Check if the click is on the update task modal
+        const isUpdateTaskModal =
+          updateTaskModalRef.current &&
+          updateTaskModalRef.current.contains(event.target);
+        const isNestedTaskModal =
+          nestedChildRef.current &&
+          nestedChildRef.current.contains(event.target);
+        const isCreateTaskModal =
+          createTaskModalRef.current &&
+          createTaskModalRef.current.contains(event.target);
+        // Check if the click target is not the toast
+        const isToast =
+          document.querySelector(".Toastify__toast") &&
+          document.querySelector(".Toastify__toast").contains(event.target);
 
-  //       // Only close the modal if the click is not on any of the above components
-  //       if (!isEmailPopup && !isUpdateTaskModal && !isToast && !isCreateTaskModal) {
-  //         handleModalClose(); // Close the main modal
-  //       }
-  //     }
-  //   };
+        // Only close the modal if the click is not on any of the above components
+        if (
+          !isEmailPopup &&
+          !isUpdateTaskModal &&
+          !isToast &&
+          !isCreateTaskModal &&
+          !isNestedTaskModal
+        ) {
+          handleModalClose(); // Close the main modal
+        }
+      }
+    };
 
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (scrollRef?.current) {
@@ -2871,15 +2881,19 @@ export const NewJobModal = ({
     setDescription(e.target.value);
   };
 
-  const handleModalClose = async () => {
-    if (!isDeleting && job && descRef.current) {
-      job.description = descRef.current;
-    }
-    if (!isDeleting && job && jobTaskRef.current) {
-      job.tasks = jobTaskRef.current;
-    }
-    await handleClose(isDeleting);
-  };
+    const handleModalClose = async () => {
+      let isUpdateRequired = false;
+      if (job && job?.description !== descRef.current) {
+        job.description = descRef.current;
+        isUpdateRequired = true;
+      }
+      if (job && !compareTaskArray(job.tasks, jobTaskRef.current)) {
+        job.tasks = jobTaskRef.current;
+        isUpdateRequired = true;
+      }
+      await handleClose(isUpdateRequired);
+    };
+  
 
   const handleDelete = async () => {
     try {
@@ -2897,7 +2911,7 @@ export const NewJobModal = ({
       toast.error("Error deleting job");
     } finally {
       setLoader(false);
-      await handleClose(true); // Notify the parent to close the modal with the deletion flag
+      await handleDeleteProp(); 
     }
   };
 
@@ -3036,6 +3050,7 @@ export const NewJobModal = ({
         <CreateTaskModal
           task={activeTaskJob}
           ref={createTaskModalRef}
+          returnToJob={true}
           handleClose={async () => {
             setShowAddTaskModal(false);
           }}
@@ -3047,7 +3062,7 @@ export const NewJobModal = ({
       )}
       {showEmailPopup && (
         <AdhocTaskCompletionPopup
-        ref={emailPopupRef}
+          ref={emailPopupRef}
           job={job}
           handleClose={() => {
             setShowEmailPopup(false);
@@ -3057,7 +3072,8 @@ export const NewJobModal = ({
 
       {showUpdateTaskModal && activeTask && (
         <UpdateTaskModal
-        ref={updateTaskModalRef}
+          ref={updateTaskModalRef}
+          nestedChildRef={nestedChildRef}
           returnToJob={true}
           task={activeTask}
           handleClose={handleCloseModal}
@@ -3162,48 +3178,7 @@ export const NewJobModal = ({
                         placeholder="Add Description Here..."
                       />
                     </div>
-                    {/* <div className="discriptionBox">
-                      <h3>Tasks</h3>
-                      <div
-                        className="d-flex align-items-center flex-wrap"
-                        style={{ gap: "8px" }}
-                      >
-                        {jobTasks.length > 0 && (
-                          <>
-                            {jobTasks.map((task, index) => {
-                              return (
-                                <span
-                                  key={index}
-                                  style={{ cursor: "pointer" }}
-                                  className={`statusBtn mx-0 ${task.status}`}
-                                  onClick={() => {
-                                    console.log(task);
-                                    if (!task.id) {
-                                      console.log("not from db");
-                                      handleCheckTask(job.id, index);
-                                    } else {
-                                      setActiveTask(task);
-                                      setShowUpdateTaskModal(true);
-                                    }
-                                  }}
-                                >
-                                  {task.title}
-                                </span>
-                              );
-                            })}
-                          </>
-                        )}
-                        <div className={`px-3 clickBox`}>
-                          <div
-                            style={{ cursor: "pointer" }}
-                            className={`clickBoxtext`}
-                            onClick={() => handleAddTaskClick(job)}
-                          >
-                            Add Tasks +
-                          </div>
-                        </div>
-                      </div>
-                    </div> */}
+
                     <div className="discriptionBox">
                       <h3>Tasks</h3>
 
@@ -3230,6 +3205,12 @@ export const NewJobModal = ({
                                       className={`addTaskJobBtn stage_${
                                         task?.stage?.title?.split(" ")[0]
                                       }`}
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        minWidth: "max-content",
+                                      }}
                                     >
                                       {task?.stage?.title
                                         ? task?.stage?.title
@@ -3300,10 +3281,7 @@ export const NewJobModal = ({
                         </button>
                       </div>
                     </div>
-                    {/* <AddNewJobChatAndAttachment
-                      JobId={job?.id}
-                      usersList={usersList}
-                    /> */}
+
                     <ChatAndComment JobId={job?.id} usersList={usersList} />
                   </div>
                 </div>
@@ -3323,6 +3301,7 @@ export const NewJobModalWithTasks = ({
   scrollRef,
   usersList,
   newJob,
+  handleDelete:handleDeleteProp
 }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
@@ -3338,10 +3317,10 @@ export const NewJobModalWithTasks = ({
   const createTaskModalRef = useRef(null);
   const emailPopupRef = useRef(null);
   const updateTaskModalRef = useRef(null);
+  const nestedChildRef = useRef(null);
 
   const descRef = useRef(null);
   const jobTaskRef = useRef(null);
-  
 
   useEffect(() => {
     descRef.current = description;
@@ -3352,36 +3331,45 @@ export const NewJobModalWithTasks = ({
   }, [jobTasks]);
 
   // Handle outside click to close the popup
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (popUpRef.current && !popUpRef.current.contains(event.target)) {
-  //       // Check if the click is on the email popup
-  //       const isEmailPopup =
-  //         emailPopupRef.current && emailPopupRef.current.contains(event.target);
-  //       // Check if the click is on the update task modal
-  //       const isUpdateTaskModal =
-  //         updateTaskModalRef.current &&
-  //         updateTaskModalRef.current.contains(event.target);
-  //         const isCreateTaskModal =
-  //         createTaskModalRef.current &&
-  //         createTaskModalRef.current.contains(event.target);
-  //       // Check if the click target is not the toast
-  //       const isToast =
-  //         document.querySelector(".Toastify__toast") &&
-  //         document.querySelector(".Toastify__toast").contains(event.target);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popUpRef.current && !popUpRef.current.contains(event.target)) {
+        // Check if the click is on the email popup
+        const isEmailPopup =
+          emailPopupRef.current && emailPopupRef.current.contains(event.target);
+        // Check if the click is on the update task modal
+        const isUpdateTaskModal =
+          updateTaskModalRef.current &&
+          updateTaskModalRef.current.contains(event.target);
+        const isNestedTaskModal =
+          nestedChildRef.current &&
+          nestedChildRef.current.contains(event.target);
+        const isCreateTaskModal =
+          createTaskModalRef.current &&
+          createTaskModalRef.current.contains(event.target);
+        // Check if the click target is not the toast
+        const isToast =
+          document.querySelector(".Toastify__toast") &&
+          document.querySelector(".Toastify__toast").contains(event.target);
 
-  //       // Only close the modal if the click is not on any of the above components
-  //       if (!isEmailPopup && !isUpdateTaskModal && !isToast && !isCreateTaskModal) {
-  //         handleModalClose(); // Close the main modal
-  //       }
-  //     }
-  //   };
+        // Only close the modal if the click is not on any of the above components
+        if (
+          !isEmailPopup &&
+          !isUpdateTaskModal &&
+          !isToast &&
+          !isCreateTaskModal &&
+          !isNestedTaskModal
+        ) {
+          handleModalClose(); // Close the main modal
+        }
+      }
+    };
 
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (scrollRef?.current) {
@@ -3401,13 +3389,16 @@ export const NewJobModalWithTasks = ({
   };
 
   const handleModalClose = async () => {
-    if (!isDeleting && job && descRef.current) {
+    let isUpdateRequired = false;
+    if (job && job?.description !== descRef.current) {
       job.description = descRef.current;
+      isUpdateRequired = true;
     }
-    if (!isDeleting && job && jobTaskRef.current) {
+    if (job && !compareTaskArray(job.tasks, jobTaskRef.current)) {
       job.tasks = jobTaskRef.current;
+      isUpdateRequired = true;
     }
-    await handleClose(isDeleting);
+    await handleClose(isUpdateRequired);
   };
 
   const handleDelete = async () => {
@@ -3426,7 +3417,7 @@ export const NewJobModalWithTasks = ({
       toast.error("Error deleting job");
     } finally {
       setLoader(false);
-      await handleClose(true); // Notify the parent to close the modal with the deletion flag
+      await handleDeleteProp(); // Notify the parent to close the modal with the deletion flag
     }
   };
 
@@ -3486,8 +3477,6 @@ export const NewJobModalWithTasks = ({
     newJobCollaboratorsList,
     stage
   ) => {
-    console.log(taskId, " - ", activeTask.id, " - ", newData);
-
     setJobTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId
@@ -3564,6 +3553,7 @@ export const NewJobModalWithTasks = ({
       {showAddTaskModal && (
         <CreateTaskModal
           task={activeTaskJob}
+          returnToJob={true}
           ref={createTaskModalRef}
           handleClose={async () => {
             setShowAddTaskModal(false);
@@ -3576,7 +3566,7 @@ export const NewJobModalWithTasks = ({
       )}
       {showEmailPopup && (
         <AdhocTaskCompletionPopup
-        ref={emailPopupRef}
+          ref={emailPopupRef}
           job={job}
           handleClose={() => {
             setShowEmailPopup(false);
@@ -3586,7 +3576,8 @@ export const NewJobModalWithTasks = ({
 
       {showUpdateTaskModal && activeTask && (
         <UpdateTaskModal
-        ref={updateTaskModalRef}
+          ref={updateTaskModalRef}
+          nestedChildRef={nestedChildRef}
           returnToJob={true}
           task={activeTask}
           handleClose={handleCloseModal}
@@ -3691,48 +3682,7 @@ export const NewJobModalWithTasks = ({
                         placeholder="Add Description Here..."
                       />
                     </div>
-                    {/* <div className="discriptionBox">
-                      <h3>Tasks</h3>
-                      <div
-                        className="d-flex align-items-center flex-wrap"
-                        style={{ gap: "8px" }}
-                      >
-                        {jobTasks.length > 0 && (
-                          <>
-                            {jobTasks.map((task, index) => {
-                              return (
-                                <span
-                                  key={index}
-                                  style={{ cursor: "pointer" }}
-                                  className={`statusBtn mx-0 ${task.status}`}
-                                  onClick={() => {
-                                    console.log(task);
-                                    if (!task.id) {
-                                      console.log("not from db");
-                                      handleCheckTask(job.id, index);
-                                    } else {
-                                      setActiveTask(task);
-                                      setShowUpdateTaskModal(true);
-                                    }
-                                  }}
-                                >
-                                  {task.title}
-                                </span>
-                              );
-                            })}
-                          </>
-                        )}
-                        <div className={`px-3 clickBox`}>
-                          <div
-                            style={{ cursor: "pointer" }}
-                            className={`clickBoxtext`}
-                            onClick={() => handleAddTaskClick(job)}
-                          >
-                            Add Tasks +
-                          </div>
-                        </div>
-                      </div>
-                    </div> */}
+
                     <div className="discriptionBox">
                       <h3>Tasks</h3>
 
@@ -3759,6 +3709,12 @@ export const NewJobModalWithTasks = ({
                                       className={`addTaskJobBtn stage_${
                                         task?.stage?.title?.split(" ")[0]
                                       }`}
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        minWidth: "max-content",
+                                      }}
                                     >
                                       {task?.stage?.title
                                         ? task?.stage?.title
@@ -3829,10 +3785,7 @@ export const NewJobModalWithTasks = ({
                         </button>
                       </div>
                     </div>
-                    {/* <AddNewJobChatAndAttachment
-                      JobId={job?.id}
-                      usersList={usersList}
-                    /> */}
+                    
                     <ChatAndComment JobId={job?.id} usersList={usersList} />
                   </div>
                 </div>
@@ -3883,6 +3836,26 @@ export const NewTaskModal = ({
   const [firstClick, setFirstClick] = useState(true);
   const popupRef = useRef(null);
   const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
+
+  // Handle outside click to close the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popUpRef.current && !popUpRef.current.contains(event.target)) {
+        // Check if the click target is not the toast
+        const isToast =
+          document.querySelector(".Toastify__toast") &&
+          document.querySelector(".Toastify__toast").contains(event.target);
+        if (!isToast) {
+          handleModalClose(); // Only call if it's not a toast click
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Handle outside click to close the popup
   useEffect(() => {
@@ -4050,22 +4023,7 @@ export const NewTaskModal = ({
     setColors(generatedColors);
   }, [stageList?.length]);
 
-  const handleCreateStage = async (stageName) => {
-    const newStage = {
-      name: stageName,
-    };
-    setStageList((prevList) => [...prevList, newStage]);
-    setAddStageBox(false);
-    setAddStageTitle("");
-
-    const response = await createTaskStage(newStage);
-
-    if (response?.res?.message) {
-      console.log(`${response.res.message}`);
-    } else {
-      toast.error(`${response?.error?.message || "Error occurred"}`);
-    }
-  };
+ 
 
   const handleCreateCustomTask = () => {
     setFirstClick(false);
@@ -4616,27 +4574,29 @@ export const NewTaskModal = ({
 };
 
 export const UpdateTaskModal = React.forwardRef(
-  ({
-    returnToJob,
-    task,
-    handleClose,
-    handleDelete,
-    reloadTabs,
-    onUpdateTask,
-    scrollRef,
-    usersList: suggestedUser,
-  }, ref) => {
+  (
+    {
+      returnToJob,
+      task,
+      handleClose,
+      handleDelete,
+      reloadTabs,
+      onUpdateTask,
+      scrollRef,
+      usersList: suggestedUser,
+      nestedChildRef,
+    },
+    ref
+  ) => {
     const [loader, setLoader] = useState(false);
     const [title, setTitle] = useState(task?.title || "");
     const [description, setDescription] = useState(task?.description || "");
-    const [isDeleting, setIsDeleting] = useState(false);
     const [dueDate, setDueDate] = useState(task?.due_date || null);
     const [stage, setStage] = useState(task?.stage || null);
     const [stageBox, setStageBox] = useState(false);
     const [stageList, setStageList] = useState([]);
     const [dueDateCalender, setDueDateCalender] = useState(false);
     const [collaboratorsBox, setCollaboratorsBox] = useState(false);
-    const [addStageBox, setAddStageBox] = useState(false);
     const [statusBox, setStatusBox] = useState(false);
     const [taskStatus, setTatskStatus] = useState(task?.status || "");
     const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState(
@@ -4669,7 +4629,7 @@ export const UpdateTaskModal = React.forwardRef(
     const stageRef = useRef(stage);
     const taskStatusRef = useRef(taskStatus);
     const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
-    const taskCompletionPopupRef = useRef(null)
+    const taskCompletionPopupRef = useRef(null);
 
     const fetchUsers = async () => {
       try {
@@ -4693,10 +4653,14 @@ export const UpdateTaskModal = React.forwardRef(
           const isToast =
             document.querySelector(".Toastify__toast") &&
             document.querySelector(".Toastify__toast").contains(event.target);
-            const isTaskPopup =
-            taskCompletionPopupRef.current && taskCompletionPopupRef.current.contains(event.target);
-            
-          if (!isToast && !isTaskPopup) {
+          const isTaskPopup =
+            taskCompletionPopupRef.current &&
+            taskCompletionPopupRef.current.contains(event.target);
+          const isNestedRef =
+            nestedChildRef?.current &&
+            nestedChildRef?.current?.contains(event?.target);
+
+          if (!isToast && !isTaskPopup && !isNestedRef) {
             handleModalClose(); // Only call if it's not a toast click
           }
         }
@@ -4973,7 +4937,8 @@ export const UpdateTaskModal = React.forwardRef(
         )}
         {showEmailPopup && (
           <TaskCompletionPopup
-          ref={taskCompletionPopupRef}
+            ref={taskCompletionPopupRef}
+            nestedChildRef={nestedChildRef}
             task={task}
             handleClose={() => {
               setShowEmailPopup(false);
@@ -5538,17 +5503,17 @@ export const UpdateTaskModal = React.forwardRef(
   }
 );
 
-export const CreateTaskModal = React.forwardRef(
+export const CreateTaskModal = memo(React.forwardRef(
   (
     {
       task: propTask,
       handleClose,
       handleDelete,
       onCreateTask,
-      reloadTabs,
       scrollRef,
       newTask,
       usersList: suggestedUser,
+      returnToJob,
     },
     ref
   ) => {
@@ -5637,7 +5602,6 @@ export const CreateTaskModal = React.forwardRef(
             document.querySelector(".Toastify__toast") &&
             document.querySelector(".Toastify__toast").contains(event.target);
           if (!isToast) {
-            console.log("closed 22");
             handleModalClose(); // Only call if it's not a toast click
           }
         }
@@ -5778,7 +5742,6 @@ export const CreateTaskModal = React.forwardRef(
         job_num: taskRef.current?.job_num,
       };
 
-      console.log("on handleModalClose", newTaskData);
       if (
         (titleRef.current !== "" && !newTask) ||
         (titleRef.current !== "" &&
@@ -5932,7 +5895,9 @@ export const CreateTaskModal = React.forwardRef(
                         <div className="searchUserImg">
                           <OpenCloseIcon />
                         </div>
-                        <div className="delete-item">Collapse</div>
+                        <div className="delete-item">
+                          {returnToJob ? "Return To Job" : "Collapse"}
+                        </div>
                       </div>
                     </div>
                     <div className="innerScroll ">
@@ -6535,6 +6500,6 @@ export const CreateTaskModal = React.forwardRef(
       </>
     );
   }
-);
+));
 
 export default JobModal;

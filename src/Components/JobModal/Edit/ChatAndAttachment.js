@@ -1020,7 +1020,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
         result.push(text.slice(lastIndex, match.index));
       }
       // Push the name inside {} as TaggedUser component
-      result.push(<TaggedUser key={match.index} name={match[1]} />);
+      result.push(<TaggedUser userKey={match.index} name={match[1]} />);
       lastIndex = regex.lastIndex; // Update last matched index
     }
 
@@ -1947,7 +1947,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         result.push(text.slice(lastIndex, match.index));
       }
       // Push the name inside {} as TaggedUser component
-      result.push(<TaggedUser key={match.index} name={match[1]} />);
+      result.push(<TaggedUser userKey={match.index} name={match[1]} />);
       lastIndex = regex.lastIndex; // Update last matched index
     }
 
@@ -2928,7 +2928,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
         result.push(text.slice(lastIndex, match.index));
       }
       // Push the name inside {} as TaggedUser component
-      result.push(<TaggedUser key={match.index} name={match[1]} />);
+      result.push(<TaggedUser userKey={match.index} name={match[1]} />);
       lastIndex = regex.lastIndex; // Update last matched index
     }
 
@@ -2960,7 +2960,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                 attachmentRef.current.click();
               }
             }}
-            title={!JobId && 'Please add the task first'}
+            title={!JobId ? 'Please add the task first' : ''}
           >
             <input
               type="file"
@@ -3159,7 +3159,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                   setShowUserList(false);
                 }
               }}
-              title={!taskId && 'Please add the task first.'}
+              title={!taskId ? 'Please add the task first' : ''}
               value={body}
               disabled={!taskId}
             />
@@ -3200,7 +3200,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
           <div
             className="d-flex gap-1 align-items-center justify-content-center comment-text cursor"
             onClick={handleSendMessage}
-            title={!taskId && 'Please add the task first.'}
+            title={!taskId ? 'Please add the task first' : ''}
           >
             <img src={comment} className="cursor" alt="Comment" />
             <span>Comment</span>

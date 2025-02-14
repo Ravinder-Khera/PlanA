@@ -33,8 +33,7 @@ function Timeline({
     label: "Select Filter",
     value: "",
   });
-  // const excessCalendarDate =
-  //   timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1;
+ 
   const [excessCalendarDate, setExcessCalendarDate] = useState(
     timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1
   );
@@ -984,62 +983,69 @@ function Timeline({
                               </span>
                               <p>{job.description}</p>
                             </div>
-                            <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                              <div className=" d-flex align-items-center justify-content-end">
-                                {job.collaborators?.length > 0 ? (
-                                  <>
-                                    {job.collaborators?.length < 3 ? (
-                                      <>
-                                        {job.collaborators.map(
-                                          (user, index) => (
-                                            <div
-                                              key={index}
-                                              className={` UserImg addedUserImages `}
-                                              style={{
-                                                minWidth: "40px",
-                                                zIndex: index,
-                                              }}
-                                            >
-                                              <User />
+                            
+                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                                          <div className=" d-flex align-items-center justify-content-end">
+                                            <div className="collaboratorsBox justify-content-end">
+                                              <div className=" d-flex align-items-center justify-content-center">
+                                                {job?.collaborators?.length >
+                                                  0 && (
+                                                  <>
+                                                    {job?.collaborators
+                                                      ?.slice(0, 3)
+                                                      .map((user, index) => {
+                                                        const initials = user
+                                                          ?.split(" ")
+                                                          .map((part) =>
+                                                            part
+                                                              .charAt(0)
+                                                              .toUpperCase()
+                                                          )
+                                                          .join("");
+
+                                                        return (
+                                                          <div
+                                                            key={index}
+                                                            className={`collaboratorsBoxUser`}
+                                                            style={{
+                                                              minWidth: "40px",
+                                                              zIndex: index,
+                                                            }}
+                                                          >
+                                                            {initials}
+                                                          </div>
+                                                        );
+                                                      })}
+
+                                                    {job?.collaborators
+                                                      ?.length > 3 && (
+                                                      <div
+                                                        className={`collaboratorsBoxUser`}
+                                                        style={{
+                                                          minWidth: "40px",
+                                                          zIndex: 1,
+                                                        }}
+                                                      >
+                                                        +
+                                                        {job?.collaborators
+                                                          .length - 3}
+                                                      </div>
+                                                    )}
+                                                  </>
+                                                )}
+                                                {job.collaborators?.length ===
+                                                  0 && (
+                                                  <div
+                                                    className="collaboratorsBoxUser disabled m-0"
+                                                    style={{ minWidth: "40px" }}
+                                                  >
+                                                    N/A
+                                                  </div>
+                                                )}
+                                              </div>
                                             </div>
-                                          )
-                                        )}
-                                      </>
-                                    ) : (
-                                      <>
-                                        {job.collaborators
-                                          .slice(0, 3)
-                                          .map((user, index) => (
-                                            <div
-                                              key={index}
-                                              className={` UserImg addedUserImages ${
-                                                index === 2 ? "CountUsers" : ""
-                                              }`}
-                                              style={{
-                                                minWidth: "40px",
-                                                zIndex: index,
-                                              }}
-                                            >
-                                              {index === 2 ? (
-                                                <>
-                                                  {job.collaborators.length - 2}
-                                                  +
-                                                </>
-                                              ) : (
-                                                <>
-                                                  <User />
-                                                </>
-                                              )}
-                                            </div>
-                                          ))}
-                                      </>
-                                    )}
-                                  </>
-                                ) : (
-                                  ""
-                                )}
-                              </div>
-                            </div>
+                                          </div>
+                                        </div>
                           </div>
                         </div>
                       </div>

@@ -946,7 +946,7 @@ export const updateJobs = async (res) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response in delete api", response, data);
+    console.log("response in update job api", response, data);
     if (response.status === 200) {
       return { res: data, error: null };
     } else {
@@ -1104,7 +1104,7 @@ export const deleteTask = async (id) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response in delete api", response, data);
+    console.log("response in delete task api", response, data);
     if (response.status === 200) {
       return { res: data, error: null };
     } else {

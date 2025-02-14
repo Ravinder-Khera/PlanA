@@ -14,7 +14,7 @@ import { Bars } from "react-loader-spinner";
 import { sendEmail } from "../../services/chat_attachment";
 
 const TaskCompletionPopup = React.forwardRef(
-  ({ task, handleClose, handleFinalClose }, ref) => {
+  ({ task, handleClose, handleFinalClose, nestedChildRef }, ref) => {
     const [showDetails, setShowDetails] = useState(0);
     const [emailDetails, setEmailDetails] = useState(null);
     const [emailSuccess, setEmailSuccess] = useState(false);
@@ -154,14 +154,14 @@ const TaskCompletionPopup = React.forwardRef(
             emailDetails={emailDetails}
             onSave={onSave}
             onReturn={() => setShowDetails(0)}
-            ref={ref}
+            ref={nestedChildRef ? nestedChildRef : ref}
           />
         )}
         {showDetails === 2 && (
-          <NotificationSent handleClose={handleFinalClose} ref={ref} />
+          <NotificationSent handleClose={handleFinalClose} ref={nestedChildRef ? nestedChildRef : ref} />
         )}
         {!showDetails && (
-          <div className="task-completion-overlay" ref={ref}>
+          <div className="task-completion-overlay" ref={nestedChildRef ? nestedChildRef : ref}>
             <div
               className="task-container"
               ref={popupRef}
