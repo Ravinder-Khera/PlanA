@@ -5208,7 +5208,11 @@ export const UpdateTaskModal = React.forwardRef(
                             <div className="textClass disabled collaboratorsBox justify-content-start position-relative">
                               <div
                                 className=" d-flex align-items-center justify-content-center"
-                                onClick={() => setCollaboratorsBox(true)}
+                                onClick={() => {
+                                  setUsersList((prevList) =>
+                                    prevList.filter((u) => !newJobCollaboratorsListId.includes(u.id))
+                                  );
+                                  setCollaboratorsBox(true)}}
                                 style={{ cursor: "pointer" }}
                               >
                                 {newJobCollaboratorsList.length > 0 && (

@@ -152,6 +152,7 @@ const Jobs = () => {
     []
   );
   const [usersList, setUsersList] = useState([]);
+  const [fullUsersList, setFullUsersList] = useState([])
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [pageUrls, setPageUrls] = useState([]);
   const [filteredString, setFilteredString] = useState([]);
@@ -704,6 +705,7 @@ const Jobs = () => {
       let response = await getUserByRole(authToken);
       if (response.res) {
         setUsersList(response.res);
+        setFullUsersList(response.res)
       } else {
         console.error("Failed to fetch Users:", response.error);
       }
@@ -940,7 +942,7 @@ const Jobs = () => {
       ) {
         const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
         const originalJob = originalJobs.find((job) => job.id === updateJobId);
-
+        setUsersList(fullUsersList)
         const isJobChanged = (updatedJob, originalJob) => {
           if (!updatedJob || !originalJob) {
             console.error(
@@ -1441,7 +1443,7 @@ const Jobs = () => {
       {showNewJobModal && (
         <NewJobModal
           job={activeJob}
-          usersList={usersList}
+          usersList={fullUsersList}
           handleClose={async (isUpdateRequired) => {
             setGetJob();
             setActiveJob(null);
@@ -1470,7 +1472,7 @@ const Jobs = () => {
 
       {showNewJobModalWithTasks && (
         <NewJobModalWithTasks
-          usersList={usersList}
+          usersList={fullUsersList}
           job={activeJob}
           newJob={newJob}
           handleClose={async (isUpdateRequired = false) => {
@@ -1505,7 +1507,7 @@ const Jobs = () => {
 
       {showNewJobAddTaskModal && (
         <NewTaskModal
-          usersList={usersList}
+          usersList={fullUsersList}
           jobNum={newJobIdNumberForNewTask}
           handleClose={async () => {
             setGetJob();
@@ -1521,7 +1523,7 @@ const Jobs = () => {
 
       {showAddTaskModal && (
         <CreateTaskModal
-          usersList={usersList}
+          usersList={fullUsersList}
           task={activeTaskJob}
           handleClose={async () => {
             setGetJob();
@@ -1545,7 +1547,7 @@ const Jobs = () => {
 
       {showUpdateTaskModal && (
         <UpdateTaskModal
-          usersList={usersList}
+          usersList={fullUsersList}
           task={activeTask}
           handleClose={async () => {
             setGetJob();
@@ -1571,7 +1573,7 @@ const Jobs = () => {
       {showJobModal && (
         <NewJobModal
           job={getJob?.data}
-          usersList={usersList}
+          usersList={fullUsersList}
           handleClose={async (isDeleting = false, description) => {
             setGetJob();
             setActiveJob(null);
