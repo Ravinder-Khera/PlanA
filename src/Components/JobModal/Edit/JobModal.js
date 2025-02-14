@@ -4779,8 +4779,14 @@ export const UpdateTaskModal = React.forwardRef(
         stage_id: stageRef.current?.id,
         description: descriptionRef.current,
       };
-
-      // Check if any of the fields have changed
+      if(!titleRef.current){
+        toast.error("Please enter task title.")
+        return
+      }
+      if(!stageRef?.current?.id){
+        toast.error("Error: Stage must be selected before saving.")
+        return
+      }
       if (
         titleRef.current !== task.title ||
         dueDateRef.current !== task.due_date ||
@@ -4793,6 +4799,7 @@ export const UpdateTaskModal = React.forwardRef(
         stageRef.current?.id !== task.stage_id ||
         descriptionRef.current !== task.description
       ) {
+
         onUpdateTask(
           { updatedTask },
           task.id,
