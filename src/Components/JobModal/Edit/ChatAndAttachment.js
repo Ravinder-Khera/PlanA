@@ -1475,6 +1475,9 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
   );
 };
 
+
+
+// New component
 export const ChatAndComment = ({ JobId, usersList }) => {
   const maxLength = 10;
   const [loading, setLoading] = useState(false);
@@ -1711,14 +1714,13 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       const [response1] = await Promise.all([
         getJobComments(JobId, { signal })
       ]);
-      console.log("get comments", response1)
+     
       if (!response1.error) {
         const combinedArray = [...response1.res];
         const sortedMessages = combinedArray.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
       
-
         setComments(sortedMessages);
         
       } else {
@@ -1771,9 +1773,11 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     try {
       setLoading(true);
       const response = await sendComment({ body: commentBody, job_id:JobId, ids: userIds2 });
-      console.log("comment response", response)
       if (!response.error) {
-        fetchComments();
+        setComments((prevComments) => [
+          ...prevComments,  { ...response.res, user: {name: localStorage.getItem("user")} }
+        ]);
+        
         setNewComment({
           type: "",
           data: "",
@@ -2769,7 +2773,9 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
       setLoading(true);
       const response = await sendComment({ body, task_id:taskId, ids: userIds });
       if (!response.error) {
-        fetchChats();
+        setChats((prevComments) => [
+          ...prevComments,  { ...response.res, user: {name: localStorage.getItem("user")} }
+        ]);
         const notificationData = {
           class: "user",
           message: "New Comment: " + userDetails.name,
