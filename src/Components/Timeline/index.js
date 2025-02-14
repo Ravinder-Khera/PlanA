@@ -893,17 +893,18 @@ function Timeline({
                                                         className={`collaboratorsBoxUser`}
                                                         style={{
                                                           minWidth: "40px",
-                                                          zIndex: 1,
+                                                          zIndex: job?.collaborators
+                                                          ?.length,
                                                         }}
                                                       >
                                                         +
                                                         {job?.collaborators
-                                                          .length - 3}
+                                                          ?.length - 3}
                                                       </div>
                                                     )}
                                                   </>
                                                 )}
-                                                {job.collaborators?.length ===
+                                                {job?.collaborators?.length ===
                                                   0 && (
                                                   <div
                                                     className="collaboratorsBoxUser disabled m-0"
@@ -1023,7 +1024,8 @@ function Timeline({
                                                         className={`collaboratorsBoxUser`}
                                                         style={{
                                                           minWidth: "40px",
-                                                          zIndex: 1,
+                                                          zIndex: job?.collaborators
+                                                          .length,
                                                         }}
                                                       >
                                                         +

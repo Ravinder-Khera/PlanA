@@ -169,7 +169,7 @@ const AdhocTaskCompletionPopup = React.forwardRef(({ job, handleClose }, ref) =>
                                 className={`collaboratorsBoxUser`}
                                 style={{
                                   minWidth: "40px",
-                                  zIndex: 1,
+                                  zIndex: job?.collaborators?.length || 4,
                                 }}
                               >
                                 +{job?.collaborators.length - 3}

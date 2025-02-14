@@ -2268,7 +2268,7 @@ const Jobs = () => {
                                           className={`collaboratorsBoxUser`}
                                           style={{
                                             minWidth: "40px",
-                                            zIndex: index,
+                                            zIndex: job?.collaborators?.length || 4,
                                           }}
                                         >
                                           +{job?.collaborators.length - 3}

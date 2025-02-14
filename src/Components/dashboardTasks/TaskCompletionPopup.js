@@ -222,7 +222,7 @@ const TaskCompletionPopup = React.forwardRef(
                               );
                             })}
 
-                            {task?.collaborators?.length > 3 && (
+                            {task?.users?.length > 3 && (
                               <div
                                 className={`collaboratorsBoxUser `}
                                 style={{

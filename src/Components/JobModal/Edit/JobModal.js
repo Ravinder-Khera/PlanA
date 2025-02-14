@@ -3836,7 +3836,40 @@ export const NewTaskModal = ({
   const [firstClick, setFirstClick] = useState(true);
   const popupRef = useRef(null);
   const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
+// Create refs for the state variables
+const titleRef = useRef(title);
+const descriptionRef = useRef(description);
+const dueDateRef = useRef(dueDate);
+const stageRef = useRef(stage);
+const taskStatusRef = useRef(taskStatus);
 
+const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
+
+ // Update refs whenever the state changes
+ useEffect(() => {
+  titleRef.current = title;
+}, [title]);
+
+useEffect(() => {
+  descriptionRef.current = description;
+}, [description]);
+
+useEffect(() => {
+  dueDateRef.current = dueDate;
+}, [dueDate]);
+
+useEffect(() => {
+  stageRef.current = stage;
+}, [stage]);
+
+useEffect(() => {
+  taskStatusRef.current = taskStatus;
+}, [taskStatus]);
+
+
+useEffect(() => {
+  newJobCollaboratorsListIdRef.current = newJobCollaboratorsListId;
+}, [newJobCollaboratorsListId]);
   // Handle outside click to close the popup
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -3925,16 +3958,16 @@ export const NewTaskModal = ({
 
   const handleModalClose = async () => {
     const newTask = {
-      title: title,
+      title: titleRef.current,
       job_num: jobNum,
-      due_date: dueDate,
-      status: taskStatus,
-      assignee_ids: newJobCollaboratorsListId,
+      due_date: dueDateRef.current,
+      status: taskStatusRef.current,
+      assignee_ids: newJobCollaboratorsListIdRef.current,
       stage_id: stage?.id,
-      description: description,
+      description: descriptionRef.current,
     };
-    if (title !== "") {
-      if (!stage?.id) {
+    if (titleRef.current !== "") {
+      if (!stageRef.current?.id) {
         toast.error("Error: Stage must be selected before saving.");
         return;
       }
@@ -4558,8 +4591,8 @@ export const NewTaskModal = ({
                       </div>
                     </div>
 
-                    <AddNewJobChatAndAttachment
-                      JobId={jobNum}
+                    <CommentBox taskId={null}
+                      JobId={null}
                       usersList={usersList}
                     />
                   </div>
@@ -5209,7 +5242,7 @@ export const UpdateTaskModal = React.forwardRef(
                                         className={`collaboratorsBoxUser`}
                                         style={{
                                           minWidth: "40px",
-                                          zIndex: "4",
+                                          zIndex: newJobCollaboratorsList?.length || 4,
                                         }}
                                       >
                                         +{newJobCollaboratorsList.length - 3}
