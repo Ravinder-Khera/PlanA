@@ -3966,7 +3966,7 @@ useEffect(() => {
       stage_id: stage?.id,
       description: descriptionRef.current,
     };
-    if (titleRef.current !== "") {
+    if (titleRef.current && titleRef.current.trim() !== "") {
       if (!stageRef.current?.id) {
         toast.error("Error: Stage must be selected before saving.");
         return;
@@ -5783,8 +5783,8 @@ export const CreateTaskModal = memo(React.forwardRef(
       };
 
       if (
-        (titleRef.current !== "" && !newTask) ||
-        (titleRef.current !== "" &&
+        (titleRef.current && titleRef.current.trim() !== "" && !newTask) ||
+        (titleRef.current && titleRef.current.trim() !== "" &&
           newTask &&
           taskRef &&
           taskRef.current?.job_num)
