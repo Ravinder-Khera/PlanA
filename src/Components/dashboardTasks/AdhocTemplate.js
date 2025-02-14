@@ -18,6 +18,7 @@ import { formatJobNumber } from "../../pages/Jobs";
 
 
 const AdhocTaskCompletionPopup = React.forwardRef(({ job, handleClose }, ref) => {
+  console.log("jobs", job)
   const [showDetails, setShowDetails] = useState(0);
   const [emailDetails, setEmailDetails] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -145,10 +146,12 @@ const AdhocTaskCompletionPopup = React.forwardRef(({ job, handleClose }, ref) =>
                             {job?.collaborators
                               ?.slice(0, 3)
                               .map((user, index) => {
-                                const initials = user?.name
+                                const initials =  user?.name ?  user?.name
                                   ?.split(" ")
                                   ?.map((part) => part.charAt(0).toUpperCase())
-                                  ?.join("");
+                                  ?.join("") :  user?.split(" ")
+                                  ?.map((part) => part.charAt(0).toUpperCase())
+                                  ?.join("")
 
                                 return (
                                   <div
