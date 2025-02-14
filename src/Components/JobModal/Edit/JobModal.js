@@ -3957,10 +3957,14 @@ useEffect(() => {
   };
 
   const handleModalClose = async () => {
+    const year = new Date().getFullYear();
+    const month = String(new Date().getMonth() + 1).padStart(2, "0");
+    const day = String(new Date().getDate()).padStart(2, "0");
+    let formattedDueDate = `${year}-${month}-${day}`;
     const newTask = {
       title: titleRef.current,
       job_num: jobNum,
-      due_date: dueDateRef.current,
+      due_date: dueDateRef.current || formattedDueDate,
       status: taskStatusRef.current,
       assignee_ids: newJobCollaboratorsListIdRef.current,
       stage_id: stage?.id,
@@ -4141,6 +4145,8 @@ useEffect(() => {
                       style={{
                         borderBottom:
                           "1px solid rgba(226, 227, 31, 0.1490196078)",
+                           position:'sticky',
+                              top:'0'
                       }}
                     >
                       <input
@@ -5067,6 +5073,8 @@ export const UpdateTaskModal = React.forwardRef(
                         style={{
                           borderBottom:
                             "1px solid rgba(226, 227, 31, 0.1490196078)",
+                             position:'sticky',
+                              top:'0'
                         }}
                       >
                         <input
@@ -5775,10 +5783,14 @@ export const CreateTaskModal = memo(React.forwardRef(
     };
 
     const handleModalClose = async () => {
+      const year = new Date().getFullYear();
+      const month = String(new Date().getMonth() + 1).padStart(2, "0");
+      const day = String(new Date().getDate()).padStart(2, "0");
+      let formattedDueDate = `${year}-${month}-${day}`;
       const newTaskData = {
         job_id: taskRef.current?.id,
         title: titleRef.current, // Use the ref to get the latest title
-        due_date: dueDateRef.current, // Use the ref to get the latest due date
+        due_date: dueDateRef.current || formattedDueDate, // Use the ref to get the latest due date
         status: taskStatusRef.current, // Use the ref to get the latest status
         assignee_ids: newJobCollaboratorsListIdRef.current, // Use the ref to get the latest collaborators
         stage_id: stageRef.current?.id, // Use the ref to get the latest stage
@@ -6014,6 +6026,8 @@ export const CreateTaskModal = memo(React.forwardRef(
                           style={{
                             borderBottom:
                               "1px solid rgba(226, 227, 31, 0.1490196078)",
+                              position:'sticky',
+                              top:'0'
                           }}
                         >
                           <input

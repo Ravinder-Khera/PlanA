@@ -190,7 +190,7 @@ const TaskCompletionPopup = React.forwardRef(
                       <div className="taskDate">
                         <span>Due Date</span>
                         <span>
-                          {moment(task.due_date)
+                          {moment(task.due_date || new Date())
                             .local()
                             .format("DD MMMM, YYYY")}
                         </span>

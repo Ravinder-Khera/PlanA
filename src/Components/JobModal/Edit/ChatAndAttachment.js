@@ -1,17 +1,19 @@
-import React, { useRef, useEffect, useState } from "react";
-import refresh from "../../../assets/icons/refreshImg.svg";
+import { debounce, throttle } from "lodash";
+import moment from "moment";
+import Pusher from "pusher-js";
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import eventEmitter from "../../../Event";
 import profileChat from "../../../assets/common/Frame 34.png";
-import deleteImg from "../../../assets/common/delete.svg";
 import attachmentsIcon from "../../../assets/common/attachments.svg";
 import cut from "../../../assets/common/cut.svg";
 import pngFIle from "../../../assets/common/pngFile.svg";
-import svgFile from "../../../assets/common/svg.svg";
-import message from "../../../assets/icons/message.svg";
 import comment from "../../../assets/icons/comment.svg";
-import file from "../../../assets/icons/file.svg";
-import edit from "../../../assets/icons/edit.svg";
 import download from "../../../assets/icons/download.svg";
-import { toast } from "react-toastify";
+import file from "../../../assets/icons/file.svg";
+import message from "../../../assets/icons/message.svg";
+import { CrossIcon, UploadIcon } from "../../../assets/svg";
+import { getProfile } from "../../../services/auth";
 import {
   addAttachments,
   deleteAttachments,
@@ -22,13 +24,6 @@ import {
   sendComment,
   sendMessage,
 } from "../../../services/chat_attachment";
-import moment from "moment";
-import { ColorRing } from "react-loader-spinner";
-import Pusher from "pusher-js";
-import eventEmitter from "../../../Event";
-import { getProfile } from "../../../services/auth";
-import { CrossIcon, UploadIcon, User } from "../../../assets/svg";
-import { debounce, throttle } from "lodash";
 import TaggedUser from "./TaggedUser";
 
 const ChatAndAttachment = ({ JobId }) => {
