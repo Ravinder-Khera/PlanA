@@ -692,6 +692,7 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
                     .split(" ")
                     .map((part) => part.charAt(0).toUpperCase())
                     .join("");
+                    console.log("user", user.id)
                   return (
                     <div
                       key={index}

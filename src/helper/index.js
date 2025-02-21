@@ -495,6 +495,7 @@ export const CollaboratorBorders = {
   168: "1px solid #FFABAB",
   169: "1px solid rgba(251, 255, 149, 0.54)",
   170: "1px solid #84AC9A",
+  173: "1px solid #864EE0",
   174: "1px solid #864EE0",
   175: "1px solid #F068FF",
   176: "1px solid #68FFF0",
@@ -510,7 +511,9 @@ export const CollaboratorBorders = {
   186: "1px solid rgba(251, 255, 149, 0.54)",
   187: "1px solid #84AC9A",
   188: "1px solid #864EE0"
+  
 };
+
 
 export const CollaboratorNameBorders = {
   "Adam Nagel": "1px solid #F068FF",
