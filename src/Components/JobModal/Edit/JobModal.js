@@ -20,6 +20,7 @@ import {
   AllStages,
   arraysEqualByIdV2,
   CollaboratorBorders,
+  CollaboratorNameBorders,
   compareTaskArray,
   MAX_CALENDAR_YEAR,
   StageList,
@@ -4307,7 +4308,8 @@ useEffect(() => {
                                           style={{
                                             minWidth: "40px",
                                             zIndex: index,
-                                            border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                            border:    CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                           }}
                                         >
                                           {initials}
@@ -4375,7 +4377,8 @@ useEffect(() => {
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -4407,7 +4410,8 @@ useEffect(() => {
                                             className={`collaboratorsBoxUser`}
                                             style={{
                                               minWidth: "40px",
-                                              border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -5246,7 +5250,8 @@ export const UpdateTaskModal = React.forwardRef(
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
-                                              border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -5314,7 +5319,8 @@ export const UpdateTaskModal = React.forwardRef(
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                  border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                                 }}
                                               >
                                                 {initials}
@@ -5346,7 +5352,8 @@ export const UpdateTaskModal = React.forwardRef(
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                 border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                 border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -6255,7 +6262,8 @@ export const CreateTaskModal = memo(React.forwardRef(
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
-                                              border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -6323,7 +6331,8 @@ export const CreateTaskModal = memo(React.forwardRef(
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                  border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                                 }}
                                               >
                                                 {initials}
@@ -6355,7 +6364,8 @@ export const CreateTaskModal = memo(React.forwardRef(
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                 border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                 border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}

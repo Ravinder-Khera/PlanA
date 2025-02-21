@@ -3,7 +3,7 @@ import "./style.scss";
 import downArr from "../../assets/icons/Vector (1).svg";
 import assignImg from "../../assets/icons/Group 13.svg";
 import { Search, User } from "../../assets/svg";
-import { TaskStatusList } from "../../helper";
+import { CollaboratorBorders, TaskStatusList } from "../../helper";
 import { getJobIds, getTasksByFilter, getUserByRole } from "../../services/auth";
 import { toast } from "react-toastify";
 
@@ -309,7 +309,9 @@ const FilterTask = ({ setFilteredTasks, setFilteredTotalPages,taskTab, setFilter
                                 >
                                   <div
                                     className={` UserImg addedUserImages `}
-                                    style={{ minWidth: "40px" }}
+                                    style={{ minWidth: "40px"
+                                     
+                                     }}
                                   >
                                     {user.profile_pic !== "" ? (
                                       <img

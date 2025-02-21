@@ -8,7 +8,7 @@ import {
 } from "../../assets/svg";
 import pngFIle from "../../assets/common/pngFile.svg";
 import moment from "moment";
-import { CollaboratorBorders, getEmailsByStageAndTitle } from "../../helper";
+import { CollaboratorBorders, CollaboratorNameBorders, getEmailsByStageAndTitle } from "../../helper";
 import EditorComponent from "./Editor";
 import { Bars } from "react-loader-spinner";
 import { sendEmail } from "../../services/chat_attachment";
@@ -215,7 +215,7 @@ const TaskCompletionPopup = React.forwardRef(
                                   style={{
                                     minWidth: "40px",
                                     zIndex: index,
-                                     border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                     border:  CollaboratorBorders[user.id] || CollaboratorNameBorders[user?.name] || "1px solid rgb(105, 103, 103)",
                                   }}
                                 >
                                   {initials}

@@ -26,7 +26,7 @@ import {
 } from "../../Components/JobModal/Edit/JobModal";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import { NotificationComponent } from "../../Components/navMenu";
-import { arraysEqualById, CollaboratorBorders, MAX_CALENDAR_YEAR, StatusList } from "../../helper";
+import { arraysEqualById, CollaboratorBorders, CollaboratorNameBorders, MAX_CALENDAR_YEAR, StatusList } from "../../helper";
 import {
   createJobs,
   createTask,
@@ -2060,7 +2060,8 @@ const Jobs = () => {
                                               minWidth: "40px",
                                               zIndex: index,
                                               cursor: "pointer",
-                                              border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                                                                            "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -2125,7 +2126,8 @@ const Jobs = () => {
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -2157,7 +2159,8 @@ const Jobs = () => {
                                             className={`collaboratorsBoxUser`}
                                             style={{
                                               minWidth: "40px",
-                                              border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -2261,7 +2264,8 @@ const Jobs = () => {
                                               style={{
                                                 minWidth: "40px",
                                                 zIndex: index,
-                                                border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -2325,7 +2329,8 @@ const Jobs = () => {
                                                   className={`collaboratorsBoxUser`}
                                                   style={{
                                                     minWidth: "40px",
-                                                    border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                    border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                                   }}
                                                 >
                                                   {initials}
@@ -2358,7 +2363,8 @@ const Jobs = () => {
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                  border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                                              "1px solid rgb(105, 103, 103)",
                                                 }}
                                               >
                                                 {initials}

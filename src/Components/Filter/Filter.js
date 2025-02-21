@@ -11,7 +11,7 @@ import {
   TickIcon,
   User,
 } from "../../assets/svg";
-import { StatusList } from "../../helper";
+import { CollaboratorBorders, StatusList } from "../../helper";
 import { FilterJobs, getJobsByFilter, getUserByRole } from "../../services/auth";
 import "./style.scss";
 
@@ -698,6 +698,7 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
                       className={`filterUserBox`}
                       style={{
                         minWidth: "40px",
+                         border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                       }}
                       onClick={() =>{
                         handleFilterClick(initials, "filterUserBox",'collaborator_ids',user.id)

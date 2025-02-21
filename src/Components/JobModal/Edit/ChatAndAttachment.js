@@ -25,7 +25,7 @@ import {
   sendMessage,
 } from "../../../services/chat_attachment";
 import TaggedUser from "./TaggedUser";
-import { CollaboratorBorders } from "../../../helper";
+import { CollaboratorBorders, CollaboratorNameBorders } from "../../../helper";
 
 const ChatAndAttachment = ({ JobId }) => {
   const maxLength = 10;
@@ -2228,7 +2228,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                               style={{
                                 minWidth: "40px",
                                 border:
-                                  CollaboratorBorders[user.id] ||
+                                  CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
                                   "1px solid rgb(105, 103, 103)",
                               }}
                             >
@@ -2612,8 +2612,8 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                             style={{
                               minWidth: "40px",
                               border:
-                                CollaboratorBorders[user.id] ||
-                                "1px solid rgb(105, 103, 103)",
+                              CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                              "1px solid rgb(105, 103, 103)",
                             }}
                           >
                             {initials}
@@ -3249,8 +3249,8 @@ if(droppedFile){
                             style={{
                               minWidth: "40px",
                               border:
-                                CollaboratorBorders[user.id] ||
-                                "1px solid rgb(105, 103, 103)",
+                              CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                              "1px solid rgb(105, 103, 103)",
                             }}
                           >
                             {initials}

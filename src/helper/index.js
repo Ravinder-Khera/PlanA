@@ -495,7 +495,21 @@ export const CollaboratorBorders = {
   168: "1px solid #FFABAB",
   169: "1px solid rgba(251, 255, 149, 0.54)",
   170: "1px solid #84AC9A",
-  173: "1px solid #864EE0"
+  174: "1px solid #864EE0",
+  175: "1px solid #F068FF",
+  176: "1px solid #68FFF0",
+  177: "1px solid #687CFF",
+  178: "1px solid #007AC1",
+  179: "1px solid #1D5600",
+  180: "1px solid #CDABFF",
+  181: "1px solid #1010FF",
+  182: "1px solid #576B4B",
+  183: "1px solid #BE008F",
+  184: "1px solid #987C00",
+  185: "1px solid #FFABAB",
+  186: "1px solid rgba(251, 255, 149, 0.54)",
+  187: "1px solid #84AC9A",
+  188: "1px solid #864EE0"
 };
 
 export const CollaboratorNameBorders = {

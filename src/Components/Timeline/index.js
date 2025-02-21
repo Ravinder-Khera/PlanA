@@ -1013,7 +1013,7 @@ function Timeline({
                                                             style={{
                                                               minWidth: "40px",
                                                               zIndex: index,
-                                                               border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                                                               border: CollaboratorBorders[user?.id] || CollaboratorNameBorders[user] || "1px solid rgb(105, 103, 103)",
                                                             }}
                                                           >
                                                             {initials}
