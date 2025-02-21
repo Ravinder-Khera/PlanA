@@ -10,6 +10,7 @@ import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import TaskCompletionPopup from "../../Components/dashboardTasks/TaskCompletionPopup";
 import moment from "moment";
+import { CollaboratorBorders, CollaboratorNameBorders } from "../../helper";
 
 const renderMessage = (text) => {
   // Regular expression to match words enclosed in {}
@@ -389,6 +390,7 @@ function Dashboard() {
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
+                                               border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -479,6 +481,7 @@ function Dashboard() {
                                   className={`InitialsBoxUser`}
                                   style={{
                                     minWidth: "40px",
+                                    border: CollaboratorNameBorders[chat.user?.name] || "1px solid rgb(105, 103, 103)",
                                   }}
                                 >
                                   {chat.user?.name

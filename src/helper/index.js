@@ -212,7 +212,7 @@ export const emailConfig = {
         receiver: "Client",
         subject: 'RE: To Client - Confirmation Notice - 99 XXXXX Street, XXXXX',
         content:
-          "<p>Hi Xxxx,</p><p>Council have issued their confirmation notice for the application over 99 XXXXX Street, XXXXX. Please see attached.</p><p>The attached confirms that the application needs to be refereed to the State Assessment & Referral Agency as the development is within 25m of a State Controlled Road.</p><p>The attached confirms that Public Notification is required under Chapter 1, part 4 of the Development Assessment Rules.</p><p>Should you have any queries or concerns please contact the office.</p>",
+          "<p>Hi xxxx,</p><p>Council have issued their confirmation notice for the application over 99 XXXXX Street, XXXXX. Please see attached.</p><p>Delete / alter as needed</p><p>The attached confirms that the application needs to be referred to the State Assessment & Referral Agency as the development is within 25m of a State Controlled Road.</p><p>The attached confirms that Public Notification is required under Chapter 1, Part 4 of the Development Assessment Rules.</p><p>Should you have any queries or concerns, please contact the office.</p>",
       },
       {
         id:4,
@@ -228,14 +228,14 @@ export const emailConfig = {
         id:5,
         emailType: "Action Notice Response",
         receiver: "Council",
-        subject: 'Action Notice Response',
+        subject: 'RE: Action Notice Response',
         content:""
             },
       {
         id:6,
         emailType: "Action Notice Extension",
         receiver: "Council",
-        subject:'Action Notice Extension',
+        subject:'RE: Action Notice Extension',
         content:""
        },
     ]
@@ -449,7 +449,7 @@ export const adHoc = [
   {
     emailType: "Weekly Review Email",
     receiver: "Client",
-    subject: "Weekly Review Email",
+    subject: "RE:  Weekly Review Email",
     content: "",
   },
   {
@@ -478,4 +478,39 @@ export function getEmailsByStageAndTitle(stage, title) {
 
   // If title is not found or not provided, return all emails from all titles in the stage
   return Object.values(stageEmails).flat();
+}
+
+
+export const CollaboratorBorders = {
+  158: "1px solid #F068FF",
+  159: "1px solid #68FFF0",
+  160: "1px solid #687CFF",
+  161: "1px solid #007AC1",
+  162: "1px solid #1D5600",
+  163: "1px solid #CDABFF",
+  164: "1px solid #1010FF",
+  165: "1px solid #576B4B",
+  166: "1px solid #BE008F",
+  167: "1px solid #987C00",
+  168: "1px solid #FFABAB",
+  169: "1px solid rgba(251, 255, 149, 0.54)",
+  170: "1px solid #84AC9A",
+  173: "1px solid #864EE0"
+};
+
+export const CollaboratorNameBorders = {
+  "Adam Nagel": "1px solid #F068FF",
+  "Peter Catchlove": "1px solid #68FFF0",
+  "Matt Geyle": "1px solid #687CFF",
+  "Emily Hutchinson": "1px solid #007AC1",
+  "Josh Dixon": "1px solid #1D5600",
+  "Georgina McNee": "1px solid #CDABFF",
+  "Luke Jones": "1px solid #1010FF",
+  "Garrett McVilly": "1px solid #576B4B",
+  "Holly Ilka": "1px solid #BE008F",
+  "Harrison Southwell": "1px solid #987C00",
+  "Oscar Delaney": "1px solid #FFABAB",
+  "Kym Allison": "1px solid rgba(251, 255, 149, 0.54)",
+  "Web User": "1px solid #84AC9A",
+  "Julian Hayes": "1px solid #864EE0"
 }

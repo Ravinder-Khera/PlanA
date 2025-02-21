@@ -14,6 +14,8 @@ import { DateRangePicker } from "react-date-range";
 import { formatJobNumber } from "../../pages/Jobs";
 import {
   CALENDAR_YEAR,
+  CollaboratorBorders,
+  CollaboratorNameBorders,
   MAX_CALENDAR_YEAR,
   MIN_CALENDAR_YEAR,
 } from "../../helper";
@@ -872,7 +874,6 @@ function Timeline({
                                                               .toUpperCase()
                                                           )
                                                           .join("");
-
                                                         return (
                                                           <div
                                                             key={index}
@@ -880,6 +881,7 @@ function Timeline({
                                                             style={{
                                                               minWidth: "40px",
                                                               zIndex: index,
+                                                               border: CollaboratorBorders[user?.id] || CollaboratorNameBorders[user] || "1px solid rgb(105, 103, 103)",
                                                             }}
                                                           >
                                                             {initials}
@@ -1011,6 +1013,7 @@ function Timeline({
                                                             style={{
                                                               minWidth: "40px",
                                                               zIndex: index,
+                                                               border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                                             }}
                                                           >
                                                             {initials}

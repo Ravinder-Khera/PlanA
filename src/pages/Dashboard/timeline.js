@@ -9,6 +9,7 @@ import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import moment from "moment";
 import TaskCompletionPopup from "../../Components/dashboardTasks/TaskCompletionPopup";
+import { CollaboratorBorders, CollaboratorNameBorders } from "../../helper";
 
 const renderMessage = (text) => {
   // Regular expression to match words enclosed in {}
@@ -279,7 +280,6 @@ function TimelinePage() {
                                             part.charAt(0).toUpperCase()
                                           )
                                           .join("");
-
                                         return (
                                           <div
                                             key={index}
@@ -287,6 +287,7 @@ function TimelinePage() {
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
+                                              border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -379,6 +380,7 @@ function TimelinePage() {
                                                  className={`InitialsBoxUser`}
                                                  style={{
                                                    minWidth: "40px",
+                                                   border: CollaboratorNameBorders[chat.user?.name] || "1px solid rgb(105, 103, 103)",
                                                  }}
                                                >
                                                  {chat.user?.name

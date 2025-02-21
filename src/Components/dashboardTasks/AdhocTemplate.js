@@ -10,7 +10,7 @@ import {
 } from "../../assets/svg";
 import pngFIle from "../../assets/common/pngFile.svg";
 
-import { adHoc } from "../../helper";
+import { adHoc, CollaboratorBorders } from "../../helper";
 import EditorComponent from "./Editor";
 import { Bars } from "react-loader-spinner";
 import { sendEmail } from "../../services/chat_attachment";
@@ -160,6 +160,7 @@ const AdhocTaskCompletionPopup = React.forwardRef(({ job, handleClose }, ref) =>
                                     style={{
                                       minWidth: "40px",
                                       zIndex: index,
+                                       border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                     }}
                                   >
                                     {initials}

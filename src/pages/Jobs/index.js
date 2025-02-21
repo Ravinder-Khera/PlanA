@@ -26,7 +26,7 @@ import {
 } from "../../Components/JobModal/Edit/JobModal";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import { NotificationComponent } from "../../Components/navMenu";
-import { arraysEqualById, MAX_CALENDAR_YEAR, StatusList } from "../../helper";
+import { arraysEqualById, CollaboratorBorders, MAX_CALENDAR_YEAR, StatusList } from "../../helper";
 import {
   createJobs,
   createTask,
@@ -2060,6 +2060,7 @@ const Jobs = () => {
                                               minWidth: "40px",
                                               zIndex: index,
                                               cursor: "pointer",
+                                              border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -2124,6 +2125,7 @@ const Jobs = () => {
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
+                                                border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -2155,6 +2157,7 @@ const Jobs = () => {
                                             className={`collaboratorsBoxUser`}
                                             style={{
                                               minWidth: "40px",
+                                              border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -2258,6 +2261,7 @@ const Jobs = () => {
                                               style={{
                                                 minWidth: "40px",
                                                 zIndex: index,
+                                                border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -2271,6 +2275,7 @@ const Jobs = () => {
                                           style={{
                                             minWidth: "40px",
                                             zIndex: job?.collaborators?.length || 4,
+                                            
                                           }}
                                         >
                                           +{job?.collaborators.length - 3}
@@ -2320,6 +2325,7 @@ const Jobs = () => {
                                                   className={`collaboratorsBoxUser`}
                                                   style={{
                                                     minWidth: "40px",
+                                                    border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                                   }}
                                                 >
                                                   {initials}
@@ -2346,11 +2352,13 @@ const Jobs = () => {
                                               onClick={() =>
                                                 handleSelectCollaborator(user)
                                               }
+                                            
                                             >
                                               <div
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
+                                                  border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
                                                 }}
                                               >
                                                 {initials}
