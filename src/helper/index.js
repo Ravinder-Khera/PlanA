@@ -212,7 +212,7 @@ export const emailConfig = {
         receiver: "Client",
         subject: 'RE: To Client - Confirmation Notice - 99 XXXXX Street, XXXXX',
         content:
-          "<p>Hi xxxx,</p><p>Council have issued their confirmation notice for the application over 99 XXXXX Street, XXXXX. Please see attached.</p><p>Delete / alter as needed</p><p>The attached confirms that the application needs to be referred to the State Assessment & Referral Agency as the development is within 25m of a State Controlled Road.</p><p>The attached confirms that Public Notification is required under Chapter 1, Part 4 of the Development Assessment Rules.</p><p>Should you have any queries or concerns, please contact the office.</p>",
+          "<p>Hi xxxx,</p><p>Council have issued their confirmation notice for the application over 99 XXXXX Street, XXXXX. Please see attached.</p><p>Delete / alter as needed</p><p>The attached confirms that the application needs to be refereed to the State Assessment & Referral Agency as the development is within 25m of a State Controlled Road.</p><p>The attached confirms that Public Notification is required under Chapter 1, part 4 of the Development Assessment Rules.</p><p>Should you have any queries or concerns please contact the office.</p>",
       },
       {
         id:4,
@@ -220,7 +220,7 @@ export const emailConfig = {
         receiver: "Council",
         subject:'RE: To Council - Extend Referral of Application Period',
         content:
-          "<p>Dear Xxxx,</p><p>In accordance with Section 5.1 of the DA Rules under the Planning Act 2016, we hereby request an extension to the Referral period for the application at XXXX.</p><p>We request and extension until XXXX.</p>",
+          "<p>Dear Xxxx,</p><p>In accordance with Section 5.1 of the DA Rules under the Planning Act 2016, we hereby request an extension to the Referral period for the application at XXXX.</p><p>We request and extension until XXXX.</p>",
       },
     ],
     "Assessment Manager Gives Action Notice":[
@@ -319,7 +319,7 @@ export const emailConfig = {
         receiver: "Council",
         subject:'RE: To Council - Response to Information Request',
         content:
-          "<p>Hi Xxxx,</p><p>In accordance with Section 13.2 of the DA Rules of the Planning Act 2016, we hereby submit a response to Council’s Information Request dated XXXX for XXXX (Council Reference: ).</p><p>The material provided represents a response to all of the information requested by Council. We trust the information provided is sufficient for Council to proceed with the assessment of the application.",
+          "<p>Hi Xxxx,</p><p>In accordance with Section 13.2 of the DA Rules of the Planning Act 2016, we hereby submit a response to Council’s Information Request dated XXXX for XXXX (Council Reference: ).</p><p>The material provided represents a response to all of the information requested by Council. We trust the information provided is sufficient for Council to proceed with the assessment of the application.</p>",
       },
     ],
   },
@@ -331,7 +331,7 @@ export const emailConfig = {
         receiver: "Client",
         subject:'RE: To Client - Notification',
         content:
-          "<p>Hi Xxxx,</p><p>We write in relation to the pending development application at xxxx.</p><p>The response to the Information Request has been lodged to Council (and /or SARA) and we are now preparing to commence the Public Notification period.</p><p>The Public Notification is to run from xxx to xxx. Signage will be installed on site on xxx. The consultant will monitor the sign intermittently, however if you notice any damage to the sign please let us know as soon as possible so we can organise a replacement.</p><p>We will follow up with Council to confirm if any submissions are lodged and keep you updated.</p><p>Should you have any queries or concerns please contact the office.</p>",
+          "<p>Hi Xxxx,</p><p>We write in relation to the pending development application at xxxx.</p><p>The response to the Information Request has been lodged to Council (and /or SARA) and we are now preparing to commence the Public Notification period.</p><p>The Public Notification is to run from xxx to xxx. Signage will be installed on site on xxx. The consultant will monitor the sign intermittently, however if you notice any damage to the sign please let us know as soon as possible so we can organise a replacement.</p><p>We will follow up with Council to confirm if any submissions are lodged and keep you updated.</p><p>Should you have any queries or concerns please contact the office.</p>",
       },
     ],
   },
@@ -343,7 +343,7 @@ export const emailConfig = {
         receiver: "Client",
         subject:'RE: To Client - Further Advice',
         content:
-          "<p>Hi Xxxx,</p><p>Council have issued a Further Issues Letter / Request for Further Advice / Outstanding Issues Letter in relation to the pending application at xxxx.</p><p>Please find the Council’s request attached.</p><p>We have included a breakdown of the items and some preliminary comments in relation to preparing our response.</p><p>Should you have any queries orconcerns please contact the office.</p>",
+          "<p>Hi Xxxx,</p><p>Council have issued a Further Issues Letter / Request for Further Advice / Outstanding Issues Letter in relation to the pending application at xxxx.</p><p>Please find the Council’s request attached.</p><p>We have included a breakdown of the items and some preliminary comments in relation to preparing our response. <ul><li>ADD COMMENTS AS RELEVANT</li></ul></p><p>Should you have any queries or concerns please contact the office.</p>",
       },
     ],
     "Assessment Manager Decides Application": [
@@ -353,7 +353,7 @@ export const emailConfig = {
         receiver: "Client",
         subject:'RE: To Client - Decision Notice - 99 XXXXX Street, XXXXXX',
         content:
-          "<p>Hi xxxx,</p><p>We are pleased to advise Council has issued a Decision Notice over the abovementioned site. Please find enclosed a copy for your records.</p><p>We are currently reviewing the notice and will provide comments in due course. Please ensure that you read and understand the requirements of these conditions and if you have any doubts or queries, please contact our office for a detailed explanation. our office.</p><p>Please note you now have a right of negotiation with Brisbane City Council and a right of appeal to the Planning and Environment Court against the conditions of approval. These rights will lapse after 20 business days. If you wish to request a negotiated decision notice or appeal, please advise us prior to this date to allow for time to prepare the appropriate documentation.</p><p>In moving forward, we note that Council have been ensuring strict compliance with plans and conditions of development approvals. In particular, Council have been undertaking additional site inspections during construction and strictly reviewing all plan sealing applications to ensure compliance. In the event that anything in the development alters, please contact our office such that we can advise whether a change application is likely required to be approved.</p><p>Should you have any queries or concerns please contact the office.</p>",
+          "<p>Hi xxxx,</p><p>We are pleased to advise Council has issued a Decision Notice over the abovementioned site. Please find enclosed a copy for your records.</p><p>We are currently reviewing the notice and will provide comments in due course. Please ensure that you read and understand the requirements of these conditions and if you have any doubts or queries, please contact our office for a detailed explanation. our office.</p><p>Please note you now have a right of negotiation with Brisbane City Council and a right of appeal to the Planning and Environment Court against the conditions of approval. These rights will lapse after 20 business days.  If you wish to request a negotiated decision notice or appeal, please advise us prior to this date to allow for time to prepare the appropriate documentation.</p><p>In moving forward, we note that Council have been ensuring strict compliance with plans and conditions of development approvals.  In particular, Council have been undertaking additional site inspections during construction and strictly reviewing all plan sealing applications to ensure compliance.  In the event that anything in the development alters, please contact our office such that we can advise whether a change application is likely required to be approved.</p><p>Should you have any queries or concerns please contact the office.</p>",
       },
       {
         id:18,
@@ -361,7 +361,7 @@ export const emailConfig = {
         receiver: "Council",
         subject:'RE: To Council - Request to Extend Decision Period',
         content:
-          "<p>Hi xxxx,</p><p>In accordance with Section 22.1 of the DA Rules of the Planning Act 2016, we hereby request an extension of the Decision Period.</p><p>We request an extension until XXXX.</p><p>Please let me know if you require anything further otherwise, we would appreciate Council's written confirmation of the above.</p>",
+          "<p>Hi xxxx,</p><p>In accordance with Section 22.1 of the DA Rules of the Planning Act 2016, we hereby request an extension of the Decision Period.</p><p>Please let me know if you require anything further otherwise, we would appreciate Council's written confirmation of the above.</p>",
       },
       {
         id:19,
@@ -369,7 +369,7 @@ export const emailConfig = {
         receiver: "SARA",
         subject:'RE: To SARA - Extend Referral Assessment Period',
         content:
-          "<p>Hi xxxx,</p><p>In accordance with Section 9.2(b) of the DA Rules under the Planning Act 2016, we hereby request an extension to the referral assessment period for the application at XXXX (SARA Ref XXXX).</p><p>We extend the period until XXXX.</p>",
+          "<p>Dear xxxx,</p><p>In accordance with Section 9.2(b) of the DA Rules under the Planning Act 2016, we hereby request an extension to the referral assessment period for the application at XXXX (SARA Ref XXXX).</p><p>We extend the period until XXXX.</p>",
       },
     ],
     "Assessment Manager Issues Decision Notice": [
@@ -379,7 +379,7 @@ export const emailConfig = {
         receiver: "Client",
         subject:'RE: To Client - Negotiated Decision Notice - 99 XXXXX Street, XXXXXX',
         content:
-          "<p>Hi xxxx,</p><p>We are pleased to advise Council has issued a Negotiated Decision Notice over the abovementioned site. Please find enclosed a copy for your records.</p><p>We are currently reviewing the notice and will provide comments in due course. Again, we request that you read and understand the requirements of these conditions and if you have any doubts or queries, please contact our office for a detailed explanation</p><p>Please note you now have a right of appeal to the Planning and Environment Court against the conditions of approval. These rights will lapse after 20 business days. If you wish to appeal, please advise us immediately such that we can co-ordinate abriefing with your solicitor.</p><p>In moving forward, we note that Council have been ensuring strict compliance with plans and conditions of development approvals. In particular, Council have been undertaking additional site inspections during construction and strictly reviewing all plan sealing applications to ensure compliance. In the event that anything in the development alters, please contact our office such that we can advise whether a change application is likely required to be approved.</p>",
+          "<p>Hi xxxx,</p><p>We are pleased to advise Council has issued a Negotiated Decision Notice over the abovementioned site. Please find enclosed a copy for your records.</p><p>We are currently reviewing the notice and will provide comments in due course. Again, we request that you read and understand the requirements of these conditions and if you have any doubts or queries, please contact our office for a detailed explanation</p><p>Please note you now have a right of appeal to the Planning and Environment Court against the conditions of approval. These rights will lapse after 20 business days. If you wish to appeal, please advise us immediately such that we can co-ordinate a briefing with your solicitor.</p><p>In moving forward, we note that Council have been ensuring strict compliance with plans and conditions of development approvals.  In particular, Council have been undertaking additional site inspections during construction and strictly reviewing all plan sealing applications to ensure compliance.  In the event that anything in the development alters, please contact our office such that we can advise whether a change application is likely required to be approved.</p>",
       },
       {
         id:21,
@@ -387,7 +387,7 @@ export const emailConfig = {
         receiver: "Client",
         subject:'RE: To Client - Condition Review',
         content:
-          "<p>Hi xxxx,</p><p>Further to receipt of Council’s decision notice on xxxx, we have undertaken a review of the conditions of approval and make the following comments for consideration.</p><p>Once you review are you able to contact myself to discuss the required actions.</p>",
+          "<p>Hi xxxx,</p><p>Further to receipt of Council’s decision notice on xxxx, we have undertaken a review of the conditions of approval and make the following comments for consideration.<ul><li>ADD COMMENTS IF RELEVANT</li></ul></p><p>Once you review are you able to contact myself to discuss the required actions.</p>",
       },
       {
         id:22,
@@ -418,7 +418,7 @@ export const emailConfig = {
         receiver: "Council",
         subject:'RE: To Council - Extend the Suspended Appeal Period',
         content:
-          "<p>Hi XXXX,</p><p>Pursuant to Section 75 (4)(b)(iii) of the Planning Act 2016, we hereby request an extension to the applicant’s suspended appeal period to enable sufficient time for the representations to be considered by Council and a negotiated decision notice issued.</p><p>We request Council’s agreement to extend the suspend period until xxxx.</p>",
+          "<p>Hi XXXX,</p><p>Pursuant to Section 75 (4)(b)(iii) of the Planning Act 2016, we hereby request an extension to the applicant’s suspended appeal period to enable sufficient time for the representations to be considered by Council and a negotiated decision notice issued.</p><p>We request Council’s agreement to extend the suspend period until xxxx.</p>",
       },
     ],
   },
