@@ -237,7 +237,7 @@ export const ExpandedTaskPopup = React.forwardRef(({ emailDetails, onSave, onRet
   const [attachments, setAttachments] = useState([]);
   const [htmlContent, setHtmlContent] = useState("");
 
-  const [subject, setSubject] = useState("RE:" + emailType);
+  const [subject, setSubject] = useState("RE:" + emailDetails?.subject);
   const attachmentRef = useRef(null);
   const popupRef = useRef(null);
 
