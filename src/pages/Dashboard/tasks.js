@@ -1404,7 +1404,7 @@ function TaskPage() {
                         )}
                       </label>
                       <p>
-                        | {task.job_id} |<span>{task.title}</span>
+                        | {task.job_id} |<span>{task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}</span>
                       </p>
                     </div>
                     <div className="listContent centerContent">
@@ -1621,7 +1621,7 @@ function TaskPage() {
                         )}
                       </label>
                       <p>
-                        | {task.job_id} |<span>{task.title}</span>
+                        | {task.job_id} |<span>{task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}</span>
                       </p>
                     </div>
                     <div className="listContent centerContent">
@@ -2211,7 +2211,7 @@ function TaskPage() {
                             )}
                           </label>
                           <p className="text-end">
-                            | {task.job_id}|<span>{task.title}</span>
+                            | {task.job_id}|<span>{task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}</span>
                           </p>
                         </div>
                       </div>
@@ -2443,7 +2443,7 @@ function TaskPage() {
                               )}
                             </label>
                             <p className="text-end">
-                              | {task.job_id}|<span>{task.title}</span>
+                              | {task.job_id}|<span>{task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}</span>
                             </p>
                           </div>
                         </div>
@@ -2661,7 +2661,7 @@ function TaskPage() {
                         <RedoIcon />
                       </div>
                       <p>
-                        | {task.job_id}|<span>{task.title}</span>
+                        | {task.job_id}|<span>{task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}</span>
                       </p>
                     </div>
                     <div className="listContent centerContent">
@@ -2728,7 +2728,7 @@ function TaskPage() {
                           <RedoIcon />
                         </div>
                         <p>
-                          | {task.job_id}|<span>{task.title}</span>
+                          | {task.job_id}|<span>{task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}</span>
                         </p>
                       </div>
                       <div className="listContent centerContent">
@@ -2807,7 +2807,7 @@ function TaskPage() {
                             <RedoIcon />
                           </div>
                           <p>
-                            | {task.job_id}|<span>{task.title}</span>
+                            | {task.job_id}|<span>{task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}</span>
                           </p>
                         </div>
                       </div>
@@ -2892,7 +2892,7 @@ function TaskPage() {
                           <RedoIcon />
                         </div>
                         <p>
-                          | {task.job_id}|<span>{task.title}</span>
+                          | {task.job_id}|<span>{task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}</span>
                         </p>
                       </div>
                     </div>

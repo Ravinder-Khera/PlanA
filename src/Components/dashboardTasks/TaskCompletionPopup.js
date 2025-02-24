@@ -475,7 +475,7 @@ export const ExpandedTaskPopup = React.forwardRef(
                 >
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,application/pdf"
                     ref={attachmentRef}
                     className="d-none"
                     onChange={handleFileUpload}

@@ -678,7 +678,7 @@ const ChatAndAttachment = ({ JobId }) => {
                     />
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,application/pdf"
                       ref={attachmentRef}
                       className="d-none"
                       onChange={handleFileUpload}
@@ -1050,7 +1050,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
           >
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf"
               ref={attachmentRef}
               className="d-none"
               onChange={handleFileUpload}
@@ -1458,7 +1458,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
             />
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf"
               ref={attachmentRef}
               className="d-none"
               onChange={handleFileUpload}
@@ -2004,6 +2004,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
             <input
               type="file"
               ref={attachmentRef}
+              accept="image/*,application/pdf"
               className="d-none"
               onChange={handleFileUpload}
             />
@@ -2641,7 +2642,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
             />
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf"
               ref={attachmentRef}
               className="d-none"
               onChange={handleFileUpload}
@@ -3028,6 +3029,7 @@ if(droppedFile){
             <input
               type="file"
               ref={attachmentRef}
+              accept="image/*,application/pdf"
               className="d-none"
               onChange={handleFileUpload}
             />

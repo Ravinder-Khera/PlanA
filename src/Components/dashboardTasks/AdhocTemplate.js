@@ -237,7 +237,7 @@ export const ExpandedTaskPopup = React.forwardRef(({ emailDetails, onSave, onRet
   const [attachments, setAttachments] = useState([]);
   const [htmlContent, setHtmlContent] = useState("");
 
-  const [subject, setSubject] = useState("RE:" + emailDetails?.subject);
+  const [subject, setSubject] = useState(emailDetails?.subject);
   const attachmentRef = useRef(null);
   const popupRef = useRef(null);
 
@@ -407,7 +407,7 @@ export const ExpandedTaskPopup = React.forwardRef(({ emailDetails, onSave, onRet
               >
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,application/pdf"
                   ref={attachmentRef}
                   className="d-none"
                   onChange={handleFileUpload}

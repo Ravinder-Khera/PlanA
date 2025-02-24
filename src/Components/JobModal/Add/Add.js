@@ -784,7 +784,7 @@ const Add = ({ handleClose, fetchJobs }) => {
                                       style={{ width: "18px", height: "18px" }}
                                     />
                                     <p className={`text_${task.stageTitle}`}>
-                                      {task.title}
+                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                     </p>
                                   </div>
 

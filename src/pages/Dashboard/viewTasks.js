@@ -975,7 +975,7 @@ function ViewTaskPage() {
                       className={`listContent listTitle justify-content-between`}
                     >
                       <p
-                        title={task?.title}
+                        title={task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                         style={{
                           WebkitBoxOrient: "vertical",
                           WebkitLineClamp: 2,
@@ -985,7 +985,7 @@ function ViewTaskPage() {
                           maxWidth: "350px",
                         }}
                       >
-                        {task?.title}
+                        {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                       </p>
 
                       <p style={{ marginRight: "30px", cursor: "pointer" }}>

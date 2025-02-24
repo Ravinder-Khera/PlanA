@@ -2790,7 +2790,7 @@ const Jobs = () => {
                                                 }
                                               }}
                                             >
-                                              {task.title}
+                                              {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                             </span>
                                           );
                                         })}

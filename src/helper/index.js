@@ -219,7 +219,7 @@ export const emailConfig = {
           "<p>Hi Xxxx,</p><p>Please see attached Council’s lodgement fees for the development application at 99 XXXXX Street, XXXXX.</p><p>Please send a copy of the receipt / remittance for us to issue to Council.</p>",
       },
     ],
-    "Assessment Manager Gives Confirmation Notice": [
+    "Assessment manager gives confirmation notice": [
       {
         id:3,
         emailType: "Confirmation Notice",
@@ -237,7 +237,7 @@ export const emailConfig = {
           "<p>Dear Xxxx,</p><p>In accordance with Section 5.1 of the DA Rules under the Planning Act 2016, we hereby request an extension to the Referral period for the application at XXXX.</p><p>We request and extension until XXXX.</p>",
       },
     ],
-    "Assessment Manager Gives Action Notice":[
+    "Assessment manager gives action notice":[
       {
         id:5,
         emailType: "Action Notice Response",
@@ -255,7 +255,7 @@ export const emailConfig = {
     ]
   },
   Referral: {
-    "Applicant Refers Application To Referral Agencies": [
+    "Applicant refers application to referral agencies": [
       {
         id:7,
         emailType: "Fee Proposal",
@@ -308,7 +308,7 @@ export const emailConfig = {
           "<p>Dear Xxxx,</p><p>In accordance with Section 9.2(b) of the DA Rules under the Planning Act 2016, we hereby request an extension to the referral assessment period for the application at XXXX (SARA Ref XXXX).</p><p>We extend the period until XXXX.</p>",
       },
     ],
-    "Referral Agency Makes Information Request": [
+    "Referral agency makes information request": [
       {
         id:12,
         emailType: "Response to Information Request",
@@ -326,7 +326,7 @@ export const emailConfig = {
           "<p>Dear Xxxx,</p><p>In accordance with Section 13.1 of the DA Rules under the Planning Act 2016, we hereby request an extension to the Referral Agency Information Request response period for the application at XXXX (Council Ref xxxx).</p><p>We request an extension until XXXX.</p>",
       },
     ],
-    "Applicant Responds To Information Request": [
+    "Applicant responds to information request": [
       {
         id:14,
         emailType: "Response to Information Request",
@@ -360,7 +360,7 @@ export const emailConfig = {
           "<p>Hi Xxxx,</p><p>Council have issued a Further Issues Letter / Request for Further Advice / Outstanding Issues Letter in relation to the pending application at xxxx.</p><p>Please find the Council’s request attached.</p><p>We have included a breakdown of the items and some preliminary comments in relation to preparing our response. <ul><li>ADD COMMENTS AS RELEVANT</li></ul></p><p>Should you have any queries or concerns please contact the office.</p>",
       },
     ],
-    "Assessment Manager Decides Application": [
+    "Assessment manager decides application": [
       {
         id:17,
         emailType: "Decision Notice",
@@ -386,7 +386,7 @@ export const emailConfig = {
           "<p>Dear xxxx,</p><p>In accordance with Section 9.2(b) of the DA Rules under the Planning Act 2016, we hereby request an extension to the referral assessment period for the application at XXXX (SARA Ref XXXX).</p><p>We extend the period until XXXX.</p>",
       },
     ],
-    "Assessment Manager Issues Decision Notice": [
+    "Assessment manager issues decision notice": [
       {
         id:20,
         emailType: "Negotiated Decision Notice",

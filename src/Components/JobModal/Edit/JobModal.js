@@ -1243,7 +1243,7 @@ const JobModal = ({
                                       style={{ width: "18px", height: "18px" }}
                                     />
                                     <p className={`text_${task.stageTitle}`}>
-                                      {task.title}
+                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                     </p>
                                   </div>
 
@@ -1908,7 +1908,7 @@ const JobModal = ({
                                   <p
                                     className={`text-end text_${task.stageTitle}`}
                                   >
-                                    {task.title}
+                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                   </p>
                                 </div>
                                 <div className="taskItem">
@@ -3198,9 +3198,9 @@ export const NewJobModal = ({
                                     className={`task-title text-left   ${
                                       task.stage?.title?.split(" ")[0]
                                     }`}
-                                    title={task?.title}
+                                    title={task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                   >
-                                    {task?.title}
+                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                   </td>
                                   <td className="addNewTaskDiv text-center">
                                     <span
@@ -3702,9 +3702,9 @@ export const NewJobModalWithTasks = ({
                                     className={`task-title text-left   ${
                                       task.stage?.title?.split(" ")[0]
                                     }`}
-                                    title={task?.title}
+                                    title={task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                   >
-                                    {task?.title}
+                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                   </td>
                                   <td className="addNewTaskDiv text-center">
                                     <span
@@ -4211,7 +4211,7 @@ useEffect(() => {
                               className="all-stage"
                             >
                               <div className={`title ${task.stageTitle}`}>
-                                {task.title}
+                                {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                               </div>
                               <div
                                 className={`stage-title stage_${task.stageTitle}`}
@@ -5144,7 +5144,7 @@ export const UpdateTaskModal = React.forwardRef(
                                 className="all-stage"
                               >
                                 <div className={`title ${task.stageTitle}`}>
-                                  {task.title}
+                                {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                 </div>
                                 <div
                                   className={`stage-title stage_${task.stageTitle}`}
@@ -6105,7 +6105,7 @@ export const CreateTaskModal = memo(React.forwardRef(
                                 className="all-stage"
                               >
                                 <div className={`title ${task.stageTitle}`}>
-                                  {task.title}
+                                {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
                                 </div>
                                 <div
                                   className={`stage-title stage_${task.stageTitle}`}
