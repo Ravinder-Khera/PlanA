@@ -250,7 +250,7 @@ function Dashboard() {
           </div>
         </div>
         <div className="dashboardBoxes">
-          <div className="custom_box">
+          <div className="custom_box"  onClick={() => navigate('/jobs/tasks')}>
             <h3>
               <CountUp
                 start={0}
@@ -261,7 +261,7 @@ function Dashboard() {
             </h3>
             <p>Total Tasks</p>
           </div>
-          <div className="custom_box">
+          <div className="custom_box" onClick={() => navigate('/jobs/tasks')}>
             <h3>
               <CountUp
                 start={0}
@@ -272,7 +272,7 @@ function Dashboard() {
             </h3>
             <p>Tasks Due</p>
           </div>
-          <div className="custom_box">
+          <div className="custom_box" onClick={() => navigate('/jobs')}>
             <h3>
               <CountUp
                 start={0}
@@ -283,7 +283,7 @@ function Dashboard() {
             </h3>
             <p>Follow Up Jobs</p>
           </div>
-          <div className="custom_box">
+          <div className="custom_box" onClick={() => navigate('/jobs')}>
             <h3>
               <CountUp
                 start={0}

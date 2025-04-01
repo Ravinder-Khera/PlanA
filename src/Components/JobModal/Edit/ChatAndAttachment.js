@@ -161,7 +161,7 @@ const ChatAndAttachment = ({ JobId }) => {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -257,7 +257,7 @@ const ChatAndAttachment = ({ JobId }) => {
     if (existingNotificationsJSON) {
       existingNotifications = JSON.parse(existingNotificationsJSON);
     }
-    existingNotifications.push(notificationData);
+    existingNotifications.unshift(notificationData);
 
     localStorage.setItem(
       "notifications",
@@ -871,7 +871,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
         const existingNotifications = JSON.parse(
           localStorage.getItem("notifications") || "[]"
         );
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
         localStorage.setItem(
           "notifications",
           JSON.stringify(existingNotifications)
@@ -979,7 +979,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
     if (existingNotificationsJSON) {
       existingNotifications = JSON.parse(existingNotificationsJSON);
     }
-    existingNotifications.push(notificationData);
+    existingNotifications.unshift(notificationData);
 
     localStorage.setItem(
       "notifications",
@@ -1745,7 +1745,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const existingNotifications = JSON.parse(
           localStorage.getItem("notifications") || "[]"
         );
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
         localStorage.setItem(
           "notifications",
           JSON.stringify(existingNotifications)
@@ -1791,7 +1791,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const existingNotifications = JSON.parse(
           localStorage.getItem("notifications") || "[]"
         );
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
         localStorage.setItem(
           "notifications",
           JSON.stringify(existingNotifications)
@@ -1917,28 +1917,47 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     reader.readAsDataURL(file);
   };
 
-  const handleDownloadFile = (fileUrl, docName) => {
-    const link = document.createElement("a");
-    link.href = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
-    link.download = docName;
-    link.target = "_blank";
-    link.click();
-    const notificationData = {
-      class: "success",
-      message: "File Successfully Downloaded!",
-    };
-    const existingNotificationsJSON = localStorage.getItem("notifications");
-    let existingNotifications = [];
-    if (existingNotificationsJSON) {
-      existingNotifications = JSON.parse(existingNotificationsJSON);
-    }
-    existingNotifications.push(notificationData);
+  const handleDownloadFile = async (fileUrl, docName) => {
+  try {
+    const filePath = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH_NEW}/${fileUrl}`;
 
-    localStorage.setItem(
-      "notifications",
-      JSON.stringify(existingNotifications)
-    );
+    const response = await fetch(filePath, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/octet-stream", // Forces browser to handle it as a file
+      },
+    });
+
+    if (!response.ok) throw new Error(`Failed to fetch file: ${response.statusText}`);
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", docName); // Forces download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
+
+    saveNotification("success", "File Successfully Downloaded!");
+  } catch (error) {
+    console.error("Download error:", error);
+    saveNotification("error", "Failed to download file. Please try again.");
+  }
+};
+
+  
+  
+  // Helper function to update notifications in localStorage
+  const saveNotification = (type, message) => {
+    const notifications = JSON.parse(localStorage.getItem("notifications")) || [];
+    notifications.unshift({ class: type, message });
+    localStorage.setItem("notifications", JSON.stringify(notifications));
   };
+  
 
   const handleDeleteAttachment = async (id) => {
     try {
@@ -2819,7 +2838,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
         const existingNotifications = JSON.parse(
           localStorage.getItem("notifications") || "[]"
         );
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
         localStorage.setItem(
           "notifications",
           JSON.stringify(existingNotifications)
@@ -2955,7 +2974,7 @@ if(droppedFile){
     if (existingNotificationsJSON) {
       existingNotifications = JSON.parse(existingNotificationsJSON);
     }
-    existingNotifications.push(notificationData);
+    existingNotifications.unshift(notificationData);
 
     localStorage.setItem(
       "notifications",

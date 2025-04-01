@@ -200,7 +200,7 @@ function DashboardMenuList() {
             if (existingNotificationsJSON) {
               existingNotifications = JSON.parse(existingNotificationsJSON);
             }
-            existingNotifications.push(notificationData);
+            existingNotifications.unshift(notificationData);
 
             localStorage.setItem(
               "notifications",
@@ -221,7 +221,7 @@ function DashboardMenuList() {
             if (existingNotificationsJSON) {
               existingNotifications = JSON.parse(existingNotificationsJSON);
             }
-            existingNotifications.push(notificationData);
+            existingNotifications.unshift(notificationData);
 
             localStorage.setItem(
               "notifications",
@@ -242,7 +242,7 @@ function DashboardMenuList() {
             if (existingNotificationsJSON) {
               existingNotifications = JSON.parse(existingNotificationsJSON);
             }
-            existingNotifications.push(notificationData);
+            existingNotifications.unshift(notificationData);
 
             localStorage.setItem(
               "notifications",

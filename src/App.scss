@@ -1323,6 +1323,7 @@ body {
       flex: 1 1 auto;
       text-align: center;
       font-family: "Archivo", sans-serif;
+      cursor: pointer;
       @media screen and (max-width: 992px) {
         flex: 0.5 1 auto;
         width: calc(50% - 5px);

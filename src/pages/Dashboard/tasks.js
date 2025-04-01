@@ -390,7 +390,7 @@ function TaskPage() {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         
@@ -425,7 +425,7 @@ function TaskPage() {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
@@ -580,7 +580,7 @@ function TaskPage() {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.success("Task created successfully", {
@@ -613,7 +613,7 @@ function TaskPage() {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {

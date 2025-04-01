@@ -186,7 +186,7 @@ const TaskCompletionPopup = React.forwardRef(
                     <div className={`markTaskComplete active `}></div>
                     <div>
                       <div className="taskHeading">| {task.id} |</div>
-                      <div className="taskHeading">{trimmedTitle}</div>
+                      <div className="taskHeading" style={{textTransform: 'capitalize'}}>{trimmedTitle}</div>
                       <div className="taskDate">
                         <span>Due Date</span>
                         <span>

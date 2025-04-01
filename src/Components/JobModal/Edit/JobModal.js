@@ -458,7 +458,7 @@ const JobModal = ({
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -475,7 +475,7 @@ const JobModal = ({
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -531,7 +531,7 @@ const JobModal = ({
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -550,7 +550,7 @@ const JobModal = ({
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -633,7 +633,7 @@ const JobModal = ({
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -651,7 +651,7 @@ const JobModal = ({
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -4153,7 +4153,7 @@ useEffect(() => {
                     >
                       <input
                         type="text"
-                        className="jobTitle"
+                        className="jobTitle text-capitalize"
                         name="title"
                         value={title}
                         onChange={(e) => {
@@ -4192,7 +4192,7 @@ useEffect(() => {
                         <div
                           className="stages"
                           style={{
-                            maxWidth: "600px",
+                            maxWidth: "650px",
                             maxHeight: "300px",
                             overflowY: "auto",
                           }}
@@ -5087,7 +5087,7 @@ export const UpdateTaskModal = React.forwardRef(
                       >
                         <input
                           type="text"
-                          className="jobTitle"
+                          className="jobTitle text-capitalize"
                           name="title"
                           value={title}
                           onChange={(e) => {
@@ -5125,7 +5125,7 @@ export const UpdateTaskModal = React.forwardRef(
                           <div
                             className="stages"
                             style={{
-                              maxWidth: "600px",
+                              maxWidth: "650px",
                               maxHeight: "300px",
                               overflowY: "auto",
                             }}
@@ -6046,7 +6046,7 @@ export const CreateTaskModal = memo(React.forwardRef(
                         >
                           <input
                             type="text"
-                            className="jobTitle position-relative"
+                            className="jobTitle position-relative text-capitalize"
                             name="title"
                             value={title}
                             onChange={(e) => {
@@ -6086,7 +6086,7 @@ export const CreateTaskModal = memo(React.forwardRef(
                           <div
                             className="stages"
                             style={{
-                              maxWidth: "600px",
+                              maxWidth: "650px",
                               maxHeight: "300px",
                               overflowY: "auto",
                             }}

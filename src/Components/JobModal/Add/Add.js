@@ -519,7 +519,7 @@ const Add = ({ handleClose, fetchJobs }) => {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
@@ -536,7 +536,7 @@ const Add = ({ handleClose, fetchJobs }) => {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.error(`${response.error.message}`);

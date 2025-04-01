@@ -78,7 +78,7 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
@@ -107,7 +107,7 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
@@ -228,7 +228,7 @@ function ProfilePic({ userPicture, fetchProfileData }) {
           if (existingNotificationsJSON) {
             existingNotifications = JSON.parse(existingNotificationsJSON);
           }
-          existingNotifications.push(notificationData);
+          existingNotifications.unshift(notificationData);
       
           localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
@@ -254,7 +254,7 @@ function ProfilePic({ userPicture, fetchProfileData }) {
           if (existingNotificationsJSON) {
             existingNotifications = JSON.parse(existingNotificationsJSON);
           }
-          existingNotifications.push(notificationData);
+          existingNotifications.unshift(notificationData);
       
           localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
@@ -468,7 +468,7 @@ function PasswordReset({fetchProfileData}) {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.success(<>
@@ -498,7 +498,7 @@ function PasswordReset({fetchProfileData}) {
           if (existingNotificationsJSON) {
             existingNotifications = JSON.parse(existingNotificationsJSON);
           }
-          existingNotifications.push(notificationData);
+          existingNotifications.unshift(notificationData);
       
           localStorage.setItem('notifications', JSON.stringify(existingNotifications));
           toast.error(<>

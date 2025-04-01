@@ -322,7 +322,7 @@ const InvoicePopup = ({ handleClose }) => {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
@@ -348,7 +348,7 @@ const InvoicePopup = ({ handleClose }) => {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
     
         localStorage.setItem('notifications', JSON.stringify(existingNotifications));
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {

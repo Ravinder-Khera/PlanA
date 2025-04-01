@@ -921,7 +921,7 @@ const Jobs = () => {
           if (existingNotificationsJSON) {
             existingNotifications = JSON.parse(existingNotificationsJSON);
           }
-          existingNotifications.push(notificationData);
+          existingNotifications.unshift(notificationData);
 
           localStorage.setItem(
             "notifications",
@@ -1059,7 +1059,7 @@ const Jobs = () => {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -1537,9 +1537,10 @@ const Jobs = () => {
             setFilteredJobs((prevJobs) =>
               prevJobs.map((job) => ({
                 ...job,
-                tasks: job.tasks.filter((task) => task.id !== activeTask.id),
+                tasks: job.tasks.filter((task) => task?.id !== activeTask?.id),
               }))
             );
+            
             setShowAddTaskModal(false);
           }}
         />
@@ -1561,7 +1562,7 @@ const Jobs = () => {
             setFilteredJobs((prevJobs) =>
               prevJobs.map((job) => ({
                 ...job,
-                tasks: job.tasks.filter((task) => task.id !== activeTask.id),
+                tasks: job.tasks.filter((task) => task?.id !== activeTask?.id),
               }))
             );
             handleTaskDelete(activeTask);
@@ -1583,7 +1584,7 @@ const Jobs = () => {
             }
             if (isDeleting) {
               setFilteredJobs((prevJobs) =>
-                prevJobs.filter((job) => job.id !== getJob?.data?.id)
+                prevJobs.filter((job) => job?.id !== getJob?.data?.id)
               );
             }
           }}
@@ -1592,7 +1593,7 @@ const Jobs = () => {
           scrollRef={taskMobileScrollRef}
           handleDelete={() => {
             setFilteredJobs((prevJobs) =>
-              prevJobs.filter((job) => job.id !== getJob?.data?.id)
+              prevJobs.filter((job) => job?.id !== getJob?.data?.id)
             );
             setIsDeleting(true);
           }}
@@ -2060,7 +2061,7 @@ const Jobs = () => {
                                               minWidth: "40px",
                                               zIndex: index,
                                               cursor: "pointer",
-                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                              border:   CollaboratorBorders[user?.id] || CollaboratorNameBorders[user?.name] || 
                                                                                                                             "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
@@ -2126,7 +2127,7 @@ const Jobs = () => {
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                                border:   CollaboratorBorders[user?.id] || CollaboratorNameBorders[user?.name] || 
                                                                               "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
@@ -2159,7 +2160,7 @@ const Jobs = () => {
                                             className={`collaboratorsBoxUser`}
                                             style={{
                                               minWidth: "40px",
-                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                              border:   CollaboratorBorders[user?.id] || CollaboratorNameBorders[user?.name] || 
                                                                               "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
@@ -2199,7 +2200,9 @@ const Jobs = () => {
                                 : ""
                             }`}
                           >
-                            <td className="text-center">
+                            <td className="text-center" style={{cursor: 'pointer'}} onClick={() => {
+                               setActiveJob(job);
+                            }}>
                               <span className={`jobNoBtn`}>
                                 {formatJobNumber(job?.job_num)}
                               </span>

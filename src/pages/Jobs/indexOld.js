@@ -418,7 +418,7 @@ const Jobs = () => {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
@@ -437,7 +437,7 @@ const Jobs = () => {
         if (existingNotificationsJSON) {
           existingNotifications = JSON.parse(existingNotificationsJSON);
         }
-        existingNotifications.push(notificationData);
+        existingNotifications.unshift(notificationData);
 
         localStorage.setItem(
           "notifications",
