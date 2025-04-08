@@ -17,6 +17,7 @@ import {
   User,
 } from "../../../assets/svg";
 import {
+  addNotification,
   AllStages,
   arraysEqualByIdV2,
   CollaboratorBorders,
@@ -449,39 +450,11 @@ const JobModal = ({
         }
         setFilteredTasks(updatedTasks);
         fetchJobs();
-        const notificationData = {
-          class: "success",
-          message: "Task Updated Successfully!",
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
 
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+        addNotification("success", "Task Updated");
         toast.success("Task Updated Successfully!");
       } else {
-        const notificationData = {
-          class: "error",
-          message: "Failed to Update Task!",
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
-
+        addNotification("error", "Task Update Failed");
         toast.error("Failed to Update Task!");
       }
     } catch (error) {
@@ -522,40 +495,11 @@ const JobModal = ({
       console.log("reqBody", reqBody);
       const response = await updateJobs(reqBody);
       if (response.res) {
-        const notificationData = {
-          class: "success",
-          message: response.res.message,
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
-
+        addNotification("success", "Task Updated");
         toast.success(`${response.res.message}`);
       } else {
         console.error("jobs update failed:", response.error);
-        const notificationData = {
-          class: "error",
-          message: response.error.message,
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+        addNotification("error", "Task Update Failed");
         toast.error(`${response.error.message}`);
       }
     } catch (error) {
@@ -624,39 +568,11 @@ const JobModal = ({
           users: selectedAssignee,
         });
         fetchJobs();
-        const notificationData = {
-          class: "success",
-          message: "Task Created Successfully!",
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
 
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
-
+        addNotification("success", "Task Created");
         toast.success("Task Created Successfully!");
       } else {
-        const notificationData = {
-          class: "error",
-          message: "Failed to Create Task!",
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+        addNotification("error", "Task Creation Failed");
 
         toast.error("Failed to Create Task!");
         setNewTask({
@@ -698,6 +614,7 @@ const JobModal = ({
         setTimeout(() => {
           fetchJobs();
           setSelectedTasks();
+          addNotification("success", "Task Updated");
           toast.success("Task Status Updated Successfully.");
         }, 1000);
       } else {
@@ -1243,7 +1160,9 @@ const JobModal = ({
                                       style={{ width: "18px", height: "18px" }}
                                     />
                                     <p className={`text_${task.stageTitle}`}>
-                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                      {task?.title?.replace(/\b\w/g, (char) =>
+                                        char.toUpperCase()
+                                      )}
                                     </p>
                                   </div>
 
@@ -1908,7 +1827,9 @@ const JobModal = ({
                                   <p
                                     className={`text-end text_${task.stageTitle}`}
                                   >
-                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                    {task?.title?.replace(/\b\w/g, (char) =>
+                                      char.toUpperCase()
+                                    )}
                                   </p>
                                 </div>
                                 <div className="taskItem">
@@ -2796,7 +2717,7 @@ export const NewJobModal = ({
   scrollRef,
   usersList,
   newJob,
-  handleDelete: handleDeleteProp
+  handleDelete: handleDeleteProp,
 }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
@@ -2816,7 +2737,6 @@ export const NewJobModal = ({
 
   const descRef = useRef(null);
   const jobTaskRef = useRef(null);
-
   useEffect(() => {
     descRef.current = description;
   }, [description]);
@@ -2883,19 +2803,18 @@ export const NewJobModal = ({
     setDescription(e.target.value);
   };
 
-    const handleModalClose = async () => {
-      let isUpdateRequired = false;
-      if (job && job?.description !== descRef.current) {
-        job.description = descRef.current;
-        isUpdateRequired = true;
-      }
-      if (job && !compareTaskArray(job.tasks, jobTaskRef.current)) {
-        job.tasks = jobTaskRef.current;
-        isUpdateRequired = true;
-      }
-      await handleClose(isUpdateRequired);
-    };
-  
+  const handleModalClose = async () => {
+    let isUpdateRequired = false;
+    if (job && job?.description !== descRef.current) {
+      job.description = descRef.current;
+      isUpdateRequired = true;
+    }
+    if (job && !compareTaskArray(job.tasks, jobTaskRef.current)) {
+      job.tasks = jobTaskRef.current;
+      isUpdateRequired = true;
+    }
+    await handleClose(isUpdateRequired);
+  };
 
   const handleDelete = async () => {
     try {
@@ -2903,9 +2822,11 @@ export const NewJobModal = ({
       setIsDeleting(true); // Set the deletion flag
       const response = await deleteJob(job.id);
       if (response.res) {
+        addNotification("success", "Job Deleted");
         console.log("Job delete successful", response.res);
       } else {
         console.error("Job delete failed:", response.error);
+        addNotification("error", "Job Deletion Failed");
         toast.error(response.error?.message || "Failed to delete the job");
       }
     } catch (error) {
@@ -2913,7 +2834,7 @@ export const NewJobModal = ({
       toast.error("Error deleting job");
     } finally {
       setLoader(false);
-      await handleDeleteProp(); 
+      await handleDeleteProp();
     }
   };
 
@@ -2943,7 +2864,13 @@ export const NewJobModal = ({
   };
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-    console.log(newData?.newTask);
+    console.log(
+      "NewJobModal handleCreateModalTask",
+      newData,
+      taskId,
+      users,
+      stage
+    );
     setJobTasks((prevTasks) => [
       {
         title: newData?.newTask?.title,
@@ -2960,8 +2887,10 @@ export const NewJobModal = ({
     setShowAddTaskModal(false);
     var response = await createTask(newData.newTask, taskId);
     if (response.res) {
+      addNotification("success", "Task Created");
       console.log("Task create successful", response.res);
     } else {
+      addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);
       toast.error(response.error?.message || "Failed to add the task");
     }
@@ -2995,6 +2924,7 @@ export const NewJobModal = ({
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
+      addNotification("success", "Task Updated");
       console.log("Task Update successful", response.res);
     } else {
       console.error("Task Update failed:", response.error);
@@ -3011,10 +2941,11 @@ export const NewJobModal = ({
     try {
       const response = await deleteTask(task.id);
       if (response.res) {
-        console.log("Job delete successful", response.res);
+        addNotification("success", "Task Deleted");
+        console.log("Task delete successful", response.res);
       } else {
-        console.error("Job delete failed:", response.error);
-        toast.error(response.error?.message || "Failed to delete the job");
+        console.error("Task delete failed:", response.error);
+        toast.error(response.error?.message || "Failed to delete the Task");
       }
     } catch (error) {
       console.error("Error deleting job:", error);
@@ -3198,9 +3129,14 @@ export const NewJobModal = ({
                                     className={`task-title text-left   ${
                                       task.stage?.title?.split(" ")[0]
                                     }`}
-                                    title={task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                    title={task?.title?.replace(
+                                      /\b\w/g,
+                                      (char) => char.toUpperCase()
+                                    )}
                                   >
-                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                    {task?.title?.replace(/\b\w/g, (char) =>
+                                      char.toUpperCase()
+                                    )}
                                   </td>
                                   <td className="addNewTaskDiv text-center">
                                     <span
@@ -3303,7 +3239,7 @@ export const NewJobModalWithTasks = ({
   scrollRef,
   usersList,
   newJob,
-  handleDelete:handleDeleteProp
+  handleDelete: handleDeleteProp,
 }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
@@ -3409,8 +3345,10 @@ export const NewJobModalWithTasks = ({
       setIsDeleting(true); // Set the deletion flag
       const response = await deleteJob(job.id);
       if (response.res) {
+        addNotification("success", "Job Deleted");
         console.log("Job delete successful", response.res);
       } else {
+        addNotification("success", "Job Deletion Failed");
         console.error("Job delete failed:", response.error);
         toast.error(response.error?.message || "Failed to delete the job");
       }
@@ -3466,8 +3404,10 @@ export const NewJobModalWithTasks = ({
     setShowAddTaskModal(false);
     var response = await createTask(newData.newTask, taskId);
     if (response.res) {
+      addNotification("success", "Task Created");
       console.log("Task create successful", response.res);
     } else {
+      addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);
       toast.error(response.error?.message || "Failed to add the task");
     }
@@ -3499,6 +3439,7 @@ export const NewJobModalWithTasks = ({
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
+      addNotification("success", "Task Updated");
       console.log("Task Update successful", response.res);
     } else {
       console.error("Task Update failed:", response.error);
@@ -3516,7 +3457,9 @@ export const NewJobModalWithTasks = ({
       const response = await deleteTask(task.id);
       if (response.res) {
         console.log("Job delete successful", response.res);
+        addNotification("success", "Task Deleted");
       } else {
+        addNotification("error", "Task Deletion Failed");
         console.error("Job delete failed:", response.error);
         toast.error(response.error?.message || "Failed to delete the job");
       }
@@ -3702,9 +3645,14 @@ export const NewJobModalWithTasks = ({
                                     className={`task-title text-left   ${
                                       task.stage?.title?.split(" ")[0]
                                     }`}
-                                    title={task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                    title={task?.title?.replace(
+                                      /\b\w/g,
+                                      (char) => char.toUpperCase()
+                                    )}
                                   >
-                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                    {task?.title?.replace(/\b\w/g, (char) =>
+                                      char.toUpperCase()
+                                    )}
                                   </td>
                                   <td className="addNewTaskDiv text-center">
                                     <span
@@ -3787,7 +3735,7 @@ export const NewJobModalWithTasks = ({
                         </button>
                       </div>
                     </div>
-                    
+
                     <ChatAndComment JobId={job?.id} usersList={usersList} />
                   </div>
                 </div>
@@ -3838,40 +3786,39 @@ export const NewTaskModal = ({
   const [firstClick, setFirstClick] = useState(true);
   const popupRef = useRef(null);
   const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
-// Create refs for the state variables
-const titleRef = useRef(title);
-const descriptionRef = useRef(description);
-const dueDateRef = useRef(dueDate);
-const stageRef = useRef(stage);
-const taskStatusRef = useRef(taskStatus);
+  // Create refs for the state variables
+  const titleRef = useRef(title);
+  const descriptionRef = useRef(description);
+  const dueDateRef = useRef(dueDate);
+  const stageRef = useRef(stage);
+  const taskStatusRef = useRef(taskStatus);
 
-const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
+  const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
 
- // Update refs whenever the state changes
- useEffect(() => {
-  titleRef.current = title;
-}, [title]);
+  // Update refs whenever the state changes
+  useEffect(() => {
+    titleRef.current = title;
+  }, [title]);
 
-useEffect(() => {
-  descriptionRef.current = description;
-}, [description]);
+  useEffect(() => {
+    descriptionRef.current = description;
+  }, [description]);
 
-useEffect(() => {
-  dueDateRef.current = dueDate;
-}, [dueDate]);
+  useEffect(() => {
+    dueDateRef.current = dueDate;
+  }, [dueDate]);
 
-useEffect(() => {
-  stageRef.current = stage;
-}, [stage]);
+  useEffect(() => {
+    stageRef.current = stage;
+  }, [stage]);
 
-useEffect(() => {
-  taskStatusRef.current = taskStatus;
-}, [taskStatus]);
+  useEffect(() => {
+    taskStatusRef.current = taskStatus;
+  }, [taskStatus]);
 
-
-useEffect(() => {
-  newJobCollaboratorsListIdRef.current = newJobCollaboratorsListId;
-}, [newJobCollaboratorsListId]);
+  useEffect(() => {
+    newJobCollaboratorsListIdRef.current = newJobCollaboratorsListId;
+  }, [newJobCollaboratorsListId]);
   // Handle outside click to close the popup
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -3969,14 +3916,16 @@ useEffect(() => {
       due_date: dueDateRef.current || formattedDueDate,
       status: taskStatusRef.current,
       assignee_ids: newJobCollaboratorsListIdRef.current,
-      stage_id: stage?.id,
+      stage_id: stageRef?.current?.id,
       description: descriptionRef.current,
     };
+    console.log("stage", stageRef);
     if (titleRef.current && titleRef.current.trim() !== "") {
       if (!stageRef.current?.id) {
         toast.error("Error: Stage must be selected before saving.");
         return;
       }
+
       onCreateTask(newTask);
     } else {
       handleClose();
@@ -4062,8 +4011,6 @@ useEffect(() => {
     setColors(generatedColors);
   }, [stageList?.length]);
 
- 
-
   const handleCreateCustomTask = () => {
     setFirstClick(false);
     setIsPopupOpen(false);
@@ -4147,8 +4094,8 @@ useEffect(() => {
                       style={{
                         borderBottom:
                           "1px solid rgba(226, 227, 31, 0.1490196078)",
-                           position:'sticky',
-                              top:'0'
+                        position: "sticky",
+                        top: "0",
                       }}
                     >
                       <input
@@ -4211,7 +4158,9 @@ useEffect(() => {
                               className="all-stage"
                             >
                               <div className={`title ${task.stageTitle}`}>
-                                {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                {task?.title?.replace(/\b\w/g, (char) =>
+                                  char.toUpperCase()
+                                )}
                               </div>
                               <div
                                 className={`stage-title stage_${task.stageTitle}`}
@@ -4308,8 +4257,12 @@ useEffect(() => {
                                           style={{
                                             minWidth: "40px",
                                             zIndex: index,
-                                            border:    CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                            border:
+                                              CollaboratorBorders[user.id] ||
+                                              CollaboratorNameBorders[
+                                                user.name
+                                              ] ||
+                                              "1px solid rgb(105, 103, 103)",
                                           }}
                                         >
                                           {initials}
@@ -4377,8 +4330,14 @@ useEffect(() => {
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                                border:
+                                                  CollaboratorBorders[
+                                                    user.id
+                                                  ] ||
+                                                  CollaboratorNameBorders[
+                                                    user.name
+                                                  ] ||
+                                                  "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -4410,8 +4369,12 @@ useEffect(() => {
                                             className={`collaboratorsBoxUser`}
                                             style={{
                                               minWidth: "40px",
-                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                              border:
+                                                CollaboratorBorders[user.id] ||
+                                                CollaboratorNameBorders[
+                                                  user.name
+                                                ] ||
+                                                "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -4605,7 +4568,8 @@ useEffect(() => {
                       </div>
                     </div>
 
-                    <CommentBox taskId={null}
+                    <CommentBox
+                      taskId={null}
                       JobId={null}
                       usersList={usersList}
                     />
@@ -4677,6 +4641,7 @@ export const UpdateTaskModal = React.forwardRef(
     const taskStatusRef = useRef(taskStatus);
     const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
     const taskCompletionPopupRef = useRef(null);
+  
 
     const fetchUsers = async () => {
       try {
@@ -4740,9 +4705,11 @@ export const UpdateTaskModal = React.forwardRef(
 
     useEffect(() => {
       if (task?.users) {
+        console.log("users------------------>", task.users)
         setNewJobCollaboratorsListId(task?.users.map((user) => user.id));
+        newJobCollaboratorsListIdRef.current = task?.users.map((user) => user.id)
       }
-    }, [task]);
+    }, [task?.user]);
 
     useEffect(() => {
       const fetchStages = async () => {
@@ -4809,9 +4776,7 @@ export const UpdateTaskModal = React.forwardRef(
       taskStatusRef.current = taskStatus;
     }, [taskStatus]);
 
-    useEffect(() => {
-      newJobCollaboratorsListIdRef.current = newJobCollaboratorsListId;
-    }, [newJobCollaboratorsListId]);
+ 
 
     const handleModalClose = async () => {
       const year = new Date().getFullYear();
@@ -4826,27 +4791,30 @@ export const UpdateTaskModal = React.forwardRef(
         stage_id: stageRef.current?.id,
         description: descriptionRef.current,
       };
-      if(!titleRef.current){
-        toast.error("Please enter task title.")
-        return
+      console.log(
+        newJobCollaboratorsListId,
+        newJobCollaboratorsList,
+        asigneeRef.current
+      );
+      if (!titleRef.current) {
+        toast.error("Please enter task title.");
+        return;
       }
-      if(!stageRef?.current?.id){
-        toast.error("Error: Stage must be selected before saving.")
-        return
+      if (!stageRef?.current?.id) {
+        toast.error("Error: Stage must be selected before saving.");
+        return;
       }
       if (
         titleRef.current !== task.title ||
         dueDateRef.current !== task.due_date ||
         taskStatusRef.current !== task.status ||
-        (newJobCollaboratorsListIdRef.current?.length > 0 &&
-          !arraysEqualByIdV2(
-            newJobCollaboratorsListIdRef.current,
-            asigneeRef.current
-          )) ||
+        !arraysEqualByIdV2(
+          newJobCollaboratorsListIdRef.current,
+          asigneeRef.current
+        ) ||
         stageRef.current?.id !== task.stage_id ||
         descriptionRef.current !== task.description
       ) {
-
         onUpdateTask(
           { updatedTask },
           task.id,
@@ -4903,24 +4871,30 @@ export const UpdateTaskModal = React.forwardRef(
     }, []);
 
     const handleRemoveCollaborator = (user) => {
-      setNewJobCollaboratorsList((prevList) =>
-        prevList.filter((u) => u.email !== user.email)
-      );
+
+      setNewJobCollaboratorsList((prevList) => {
+        const updated = prevList.filter((u) => u.email !== user.email);
+        setNewJobCollaboratorsListId(updated.map((u) => u.id)); // sync id list
+        newJobCollaboratorsListIdRef.current = updated.map((u) => u.id); // sync ref manually
+        return updated;
+      });
+    
       setUsersList((prevList) => [...prevList, user]);
-
-      setNewJobCollaboratorsListId((prevList) =>
-        prevList.filter((u) => u.id !== user.id)
-      );
     };
-
+    
     const handleSelectCollaborator = (user) => {
-      setNewJobCollaboratorsList((prevList) => [...prevList, user]);
+
+      setNewJobCollaboratorsList((prevList) => {
+        const updated = [...prevList, user];
+        setNewJobCollaboratorsListId(updated.map((u) => u.id)); // sync id list
+        newJobCollaboratorsListIdRef.current = updated.map((u) => u.id); // sync ref manually
+        return updated;
+      });
+    
       setUsersList((prevList) =>
         prevList.filter((u) => u.email !== user.email)
       );
-      setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
     };
-
     function formatStatus(status) {
       return status
         .replace(/-/g, " ")
@@ -5081,8 +5055,8 @@ export const UpdateTaskModal = React.forwardRef(
                         style={{
                           borderBottom:
                             "1px solid rgba(226, 227, 31, 0.1490196078)",
-                             position:'sticky',
-                              top:'0'
+                          position: "sticky",
+                          top: "0",
                         }}
                       >
                         <input
@@ -5144,7 +5118,9 @@ export const UpdateTaskModal = React.forwardRef(
                                 className="all-stage"
                               >
                                 <div className={`title ${task.stageTitle}`}>
-                                {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                  {task?.title?.replace(/\b\w/g, (char) =>
+                                    char.toUpperCase()
+                                  )}
                                 </div>
                                 <div
                                   className={`stage-title stage_${task.stageTitle}`}
@@ -5226,9 +5202,15 @@ export const UpdateTaskModal = React.forwardRef(
                                 className=" d-flex align-items-center justify-content-center"
                                 onClick={() => {
                                   setUsersList((prevList) =>
-                                    prevList.filter((u) => !newJobCollaboratorsListId.includes(u.id))
+                                    prevList.filter(
+                                      (u) =>
+                                        !newJobCollaboratorsListId.includes(
+                                          u.id
+                                        )
+                                    )
                                   );
-                                  setCollaboratorsBox(true)}}
+                                  setCollaboratorsBox(true);
+                                }}
                                 style={{ cursor: "pointer" }}
                               >
                                 {newJobCollaboratorsList.length > 0 && (
@@ -5250,8 +5232,12 @@ export const UpdateTaskModal = React.forwardRef(
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
-                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                              border:
+                                                CollaboratorBorders[user.id] ||
+                                                CollaboratorNameBorders[
+                                                  user.name
+                                                ] ||
+                                                "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -5264,7 +5250,9 @@ export const UpdateTaskModal = React.forwardRef(
                                         className={`collaboratorsBoxUser`}
                                         style={{
                                           minWidth: "40px",
-                                          zIndex: newJobCollaboratorsList?.length || 4,
+                                          zIndex:
+                                            newJobCollaboratorsList?.length ||
+                                            4,
                                         }}
                                       >
                                         +{newJobCollaboratorsList.length - 3}
@@ -5319,8 +5307,14 @@ export const UpdateTaskModal = React.forwardRef(
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                                  border:
+                                                    CollaboratorBorders[
+                                                      user.id
+                                                    ] ||
+                                                    CollaboratorNameBorders[
+                                                      user.name
+                                                    ] ||
+                                                    "1px solid rgb(105, 103, 103)",
                                                 }}
                                               >
                                                 {initials}
@@ -5352,8 +5346,14 @@ export const UpdateTaskModal = React.forwardRef(
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                 border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                                border:
+                                                  CollaboratorBorders[
+                                                    user.id
+                                                  ] ||
+                                                  CollaboratorNameBorders[
+                                                    user.name
+                                                  ] ||
+                                                  "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -5413,7 +5413,12 @@ export const UpdateTaskModal = React.forwardRef(
                                     onClick={() => {
                                       setStatusBox(false);
                                       setTatskStatus("completed");
-                                      setShowEmailPopup(true);
+                                      const exists = AllStages.some(
+                                        (item) =>
+                                          item?.title?.toLowerCase() ===
+                                          title?.toLowerCase()
+                                      );
+                                      if (exists) setShowEmailPopup(true);
                                     }}
                                   >
                                     <div className="statusBox completed">
@@ -5569,749 +5574,812 @@ export const UpdateTaskModal = React.forwardRef(
   }
 );
 
-export const CreateTaskModal = memo(React.forwardRef(
-  (
-    {
-      task: propTask,
-      handleClose,
-      handleDelete,
-      onCreateTask,
-      scrollRef,
-      newTask,
-      usersList: suggestedUser,
-      returnToJob,
-    },
-    ref
-  ) => {
-    const [task, setTask] = useState(propTask);
-    const [loader, setLoader] = useState(false);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [dueDate, setDueDate] = useState(null);
-    const [stage, setStage] = useState(null);
-    const [stageBox, setStageBox] = useState(false);
-    const [stageList, setStageList] = useState([]);
-    const [dueDateCalender, setDueDateCalender] = useState(false);
-    const [collaboratorsBox, setCollaboratorsBox] = useState(false);
-    const [statusBox, setStatusBox] = useState(false);
-    const [taskStatus, setTatskStatus] = useState("not-started");
-    const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
-    const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState(
-      []
-    );
-    const [usersList, setUsersList] = useState([]);
-    const popUpRef = useRef(null);
-    const popupRef = useRef(null);
-    const datePickerRef = useRef(null);
-    const newCollaboratorBoxRef = useRef(null);
-    const statusBoxRef = useRef(null);
-    const stageBoxRef = useRef(null);
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [isJobPopupOpen, setIsJobPopupOpen] = useState(false);
-    const inputRef = useRef(null);
-    const inputJobRef = useRef(null);
-    const jobSelectRef = useRef(null);
-    const [firstClick, setFirstClick] = useState(true);
-    const [jobNo, setJobNo] = useState(null);
-    const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
-    // Create refs for the state variables
-    const titleRef = useRef(title);
-    const descriptionRef = useRef(description);
-    const dueDateRef = useRef(dueDate);
-    const stageRef = useRef(stage);
-    const taskStatusRef = useRef(taskStatus);
-    const taskRef = useRef(task);
-    const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
+export const CreateTaskModal = memo(
+  React.forwardRef(
+    (
+      {
+        task: propTask,
+        handleClose,
+        handleDelete,
+        onCreateTask,
+        scrollRef,
+        newTask,
+        usersList: suggestedUser,
+        returnToJob,
+      },
+      ref
+    ) => {
+      const [task, setTask] = useState(propTask);
+      const [loader, setLoader] = useState(false);
+      const [title, setTitle] = useState("");
+      const [description, setDescription] = useState("");
+      const [dueDate, setDueDate] = useState(null);
+      const [stage, setStage] = useState(null);
+      const [stageBox, setStageBox] = useState(false);
+      const [stageList, setStageList] = useState([]);
+      const [dueDateCalender, setDueDateCalender] = useState(false);
+      const [collaboratorsBox, setCollaboratorsBox] = useState(false);
+      const [statusBox, setStatusBox] = useState(false);
+      const [taskStatus, setTatskStatus] = useState("not-started");
+      const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState(
+        []
+      );
+      const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] =
+        useState([]);
+      const [usersList, setUsersList] = useState([]);
+      const popUpRef = useRef(null);
+      const popupRef = useRef(null);
+      const datePickerRef = useRef(null);
+      const newCollaboratorBoxRef = useRef(null);
+      const statusBoxRef = useRef(null);
+      const stageBoxRef = useRef(null);
+      const [isPopupOpen, setIsPopupOpen] = useState(false);
+      const [isJobPopupOpen, setIsJobPopupOpen] = useState(false);
+      const inputRef = useRef(null);
+      const inputJobRef = useRef(null);
+      const jobSelectRef = useRef(null);
+      const [firstClick, setFirstClick] = useState(true);
+      const [jobNo, setJobNo] = useState(null);
+      const [inputPlaceholder, setInputPlaceholder] = useState("Select Task");
+      // Create refs for the state variables
+      const titleRef = useRef(title);
+      const descriptionRef = useRef(description);
+      const dueDateRef = useRef(dueDate);
+      const stageRef = useRef(stage);
+      const taskStatusRef = useRef(taskStatus);
+      const taskRef = useRef(task);
+      const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
 
-    // Update refs whenever the state changes
-    useEffect(() => {
-      titleRef.current = title;
-    }, [title]);
+      // Update refs whenever the state changes
+      useEffect(() => {
+        titleRef.current = title;
+      }, [title]);
 
-    useEffect(() => {
-      descriptionRef.current = description;
-    }, [description]);
+      useEffect(() => {
+        descriptionRef.current = description;
+      }, [description]);
 
-    useEffect(() => {
-      dueDateRef.current = dueDate;
-    }, [dueDate]);
+      useEffect(() => {
+        dueDateRef.current = dueDate;
+      }, [dueDate]);
 
-    useEffect(() => {
-      stageRef.current = stage;
-    }, [stage]);
+      useEffect(() => {
+        stageRef.current = stage;
+      }, [stage]);
 
-    useEffect(() => {
-      taskStatusRef.current = taskStatus;
-    }, [taskStatus]);
-    useEffect(() => {
-      taskRef.current = task;
-    }, [task]);
+      useEffect(() => {
+        taskStatusRef.current = taskStatus;
+      }, [taskStatus]);
+      useEffect(() => {
+        taskRef.current = task;
+      }, [task]);
 
-    useEffect(() => {
-      newJobCollaboratorsListIdRef.current = newJobCollaboratorsListId;
-    }, [newJobCollaboratorsListId]);
+      useEffect(() => {
+        newJobCollaboratorsListIdRef.current = newJobCollaboratorsListId;
+      }, [newJobCollaboratorsListId]);
 
-    const handleInputClick = () => {
-      setIsPopupOpen(true);
-    };
+      const handleInputClick = () => {
+        setIsPopupOpen(true);
+      };
 
-    const handleInputJobClick = (e) => {
-      setIsJobPopupOpen(true);
-    };
+      const handleInputJobClick = (e) => {
+        setIsJobPopupOpen(true);
+      };
 
-    // Handle outside click to close the popup
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (popUpRef.current && !popUpRef.current.contains(event.target)) {
-          // Check if the click target is not the toast
-          const isToast =
-            document.querySelector(".Toastify__toast") &&
-            document.querySelector(".Toastify__toast").contains(event.target);
-          if (!isToast) {
-            handleModalClose(); // Only call if it's not a toast click
+      // Handle outside click to close the popup
+      useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (popUpRef.current && !popUpRef.current.contains(event.target)) {
+            // Check if the click target is not the toast
+            const isToast =
+              document.querySelector(".Toastify__toast") &&
+              document.querySelector(".Toastify__toast").contains(event.target);
+            if (!isToast) {
+              handleModalClose(); // Only call if it's not a toast click
+            }
           }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, []);
+
+      // Handle outside click to close the popup
+      useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (
+            popupRef.current &&
+            !popupRef.current.contains(event.target) &&
+            inputRef.current &&
+            !inputRef.current.contains(event.target)
+          ) {
+            setIsPopupOpen(false);
+          }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, []);
+      // jobSelectRef
+      useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (
+            jobSelectRef.current &&
+            !jobSelectRef.current.contains(event.target) &&
+            inputJobRef.current &&
+            !inputJobRef.current.contains(event.target)
+          ) {
+            setIsJobPopupOpen(false);
+          }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, []);
+
+      // Handle option selection
+      const handleOptionClick = (option) => {
+        setTitle(option.title);
+        setStage({ id: option.id, title: option.stageTitle });
+        setTatskStatus(option.status);
+        setIsPopupOpen(false);
+        setFirstClick(true);
+      };
+
+      const handleJobOptionClick = (job) => {
+        setTask((prevTask) => ({
+          ...prevTask,
+          job_num: job?.job_num, // Update the job_num field
+          id: job?.id,
+        }));
+        setIsJobPopupOpen(false);
+      };
+
+      const fetchJonbNo = async () => {
+        try {
+          let response = await getJobsByUser();
+          if (response.res) {
+            setJobNo(response.res?.job_numbers);
+          } else {
+            console.error("Failed to fetch Users:", response.error);
+          }
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        }
+      };
+      const fetchUsers = async () => {
+        try {
+          const authToken = localStorage.getItem("authToken");
+          let response = await getUserByRole(authToken);
+          if (response.res) {
+            setUsersList(response.res);
+          } else {
+            console.error("Failed to fetch Users:", response.error);
+          }
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
         }
       };
 
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
+      const fetchStages = async () => {
+        try {
+          const authToken = localStorage.getItem("authToken");
+          let response = await getTaskStages(authToken);
+          if (response.res) {
+            setStageList(response.res);
+            console.log("stages", response.res);
+          } else {
+            console.error("Failed to fetch Users:", response.error);
+          }
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        }
       };
-    }, []);
 
-    // Handle outside click to close the popup
-    useEffect(() => {
-      const handleClickOutside = (event) => {
+      useEffect(() => {
+        fetchUsers();
+        fetchStages();
+        if (newTask) {
+          fetchJonbNo();
+        }
+      }, []);
+
+      useEffect(() => {
+        if (scrollRef?.current) {
+          scrollRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }, [scrollRef]);
+
+      const handleOnChange = (e) => {
+        setDescription(e.target.value);
+      };
+
+      const handleModalClose = async () => {
+        const year = new Date().getFullYear();
+        const month = String(new Date().getMonth() + 1).padStart(2, "0");
+        const day = String(new Date().getDate()).padStart(2, "0");
+        let formattedDueDate = `${year}-${month}-${day}`;
+        const newTaskData = {
+          job_id: taskRef.current?.id,
+          title: titleRef.current, // Use the ref to get the latest title
+          due_date: dueDateRef.current || formattedDueDate, // Use the ref to get the latest due date
+          status: taskStatusRef.current, // Use the ref to get the latest status
+          assignee_ids: newJobCollaboratorsListIdRef.current, // Use the ref to get the latest collaborators
+          stage_id: stageRef.current?.id, // Use the ref to get the latest stage
+          description: descriptionRef.current, // Use the ref to get the latest description
+          job_num: taskRef.current?.job_num,
+        };
+
         if (
-          popupRef.current &&
-          !popupRef.current.contains(event.target) &&
-          inputRef.current &&
-          !inputRef.current.contains(event.target)
+          (titleRef.current && titleRef.current.trim() !== "" && !newTask) ||
+          (titleRef.current &&
+            titleRef.current.trim() !== "" &&
+            newTask &&
+            taskRef &&
+            taskRef.current?.job_num)
         ) {
-          setIsPopupOpen(false);
-        }
-      };
-
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
-    // jobSelectRef
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (
-          jobSelectRef.current &&
-          !jobSelectRef.current.contains(event.target) &&
-          inputJobRef.current &&
-          !inputJobRef.current.contains(event.target)
-        ) {
-          setIsJobPopupOpen(false);
-        }
-      };
-
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
-
-    // Handle option selection
-    const handleOptionClick = (option) => {
-      setTitle(option.title);
-      setStage({ id: option.id, title: option.stageTitle });
-      setTatskStatus(option.status);
-      setIsPopupOpen(false);
-      setFirstClick(true);
-    };
-
-    const handleJobOptionClick = (job) => {
-      setTask((prevTask) => ({
-        ...prevTask,
-        job_num: job?.job_num, // Update the job_num field
-        id: job?.id,
-      }));
-      setIsJobPopupOpen(false);
-    };
-
-    const fetchJonbNo = async () => {
-      try {
-        let response = await getJobsByUser();
-        if (response.res) {
-          setJobNo(response.res?.job_numbers);
+          if (!stageRef?.current?.id) {
+            toast.error("Error: Stage must be selected before saving.");
+            return;
+          }
+          console.log(
+            "Create task request body",
+            { newTask: newTaskData },
+            taskRef.current?.id,
+            newJobCollaboratorsListIdRef.current,
+            stageRef.current
+          );
+          onCreateTask(
+            { newTask: newTaskData },
+            taskRef.current?.id,
+            newJobCollaboratorsListIdRef.current,
+            stageRef.current
+          );
         } else {
-          console.error("Failed to fetch Users:", response.error);
+          handleClose();
         }
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-    const fetchUsers = async () => {
-      try {
-        const authToken = localStorage.getItem("authToken");
-        let response = await getUserByRole(authToken);
-        if (response.res) {
-          setUsersList(response.res);
-        } else {
-          console.error("Failed to fetch Users:", response.error);
-        }
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
-    const fetchStages = async () => {
-      try {
-        const authToken = localStorage.getItem("authToken");
-        let response = await getTaskStages(authToken);
-        if (response.res) {
-          setStageList(response.res);
-          console.log("stages", response.res);
-        } else {
-          console.error("Failed to fetch Users:", response.error);
-        }
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
-    useEffect(() => {
-      fetchUsers();
-      fetchStages();
-      if (newTask) {
-        fetchJonbNo();
-      }
-    }, []);
-
-    useEffect(() => {
-      if (scrollRef?.current) {
-        scrollRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      }
-    }, [scrollRef]);
-
-    const handleOnChange = (e) => {
-      setDescription(e.target.value);
-    };
-
-    const handleModalClose = async () => {
-      const year = new Date().getFullYear();
-      const month = String(new Date().getMonth() + 1).padStart(2, "0");
-      const day = String(new Date().getDate()).padStart(2, "0");
-      let formattedDueDate = `${year}-${month}-${day}`;
-      const newTaskData = {
-        job_id: taskRef.current?.id,
-        title: titleRef.current, // Use the ref to get the latest title
-        due_date: dueDateRef.current || formattedDueDate, // Use the ref to get the latest due date
-        status: taskStatusRef.current, // Use the ref to get the latest status
-        assignee_ids: newJobCollaboratorsListIdRef.current, // Use the ref to get the latest collaborators
-        stage_id: stageRef.current?.id, // Use the ref to get the latest stage
-        description: descriptionRef.current, // Use the ref to get the latest description
-        job_num: taskRef.current?.job_num,
       };
 
-      if (
-        (titleRef.current && titleRef.current.trim() !== "" && !newTask) ||
-        (titleRef.current && titleRef.current.trim() !== "" &&
-          newTask &&
-          taskRef &&
-          taskRef.current?.job_num)
-      ) {
-        if (!stageRef.current?.id) {
-          toast.error("Error: Stage must be selected before saving.");
-          return;
-        }
-        onCreateTask(
-          { newTask: newTaskData },
-          taskRef.current?.id,
-          newJobCollaboratorsListIdRef.current,
-          stageRef.current
+      const handleDueDateChange = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        let formattedDueDate = `${year}-${month}-${day}`;
+        setDueDate(formattedDueDate);
+        setDueDateCalender(false);
+      };
+
+      useEffect(() => {
+        const handleClickOutside = async (event) => {
+          if (
+            datePickerRef.current &&
+            !datePickerRef.current.contains(event.target)
+          ) {
+            setDueDateCalender(false);
+          }
+          if (
+            newCollaboratorBoxRef.current &&
+            !newCollaboratorBoxRef.current.contains(event.target)
+          ) {
+            setCollaboratorsBox(false);
+          }
+          if (
+            statusBoxRef.current &&
+            !statusBoxRef.current.contains(event.target)
+          ) {
+            setStatusBox(false);
+          }
+          if (
+            stageBoxRef.current &&
+            !stageBoxRef.current.contains(event.target)
+          ) {
+            setStageBox(false);
+          }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, []);
+
+      const handleRemoveCollaborator = (user) => {
+        setNewJobCollaboratorsList((prevList) =>
+          prevList.filter((u) => u.email !== user.email)
         );
-      } else {
-        handleClose();
+        setUsersList((prevList) => [...prevList, user]);
+
+        setNewJobCollaboratorsListId((prevList) =>
+          prevList.filter((u) => u.id !== user.id)
+        );
+      };
+
+      const handleSelectCollaborator = (user) => {
+        setNewJobCollaboratorsList((prevList) => [...prevList, user]);
+        setUsersList((prevList) =>
+          prevList.filter((u) => u.email !== user.email)
+        );
+        setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
+      };
+
+      function formatStatus(status) {
+        return status
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (char) => char.toUpperCase());
       }
-    };
 
-    const handleDueDateChange = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      let formattedDueDate = `${year}-${month}-${day}`;
-      setDueDate(formattedDueDate);
-      setDueDateCalender(false);
-    };
+      const handleCreateCustomTask = () => {
+        setFirstClick(false);
+        setIsPopupOpen(false);
+        setInputPlaceholder("Write Task Name...");
+        // Reset input and related states
+        setTitle("");
+        setStage(null);
+        setTatskStatus("not-started");
 
-    useEffect(() => {
-      const handleClickOutside = async (event) => {
-        if (
-          datePickerRef.current &&
-          !datePickerRef.current.contains(event.target)
-        ) {
-          setDueDateCalender(false);
-        }
-        if (
-          newCollaboratorBoxRef.current &&
-          !newCollaboratorBoxRef.current.contains(event.target)
-        ) {
-          setCollaboratorsBox(false);
-        }
-        if (
-          statusBoxRef.current &&
-          !statusBoxRef.current.contains(event.target)
-        ) {
-          setStatusBox(false);
-        }
-        if (
-          stageBoxRef.current &&
-          !stageBoxRef.current.contains(event.target)
-        ) {
-          setStageBox(false);
-        }
+        // Wait for state update, then focus
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+          } else {
+            console.log("inputRef is null"); // Debugging
+          }
+        }, 50);
       };
 
-      document.addEventListener("mousedown", handleClickOutside);
-
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
-
-    const handleRemoveCollaborator = (user) => {
-      setNewJobCollaboratorsList((prevList) =>
-        prevList.filter((u) => u.email !== user.email)
-      );
-      setUsersList((prevList) => [...prevList, user]);
-
-      setNewJobCollaboratorsListId((prevList) =>
-        prevList.filter((u) => u.id !== user.id)
-      );
-    };
-
-    const handleSelectCollaborator = (user) => {
-      setNewJobCollaboratorsList((prevList) => [...prevList, user]);
-      setUsersList((prevList) =>
-        prevList.filter((u) => u.email !== user.email)
-      );
-      setNewJobCollaboratorsListId((prevList) => [...prevList, user.id]);
-    };
-
-    function formatStatus(status) {
-      return status
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (char) => char.toUpperCase());
-    }
-
-    const handleCreateCustomTask = () => {
-      setFirstClick(false);
-      setIsPopupOpen(false);
-      setInputPlaceholder("Write Task Name...");
-      // Reset input and related states
-      setTitle("");
-      setStage(null);
-      setTatskStatus("not-started");
-
-      // Wait for state update, then focus
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        } else {
-          console.log("inputRef is null"); // Debugging
-        }
-      }, 50);
-    };
-
-    return (
-      <>
-        {loader && (
-          <div className="loaderDiv">
-            <Bars
-              height="80"
-              width="80"
-              color="#E2E31F"
-              ariaLabel="bars-loading"
-              wrapperStyle={{}}
-              wrapperClass=""
-              visible={true}
-            />
-          </div>
-        )}
-        <div className="loaderDiv2 mobile" style={{ zIndex: "1001" }} ref={ref}>
-          <div className="pop-wrapper position-relative">
-            <div className="wrapper">
-              <div
-                className="container newJob-pop-container pop-container "
-                ref={popUpRef}
-              >
-                <div className="popup-content " ref={scrollRef}>
-                  <div className="popup-section-left">
-                    <div className="topFlexDiv">
-                      <div
-                        className="delete-box"
-                        style={{ cursor: "pointer", zIndex: 2 }}
-                        onClick={handleDelete}
-                      >
-                        <div className="deletBg">
-                          <DeleteIcon />
-                        </div>
-                        <div className="delete-item">Cancel Task</div>
-                      </div>
-                      <div
-                        className="delete-box"
-                        style={{ cursor: "pointer", zIndex: 2 }}
-                        onClick={handleModalClose}
-                      >
-                        <div className="searchUserImg">
-                          <OpenCloseIcon />
-                        </div>
-                        <div className="delete-item">
-                          {returnToJob ? "Return To Job" : "Collapse"}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="innerScroll ">
-                      {newTask && !task?.job_num && (
-                        <>
-                          {" "}
-                          <input
-                            type="text"
-                            className="jobTitle position-relative"
-                            name="job_number"
-                            value={task?.job_num}
-                            onChange={(e) => {
-                              e.preventDefault();
-                            }}
-                            onClick={handleInputJobClick}
-                            placeholder="Select Job No."
-                            ref={inputJobRef}
-                            autoFocus={true}
-                          />
-                          {isJobPopupOpen && (
-                            <div
-                              style={{
-                                position: "absolute",
-                                padding: "20px",
-                                border: "1px solid #353535",
-                                borderRadius: "8px",
-                                backgroundColor: "#252525",
-                                width: "max-content",
-                                zIndex: "99",
-                                right: "50%",
-                              }}
-                              className="main-Stage-Div"
-                              ref={jobSelectRef}
-                            >
-                              <div
-                                className="stages"
-                                style={{
-                                  marginLeft: "auto",
-                                  minWidth: "300px",
-                                  maxHeight: "300px",
-                                  overflowY: "auto",
-                                }}
-                              >
-                                {jobNo?.map((jobId, index) => (
-                                  <div
-                                    key={index}
-                                    onClick={() => handleJobOptionClick(jobId)}
-                                    style={{
-                                      padding: "5px",
-                                      cursor: "pointer",
-                                      whiteSpace: "nowrap",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                    }}
-                                    className="all-stage"
-                                  >
-                                    <span className="job-id">
-                                      {jobId.job_num}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
-                      {((newTask && task?.job_num) || !newTask) && (
+      return (
+        <>
+          {loader && (
+            <div className="loaderDiv">
+              <Bars
+                height="80"
+                width="80"
+                color="#E2E31F"
+                ariaLabel="bars-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={true}
+              />
+            </div>
+          )}
+          <div
+            className="loaderDiv2 mobile"
+            style={{ zIndex: "1001" }}
+            ref={ref}
+          >
+            <div className="pop-wrapper position-relative">
+              <div className="wrapper">
+                <div
+                  className="container newJob-pop-container pop-container "
+                  ref={popUpRef}
+                >
+                  <div className="popup-content " ref={scrollRef}>
+                    <div className="popup-section-left">
+                      <div className="topFlexDiv">
                         <div
-                          className="d-flex justify-content-between align-items-center"
-                          style={{
-                            borderBottom:
-                              "1px solid rgba(226, 227, 31, 0.1490196078)",
-                              position:'sticky',
-                              top:'0'
-                          }}
+                          className="delete-box"
+                          style={{ cursor: "pointer", zIndex: 2 }}
+                          onClick={handleDelete}
                         >
-                          <input
-                            type="text"
-                            className="jobTitle position-relative text-capitalize"
-                            name="title"
-                            value={title}
-                            onChange={(e) => {
-                              if (!firstClick) {
-                                setTitle(e.target.value);
-                              } else {
+                          <div className="deletBg">
+                            <DeleteIcon />
+                          </div>
+                          <div className="delete-item">Cancel Task</div>
+                        </div>
+                        <div
+                          className="delete-box"
+                          style={{ cursor: "pointer", zIndex: 2 }}
+                          onClick={handleModalClose}
+                        >
+                          <div className="searchUserImg">
+                            <OpenCloseIcon />
+                          </div>
+                          <div className="delete-item">
+                            {returnToJob ? "Return To Job" : "Collapse"}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="innerScroll ">
+                        {newTask && !task?.job_num && (
+                          <>
+                            {" "}
+                            <input
+                              type="text"
+                              className="jobTitle position-relative"
+                              name="job_number"
+                              value={task?.job_num}
+                              onChange={(e) => {
                                 e.preventDefault();
-                              }
-                            }}
-                            onClick={handleInputClick}
-                            placeholder={inputPlaceholder ?? "Select Task"}
-                            ref={inputRef}
-                            autoFocus={!newTask && true}
-                          />
-                          <div
-                            className="yellow-edit-button"
-                            onClick={() => setIsPopupOpen(true)}
-                          >
-                            <EditIcon />
-                          </div>
-                        </div>
-                      )}
-                      {isPopupOpen && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            padding: "20px",
-                            border: "1px solid #353535",
-                            borderRadius: "8px",
-                            backgroundColor: "#252525",
-                            width: "fit-content",
-                            zIndex: "99",
-                          }}
-                          className="main-Stage-Div"
-                          ref={popupRef}
-                        >
-                          <div
-                            className="stages"
-                            style={{
-                              maxWidth: "650px",
-                              maxHeight: "300px",
-                              overflowY: "auto",
-                            }}
-                          >
-                            {AllStages.map((task, index) => (
+                              }}
+                              onClick={handleInputJobClick}
+                              placeholder="Select Job No."
+                              ref={inputJobRef}
+                              autoFocus={true}
+                            />
+                            {isJobPopupOpen && (
                               <div
-                                key={index}
-                                onClick={() => handleOptionClick(task)}
                                 style={{
-                                  padding: "5px",
-                                  cursor: "pointer",
-                                  whiteSpace: "nowrap",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
+                                  position: "absolute",
+                                  padding: "20px",
+                                  border: "1px solid #353535",
+                                  borderRadius: "8px",
+                                  backgroundColor: "#252525",
+                                  width: "max-content",
+                                  zIndex: "99",
+                                  right: "50%",
                                 }}
-                                className="all-stage"
+                                className="main-Stage-Div"
+                                ref={jobSelectRef}
                               >
-                                <div className={`title ${task.stageTitle}`}>
-                                {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
-                                </div>
                                 <div
-                                  className={`stage-title stage_${task.stageTitle}`}
+                                  className="stages"
+                                  style={{
+                                    marginLeft: "auto",
+                                    minWidth: "300px",
+                                    maxHeight: "300px",
+                                    overflowY: "auto",
+                                  }}
                                 >
-                                  {task.stageTitle}
+                                  {jobNo?.map((jobId, index) => (
+                                    <div
+                                      key={index}
+                                      onClick={() =>
+                                        handleJobOptionClick(jobId)
+                                      }
+                                      style={{
+                                        padding: "5px",
+                                        cursor: "pointer",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                      }}
+                                      className="all-stage"
+                                    >
+                                      <span className="job-id">
+                                        {jobId.job_num}
+                                      </span>
+                                    </div>
+                                  ))}
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                          <div
-                            className="custom-task"
-                            onClick={() => {
-                              handleCreateCustomTask();
-                            }}
-                          >
-                            <div
-                              className="add-btn"
-                              style={{ minWidth: "40px" }}
-                            >
-                              <AddIcon />
-                            </div>{" "}
-                            Create Custom Task
-                          </div>
-                        </div>
-                      )}
-                      <div className="discriptionBox">
-                        <h3>Description</h3>
-                        <textarea
-                          type="text"
-                          name="description"
-                          rows={2}
-                          value={description}
-                          onChange={handleOnChange}
-                          placeholder="Add Description Here..."
-                        />
-                      </div>
-
-                      {newTask ? (
-                        <div className="discriptionBox">
-                          <div className="d-flex align-items-center justify-content-start gap-1 mw-100">
-                            {newTask && task?.job_num && (
-                              <div style={{ flex: "0.5" }}>
-                                <h3>Job No.</h3>
-                                <p className="textClass disabled">
-                                  <button className="taskJobBtn">
-                                    {formatJobNumber(task?.job_num)}
-                                  </button>
-                                </p>
                               </div>
                             )}
-                            <div style={{ flex: "1" }}>
-                              <h3>Days Left</h3>
-                              {dueDate ? (
-                                (() => {
-                                  // Normalize both dates to midnight
-                                  const dueDateObj = new Date(dueDate);
-                                  const now = new Date();
-
-                                  // Set both dates to midnight
-                                  dueDateObj.setHours(0, 0, 0, 0);
-                                  now.setHours(0, 0, 0, 0);
-
-                                  const daysLeft = Math.floor(
-                                    (dueDateObj - now) / (1000 * 60 * 60 * 24)
-                                  );
-
-                                  return daysLeft > 0 ? (
-                                    `${daysLeft} day${
-                                      daysLeft === 1 ? "" : "s"
-                                    }`
-                                  ) : (
-                                    <span style={{ color: "#616161" }}>
-                                      No Data
-                                    </span>
-                                  );
-                                })()
-                              ) : (
-                                <span style={{ color: "#616161" }}>
-                                  No Data
-                                </span>
-                              )}
+                          </>
+                        )}
+                        {((newTask && task?.job_num) || !newTask) && (
+                          <div
+                            className="d-flex justify-content-between align-items-center"
+                            style={{
+                              borderBottom:
+                                "1px solid rgba(226, 227, 31, 0.1490196078)",
+                              position: "sticky",
+                              top: "0",
+                            }}
+                          >
+                            <input
+                              type="text"
+                              className="jobTitle position-relative text-capitalize"
+                              name="title"
+                              value={title}
+                              onChange={(e) => {
+                                if (!firstClick) {
+                                  setTitle(e.target.value);
+                                } else {
+                                  e.preventDefault();
+                                }
+                              }}
+                              onClick={handleInputClick}
+                              placeholder={inputPlaceholder ?? "Select Task"}
+                              ref={inputRef}
+                              autoFocus={!newTask && true}
+                            />
+                            <div
+                              className="yellow-edit-button"
+                              onClick={() => setIsPopupOpen(true)}
+                            >
+                              <EditIcon />
                             </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="discriptionBox">
-                          <h3>Days Left</h3>
-                          {dueDate ? (
-                            (() => {
-                              // Normalize both dates to midnight
-                              const dueDateObj = new Date(dueDate);
-                              const now = new Date();
-
-                              // Set both dates to midnight
-                              dueDateObj.setHours(0, 0, 0, 0);
-                              now.setHours(0, 0, 0, 0);
-
-                              const daysLeft = Math.floor(
-                                (dueDateObj - now) / (1000 * 60 * 60 * 24)
-                              );
-
-                              return daysLeft > 0 ? (
-                                `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
-                              ) : (
-                                <span style={{ color: "#616161" }}>
-                                  No Data
-                                </span>
-                              );
-                            })()
-                          ) : (
-                            <span style={{ color: "#616161" }}>No Data</span>
-                          )}
-                        </div>
-                      )}
-
-                      <div className="discriptionBox">
-                        <div className="editBox">
-                          <div className="editBoxContent">
-                            {!newTask && (
-                              <>
-                                <h3>Job No.</h3>
-                                <p className="textClass disabled">
-                                  <button className="taskJobBtn">
-                                    {formatJobNumber(task?.job_num)}
-                                  </button>
-                                </p>
-                              </>
-                            )}
-                            {/* <div className="editBoxInner">
-                          </div> */}
-                            <h3>Collaborators</h3>
-                            <div className="textClass disabled collaboratorsBox justify-content-start position-relative">
-                              <div
-                                className=" d-flex align-items-center justify-content-center"
-                                onClick={() => setCollaboratorsBox(true)}
-                                style={{ cursor: "pointer" }}
-                              >
-                                {newJobCollaboratorsList.length > 0 && (
-                                  <>
-                                    {newJobCollaboratorsList
-                                      .slice(0, 3)
-                                      .map((user, index) => {
-                                        const initials = user.name
-                                          ?.split(" ")
-                                          .map((part) =>
-                                            part.charAt(0).toUpperCase()
-                                          )
-                                          .join("");
-
-                                        return (
-                                          <div
-                                            key={index}
-                                            className={`collaboratorsBoxUser`}
-                                            style={{
-                                              minWidth: "40px",
-                                              zIndex: index,
-                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
-                                            }}
-                                          >
-                                            {initials}
-                                          </div>
-                                        );
-                                      })}
-
-                                    {newJobCollaboratorsList.length > 3 && (
-                                      <div
-                                        className={`collaboratorsBoxUser`}
-                                        style={{
-                                          minWidth: "40px",
-                                          zIndex: "4",
-                                        }}
-                                      >
-                                        +{newJobCollaboratorsList.length - 3}
-                                      </div>
+                        )}
+                        {isPopupOpen && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              padding: "20px",
+                              border: "1px solid #353535",
+                              borderRadius: "8px",
+                              backgroundColor: "#252525",
+                              width: "fit-content",
+                              zIndex: "99",
+                            }}
+                            className="main-Stage-Div"
+                            ref={popupRef}
+                          >
+                            <div
+                              className="stages"
+                              style={{
+                                maxWidth: "650px",
+                                maxHeight: "300px",
+                                overflowY: "auto",
+                              }}
+                            >
+                              {AllStages.map((task, index) => (
+                                <div
+                                  key={index}
+                                  onClick={() => handleOptionClick(task)}
+                                  style={{
+                                    padding: "5px",
+                                    cursor: "pointer",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                  className="all-stage"
+                                >
+                                  <div className={`title ${task.stageTitle}`}>
+                                    {task?.title?.replace(/\b\w/g, (char) =>
+                                      char.toUpperCase()
                                     )}
-                                  </>
-                                )}
-                                {newJobCollaboratorsList.length === 0 && (
-                                  <div
-                                    className="collaboratorsBoxUser disabled m-0"
-                                    style={{
-                                      minWidth: "40px",
-                                      cursor: "pointer",
-                                    }}
-                                  >
-                                    Add Collaborators
                                   </div>
+                                  <div
+                                    className={`stage-title stage_${task.stageTitle}`}
+                                  >
+                                    {task.stageTitle}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div
+                              className="custom-task"
+                              onClick={() => {
+                                handleCreateCustomTask();
+                              }}
+                            >
+                              <div
+                                className="add-btn"
+                                style={{ minWidth: "40px" }}
+                              >
+                                <AddIcon />
+                              </div>{" "}
+                              Create Custom Task
+                            </div>
+                          </div>
+                        )}
+                        <div className="discriptionBox">
+                          <h3>Description</h3>
+                          <textarea
+                            type="text"
+                            name="description"
+                            rows={2}
+                            value={description}
+                            onChange={handleOnChange}
+                            placeholder="Add Description Here..."
+                          />
+                        </div>
+
+                        {newTask ? (
+                          <div className="discriptionBox">
+                            <div className="d-flex align-items-center justify-content-start gap-1 mw-100">
+                              {newTask && task?.job_num && (
+                                <div style={{ flex: "0.5" }}>
+                                  <h3>Job No.</h3>
+                                  <p className="textClass disabled">
+                                    <button className="taskJobBtn">
+                                      {formatJobNumber(task?.job_num)}
+                                    </button>
+                                  </p>
+                                </div>
+                              )}
+                              <div style={{ flex: "1" }}>
+                                <h3>Days Left</h3>
+                                {dueDate ? (
+                                  (() => {
+                                    // Normalize both dates to midnight
+                                    const dueDateObj = new Date(dueDate);
+                                    const now = new Date();
+
+                                    // Set both dates to midnight
+                                    dueDateObj.setHours(0, 0, 0, 0);
+                                    now.setHours(0, 0, 0, 0);
+
+                                    const daysLeft = Math.floor(
+                                      (dueDateObj - now) / (1000 * 60 * 60 * 24)
+                                    );
+
+                                    return daysLeft > 0 ? (
+                                      `${daysLeft} day${
+                                        daysLeft === 1 ? "" : "s"
+                                      }`
+                                    ) : (
+                                      <span style={{ color: "#616161" }}>
+                                        No Data
+                                      </span>
+                                    );
+                                  })()
+                                ) : (
+                                  <span style={{ color: "#616161" }}>
+                                    No Data
+                                  </span>
                                 )}
                               </div>
-                              {collaboratorsBox && (
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="discriptionBox">
+                            <h3>Days Left</h3>
+                            {dueDate ? (
+                              (() => {
+                                // Normalize both dates to midnight
+                                const dueDateObj = new Date(dueDate);
+                                const now = new Date();
+
+                                // Set both dates to midnight
+                                dueDateObj.setHours(0, 0, 0, 0);
+                                now.setHours(0, 0, 0, 0);
+
+                                const daysLeft = Math.floor(
+                                  (dueDateObj - now) / (1000 * 60 * 60 * 24)
+                                );
+
+                                return daysLeft > 0 ? (
+                                  `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
+                                ) : (
+                                  <span style={{ color: "#616161" }}>
+                                    No Data
+                                  </span>
+                                );
+                              })()
+                            ) : (
+                              <span style={{ color: "#616161" }}>No Data</span>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="discriptionBox">
+                          <div className="editBox">
+                            <div className="editBoxContent">
+                              {!newTask && (
+                                <>
+                                  <h3>Job No.</h3>
+                                  <p className="textClass disabled">
+                                    <button className="taskJobBtn">
+                                      {formatJobNumber(task?.job_num)}
+                                    </button>
+                                  </p>
+                                </>
+                              )}
+                              {/* <div className="editBoxInner">
+                          </div> */}
+                              <h3>Collaborators</h3>
+                              <div className="textClass disabled collaboratorsBox justify-content-start position-relative">
                                 <div
-                                  className={`newJobItemDropBox`}
-                                  style={{
-                                    ...(!newTask ? { right: "10px" } : {}),
-                                    minWidth: "415px",
-                                    maxWidth: "max-content",
-                                    top: "calc(100% + 11px)",
-                                    left: "unset",
-                                  }}
-                                  ref={newCollaboratorBoxRef}
+                                  className=" d-flex align-items-center justify-content-center"
+                                  onClick={() => setCollaboratorsBox(true)}
+                                  style={{ cursor: "pointer" }}
                                 >
                                   {newJobCollaboratorsList.length > 0 && (
-                                    <div className="addedCollabs">
-                                      {newJobCollaboratorsList.map(
-                                        (user, index) => {
+                                    <>
+                                      {newJobCollaboratorsList
+                                        .slice(0, 3)
+                                        .map((user, index) => {
+                                          const initials = user.name
+                                            ?.split(" ")
+                                            .map((part) =>
+                                              part.charAt(0).toUpperCase()
+                                            )
+                                            .join("");
+
+                                          return (
+                                            <div
+                                              key={index}
+                                              className={`collaboratorsBoxUser`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                                border:
+                                                  CollaboratorBorders[
+                                                    user.id
+                                                  ] ||
+                                                  CollaboratorNameBorders[
+                                                    user.name
+                                                  ] ||
+                                                  "1px solid rgb(105, 103, 103)",
+                                              }}
+                                            >
+                                              {initials}
+                                            </div>
+                                          );
+                                        })}
+
+                                      {newJobCollaboratorsList.length > 3 && (
+                                        <div
+                                          className={`collaboratorsBoxUser`}
+                                          style={{
+                                            minWidth: "40px",
+                                            zIndex: "4",
+                                          }}
+                                        >
+                                          +{newJobCollaboratorsList.length - 3}
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                  {newJobCollaboratorsList.length === 0 && (
+                                    <div
+                                      className="collaboratorsBoxUser disabled m-0"
+                                      style={{
+                                        minWidth: "40px",
+                                        cursor: "pointer",
+                                      }}
+                                    >
+                                      Add Collaborators
+                                    </div>
+                                  )}
+                                </div>
+                                {collaboratorsBox && (
+                                  <div
+                                    className={`newJobItemDropBox`}
+                                    style={{
+                                      ...(!newTask ? { right: "10px" } : {}),
+                                      minWidth: "415px",
+                                      maxWidth: "max-content",
+                                      top: "calc(100% + 11px)",
+                                      left: "unset",
+                                    }}
+                                    ref={newCollaboratorBoxRef}
+                                  >
+                                    {newJobCollaboratorsList.length > 0 && (
+                                      <div className="addedCollabs">
+                                        {newJobCollaboratorsList.map(
+                                          (user, index) => {
+                                            const initials = user.name
+                                              ?.split(" ")
+                                              .map((part) =>
+                                                part.charAt(0).toUpperCase()
+                                              )
+                                              .join("");
+
+                                            return (
+                                              <div
+                                                className="selectCollaboratorsBox"
+                                                key={index}
+                                                onClick={() =>
+                                                  handleRemoveCollaborator(user)
+                                                }
+                                              >
+                                                <div
+                                                  className={`collaboratorsBoxUser`}
+                                                  style={{
+                                                    minWidth: "40px",
+                                                    border:
+                                                      CollaboratorBorders[
+                                                        user.id
+                                                      ] ||
+                                                      CollaboratorNameBorders[
+                                                        user.name
+                                                      ] ||
+                                                      "1px solid rgb(105, 103, 103)",
+                                                  }}
+                                                >
+                                                  {initials}
+                                                </div>
+                                              </div>
+                                            );
+                                          }
+                                        )}
+                                      </div>
+                                    )}
+                                    {usersList
+                                      ? usersList.map((user, index) => {
                                           const initials = user.name
                                             ?.split(" ")
                                             .map((part) =>
@@ -6324,115 +6392,88 @@ export const CreateTaskModal = memo(React.forwardRef(
                                               className="selectCollaboratorsBox"
                                               key={index}
                                               onClick={() =>
-                                                handleRemoveCollaborator(user)
+                                                handleSelectCollaborator(user)
                                               }
                                             >
                                               <div
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                                  border:
+                                                    CollaboratorBorders[
+                                                      user.id
+                                                    ] ||
+                                                    CollaboratorNameBorders[
+                                                      user.name
+                                                    ] ||
+                                                    "1px solid rgb(105, 103, 103)",
                                                 }}
                                               >
                                                 {initials}
                                               </div>
+                                              <div className="userName">
+                                                {user.name}
+                                              </div>
+                                              <div className="userMail">
+                                                {user.email}
+                                              </div>
                                             </div>
                                           );
-                                        }
-                                      )}
-                                    </div>
-                                  )}
-                                  {usersList
-                                    ? usersList.map((user, index) => {
-                                        const initials = user.name
-                                          ?.split(" ")
-                                          .map((part) =>
-                                            part.charAt(0).toUpperCase()
-                                          )
-                                          .join("");
-
-                                        return (
-                                          <div
-                                            className="selectCollaboratorsBox"
-                                            key={index}
-                                            onClick={() =>
-                                              handleSelectCollaborator(user)
-                                            }
-                                          >
-                                            <div
-                                              className={`collaboratorsBoxUser`}
-                                              style={{
-                                                minWidth: "40px",
-                                                 border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
-                                              }}
-                                            >
-                                              {initials}
-                                            </div>
-                                            <div className="userName">
-                                              {user.name}
-                                            </div>
-                                            <div className="userMail">
-                                              {user.email}
-                                            </div>
-                                          </div>
-                                        );
-                                      })
-                                    : "No users found"}
-                                </div>
-                              )}
-                            </div>
-                            {/* <div className="editBoxInner">
+                                        })
+                                      : "No users found"}
+                                  </div>
+                                )}
+                              </div>
+                              {/* <div className="editBoxInner">
                           </div> */}
-                            <h3>Status</h3>
-                            <div className="position-relative">
-                              <button
-                                className={`statusBox ${taskStatus}`}
-                                onClick={() => setStatusBox(true)}
-                              >
-                                {formatStatus(taskStatus)}
-                              </button>
-                              {statusBox && (
-                                <div
-                                  className={`newJobItemDropBox`}
-                                  ref={statusBoxRef}
+                              <h3>Status</h3>
+                              <div className="position-relative">
+                                <button
+                                  className={`statusBox ${taskStatus}`}
+                                  onClick={() => setStatusBox(true)}
                                 >
+                                  {formatStatus(taskStatus)}
+                                </button>
+                                {statusBox && (
                                   <div
-                                    className="selectCollaboratorsBox"
-                                    onClick={() => {
-                                      setStatusBox(false);
-                                      setTatskStatus("not-started");
-                                    }}
+                                    className={`newJobItemDropBox`}
+                                    ref={statusBoxRef}
                                   >
-                                    <div className={`statusBox not-started`}>
-                                      Not Started
+                                    <div
+                                      className="selectCollaboratorsBox"
+                                      onClick={() => {
+                                        setStatusBox(false);
+                                        setTatskStatus("not-started");
+                                      }}
+                                    >
+                                      <div className={`statusBox not-started`}>
+                                        Not Started
+                                      </div>
                                     </div>
-                                  </div>
 
-                                  <div
-                                    className="selectCollaboratorsBox"
-                                    onClick={() => {
-                                      setStatusBox(false);
-                                      setTatskStatus("in-progress");
-                                    }}
-                                  >
-                                    <div className="statusBox in-progress">
-                                      In Progress
+                                    <div
+                                      className="selectCollaboratorsBox"
+                                      onClick={() => {
+                                        setStatusBox(false);
+                                        setTatskStatus("in-progress");
+                                      }}
+                                    >
+                                      <div className="statusBox in-progress">
+                                        In Progress
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div
-                                    className="selectCollaboratorsBox"
-                                    onClick={() => {
-                                      setStatusBox(false);
-                                      setTatskStatus("completed");
-                                    }}
-                                  >
-                                    <div className="statusBox completed">
-                                      Completed
+                                    <div
+                                      className="selectCollaboratorsBox"
+                                      onClick={() => {
+                                        setStatusBox(false);
+                                        setTatskStatus("completed");
+                                      }}
+                                    >
+                                      <div className="statusBox completed">
+                                        Completed
+                                      </div>
                                     </div>
-                                  </div>
-                                  {/* <div
+                                    {/* <div
                                   className="selectCollaboratorsBox"
                                   onClick={() => {
                                     setStatusBox(false);
@@ -6454,130 +6495,131 @@ export const CreateTaskModal = memo(React.forwardRef(
                                     Pending
                                   </div>
                                 </div> */}
-                                </div>
-                              )}
-                              {/* <div className="editBoxInner position-relative">
-                            </div> */}
-                            </div>
-                            <h3>Due Date</h3>
-                            <div
-                              className={`textClass pointer ${
-                                !dueDate && "disabled"
-                              }`}
-                              onClick={() => setDueDateCalender(true)}
-                            >
-                              {dueDate
-                                ? moment(dueDate, "YYYY-MM-DD").format(
-                                    "DD/MM/YYYY"
-                                  )
-                                : "Select Date"}
-                              {dueDateCalender && (
-                                <div
-                                  className="datePickerDiv"
-                                  ref={datePickerRef}
-                                >
-                                  <Calendar
-                                    date={dueDate}
-                                    onChange={handleDueDateChange}
-                                    value={new Date(dueDate)}
-                                    calendarType="ISO 8601"
-                                    rangeColors={["#E2E31F"]}
-                                    minDate={new Date()}
-                                    maxDate={
-                                      new Date(
-                                        new Date().setFullYear(
-                                          new Date().getFullYear() +
-                                            MAX_CALENDAR_YEAR
-                                        )
-                                      )
-                                    }
-                                  />
-                                </div>
-                              )}
-                            </div>
-                            {/* <div className="editBoxInner">
-                          </div> */}
-                            <h3>Stage</h3>
-                            <div className="position-relative">
-                              <button
-                                className={`statusBox stageBox  position-relative ${
-                                  !stage && "disabled"
-                                } stage_${stage?.title}`}
-                                onClick={() => {
-                                  if (firstClick) return;
-                                  setStageBox(true);
-                                }}
-                              >
-                                {stage ? stage.title : "Select Stage"}
-                              </button>
-                              {stageBox && (
-                                <div
-                                  className={`newJobItemDropBox ${
-                                    newTask && "create-task-modal"
-                                  } stageBox`}
-                                  ref={stageBoxRef}
-                                >
-                                  <div className="stageListBox">
-                                    {stageList.map((stage, index) => {
-                                      return (
-                                        <div
-                                          key={index}
-                                          className="selectCollaboratorsBox"
-                                          onClick={() => {
-                                            setStageBox(false);
-                                            setStage(stage);
-                                          }}
-                                        >
-                                          <div
-                                            className={`statusBox position-relative stage_${stage?.title}`}
-                                            // style={{
-                                            //   border: `1px solid ${colors[index]}`,
-                                            // }}
-                                          >
-                                            {stage.title}
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
                                   </div>
-                                </div>
-                              )}
-                            </div>
-                            {/* <div className="editBoxInner position-relative">
-                          </div> */}
-                          </div>
-                          <div className="editBoxIcon pe-4">
-                            <div
-                              className="delete-box"
-                              style={{ cursor: "pointer", zIndex: 2 }}
-                            >
-                              <div
-                                className="deletBg"
-                                style={{ padding: "6px" }}
-                              >
-                                <EditIcon />
+                                )}
+                                {/* <div className="editBoxInner position-relative">
+                            </div> */}
                               </div>
-                              <div className="delete-item">Edit</div>
+                              <h3>Due Date</h3>
+                              <div
+                                className={`textClass pointer ${
+                                  !dueDate && "disabled"
+                                }`}
+                                onClick={() => setDueDateCalender(true)}
+                              >
+                                {dueDate
+                                  ? moment(dueDate, "YYYY-MM-DD").format(
+                                      "DD/MM/YYYY"
+                                    )
+                                  : "Select Date"}
+                                {dueDateCalender && (
+                                  <div
+                                    className="datePickerDiv"
+                                    ref={datePickerRef}
+                                  >
+                                    <Calendar
+                                      date={dueDate}
+                                      onChange={handleDueDateChange}
+                                      value={new Date(dueDate)}
+                                      calendarType="ISO 8601"
+                                      rangeColors={["#E2E31F"]}
+                                      minDate={new Date()}
+                                      maxDate={
+                                        new Date(
+                                          new Date().setFullYear(
+                                            new Date().getFullYear() +
+                                              MAX_CALENDAR_YEAR
+                                          )
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                              {/* <div className="editBoxInner">
+                          </div> */}
+                              <h3>Stage</h3>
+                              <div className="position-relative">
+                                <button
+                                  className={`statusBox stageBox  position-relative ${
+                                    !stage && "disabled"
+                                  } stage_${stage?.title}`}
+                                  onClick={() => {
+                                    if (firstClick) return;
+                                    setStageBox(true);
+                                  }}
+                                >
+                                  {stage ? stage.title : "Select Stage"}
+                                </button>
+                                {stageBox && (
+                                  <div
+                                    className={`newJobItemDropBox ${
+                                      newTask && "create-task-modal"
+                                    } stageBox`}
+                                    ref={stageBoxRef}
+                                  >
+                                    <div className="stageListBox">
+                                      {stageList.map((stage, index) => {
+                                        return (
+                                          <div
+                                            key={index}
+                                            className="selectCollaboratorsBox"
+                                            onClick={() => {
+                                              setStageBox(false);
+                                              setStage(stage);
+                                            }}
+                                          >
+                                            <div
+                                              className={`statusBox position-relative stage_${stage?.title}`}
+                                              // style={{
+                                              //   border: `1px solid ${colors[index]}`,
+                                              // }}
+                                            >
+                                              {stage.title}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                              {/* <div className="editBoxInner position-relative">
+                          </div> */}
+                            </div>
+                            <div className="editBoxIcon pe-4">
+                              <div
+                                className="delete-box"
+                                style={{ cursor: "pointer", zIndex: 2 }}
+                              >
+                                <div
+                                  className="deletBg"
+                                  style={{ padding: "6px" }}
+                                >
+                                  <EditIcon />
+                                </div>
+                                <div className="delete-item">Edit</div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      <CommentBox
-                        taskId={null}
-                        JobId={task?.id}
-                        usersList={suggestedUser}
-                      />
+                        <CommentBox
+                          taskId={null}
+                          JobId={task?.id}
+                          usersList={suggestedUser}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </>
-    );
-  }
-));
+        </>
+      );
+    }
+  )
+);
 
 export default JobModal;

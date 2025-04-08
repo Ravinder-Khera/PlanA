@@ -29,7 +29,6 @@ import JobModal, { NewJobModal } from "../../Components/JobModal/Edit/JobModal";
 import { StatusList } from "../../helper";
 import Add from "../../Components/JobModal/Add/Add";
 import { useLocation } from "react-router-dom";
-import { NotificationComponent } from "../../Components/navMenu";
 import { Calendar } from "react-date-range";
 
 const Jobs = () => {
@@ -77,6 +76,7 @@ const Jobs = () => {
   const [newJobIdExist, setNewJobIdExist] = useState(false);
   const [newJobIdNumber, setNewJobIdNumber] = useState(Number("00000"));
   const newJobIdInputRefs = useRef([]);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -168,16 +168,19 @@ const Jobs = () => {
     }
   };
 
-  const handleRemoveNotification = (notificationToRemove) => {
+  const handleRemoveNotification = async (notificationToRemove) => {
+    setDeletingId(notificationToRemove.id);
+    await new Promise((resolve) => setTimeout(resolve, 300));
     setNotifications((prevNotifications) =>
       prevNotifications.filter(
-        (notification) => notification !== notificationToRemove
+        (notification) => notification?.id !== notificationToRemove?.id
       )
     );
     const updatedNotifications = notifications.filter(
-      (notification) => notification !== notificationToRemove
+      (notification) => notification?.id !== notificationToRemove?.id
     );
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+    setDeletingId(null);
   };
 
   useEffect(() => {
@@ -480,7 +483,7 @@ const Jobs = () => {
     return () => {
       bodyScroll.style.overflow = "auto";
     };
-  }, [showJobModal,showNewJobModal]);
+  }, [showJobModal, showNewJobModal]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -593,18 +596,18 @@ const Jobs = () => {
   const handleAddNewJob = async () => {
     try {
       setLoading(true);
-  
+
       // Request body with job details
       const reqBody = {
         title: addJobName,
         due_date: selectedNewJobDueDate || "", // Use empty string if no date is selected
         status: selectNewJobStatus || "", // Use empty string if no status is selected
       };
-  
+
       // API call to create job
       const response = await createJobs(reqBody);
       console.log("request body for create job", response);
-  
+
       if (response?.res?.message) {
         toast.success(`${response.res.message}`);
       } else {
@@ -795,11 +798,29 @@ const Jobs = () => {
                             <div className="addTaskJobListItems">
                               {notifications.length > 0 ? (
                                 notifications.map((notification, index) => (
-                                  <NotificationComponent
-                                    key={index}
-                                    notificationData={notification}
-                                    onRemove={handleRemoveNotification}
-                                  />
+                                  <div
+                                    ref={notificationRef}
+                                    className={`notificationClass ${
+                                      notification.class
+                                    }-class ${
+                                      deletingId === notification.id
+                                        ? "deleting"
+                                        : ""
+                                    }`}
+                                  >
+                                    <div className="notificationMsg">
+                                      <div className="notificationIcon"></div>
+                                      <div className="notificationText">
+                                        {notification.message}
+                                      </div>
+                                    </div>
+                                    <button
+                                      className="notificationCloseBtn"
+                                      onClick={() =>
+                                        handleRemoveNotification(notification)
+                                      }
+                                    />
+                                  </div>
                                 ))
                               ) : (
                                 <div className="notificationClass info-class">
@@ -809,12 +830,6 @@ const Jobs = () => {
                                       No Notifications
                                     </div>
                                   </div>
-                                  <div
-                                    className="notificationCloseBtn"
-                                    onClick={() =>
-                                      setNotificationDropDown(false)
-                                    }
-                                  ></div>
                                 </div>
                               )}
                             </div>

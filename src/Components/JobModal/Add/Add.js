@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./style.scss";
 import Slider from "react-slick";
-import { AllStages, StageList, StatusList } from "../../../helper";
+import { addNotification, AllStages, StageList, StatusList } from "../../../helper";
 import { Calendar } from "react-date-range";
 import { AddIcon, User, TaskIcon } from "../../../assets/svg";
 import { createJobs, getUserByRole } from "../../../services/auth";
@@ -510,35 +510,14 @@ const Add = ({ handleClose, fetchJobs }) => {
       const response = await createJobs(reqBody);
       console.log("request body for create job", response);
       if (response.res) {
-        const notificationData = {
-          class: "success",
-          message: response.res.message
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+       
+        addNotification("success", "Job Created")
 
         toast.success(`${response.res.message}`);
       } else {
         console.error("jobs update failed:", response.error);
 
-        const notificationData = {
-          class: "error",
-          message: response.error.message
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+        addNotification("error", "Job Creation Failed")
         toast.error(`${response.error.message}`);
       }
     } catch (error) {

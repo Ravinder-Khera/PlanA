@@ -8,7 +8,7 @@ import {
 } from "../../assets/svg";
 import pngFIle from "../../assets/common/pngFile.svg";
 import moment from "moment";
-import { CollaboratorBorders, CollaboratorNameBorders, getEmailsByStageAndTitle } from "../../helper";
+import { addNotification, CollaboratorBorders, CollaboratorNameBorders, getEmailsByStageAndTitle } from "../../helper";
 import EditorComponent from "./Editor";
 import { Bars } from "react-loader-spinner";
 import { sendEmail } from "../../services/chat_attachment";
@@ -123,6 +123,7 @@ const TaskCompletionPopup = React.forwardRef(
 
         // Check if all emails were sent successfully
         if (responses.every((response) => response.res)) {
+          
           setShowDetails(2);
         } else {
           console.error("Some emails failed to send:", responses);

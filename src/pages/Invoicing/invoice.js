@@ -4,6 +4,7 @@ import { Bars } from "react-loader-spinner";
 import { deleteInvoices } from "../../services/auth";
 import { toast } from "react-toastify";
 import InvoicePopup from "./invoicePopup";
+import { addNotification } from "../../helper";
 
 function Invoice() {
   const [isChecked, setIsChecked] = useState({});
@@ -92,19 +93,8 @@ function Invoice() {
       );
       if (!response.ok) {
         setLoading(false);
-        const notificationData = {
-          class: "error",
-          message: 'Failed to download File'
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
+        addNotification("error", "File Download Failed")
         throw new Error("Failed to download PDF");
       }
       const pdfBlob = await response.blob();
@@ -115,19 +105,8 @@ function Invoice() {
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
-      const notificationData = {
-        class: "success",
-        message: 'File Successfully Downloaded!'
-      };
-      const existingNotificationsJSON = localStorage.getItem('notifications');
-      let existingNotifications = [];
-      if (existingNotificationsJSON) {
-        existingNotifications = JSON.parse(existingNotificationsJSON);
-      }
-      existingNotifications.unshift(notificationData);
-  
-      localStorage.setItem('notifications', JSON.stringify(existingNotifications));
       
+      addNotification("success", "File Successfully Downloaded")
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -163,19 +142,8 @@ function Invoice() {
       },authToken);
       if (response.res) {
         console.log("invoice delete successful", response);
-        const notificationData = {
-          class: "success",
-          message: response.res.deletedCount+' '+ response.res.message
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
-
+        
+        addNotification("success", response.res.deletedCount+' '+ "Invoice Deleted")
         toast.success(`${response.res.deletedCount} ${response.res.message}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -188,18 +156,8 @@ function Invoice() {
         });
       } else {
         console.error("invoice delete failed:", response.error);
-        const notificationData = {
-          class: "error",
-          message: response.error.message
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+
+        addNotification("error", "Invoice Deletion Failed")
         toast.error(`${response.error.message}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,

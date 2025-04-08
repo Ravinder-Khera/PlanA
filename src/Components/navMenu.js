@@ -1,40 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BellIcon, CrossIcon, Search, User } from "../assets/svg";
-import { getJobs, getProfile, getTasks } from "../services/auth";
 import { Bars } from "react-loader-spinner";
-import eventEmitter from "../Event";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-export const NotificationComponent = React.memo(
-  ({ notificationData, onRemove }) => {
-    const [removing, setRemoving] = useState(false);
-    const handleRemove = (e) => {
-      e.stopPropagation(); // Prevent the click from bubbling up
-      setRemoving(true);
-      setTimeout(() => {
-        onRemove(notificationData);
-        setRemoving(false);
-      }, 500); // Matches animation duration
-    };
+import { BellIcon, Search } from "../assets/svg";
+import eventEmitter from "../Event";
+import { addNotification } from "../helper";
+import { getJobs, getProfile } from "../services/auth";
 
-    return (
-      <div
-        className={`notificationClass ${notificationData.class}-class ${
-          removing ? "slide-out" : ""
-        }`}
-      >
-        <div className="notificationMsg">
-          <div className="notificationIcon"></div>
-          <div className="notificationText">{notificationData.message}</div>
-        </div>
-        <button
-          className="notificationCloseBtn"
-          onClick={handleRemove}
-        ></button>
-      </div>
-    );
-  }
-);
 
 function NavMenu() {
   const [loading, setLoading] = useState(false);
@@ -50,6 +22,7 @@ function NavMenu() {
   const [filteredInvoice, setFilteredInvoice] = useState([]);
   const notificationRef = useRef(null);
   const navigate = useNavigate();
+  const [deletingId, setDeletingId] = useState(null);
 
   const searchPopUpRef = useRef(null);
 
@@ -62,7 +35,7 @@ function NavMenu() {
         const updatedNotifications = JSON.parse(event.newValue)?.map(
           (notif) => ({
             ...notif,
-            id: uuidv4(),
+            id: notif.id || uuidv4(),
           })
         );
         setNotifications(updatedNotifications);
@@ -78,7 +51,7 @@ function NavMenu() {
         const existingNotifications = JSON.parse(existingNotificationsJSON).map(
           (notif) => ({
             ...notif,
-            id: uuidv4(),
+            id: notif.id || uuidv4(),
           })
         );
         setNotifications(existingNotifications);
@@ -92,9 +65,11 @@ function NavMenu() {
       window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
     };
-  }, [storageUpdated]);
+  }, []);
 
-  const handleRemoveNotification = (notificationToRemove) => {
+  const handleRemoveNotification = async (notificationToRemove) => {
+    setDeletingId(notificationToRemove.id);
+    await new Promise((resolve) => setTimeout(resolve, 300));
     setNotifications((prevNotifications) =>
       prevNotifications.filter(
         (notification) => notification?.id !== notificationToRemove?.id
@@ -104,6 +79,7 @@ function NavMenu() {
       (notification) => notification?.id !== notificationToRemove?.id
     );
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+    setDeletingId(null);
   };
 
   const handleChange = (event) => {
@@ -150,6 +126,7 @@ function NavMenu() {
         notificationRef.current &&
         !notificationRef.current.contains(e.target)
       ) {
+        console.log("clicked")
         setNotificationDropDown(false);
       }
       if (
@@ -194,22 +171,7 @@ function NavMenu() {
           response.res.user.designation === "" ||
           response.res.user.designation === null
         ) {
-          const notificationData = {
-            class: "user",
-            message: "Finish Creating Your Profile!",
-          };
-          const existingNotificationsJSON =
-            localStorage.getItem("notifications");
-          let existingNotifications = [];
-          if (existingNotificationsJSON) {
-            existingNotifications = JSON.parse(existingNotificationsJSON);
-          }
-          existingNotifications.unshift(notificationData);
-
-          localStorage.setItem(
-            "notifications",
-            JSON.stringify(existingNotifications)
-          );
+          addNotification("user", "Finish Creating Your Profile");
         }
         localStorage.setItem("user", response.res.user.name);
       } else {
@@ -430,9 +392,12 @@ function NavMenu() {
                     className="bellIcon addTaskJobDiv"
                     style={{ cursor: "pointer" }}
                   >
+                    {notifications?.length > 0 && (
+                      <div className="activeNotification"></div>
+                    )}
                     <div
                       onClick={() =>
-                        setNotificationDropDown(!notificationDropDown)
+                        setNotificationDropDown(true)
                       }
                     >
                       <BellIcon />
@@ -444,13 +409,30 @@ function NavMenu() {
                       >
                         <div className="addTaskJobListScroll">
                           <div className="addTaskJobListItems">
-                            {notifications.length > 0 ? (
-                              notifications.map((notification, index) => (
-                                <NotificationComponent
-                                  key={index}
-                                  notificationData={notification}
-                                  onRemove={handleRemoveNotification}
-                                />
+                            {notifications?.length > 0 ? (
+                              notifications?.map((notification) => (
+                                <div
+                                  className={`notificationClass ${
+                                    notification.class
+                                  }-class ${
+                                    deletingId === notification.id
+                                      ? "deleting"
+                                      : ""
+                                  }`}
+                                >
+                                  <div className="notificationMsg">
+                                    <div className="notificationIcon"></div>
+                                    <div className="notificationText">
+                                      {notification.message}
+                                    </div>
+                                  </div>
+                                  <button
+                                    className="notificationCloseBtn"
+                                    onClick={() =>
+                                      handleRemoveNotification(notification)
+                                    }
+                                  />
+                                </div>
                               ))
                             ) : (
                               <div className="notificationClass info-class">
@@ -460,10 +442,6 @@ function NavMenu() {
                                     No Notifications
                                   </div>
                                 </div>
-                                <div
-                                  className="notificationCloseBtn"
-                                  onClick={() => setNotificationDropDown(false)}
-                                ></div>
                               </div>
                             )}
                           </div>
@@ -484,7 +462,7 @@ function NavMenu() {
                       cursor: "pointer",
                     }}
                     onClick={() =>
-                      setNotificationDropDown(!notificationDropDown)
+                      setNotificationDropDown(true)
                     }
                   >
                     Notifications

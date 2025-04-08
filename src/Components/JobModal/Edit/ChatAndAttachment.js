@@ -25,7 +25,12 @@ import {
   sendMessage,
 } from "../../../services/chat_attachment";
 import TaggedUser from "./TaggedUser";
-import { CollaboratorBorders, CollaboratorNameBorders } from "../../../helper";
+import {
+  addNotification,
+  CollaboratorBorders,
+  CollaboratorNameBorders,
+} from "../../../helper";
+import pusher from "../../../Pusher";
 
 const ChatAndAttachment = ({ JobId }) => {
   const maxLength = 10;
@@ -152,21 +157,8 @@ const ChatAndAttachment = ({ JobId }) => {
       const response = await sendMessage(JobId, { body });
       if (!response.error) {
         fetchChats();
-        const notificationData = {
-          class: "user",
-          message: "New Comment:" + userDetails.name,
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
 
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+        addNotification("user", "New Comment: " + userDetails.name);
         setBody("");
       }
     } catch (error) {
@@ -221,15 +213,18 @@ const ChatAndAttachment = ({ JobId }) => {
       try {
         setLoading(true);
         let response = await addAttachments(formData, JobId);
-        console.log("response 123--->", response);
+
         if (response.res) {
           toast.success(response.res?.message);
+          addNotification("success", "File Successfully Uploaded");
           fetchChats();
         } else {
+          addNotification("error", "File Upload Failed");
           toast.error(`${response.error}`);
         }
       } catch (error) {
         console.error("There was an error:", error);
+        addNotification("error", "File Upload Failed");
         toast.error("An error occurred while uploading the attachment");
       } finally {
         setLoading(false);
@@ -248,21 +243,8 @@ const ChatAndAttachment = ({ JobId }) => {
     link.download = docName;
     link.target = "_blank";
     link.click();
-    const notificationData = {
-      class: "success",
-      message: "File Successfully Downloaded!",
-    };
-    const existingNotificationsJSON = localStorage.getItem("notifications");
-    let existingNotifications = [];
-    if (existingNotificationsJSON) {
-      existingNotifications = JSON.parse(existingNotificationsJSON);
-    }
-    existingNotifications.unshift(notificationData);
 
-    localStorage.setItem(
-      "notifications",
-      JSON.stringify(existingNotifications)
-    );
+    addNotification("success", "File Successfully Downloaded");
   };
 
   const handleDeleteAttachment = async (id) => {
@@ -864,18 +846,8 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
       const response = await sendMessage(JobId, { body, ids: userIds });
       if (!response.error) {
         fetchChats();
-        const notificationData = {
-          class: "user",
-          message: "New Comment: " + userDetails.name,
-        };
-        const existingNotifications = JSON.parse(
-          localStorage.getItem("notifications") || "[]"
-        );
-        existingNotifications.unshift(notificationData);
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+
+        addNotification("user", "New Comment: " + userDetails?.name);
         setBody("");
       }
     } catch (error) {
@@ -940,7 +912,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
       try {
         setLoading(true);
         let response = await addAttachments(formData, JobId);
-        console.log("response 123--->", response);
+
         if (response.res) {
           toast.success(response.res?.message);
           throttledFetchChats();
@@ -970,21 +942,8 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
     link.download = docName;
     link.target = "_blank";
     link.click();
-    const notificationData = {
-      class: "success",
-      message: "File Successfully Downloaded!",
-    };
-    const existingNotificationsJSON = localStorage.getItem("notifications");
-    let existingNotifications = [];
-    if (existingNotificationsJSON) {
-      existingNotifications = JSON.parse(existingNotificationsJSON);
-    }
-    existingNotifications.unshift(notificationData);
 
-    localStorage.setItem(
-      "notifications",
-      JSON.stringify(existingNotifications)
-    );
+    addNotification("success", "File Successfully Downloaded");
   };
 
   const handleDeleteAttachment = async (id) => {
@@ -1505,10 +1464,10 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const [filteredUsers2, setFilteredUsers2] = useState(usersList);
   const [userIds, setUserIds] = useState([]);
   const [userIds2, setUserIds2] = useState([]);
+  const [subscribed, setSubscribed] = useState(false)
 
   const userRef = useRef(null);
   const userRef2 = useRef(null);
-  const messagesContainerRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -1516,12 +1475,14 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const isToast =
           document.querySelector(".Toastify__toast") &&
           document.querySelector(".Toastify__toast").contains(event.target);
+        console.log("isToast 1 ", isToast);
         if (!isToast) setShowUserList(false);
       }
       if (userRef2.current && !userRef2.current.contains(event.target)) {
         const isToast =
           document.querySelector(".Toastify__toast") &&
           document.querySelector(".Toastify__toast").contains(event.target);
+        console.log("isToast 2", isToast);
         if (!isToast) setShowUserList2(false);
       }
     };
@@ -1626,16 +1587,11 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   }, [comments]);
 
   useEffect(() => {
-    const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
-      cluster: process.env.REACT_APP_CLUSTER,
-      encrypted: true,
-    });
-
     const channel = pusher.subscribe(`job.${JobId}`);
-
+    console.log("subscribing to job:", JobId);
     const handleMessage = (data) => {
       const { message } = data;
-      console.log("New message received:", message);
+      console.log("New message received:",  message);
 
       if (message) {
         setChats((prevChats) => {
@@ -1646,6 +1602,14 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     };
 
     channel.bind("message.created", handleMessage);
+    channel.bind("pusher:subscription_succeeded", () => {
+      setSubscribed(true)
+      console.log(`Successfully subscribed to job.${JobId}`);
+    });
+
+    channel.bind("pusher:subscription_error", (status) => {
+      console.error(`Subscription failed:`, status);
+    });
 
     return () => {
       console.log("Unsubscribing from job:", JobId);
@@ -1674,6 +1638,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         getMessages(JobId, { signal }),
         getAttachments(JobId, { signal }),
       ]);
+
 
       if (!response1.error && !response2.error) {
         const combinedArray = [...response1.res, ...response2.res];
@@ -1737,19 +1702,9 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       setLoading(true);
       const response = await sendMessage(JobId, { body, ids: userIds });
       if (!response.error) {
+        if(!subscribed)
         fetchChats();
-        const notificationData = {
-          class: "user",
-          message: "New Comment: " + userDetails.name,
-        };
-        const existingNotifications = JSON.parse(
-          localStorage.getItem("notifications") || "[]"
-        );
-        existingNotifications.unshift(notificationData);
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+        // addNotification("user", "New Comment: " + userDetails?.name);
         setBody("");
       }
     } catch (error) {
@@ -1761,7 +1716,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       }
       setNewMsg({ type: "", data: "" });
     }
-  }, 300);
+  }, 1000);
 
   const throttledFetchChats = throttle(fetchChats, 1000); // 1 second throttle delay
 
@@ -1784,18 +1739,8 @@ export const ChatAndComment = ({ JobId, usersList }) => {
           data: "",
         });
         setCommentBody("");
-        const notificationData = {
-          class: "user",
-          message: "New Comment: " + userDetails.name,
-        };
-        const existingNotifications = JSON.parse(
-          localStorage.getItem("notifications") || "[]"
-        );
-        existingNotifications.unshift(notificationData);
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+
+        addNotification("user", "New Comment: " + userDetails.name);
       }
     } catch (error) {
       console.error("Error sending message:", error);
@@ -1858,8 +1803,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
-    if(droppedFile){
-
+    if (droppedFile) {
       if (
         (droppedFile && droppedFile.type.startsWith("image/")) ||
         droppedFile.type.startsWith("application/pdf")
@@ -1876,7 +1820,6 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         toast.error("Invalid file type. Please upload an image or PDF.");
       }
     }
-    
   };
 
   const handleDragOver = (e) => {
@@ -1893,14 +1836,17 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       try {
         setLoading(true);
         let response = await addAttachments(formData, JobId);
-        console.log("response 123--->", response);
+
         if (response.res) {
+          addNotification("success", "File Successfully Uploaded.");
           toast.success(response.res?.message);
           throttledFetchChats();
         } else {
+          addNotification("error", "File Upload Failed.");
           toast.error(`${response.error}`);
         }
       } catch (error) {
+        addNotification("error", "File Upload Failed.");
         console.error("There was an error:", error);
         toast.error("An error occurred while uploading the attachment");
       } finally {
@@ -1918,46 +1864,38 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   };
 
   const handleDownloadFile = async (fileUrl, docName) => {
-  try {
-    const filePath = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH_NEW}/${fileUrl}`;
+    try {
+      console.log("url", fileUrl);
+      const filePath = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
 
-    const response = await fetch(filePath, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/octet-stream", // Forces browser to handle it as a file
-      },
-    });
+      const response = await fetch(filePath, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/octet-stream", // Forces browser to handle it as a file
+        },
+      });
 
-    if (!response.ok) throw new Error(`Failed to fetch file: ${response.statusText}`);
+      if (!response.ok)
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
 
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", docName); // Forces download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", docName); // Forces download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-    window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(url);
 
-    saveNotification("success", "File Successfully Downloaded!");
-  } catch (error) {
-    console.error("Download error:", error);
-    saveNotification("error", "Failed to download file. Please try again.");
-  }
-};
-
-  
-  
-  // Helper function to update notifications in localStorage
-  const saveNotification = (type, message) => {
-    const notifications = JSON.parse(localStorage.getItem("notifications")) || [];
-    notifications.unshift({ class: type, message });
-    localStorage.setItem("notifications", JSON.stringify(notifications));
+      addNotification("success", "File Successfully Downloaded");
+    } catch (error) {
+      console.error("Download error:", error);
+      addNotification("error", "File Download Failed");
+    }
   };
-  
 
   const handleDeleteAttachment = async (id) => {
     try {
@@ -2036,6 +1974,14 @@ export const ChatAndComment = ({ JobId, usersList }) => {
             {attachments?.length > 0 &&
               attachments?.map((msg, i) => (
                 <div key={i} className="attachments">
+                  <div
+                    className="download-icon"
+                    onClick={() =>
+                      handleDownloadFile(msg.filename, msg.original_name)
+                    }
+                  >
+                    <img src={download} alt="" className="" />
+                  </div>
                   <div className="imgBox">
                     <img src={pngFIle} className="" alt="" />
                   </div>
@@ -2248,7 +2194,8 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                               style={{
                                 minWidth: "40px",
                                 border:
-                                  CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
+                                  CollaboratorBorders[user.id] ||
+                                  CollaboratorNameBorders[user.name] ||
                                   "1px solid rgb(105, 103, 103)",
                               }}
                             >
@@ -2632,8 +2579,9 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                             style={{
                               minWidth: "40px",
                               border:
-                              CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                              "1px solid rgb(105, 103, 103)",
+                                CollaboratorBorders[user.id] ||
+                                CollaboratorNameBorders[user.name] ||
+                                "1px solid rgb(105, 103, 103)",
                             }}
                           >
                             {initials}
@@ -2831,18 +2779,8 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
           ...prevComments,
           { ...response.res, user: { name: localStorage.getItem("user") } },
         ]);
-        const notificationData = {
-          class: "user",
-          message: "New Comment: " + userDetails.name,
-        };
-        const existingNotifications = JSON.parse(
-          localStorage.getItem("notifications") || "[]"
-        );
-        existingNotifications.unshift(notificationData);
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+
+        addNotification("user", "New Comment: " + userDetails.name);
         setBody("");
       }
     } catch (error) {
@@ -2873,8 +2811,6 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
 
     const selectedFile = e.target?.files[0];
 
-   
-
     if (selectedFile) {
       if (
         selectedFile.type.startsWith("image/") ||
@@ -2901,26 +2837,23 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
     e.preventDefault();
     if (!JobId) return;
     const droppedFile = e.dataTransfer.files[0];
-if(droppedFile){
-
-  if (
-    (droppedFile && droppedFile.type.startsWith("image/")) ||
-    droppedFile.type.startsWith("application/pdf")
-  ) {
-    setNewMsg({
-      type: "attachment",
-      data: droppedFile,
-    });
-    handleImageUpload(droppedFile);
-  } else {
-    if (attachmentRef.current) {
-      attachmentRef.current.value = ""; // Reset the input value
+    if (droppedFile) {
+      if (
+        (droppedFile && droppedFile.type.startsWith("image/")) ||
+        droppedFile.type.startsWith("application/pdf")
+      ) {
+        setNewMsg({
+          type: "attachment",
+          data: droppedFile,
+        });
+        handleImageUpload(droppedFile);
+      } else {
+        if (attachmentRef.current) {
+          attachmentRef.current.value = ""; // Reset the input value
+        }
+        toast.error("Invalid file type. Please upload an image or PDF.");
+      }
     }
-    toast.error("Invalid file type. Please upload an image or PDF.");
-  }
-}
-
-
   };
 
   const handleDragOver = (e) => {
@@ -2957,29 +2890,6 @@ if(droppedFile){
       }
     };
     reader.readAsDataURL(file);
-  };
-
-  const handleDownloadFile = (fileUrl, docName) => {
-    const link = document.createElement("a");
-    link.href = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
-    link.download = docName;
-    link.target = "_blank";
-    link.click();
-    const notificationData = {
-      class: "success",
-      message: "File Successfully Downloaded!",
-    };
-    const existingNotificationsJSON = localStorage.getItem("notifications");
-    let existingNotifications = [];
-    if (existingNotificationsJSON) {
-      existingNotifications = JSON.parse(existingNotificationsJSON);
-    }
-    existingNotifications.unshift(notificationData);
-
-    localStorage.setItem(
-      "notifications",
-      JSON.stringify(existingNotifications)
-    );
   };
 
   const handleDeleteAttachment = async (id) => {
@@ -3023,6 +2933,41 @@ if(droppedFile){
     return result;
   };
 
+  const handleDownloadFile = async (fileUrl, docName) => {
+    try {
+      console.log("url", fileUrl);
+      const filePath = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
+
+      const response = await fetch(filePath, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/octet-stream", // Forces browser to handle it as a file
+        },
+      });
+
+      if (!response.ok)
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", docName); // Forces download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+
+      addNotification("success", "File Successfully Downloaded");
+    } catch (error) {
+      console.error("Download error:", error);
+      addNotification("error", "File Download Failed");
+    }
+  };
+
+
   return (
     <div className="comment-box">
       <div className="addJobPopUpAttachments">
@@ -3061,6 +3006,14 @@ if(droppedFile){
             {attachments?.length > 0 &&
               attachments?.map((msg, i) => (
                 <div key={i} className="attachments">
+                  <div
+                    className="download-icon"
+                    onClick={() =>
+                      handleDownloadFile(msg.filename, msg.original_name)
+                    }
+                  >
+                    <img src={download} alt="" className="" />
+                  </div>
                   <div className="imgBox">
                     <img src={pngFIle} className="" alt="" />
                   </div>
@@ -3270,8 +3223,9 @@ if(droppedFile){
                             style={{
                               minWidth: "40px",
                               border:
-                              CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                              "1px solid rgb(105, 103, 103)",
+                                CollaboratorBorders[user.id] ||
+                                CollaboratorNameBorders[user.name] ||
+                                "1px solid rgb(105, 103, 103)",
                             }}
                           >
                             {initials}

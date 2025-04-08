@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import {
   AddIcon,
@@ -31,9 +31,9 @@ import {
   CreateTaskModal,
   UpdateTaskModal,
 } from "../../Components/JobModal/Edit/JobModal";
-import { NotificationComponent } from "../../Components/navMenu";
 import { formatJobNumber } from "../Jobs";
 import ToggleButton from "../../Components/ToggleButton";
+import { addNotification } from "../../helper";
 function ViewTaskPage() {
   const [loading, setLoading] = useState(true);
   const [taskTab, setTaskTab] = useState("to-do");
@@ -94,6 +94,7 @@ function ViewTaskPage() {
   const [userColors, setUserColors] = useState({});
   const [notifications, setNotifications] = useState([]);
   const [isOn, setIsOn] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const notificationRef = useRef(null);
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -101,7 +102,7 @@ function ViewTaskPage() {
         const updatedNotifications = JSON.parse(event.newValue)?.map(
           (notif) => ({
             ...notif,
-            id: uuidv4(),
+            id: notif.id || uuidv4(),
           })
         );
         setNotifications(updatedNotifications);
@@ -117,7 +118,7 @@ function ViewTaskPage() {
         const existingNotifications = JSON.parse(existingNotificationsJSON).map(
           (notif) => ({
             ...notif,
-            id: uuidv4(),
+            id: notif.id || uuidv4(),
           })
         );
         setNotifications(existingNotifications);
@@ -133,16 +134,20 @@ function ViewTaskPage() {
     };
   }, [storageUpdated]);
 
-  const handleRemoveNotification = (notificationToRemove) => {
+
+  const handleRemoveNotification = async (notificationToRemove) => {
+    setDeletingId(notificationToRemove.id);
+    await new Promise((resolve) => setTimeout(resolve, 300));
     setNotifications((prevNotifications) =>
       prevNotifications.filter(
-        (notification) => notification.id !== notificationToRemove.id
+        (notification) => notification?.id !== notificationToRemove?.id
       )
     );
     const updatedNotifications = notifications.filter(
-      (notification) => notification.id !== notificationToRemove.id
+      (notification) => notification?.id !== notificationToRemove?.id
     );
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+    setDeletingId(null);
   };
 
   useEffect(() => {
@@ -415,8 +420,10 @@ function ViewTaskPage() {
       setFilteredTasks((prevTasks) =>
         prevTasks.map((t) => (t.id === "temp" ? task : t))
       );
+      addNotification("success", "Task Created")
       console.log("Task create successful", response.res);
     } else {
+      addNotification("error", "Task Creation Failed")
       console.error("Task create failed:", response.error);
       toast.error(response.error?.message || "Failed to add the task");
       // Optionally, remove the temporary task if the creation fails
@@ -460,6 +467,7 @@ function ViewTaskPage() {
     try {
       const response = await deleteTask(task.id);
       if (response.res) {
+          addNotification("success", "Task Deleted")
         console.log("Job delete successful", response.res);
       } else {
         console.error("Job delete failed:", response.error);
@@ -499,8 +507,10 @@ function ViewTaskPage() {
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
+      addNotification("success", "Task Updated")
       console.log("Task Update successful", response.res);
     } else {
+      addNotification("error", "Task Update Failed")
       console.error("Task Update failed:", response.error);
       toast.error(response.error?.message || "Failed to Update the task");
     }
@@ -782,9 +792,10 @@ function ViewTaskPage() {
             <div
               className="d-flex align-items-center"
               style={{ gap: "8px", cursor: "pointer" }}
-              onClick={() => setNotificationDropDown(!notificationDropDown)}
+              onClick={() => setNotificationDropDown(true)}
             >
               <div className="notifyIcon notificationWhite mx-0">
+              {notifications?.length > 0 &&  <div className="activeNotification"></div>}
                 <div className="addNewTaskDiv">
                   <div className="bellIcon addTaskJobDiv">
                     <div>
@@ -797,13 +808,28 @@ function ViewTaskPage() {
                       >
                         <div className="addTaskJobListScroll">
                           <div className="addTaskJobListItems">
-                            {notifications.length > 0 ? (
-                              notifications.map((notification, index) => (
-                                <NotificationComponent
-                                  key={notification.id}
-                                  notificationData={notification}
-                                  onRemove={handleRemoveNotification}
+                            {notifications?.length > 0 ? (
+                              notifications?.map((notification, index) => (
+                                <div
+                                className={`notificationClass ${notification.class}-class ${
+                                  deletingId === notification.id
+                                    ? "deleting"
+                                    : ""
+                                }`}
+                              >
+                                <div className="notificationMsg">
+                                  <div className="notificationIcon"></div>
+                                  <div className="notificationText">
+                                    {notification.message}
+                                  </div>
+                                </div>
+                                <button
+                                  className="notificationCloseBtn"
+                                  onClick={() =>
+                                    handleRemoveNotification(notification)
+                                  }
                                 />
+                              </div>
                               ))
                             ) : (
                               <div className="notificationClass info-class">
@@ -813,10 +839,7 @@ function ViewTaskPage() {
                                     No Notifications
                                   </div>
                                 </div>
-                                <div
-                                  className="notificationCloseBtn"
-                                  onClick={() => setNotificationDropDown(false)}
-                                ></div>
+                               
                               </div>
                             )}
                           </div>

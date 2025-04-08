@@ -25,8 +25,14 @@ import {
   UpdateTaskModal,
 } from "../../Components/JobModal/Edit/JobModal";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
-import { NotificationComponent } from "../../Components/navMenu";
-import { arraysEqualById, CollaboratorBorders, CollaboratorNameBorders, MAX_CALENDAR_YEAR, StatusList } from "../../helper";
+import {
+  addNotification,
+  arraysEqualById,
+  CollaboratorBorders,
+  CollaboratorNameBorders,
+  MAX_CALENDAR_YEAR,
+  StatusList,
+} from "../../helper";
 import {
   createJobs,
   createTask,
@@ -152,7 +158,7 @@ const Jobs = () => {
     []
   );
   const [usersList, setUsersList] = useState([]);
-  const [fullUsersList, setFullUsersList] = useState([])
+  const [fullUsersList, setFullUsersList] = useState([]);
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [pageUrls, setPageUrls] = useState([]);
   const [filteredString, setFilteredString] = useState([]);
@@ -182,6 +188,7 @@ const Jobs = () => {
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
   const [editedJobDueDate, setEditedJobDueDate] = useState(null);
   const [collabChanged, setCollabChanged] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -189,7 +196,7 @@ const Jobs = () => {
         const updatedNotifications = JSON.parse(event.newValue)?.map(
           (notif) => ({
             ...notif,
-            id: uuidv4(),
+            id: notif.id || uuidv4(),
           })
         );
         setNotifications(updatedNotifications);
@@ -205,7 +212,7 @@ const Jobs = () => {
         const existingNotifications = JSON.parse(existingNotificationsJSON).map(
           (notif) => ({
             ...notif,
-            id: uuidv4(),
+            id: notif.id || uuidv4(),
           })
         );
         setNotifications(existingNotifications);
@@ -263,16 +270,19 @@ const Jobs = () => {
     }
   };
 
-  const handleRemoveNotification = (notificationToRemove) => {
+  const handleRemoveNotification = async (notificationToRemove) => {
+    setDeletingId(notificationToRemove.id);
+    await new Promise((resolve) => setTimeout(resolve, 300));
     setNotifications((prevNotifications) =>
-      prevNotifications?.filter(
+      prevNotifications.filter(
         (notification) => notification?.id !== notificationToRemove?.id
       )
     );
-    const updatedNotifications = notifications?.filter(
+    const updatedNotifications = notifications.filter(
       (notification) => notification?.id !== notificationToRemove?.id
     );
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+    setDeletingId(null);
   };
 
   useEffect(() => {
@@ -371,6 +381,7 @@ const Jobs = () => {
         notificationRef.current &&
         !notificationRef.current.contains(e.target)
       ) {
+        console.log("clicked job")
         setNotificationDropDown(false);
       }
     };
@@ -453,7 +464,7 @@ const Jobs = () => {
   const handleScroll = useCallback(async () => {
     const container = containerRef.current;
     if (!container) return;
-
+    
     // Check if the container has been scrolled to the bottom
     if (
       container.scrollTop + container.clientHeight >= container.scrollHeight &&
@@ -464,9 +475,9 @@ const Jobs = () => {
       try {
         const res = await getJobs(loadMorePage + 1);
         const data = res?.res?.data;
-        console.log(res.res, "filtered jobs");
         setLoadTotalPage(res?.res?.last_page);
         setFilteredJobs((prevJobs) => [...prevJobs, ...data]);
+        setOriginalJobs((prevJobs) => [...prevJobs, ...data]);
       } catch (error) {
         console.log("error while fetching jobs", error);
       } finally {
@@ -624,7 +635,7 @@ const Jobs = () => {
     synchronizeRowHeights();
     if (showPopup) setShowNewJobModal(true);
   };
-
+ 
   const handleAddNewJob = async () => {
     try {
       const year = new Date().getFullYear();
@@ -641,15 +652,13 @@ const Jobs = () => {
 
       // API call to create job
       const response = await createJobs(reqBody);
-      console.log("request body for create job", response);
       if (response?.res) {
         const { job } = response?.res;
         // remove the temp job num details
         let tempJobs = filteredJobs.filter((job) => job !== newJobIdNumber);
         tempJobs = [job, ...tempJobs];
-        console.log("temp jobs", tempJobs);
+        addNotification("success", "Job Created");
         setFilteredJobs(tempJobs);
-        console.log(`${response.res.message}`);
       } else {
         toast.error(`${response?.error?.message || "Error occurred"}`);
       }
@@ -659,6 +668,7 @@ const Jobs = () => {
       handleCancelAddJob(); // Reset state after action
     }
   };
+
   useEffect(() => {
     const handleDoubleClick = (event) => {
       if (
@@ -705,7 +715,7 @@ const Jobs = () => {
       let response = await getUserByRole(authToken);
       if (response.res) {
         setUsersList(response.res);
-        setFullUsersList(response.res)
+        setFullUsersList(response.res);
       } else {
         console.error("Failed to fetch Users:", response.error);
       }
@@ -910,24 +920,10 @@ const Jobs = () => {
         // fetchUsers();
         const response = await updateJobs(reqBody);
         if (!response.res) {
-          console.error("jobs update failed:", response.error);
-          const notificationData = {
-            class: "error",
-            message: response.error.message,
-          };
-          const existingNotificationsJSON =
-            localStorage.getItem("notifications");
-          let existingNotifications = [];
-          if (existingNotificationsJSON) {
-            existingNotifications = JSON.parse(existingNotificationsJSON);
-          }
-          existingNotifications.unshift(notificationData);
-
-          localStorage.setItem(
-            "notifications",
-            JSON.stringify(existingNotifications)
-          );
+          addNotification("error", "Job Update Failed");
           toast.error(`${response.error.message}`);
+        } else {
+          addNotification("success", "Job Updated");
         }
       } catch (error) {
         console.log("error in updating jobs", error);
@@ -942,7 +938,8 @@ const Jobs = () => {
       ) {
         const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
         const originalJob = originalJobs.find((job) => job.id === updateJobId);
-        setUsersList(fullUsersList)
+       
+        setUsersList(fullUsersList);
         const isJobChanged = (updatedJob, originalJob) => {
           if (!updatedJob || !originalJob) {
             console.error(
@@ -959,12 +956,12 @@ const Jobs = () => {
           );
           console.log(
             "job data comparison",
-            (updatedJob?.title || "") !== (originalJob?.title || "") ||
+            (updatedJob?.title || "") !== (originalJob?.title || ""),updatedJob?.collaborators, originalJob?.collaborators,
               !arraysEqualById(
                 updatedJob?.collaborators || [],
                 originalJob?.collaborators || []
-              ) ||
-              (updatedJob?.status || "") !== (originalJob?.status || "") ||
+              ) ,
+              (updatedJob?.status || "") !== (originalJob?.status || "") ,
               (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
           );
 
@@ -1050,22 +1047,10 @@ const Jobs = () => {
 
       if (!response.res) {
         console.error("jobs update failed:", response.error);
-        const notificationData = {
-          class: "error",
-          message: response.error.message,
-        };
-        const existingNotificationsJSON = localStorage.getItem("notifications");
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify(existingNotifications)
-        );
+        addNotification("error", "Job Update Failed");
         toast.error(`${response.error.message}`);
+      } else {
+        addNotification("success", "Job Updated");
       }
     } catch (error) {
       console.error("Error updating job:", error);
@@ -1101,6 +1086,10 @@ const Jobs = () => {
     var response = await updateTask(newData, taskId);
     if (response.res) {
       fetchJobs();
+      if(newData?.updatedTask?.status === "completed"){
+        addNotification("success", "Task Completed")
+      }
+      addNotification("success", "Task Updated");
       console.log("Task Update successful", response.res);
     } else {
       console.error("Task Update failed:", response.error);
@@ -1155,16 +1144,16 @@ const Jobs = () => {
               : job
           )
         );
-
-        console.log("Task create successful", response.res);
+        addNotification("success", "Task Created");
         toast.success("Task added successfully!");
       } else {
+
         throw new Error(response.error?.message || "Failed to add the task");
       }
     } catch (error) {
       console.error("Task create failed:", error.message);
       toast.error(error.message);
-
+      addNotification("error", "Task Creation Failed")
       // Rollback: Remove the temporary task if API fails
       setFilteredJobs((prevJobs) =>
         prevJobs.map((job) =>
@@ -1180,7 +1169,8 @@ const Jobs = () => {
     try {
       const response = await deleteTask(task.id);
       if (response.res) {
-        console.log("Job delete successful", response.res);
+        addNotification("success", "Task Deleted");
+        console.log("task delete successful", response.res);
       } else {
         console.error("Job delete failed:", response.error);
         toast.error(response.error?.message || "Failed to delete the job");
@@ -1284,7 +1274,7 @@ const Jobs = () => {
         ...job,
         tasks:
           job.job_num === task.job_num
-            ? [...(job.tasks || []), {...task, id:'temp'}]
+            ? [...(job.tasks || []), { ...task, id: "temp" }]
             : job.tasks,
       }))
     );
@@ -1303,8 +1293,10 @@ const Jobs = () => {
               : job.tasks,
         }))
       );
-      console.log("Task create successful", response.res);
+      addNotification("success", "Task Created");
+      console.log("Task create successful",taskToUpdate, response.res);
     } else {
+      addNotification("error", "Task Creation Failed")
       console.error("Task create failed:", response.error);
       toast.error(response.error?.message || "Failed to add the task");
     }
@@ -1413,6 +1405,7 @@ const Jobs = () => {
         setNewJob(true);
         handleOpenJobWithTask(job);
         setFilteredJobs((prevJobs) => [job, ...prevJobs]);
+        addNotification("success", "Job Created");
       } else {
         toast.error(`${response?.error?.message || "Error occurred"}`);
       }
@@ -1486,14 +1479,14 @@ const Jobs = () => {
                 activeJob.tasks
               );
             }
-            
+
             setNewJob(false);
           }}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
           handleDelete={() => {
-            console.log("active job id to be deleted", activeJob)
+            console.log("active job id to be deleted", activeJob);
             setFilteredJobs((prevJobs) =>
               prevJobs.filter((job) => job.id !== activeJob.id)
             );
@@ -1540,7 +1533,7 @@ const Jobs = () => {
                 tasks: job.tasks.filter((task) => task?.id !== activeTask?.id),
               }))
             );
-            
+
             setShowAddTaskModal(false);
           }}
         />
@@ -1763,9 +1756,10 @@ const Jobs = () => {
               <div
                 className="d-flex align-items-center"
                 style={{ gap: "8px", cursor: "pointer" }}
-                onClick={() => setNotificationDropDown(!notificationDropDown)}
+                onClick={() => setNotificationDropDown(true)}
               >
                 <div className="notifyIcon notificationWhite mx-0">
+                {notifications?.length > 0 &&  <div className="activeNotification"></div>}
                   <div className="addNewTaskDiv">
                     <div className="bellIcon addTaskJobDiv">
                       <div>
@@ -1780,11 +1774,26 @@ const Jobs = () => {
                             <div className="addTaskJobListItems">
                               {notifications.length > 0 ? (
                                 notifications.map((notification, index) => (
-                                  <NotificationComponent
-                                    key={index}
-                                    notificationData={notification}
-                                    onRemove={handleRemoveNotification}
+                                  <div
+                                  className={`notificationClass ${notification.class}-class ${
+                                    deletingId === notification.id
+                                      ? "deleting"
+                                      : ""
+                                  }`}
+                                >
+                                  <div className="notificationMsg">
+                                    <div className="notificationIcon"></div>
+                                    <div className="notificationText">
+                                      {notification.message}
+                                    </div>
+                                  </div>
+                                  <button
+                                    className="notificationCloseBtn"
+                                    onClick={() =>
+                                      handleRemoveNotification(notification)
+                                    }
                                   />
+                                </div>
                                 ))
                               ) : (
                                 <div className="notificationClass info-class">
@@ -1794,12 +1803,6 @@ const Jobs = () => {
                                       No Notifications
                                     </div>
                                   </div>
-                                  <div
-                                    className="notificationCloseBtn"
-                                    onClick={() =>
-                                      setNotificationDropDown(false)
-                                    }
-                                  ></div>
                                 </div>
                               )}
                             </div>
@@ -2061,8 +2064,12 @@ const Jobs = () => {
                                               minWidth: "40px",
                                               zIndex: index,
                                               cursor: "pointer",
-                                              border:   CollaboratorBorders[user?.id] || CollaboratorNameBorders[user?.name] || 
-                                                                                                                            "1px solid rgb(105, 103, 103)",
+                                              border:
+                                                CollaboratorBorders[user?.id] ||
+                                                CollaboratorNameBorders[
+                                                  user?.name
+                                                ] ||
+                                                "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -2127,8 +2134,14 @@ const Jobs = () => {
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                border:   CollaboratorBorders[user?.id] || CollaboratorNameBorders[user?.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                                border:
+                                                  CollaboratorBorders[
+                                                    user?.id
+                                                  ] ||
+                                                  CollaboratorNameBorders[
+                                                    user?.name
+                                                  ] ||
+                                                  "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -2160,8 +2173,12 @@ const Jobs = () => {
                                             className={`collaboratorsBoxUser`}
                                             style={{
                                               minWidth: "40px",
-                                              border:   CollaboratorBorders[user?.id] || CollaboratorNameBorders[user?.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                              border:
+                                                CollaboratorBorders[user?.id] ||
+                                                CollaboratorNameBorders[
+                                                  user?.name
+                                                ] ||
+                                                "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -2200,9 +2217,13 @@ const Jobs = () => {
                                 : ""
                             }`}
                           >
-                            <td className="text-center" style={{cursor: 'pointer'}} onClick={() => {
-                               setActiveJob(job);
-                            }}>
+                            <td
+                              className="text-center"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                setActiveJob(job);
+                              }}
+                            >
                               <span className={`jobNoBtn`}>
                                 {formatJobNumber(job?.job_num)}
                               </span>
@@ -2267,8 +2288,14 @@ const Jobs = () => {
                                               style={{
                                                 minWidth: "40px",
                                                 zIndex: index,
-                                                border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                                border:
+                                                  CollaboratorBorders[
+                                                    user.id
+                                                  ] ||
+                                                  CollaboratorNameBorders[
+                                                    user.name
+                                                  ] ||
+                                                  "1px solid rgb(105, 103, 103)",
                                               }}
                                             >
                                               {initials}
@@ -2281,8 +2308,8 @@ const Jobs = () => {
                                           className={`collaboratorsBoxUser`}
                                           style={{
                                             minWidth: "40px",
-                                            zIndex: job?.collaborators?.length || 4,
-                                            
+                                            zIndex:
+                                              job?.collaborators?.length || 4,
                                           }}
                                         >
                                           +{job?.collaborators.length - 3}
@@ -2332,8 +2359,14 @@ const Jobs = () => {
                                                   className={`collaboratorsBoxUser`}
                                                   style={{
                                                     minWidth: "40px",
-                                                    border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                                    border:
+                                                      CollaboratorBorders[
+                                                        user.id
+                                                      ] ||
+                                                      CollaboratorNameBorders[
+                                                        user.name
+                                                      ] ||
+                                                      "1px solid rgb(105, 103, 103)",
                                                   }}
                                                 >
                                                   {initials}
@@ -2360,14 +2393,19 @@ const Jobs = () => {
                                               onClick={() =>
                                                 handleSelectCollaborator(user)
                                               }
-                                            
                                             >
                                               <div
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                              "1px solid rgb(105, 103, 103)",
+                                                  border:
+                                                    CollaboratorBorders[
+                                                      user.id
+                                                    ] ||
+                                                    CollaboratorNameBorders[
+                                                      user.name
+                                                    ] ||
+                                                    "1px solid rgb(105, 103, 103)",
                                                 }}
                                               >
                                                 {initials}
@@ -2793,7 +2831,10 @@ const Jobs = () => {
                                                 }
                                               }}
                                             >
-                                              {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                              {task?.title?.replace(
+                                                /\b\w/g,
+                                                (char) => char.toUpperCase()
+                                              )}
                                             </span>
                                           );
                                         })}

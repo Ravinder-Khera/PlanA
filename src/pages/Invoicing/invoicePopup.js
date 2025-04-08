@@ -4,6 +4,7 @@ import { Bars } from "react-loader-spinner";
 import { Calendar } from "react-date-range";
 import { createInvoice } from "../../services/auth";
 import { toast } from "react-toastify";
+import { addNotification } from "../../helper";
 
 const InvoicePopup = ({ handleClose }) => {
   const [state, setState] = useState([]);
@@ -313,19 +314,8 @@ const InvoicePopup = ({ handleClose }) => {
       if (response.res) {
         console.log("create Task successful", response);
 
-        const notificationData = {
-          class: "success",
-          message: response.message
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
-
+      
+        addNotification("success", "Invoice Created")
         toast.success(response.message, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -339,18 +329,8 @@ const InvoicePopup = ({ handleClose }) => {
         handleClose()
       } else {
         console.error("Invoice creation failed:", response.error);
-        const notificationData = {
-          class: "error",
-          message: Object.values(response.error.errors)[0][0]
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+  
+        addNotification("error", "Invoice Creation Failed")
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,

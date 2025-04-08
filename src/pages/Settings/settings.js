@@ -13,8 +13,14 @@ import { Bars } from "react-loader-spinner";
 import eventEmitter from "../../Event";
 import PasswordStrengthMeter from "../../Components/PasswordStrengthMeter";
 import { useLocation, useNavigate } from "react-router-dom";
+import { addNotification } from "../../helper";
 
-function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchProfileData }) {
+function ProfileDetails({
+  userFirstName,
+  userLastName,
+  userDesignation,
+  fetchProfileData,
+}) {
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -25,7 +31,7 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
   const handleFirstNameChange = (e) => {
     const inputValue = e.target.value;
     const isValid = /^[a-zA-Z\s]*$/.test(inputValue);
-    if(isValid) {
+    if (isValid) {
       setFirstName(inputValue);
       setNameError("");
     } else if (!inputValue) {
@@ -40,11 +46,11 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
     const isValid = /^[a-zA-Z\s]*$/.test(inputValue); // Allow empty string
     if (isValid) {
       setDesignation(inputValue);
-      setJobError(""); 
+      setJobError("");
     } else {
       setJobError("Please enter a valid job title.");
     }
-  };  
+  };
 
   const handleUpdateProfile = async () => {
     if (firstName === "") {
@@ -53,7 +59,11 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
     } else if (designation === "") {
       setJobError("Job Title can not be empty");
       return;
-    } else if (firstName === userFirstName && lastName === userLastName && designation === userDesignation ) {
+    } else if (
+      firstName === userFirstName &&
+      lastName === userLastName &&
+      designation === userDesignation
+    ) {
       return;
     }
     try {
@@ -62,28 +72,17 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
       let response = await updateProfile(
         {
           name: firstName + " " + lastName,
-          designation: designation
+          designation: designation,
         },
         authToken
       );
 
       if (response.res) {
         console.log("update successful", response);
-        const notificationData = {
-          class: "success",
-          message: 'Profile updated successfully'
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
+        addNotification("success", "Profile Successfully Updated");
         toast.success("Profile updated successfully", {
-          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+          position: window.innerWidth < 992 ? "bottom-center" : "top-center",
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -97,22 +96,9 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
         eventEmitter.emit("updateProfile");
       } else {
         console.error("profile update failed:", response.error);
-
-        const notificationData = {
-          class: "error",
-          message: response.error.message
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
-
+        addNotification("success", "Failed To Update Profile");
         toast.error(`${response.error.message}`, {
-          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+          position: window.innerWidth < 992 ? "bottom-center" : "top-center",
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -132,7 +118,7 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
   useEffect(() => {
     setFirstName(userFirstName);
     setLastName(userLastName);
-    setDesignation(userDesignation)
+    setDesignation(userDesignation);
   }, [userFirstName, userLastName, userDesignation]);
   return (
     <>
@@ -172,13 +158,25 @@ function ProfileDetails({ userFirstName, userLastName, userDesignation, fetchPro
             </div>
             <div className="my-5"></div>
             <div className={`customInput ${jobError !== "" && "errorClass"}`}>
-              <input name="jobTitle" placeholder="Job Title" 
+              <input
+                name="jobTitle"
+                placeholder="Job Title"
                 value={designation}
-                onChange={handleJobTitleChange} />
+                onChange={handleJobTitleChange}
+              />
             </div>
           </form>
           <div className="btnDiv">
-            <button className="signupButton" disabled={firstName === userFirstName && lastName === userLastName && designation === userDesignation && true} onClick={handleUpdateProfile}>
+            <button
+              className="signupButton"
+              disabled={
+                firstName === userFirstName &&
+                lastName === userLastName &&
+                designation === userDesignation &&
+                true
+              }
+              onClick={handleUpdateProfile}
+            >
               Save Changes
             </button>
           </div>
@@ -218,22 +216,10 @@ function ProfilePic({ userPicture, fetchProfileData }) {
         let response = await updateProfilePicture(formData, authToken);
         if (response.res) {
           console.log(response);
-          
-          const notificationData = {
-            class: "success",
-            message: response.res.message
-          };
-          const existingNotificationsJSON = localStorage.getItem('notifications');
-          let existingNotifications = [];
-          if (existingNotificationsJSON) {
-            existingNotifications = JSON.parse(existingNotificationsJSON);
-          }
-          existingNotifications.unshift(notificationData);
-      
-          localStorage.setItem('notifications', JSON.stringify(existingNotifications));
 
+          addNotification("success", "Profile Successfully Updated");
           toast.success(`${response.res.message}`, {
-            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+            position: window.innerWidth < 992 ? "bottom-center" : "top-center",
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -245,21 +231,9 @@ function ProfilePic({ userPicture, fetchProfileData }) {
           fetchProfileData();
           eventEmitter.emit("updateProfile");
         } else {
-          const notificationData = {
-            class: "error",
-            message: response.error.message
-          };
-          const existingNotificationsJSON = localStorage.getItem('notifications');
-          let existingNotifications = [];
-          if (existingNotificationsJSON) {
-            existingNotifications = JSON.parse(existingNotificationsJSON);
-          }
-          existingNotifications.unshift(notificationData);
-      
-          localStorage.setItem('notifications', JSON.stringify(existingNotifications));
-
+          addNotification("error", "Failed To Update Profile");
           toast.error(`${response.error.message}`, {
-            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+            position: window.innerWidth < 992 ? "bottom-center" : "top-center",
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -272,7 +246,7 @@ function ProfilePic({ userPicture, fetchProfileData }) {
       } catch (error) {
         console.error("There was an error:", error);
         toast.error("An error occurred while uploading the image", {
-          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+          position: window.innerWidth < 992 ? "bottom-center" : "top-center",
           autoClose: 5000,
           hideProgressBar: true,
           closeOnClick: true,
@@ -305,12 +279,15 @@ function ProfilePic({ userPicture, fetchProfileData }) {
     }
   };
 
-  const backgroundImageStyle = userPicture && userPicture !== 'default-profile-pic.jpg'
-    ? {
-        backgroundImage: `url(${process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userPicture})`,
-        backgroundSize: "cover",
-      }
-    : {};
+  const backgroundImageStyle =
+    userPicture && userPicture !== "default-profile-pic.jpg"
+      ? {
+          backgroundImage: `url(${
+            process.env.REACT_APP_USER_API_CLOUD_IMG_PATH + userPicture
+          })`,
+          backgroundSize: "cover",
+        }
+      : {};
 
   return (
     <>
@@ -368,15 +345,15 @@ function ProfilePic({ userPicture, fetchProfileData }) {
   );
 }
 
-function PasswordReset({fetchProfileData}) {
-  const [oldPassword, setOldPassword] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+function PasswordReset({ fetchProfileData }) {
+  const [oldPassword, setOldPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
-  const [oldPasswordError, setOldPasswordError] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [passwordError, setPasswordError] = useState("");
+  const [oldPasswordError, setOldPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleToggleOldPassword = () => {
@@ -385,7 +362,7 @@ function PasswordReset({fetchProfileData}) {
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
-};
+  };
 
   const validatePassword = (inputPassword) => {
     const capitalRegex = /[A-Z]/;
@@ -405,8 +382,8 @@ function PasswordReset({fetchProfileData}) {
     setOldPassword(inputValue);
 
     if (!inputValue) {
-      setOldPasswordError('');
-    } 
+      setOldPasswordError("");
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -414,9 +391,9 @@ function PasswordReset({fetchProfileData}) {
     setPassword(inputValue);
 
     if (!inputValue) {
-      setPasswordError('');
-    } else if (validatePassword(inputValue)){
-      setPasswordError('');
+      setPasswordError("");
+    } else if (validatePassword(inputValue)) {
+      setPasswordError("");
     }
   };
 
@@ -427,87 +404,47 @@ function PasswordReset({fetchProfileData}) {
 
   const handlePasswordReset = async () => {
     if (!validatePassword(password)) {
-      setPasswordError('Please enter a valid password');
-      setTimeout(function() {
-        setPasswordError('');
+      setPasswordError("Please enter a valid password");
+      setTimeout(function () {
+        setPasswordError("");
       }, 500);
-      return
-    } 
+      return;
+    }
     if (confirmPassword !== password) {
-      setConfirmPasswordError('Password does not match');
-      return
-    } else if (!confirmPassword){
-      setConfirmPasswordError('Password can not be empty');
-      return
+      setConfirmPasswordError("Password does not match");
+      return;
+    } else if (!confirmPassword) {
+      setConfirmPasswordError("Password can not be empty");
+      return;
     } else {
-      setConfirmPasswordError('')
+      setConfirmPasswordError("");
     }
     try {
-    const authToken = localStorage.getItem("authToken");
-    setLoading(true);
-    let response = await changePassword(
-        {
-          current_password : oldPassword,
-          new_password : password,
-          new_password_confirmation : confirmPassword,
-          authToken: authToken,
-        }
-      );
-  
+      const authToken = localStorage.getItem("authToken");
+      setLoading(true);
+      let response = await changePassword({
+        current_password: oldPassword,
+        new_password: password,
+        new_password_confirmation: confirmPassword,
+        authToken: authToken,
+      });
+
       if (response.res) {
-        console.log('Password reset successful',response.res);
-        setConfirmPassword('');
-        setPassword('');
-        setOldPassword('');
-        const notificationData = {
-          class: "success",
-          message: 'Password Reset Successfully'
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
-        toast.success(<>
-          <div >
-            <h3>Password Reset Successfully</h3>
-          </div>
-          <p>Your password has been updated.</p>
-        </>, {
-          position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        fetchProfileData()
-        } else {
-          console.error('Password reset failed:', response.error);
-          const notificationData = {
-            class: "error",
-            message: 'There was an issue resetting your password'
-          };
-          const existingNotificationsJSON = localStorage.getItem('notifications');
-          let existingNotifications = [];
-          if (existingNotificationsJSON) {
-            existingNotifications = JSON.parse(existingNotificationsJSON);
-          }
-          existingNotifications.unshift(notificationData);
-      
-          localStorage.setItem('notifications', JSON.stringify(existingNotifications));
-          toast.error(<>
-            <div >
-              <h3>Reset Unsuccessful</h3>
+        console.log("Password reset successful", response.res);
+        setConfirmPassword("");
+        setPassword("");
+        setOldPassword("");
+
+        addNotification("success", "Password Changed");
+        toast.success(
+          <>
+            <div>
+              <h3>Password Reset Successfully</h3>
             </div>
-            <p>There was an issue resetting your password. Please try again or contact support.</p>
-          </>, {
-            position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
+            <p>Your password has been updated.</p>
+          </>,
+          {
+            position: window.innerWidth < 992 ? "bottom-center" : "top-center",
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
@@ -515,103 +452,166 @@ function PasswordReset({fetchProfileData}) {
             draggable: true,
             progress: undefined,
             theme: "colored",
-          });
+          }
+        );
+        fetchProfileData();
+      } else {
+        console.error("Password reset failed:", response.error);
+
+        addNotification("error", "There Was An Issue Resetting Your Password");
+        toast.error(
+          <>
+            <div>
+              <h3>Reset Unsuccessful</h3>
+            </div>
+            <p>
+              There was an issue resetting your password. Please try again or
+              contact support.
+            </p>
+          </>,
+          {
+            position: window.innerWidth < 992 ? "bottom-center" : "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          }
+        );
       }
-      } catch (error) {
-        console.error('There was an error:', error);
-      }finally {
-      setLoading(false); 
+    } catch (error) {
+      console.error("There was an error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handlePasswordReset();
     }
   };
-  return (<>
-    {loading &&  <div className='loaderDiv'>
-      <Bars
-        height="80"
-        width="80"
-        color="#E2E31F"
-        ariaLabel="bars-loading"
-        wrapperStyle={{}}
-        wrapperClass=""
-        visible={true}
-      />
-    </div>}
+  return (
+    <>
+      {loading && (
+        <div className="loaderDiv">
+          <Bars
+            height="80"
+            width="80"
+            color="#E2E31F"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      )}
 
-    <div className="ProfileDetailsSection">
-      <div className="contentDiv">
-        <div className='SignUpSection'>
-          <div>
-            <h2>Change Password</h2>
-            <p>Set a new password to continue your login process.</p>
-            <form>
-              <div className={`customInput ${oldPasswordError !== '' && 'errorClass'}`}>
-                  <div className='IconBox'><Key /></div>
-                  <input 
-                      type={showOldPassword ? 'text' : 'password'}
-                      id="oldPassword"
-                      name="oldPassword"
-                      value={oldPassword}
-                      onChange={handleOldPasswordChange}
-                      placeholder='Old Password'
-                      autoComplete="old-password"
-                      className='passwordInput'
-                      onKeyDown={handleKeyDown}
+      <div className="ProfileDetailsSection">
+        <div className="contentDiv">
+          <div className="SignUpSection">
+            <div>
+              <h2>Change Password</h2>
+              <p>Set a new password to continue your login process.</p>
+              <form>
+                <div
+                  className={`customInput ${
+                    oldPasswordError !== "" && "errorClass"
+                  }`}
+                >
+                  <div className="IconBox">
+                    <Key />
+                  </div>
+                  <input
+                    type={showOldPassword ? "text" : "password"}
+                    id="oldPassword"
+                    name="oldPassword"
+                    value={oldPassword}
+                    onChange={handleOldPasswordChange}
+                    placeholder="Old Password"
+                    autoComplete="old-password"
+                    className="passwordInput"
+                    onKeyDown={handleKeyDown}
                   />
-                  <span className={`toggle-eye-icon ${showOldPassword ? 'show' : ''}`} onClick={handleToggleOldPassword} > 
-                      {showOldPassword ? <OpenedEye /> : <ClosedEye /> }
+                  <span
+                    className={`toggle-eye-icon ${
+                      showOldPassword ? "show" : ""
+                    }`}
+                    onClick={handleToggleOldPassword}
+                  >
+                    {showOldPassword ? <OpenedEye /> : <ClosedEye />}
                   </span>
-              </div>
-              <div className={`customInput ${passwordError !== '' && 'errorClass'}`}>
-                  <div className='IconBox'><Key /></div>
-                  <input 
-                      type={showPassword ? 'text' : 'password'}
-                      id="resetPassword"
-                      name="resetPassword"
-                      value={password}
-                      onChange={handlePasswordChange}
-                      placeholder='Password'
-                      autoComplete="new-password"
-                      className='passwordInput'
-                      onKeyDown={handleKeyDown}
+                </div>
+                <div
+                  className={`customInput ${
+                    passwordError !== "" && "errorClass"
+                  }`}
+                >
+                  <div className="IconBox">
+                    <Key />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="resetPassword"
+                    name="resetPassword"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    placeholder="Password"
+                    autoComplete="new-password"
+                    className="passwordInput"
+                    onKeyDown={handleKeyDown}
                   />
-                  <span className={`toggle-eye-icon ${showPassword ? 'show' : ''}`} onClick={handleTogglePassword} > 
-                      {showPassword ? <OpenedEye /> : <ClosedEye /> }
+                  <span
+                    className={`toggle-eye-icon ${showPassword ? "show" : ""}`}
+                    onClick={handleTogglePassword}
+                  >
+                    {showPassword ? <OpenedEye /> : <ClosedEye />}
                   </span>
-              </div>
-              <div className={`customInput ${confirmPasswordError !== '' && 'errorClass'}`}>
-                  <div className='IconBox'><Key /></div>
-                  <input 
-                      type={showPassword ? 'text' : 'password'}
-                      id="confirmResetPassword"
-                      name="confirmResetPassword"
-                      value={confirmPassword}
-                      onChange={handleConfirmPasswordChange}
-                      placeholder='Confirm Password'
-                      className='passwordInput'
-                      autoComplete="new-password"
-                      onKeyDown={handleKeyDown}
+                </div>
+                <div
+                  className={`customInput ${
+                    confirmPasswordError !== "" && "errorClass"
+                  }`}
+                >
+                  <div className="IconBox">
+                    <Key />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="confirmResetPassword"
+                    name="confirmResetPassword"
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
+                    placeholder="Confirm Password"
+                    className="passwordInput"
+                    autoComplete="new-password"
+                    onKeyDown={handleKeyDown}
                   />
-                  <span className={`toggle-eye-icon ${showPassword ? 'show' : ''}`} onClick={handleTogglePassword} > {showPassword ? <OpenedEye /> : <ClosedEye /> }</span>
-              </div>
-            {password !== '' &&
-              <PasswordStrengthMeter password={password}/>
-            }
-          </form>
-            <div className='btnDiv'>
-              <button className='signupButton' onClick={handlePasswordReset}>
+                  <span
+                    className={`toggle-eye-icon ${showPassword ? "show" : ""}`}
+                    onClick={handleTogglePassword}
+                  >
+                    {" "}
+                    {showPassword ? <OpenedEye /> : <ClosedEye />}
+                  </span>
+                </div>
+                {password !== "" && (
+                  <PasswordStrengthMeter password={password} />
+                )}
+              </form>
+              <div className="btnDiv">
+                <button className="signupButton" onClick={handlePasswordReset}>
                   Reset Password
-              </button>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </>)
+    </>
+  );
 }
 
 function SettingsPage() {
@@ -636,7 +636,7 @@ function SettingsPage() {
         setLastName(lastName);
         const userPic = response.res.user.profile_pic;
         setUserPicture(userPic);
-        setDesignation(response.res.user.designation)
+        setDesignation(response.res.user.designation);
       } else {
         setLoading(false);
         console.error("profile error:", response.error);
@@ -731,9 +731,7 @@ function SettingsPage() {
         )}
 
         {settingsPage === "PasswordReset" && (
-          <PasswordReset
-            fetchProfileData={fetchProfileData}
-          />
+          <PasswordReset fetchProfileData={fetchProfileData} />
         )}
       </div>
     </>

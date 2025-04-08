@@ -13,7 +13,6 @@ export const SignIn = async (data) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response ----", data, response);
     if (response.status === 200) {
       return { res: data, error: null };
     } else {
@@ -883,7 +882,7 @@ export const deleteJobs = async (data) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response in delete api", response, data);
+
     if (response.status === 200) {
       return { res: data, error: null };
     } else {
@@ -914,7 +913,7 @@ export const deleteJob = async (id) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response in delete api", response, data);
+
     if (response.status === 200) {
       return { res: data, error: null };
     } else {
@@ -946,7 +945,7 @@ export const updateJobs = async (res) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response in update job api", response, data);
+
     if (response.status === 200) {
       return { res: data, error: null };
     } else {
@@ -978,7 +977,7 @@ export const createJobs = async (data) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response in create-job api", response, data);
+   
     if (response.status === 201) {
       return { res: data, error: null };
     } else {
@@ -1073,7 +1072,7 @@ export const createTaskStage = async (data) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response in delete api", response, data);
+
     if (response.status === 201) {
       return { res: data, error: null };
     } else {
@@ -1104,7 +1103,7 @@ export const deleteTask = async (id) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log("response in delete task api", response, data);
+  
     if (response.status === 200) {
       return { res: data, error: null };
     } else {

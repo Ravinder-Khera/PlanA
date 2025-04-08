@@ -3,7 +3,7 @@ import "./style.scss";
 import Slider from "react-slick";
 import { RedoIcon, User } from "../../assets/svg";
 import { Calendar } from "react-date-range";
-import { StageList, StatusList } from "../../helper";
+import { addNotification, StageList, StatusList } from "../../helper";
 import {
   createTask,
   getUserByRole,
@@ -376,8 +376,10 @@ const DashboardTask = ({
       console.log("reqBody", reqBody);
       const response = await updateJobs(reqBody);
       if (response.res) {
+        addNotification("success", "Job Updated")
         toast.success(`${response.res.message}`);
       } else {
+
         console.error("jobs update failed:", response.error);
         toast.error(`${response.error.message}`);
       }
@@ -442,6 +444,7 @@ const DashboardTask = ({
           users: selectedAssignee,
         });
         fetchJobs();
+        addNotification("success", "Task Created")
         toast.success("Task Created Successfully.");
       } else {
         toast.error("Failed to Create Task.");

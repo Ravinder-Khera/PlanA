@@ -26,6 +26,7 @@ import Complete from "../../Components/Popups/Complete";
 import filterIcon from "../../assets/icons/filterIcon.png";
 import { useNavigate } from "react-router-dom";
 import FilterTask from "../../Components/Filter/FilterTask";
+import { addNotification } from "../../helper";
 function TaskPage() {
   const [loading, setLoading] = useState(true);
   const [addTask, setAddTask] = useState(false);
@@ -381,19 +382,8 @@ function TaskPage() {
           fetchTasksCompleted(currentPage2);
         }setSelectedAssignee([]);
         setUserDropdownStates([]);
-        const notificationData = {
-          class: "success",
-          message: "Task updated successfully"
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
-        
+      
+        addNotification("success", "Task Updated")
         toast.success("Assignee added to Task", {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -416,19 +406,8 @@ function TaskPage() {
         setSelectedAssignee([]);
         setUserDropdownStates([]);
 
-        const notificationData = {
-          class: "error",
-          message: response.error.message
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
-
+        
+        addNotification("error", "Update Task Failed")
         toast.error(`${response.error.message}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -571,18 +550,8 @@ function TaskPage() {
       console.log("create Task --", response,);
       if (response.res) {
         console.log("create Task successful", response);
-        const notificationData = {
-          class: "success",
-          message: "Task created successfully"
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+     
+        addNotification("success", "Task Created")
         toast.success("Task created successfully", {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,
@@ -604,18 +573,8 @@ function TaskPage() {
         setCreateTaskTitle("");
       } else {
         console.error("Task creation failed:", response.error);
-        const notificationData = {
-          class: "error",
-          message: Object.values(response.error.errors)[0][0]
-        };
-        const existingNotificationsJSON = localStorage.getItem('notifications');
-        let existingNotifications = [];
-        if (existingNotificationsJSON) {
-          existingNotifications = JSON.parse(existingNotificationsJSON);
-        }
-        existingNotifications.unshift(notificationData);
-    
-        localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+      
+        addNotification("error", "Task Creation Failed")
         toast.error(`${Object.values(response.error.errors)[0][0]}`, {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,

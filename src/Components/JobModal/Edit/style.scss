@@ -3270,6 +3270,23 @@
       gap: 8px;
       flex-wrap: nowrap;
       min-width: max-content;
+      position: relative;
+      &:hover {
+        .download-icon {
+          opacity: 1; /* Show download icon when hovered */
+          visibility: visible; /* Ensure visibility */
+        }
+      }
+      /* The download icon styling */
+      .download-icon {
+        position: absolute; /* Position it at the bottom-right */
+        bottom: 2px; /* Adjust the distance from the bottom */
+        right: 5px; /* Adjust the distance from the right */
+        opacity: 0; /* Hide it by default */
+        visibility: hidden; /* Hide it by default */
+        cursor: pointer;
+        transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition for appearance */
+      }
       .imgBox {
         background: #ffffff;
         width: 40px;

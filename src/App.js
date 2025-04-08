@@ -10,7 +10,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.scss";
 import NavMenu from "./Components/navMenu";
@@ -41,6 +41,8 @@ import PasswordReset from "./pages/LandingPages/Password/passwordReset";
 import SignUp from "./pages/LandingPages/SignUp/signUp";
 import SettingsPage from "./pages/Settings/settings";
 import { getProfile } from "./services/auth";
+import pusher from "./Pusher";
+import { addNotification } from "./helper";
 
 function DashboardMenuList() {
   const location = useLocation();
@@ -52,6 +54,39 @@ function DashboardMenuList() {
   const [loading, setLoading] = useState(false);
   const menuRef = useRef(null);
   const menuRefLoggedIn = useRef(null);
+  const [loggedInUserId, setLoggedInUserId] = useState(null)
+
+ 
+  useEffect(() => {
+    if (!loggedInUserId) return;
+    
+    const channel = pusher.subscribe(`user-${loggedInUserId}`);
+    channel.bind("pusher:subscription_succeeded", () => {
+      console.log(`Successfully subscribed to user-${loggedInUserId}`);
+    });
+    channel.bind("new-task-assignment", () => {
+      addNotification("success", "New Task Allocated");
+      console.log("New Task Assigned-",loggedInUserId)
+    });
+    channel.bind("new-job-assignment", () => {
+      addNotification("success", "New Job Allocated");
+      console.log("New Job Assigned-",loggedInUserId)
+    });
+    channel.bind("new-comment", (data) => {
+      addNotification("success", `New Comment: ${data?.userName}`);
+      console.log("New Comment-",data)
+    });
+
+    channel.bind("pusher:subscription_error", (status) => {
+      console.error(`Subscription failed:`, status);
+    });
+  
+    return () => {
+      console.log(`unsubscriber from user-${loggedInUserId}`)
+      channel.unbind_all()
+      pusher.unsubscribe(`user-${loggedInUserId}`);
+    };
+  }, [loggedInUserId]);
 
   const handleMenuOpen = () => {
     if (isMenuOpen) {
@@ -159,11 +194,14 @@ function DashboardMenuList() {
         const authToken = localStorage.getItem("authToken");
         let response = await getProfile(authToken);
         if (response.res) {
+          setLoggedInUserId(response.res.user.id)
           setUser(response.res.user.name);
           setUserImg(response.res.user.profile_pic);
           localStorage.setItem("user", response.res.user.name);
-          const passwordLastChangedDate = new Date(
-            response.res.user.password_last_changed
+          const passwordLastChangedDate = response?.res?.user?.password_last_changed ?  new Date(
+            response?.res?.user?.password_last_changed
+          ) :  new Date(
+            response?.res?.user?.created_at
           );
           // Calculate the target dates
           const currentDate = new Date();
@@ -189,65 +227,20 @@ function DashboardMenuList() {
           if (
             currentDate.toDateString() === OneDayBeforeSixMonths.toDateString()
           ) {
-            const notificationData = {
-              class: "info",
-              message: "Your Password Is About To Expire!",
-              span: "You have 1 Day left to change your password.",
-            };
-            const existingNotificationsJSON =
-              localStorage.getItem("notifications");
-            let existingNotifications = [];
-            if (existingNotificationsJSON) {
-              existingNotifications = JSON.parse(existingNotificationsJSON);
-            }
-            existingNotifications.unshift(notificationData);
-
-            localStorage.setItem(
-              "notifications",
-              JSON.stringify(existingNotifications)
-            );
+          
+            addNotification("info","Your Password Is About To Expire" )
           } else if (
             currentDate.toDateString() ===
             fiveDaysBeforeSixMonths.toDateString()
           ) {
-            const notificationData = {
-              class: "info",
-              message: "Your Password Is About To Expire!",
-              span: "You have 5 Days left to change your password.",
-            };
-            const existingNotificationsJSON =
-              localStorage.getItem("notifications");
-            let existingNotifications = [];
-            if (existingNotificationsJSON) {
-              existingNotifications = JSON.parse(existingNotificationsJSON);
-            }
-            existingNotifications.unshift(notificationData);
-
-            localStorage.setItem(
-              "notifications",
-              JSON.stringify(existingNotifications)
-            );
+           
+            addNotification("info","Your Password Is About To Expire" )
           } else if (
             currentDate.toDateString() ===
             sixMonthsAgoPlusThirtyDays.toDateString()
           ) {
-            const notificationData = {
-              class: "info",
-              message: "Your Password Is About To Expire!",
-              span: "You have 30 Days left to change your password.",
-            };
-            const existingNotificationsJSON =
-              localStorage.getItem("notifications");
-            let existingNotifications = [];
-            if (existingNotificationsJSON) {
-              existingNotifications = JSON.parse(existingNotificationsJSON);
-            }
-            existingNotifications.unshift(notificationData);
-
-            localStorage.setItem(
-              "notifications",
-              JSON.stringify(existingNotifications)
-            );
+            
+            addNotification("info","Your Password Is About To Expire" )
           }
         } else {
           console.error("profile error:", response.error);
