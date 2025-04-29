@@ -2023,6 +2023,7 @@ const Jobs = () => {
                                     !newJobIdExist && (
                                       <span
                                         onClick={() => {
+                                          setNewJobActiveBoxLeft("")
                                           handleJobOpenWhileCreating();
                                         }}
                                       >
@@ -2257,6 +2258,7 @@ const Jobs = () => {
                               <span
                                 onClick={() => {
                                   setActiveJob(job);
+                                  setActiveJobField("")
                                   // setShowNewJobModal(true);
                                   handleOpenJobWithTask(job);
                                 }}

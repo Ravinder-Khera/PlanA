@@ -2881,6 +2881,7 @@ export const NewJobModal = ({
         assignee_ids: newData?.newTask?.assignee_ids,
         users: users,
         stage: stage,
+        id: "temp",
       },
       ...prevTasks,
     ]);
@@ -2889,6 +2890,13 @@ export const NewJobModal = ({
     if (response.res) {
       addNotification("success", "Task Created");
       console.log("Task create successful", response.res);
+      setJobTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === "temp"
+            ? { ...response.res.task } // Replace 'temp' with real id
+            : task
+        )
+      );
     } else {
       addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);
@@ -3387,7 +3395,7 @@ export const NewJobModalWithTasks = ({
   };
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-    console.log(newData?.newTask);
+    console.log("handleCreateModalTask", newData?.newTask);
     setJobTasks((prevTasks) => [
       {
         title: newData?.newTask?.title,
@@ -3398,6 +3406,7 @@ export const NewJobModalWithTasks = ({
         assignee_ids: newData?.newTask?.assignee_ids,
         users: users,
         stage: stage,
+        id: "temp",
       },
       ...prevTasks,
     ]);
@@ -3406,6 +3415,13 @@ export const NewJobModalWithTasks = ({
     if (response.res) {
       addNotification("success", "Task Created");
       console.log("Task create successful", response.res);
+      setJobTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === "temp"
+            ? { ...response.res.task } // Replace 'temp' with real id
+            : task
+        )
+      );
     } else {
       addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);
@@ -3419,6 +3435,7 @@ export const NewJobModalWithTasks = ({
     newJobCollaboratorsList,
     stage
   ) => {
+    console.log("handleUpdateTask", taskId, jobTasks, newData);
     setJobTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId
@@ -4599,6 +4616,7 @@ export const UpdateTaskModal = React.forwardRef(
     },
     ref
   ) => {
+    console.log("task=======>>>>>>>>>>>>>>", task);
     const [loader, setLoader] = useState(false);
     const [title, setTitle] = useState(task?.title || "");
     const [description, setDescription] = useState(task?.description || "");
@@ -4641,7 +4659,6 @@ export const UpdateTaskModal = React.forwardRef(
     const taskStatusRef = useRef(taskStatus);
     const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
     const taskCompletionPopupRef = useRef(null);
-  
 
     const fetchUsers = async () => {
       try {
@@ -4705,9 +4722,11 @@ export const UpdateTaskModal = React.forwardRef(
 
     useEffect(() => {
       if (task?.users) {
-        console.log("users------------------>", task.users)
+        console.log("users------------------>", task.users);
         setNewJobCollaboratorsListId(task?.users.map((user) => user.id));
-        newJobCollaboratorsListIdRef.current = task?.users.map((user) => user.id)
+        newJobCollaboratorsListIdRef.current = task?.users.map(
+          (user) => user.id
+        );
       }
     }, [task?.user]);
 
@@ -4776,8 +4795,6 @@ export const UpdateTaskModal = React.forwardRef(
       taskStatusRef.current = taskStatus;
     }, [taskStatus]);
 
- 
-
     const handleModalClose = async () => {
       const year = new Date().getFullYear();
       const month = String(new Date().getMonth() + 1).padStart(2, "0");
@@ -4794,9 +4811,9 @@ export const UpdateTaskModal = React.forwardRef(
       console.log(
         newJobCollaboratorsListId,
         newJobCollaboratorsList,
-        asigneeRef.current, 
-        taskStatusRef.current,task.status
-        
+        asigneeRef.current,
+        taskStatusRef.current,
+        task.status
       );
       if (!titleRef.current) {
         toast.error("Please enter task title.");
@@ -4873,26 +4890,24 @@ export const UpdateTaskModal = React.forwardRef(
     }, []);
 
     const handleRemoveCollaborator = (user) => {
-
       setNewJobCollaboratorsList((prevList) => {
         const updated = prevList.filter((u) => u.email !== user.email);
         setNewJobCollaboratorsListId(updated.map((u) => u.id)); // sync id list
         newJobCollaboratorsListIdRef.current = updated.map((u) => u.id); // sync ref manually
         return updated;
       });
-    
+
       setUsersList((prevList) => [...prevList, user]);
     };
-    
-    const handleSelectCollaborator = (user) => {
 
+    const handleSelectCollaborator = (user) => {
       setNewJobCollaboratorsList((prevList) => {
         const updated = [...prevList, user];
         setNewJobCollaboratorsListId(updated.map((u) => u.id)); // sync id list
         newJobCollaboratorsListIdRef.current = updated.map((u) => u.id); // sync ref manually
         return updated;
       });
-    
+
       setUsersList((prevList) =>
         prevList.filter((u) => u.email !== user.email)
       );
