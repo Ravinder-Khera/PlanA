@@ -1087,7 +1087,8 @@ const Jobs = () => {
     if (response.res) {
       fetchJobs();
       if(newData?.updatedTask?.status === "completed"){
-        addNotification("success", "Task Completed")
+        const name = localStorage.getItem("user")
+        addNotification("success", `Task Completed by ${name}`)
       }
       addNotification("success", "Task Updated");
       console.log("Task Update successful", response.res);

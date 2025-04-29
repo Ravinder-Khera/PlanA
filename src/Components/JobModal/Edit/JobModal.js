@@ -3031,7 +3031,7 @@ export const NewJobModal = ({
               <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
                   <div className="topFlexDiv">
-                    {!newJob && (
+                    {/* {!newJob && (
                       <div
                         className="delete-box"
                         style={{ cursor: "pointer", zIndex: 2 }}
@@ -3070,7 +3070,7 @@ export const NewJobModal = ({
                         </div>
                         <div className="delete-item">Send Email</div>
                       </div>
-                    )}
+                    )} */}
 
                     <div
                       className="delete-box"
@@ -3547,7 +3547,7 @@ export const NewJobModalWithTasks = ({
               <div className="popup-content" ref={scrollRef}>
                 <div className="popup-section-left">
                   <div className="topFlexDiv">
-                    {!newJob && (
+                    {/* {!newJob && (
                       <div
                         className="delete-box"
                         style={{ cursor: "pointer", zIndex: 2 }}
@@ -3586,7 +3586,7 @@ export const NewJobModalWithTasks = ({
                         </div>
                         <div className="delete-item">Send Email</div>
                       </div>
-                    )}
+                    )} */}
 
                     <div
                       className="delete-box"
@@ -4794,7 +4794,9 @@ export const UpdateTaskModal = React.forwardRef(
       console.log(
         newJobCollaboratorsListId,
         newJobCollaboratorsList,
-        asigneeRef.current
+        asigneeRef.current, 
+        taskStatusRef.current,task.status
+        
       );
       if (!titleRef.current) {
         toast.error("Please enter task title.");
@@ -5413,12 +5415,13 @@ export const UpdateTaskModal = React.forwardRef(
                                     onClick={() => {
                                       setStatusBox(false);
                                       setTatskStatus("completed");
-                                      const exists = AllStages.some(
-                                        (item) =>
-                                          item?.title?.toLowerCase() ===
-                                          title?.toLowerCase()
-                                      );
-                                      if (exists) setShowEmailPopup(true);
+                                      // const exists = AllStages.some(
+                                      //   (item) =>
+                                      //     item?.title?.toLowerCase() ===
+                                      //     title?.toLowerCase()
+                                      // );
+                                      // if (exists) setShowEmailPopup(true);
+                                      // handleModalClose()
                                     }}
                                   >
                                     <div className="statusBox completed">

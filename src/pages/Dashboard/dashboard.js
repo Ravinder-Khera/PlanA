@@ -10,7 +10,7 @@ import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import TaskCompletionPopup from "../../Components/dashboardTasks/TaskCompletionPopup";
 import moment from "moment";
-import { CollaboratorBorders, CollaboratorNameBorders } from "../../helper";
+import { addNotification, CollaboratorBorders, CollaboratorNameBorders } from "../../helper";
 
 const renderMessage = (text) => {
   // Regular expression to match words enclosed in {}
@@ -88,7 +88,7 @@ function Dashboard() {
       const response1 = await getJobComments(jobId);
       if (!response1.error) {
         const combinedArray = [...response1.res];
-        console.log("combined array: " + combinedArray)
+        console.log("combined array: " + combinedArray);
         const sortedMessages = combinedArray.sort((a, b) => {
           const dateA = new Date(a.created_at);
           const dateB = new Date(b.created_at);
@@ -128,8 +128,7 @@ function Dashboard() {
     setTimeout(() => {
       if (selectedJob) {
         const popUpSlide = selectedJobRef.current;
-        if(popUpSlide)
-        popUpSlide.classList.add("slideIn");
+        if (popUpSlide) popUpSlide.classList.add("slideIn");
       }
     }, 1000);
   }, [selectedJob]);
@@ -184,8 +183,6 @@ function Dashboard() {
     navigate("/jobs", { state: 1 });
   };
 
-
-
   const handleTaskUpdate = async (task) => {
     let reqBody = {
       status: "completed",
@@ -198,6 +195,12 @@ function Dashboard() {
           setUpdateTaskStatus(null);
         }, 1000);
         console.log("task status updated");
+        setSelectedTask(null);
+        if (reqBody?.status === "completed") {
+          const name = localStorage.getItem("user");
+          addNotification("success", `Task Completed by ${name}`);
+        }
+        addNotification("success", "Task Updated");
       }
     } catch (error) {
       console.log("error while updating task", error);
@@ -223,16 +226,21 @@ function Dashboard() {
           />
         </div>
       )}
-      {showTaskCompletionPopup && <TaskCompletionPopup task={selectedTask}  handleClose={() => {
-        setShowTaskCompletionPopup(false);
-        setSelectedTask(null);
-       
-      }} handleFinalClose={() => {
-          setUpdateTaskStatus(selectedTask);
-          handleTaskUpdate(selectedTask);
-          setShowTaskCompletionPopup(false);
-          setSelectedTask(null);
-      }}/>}
+      {showTaskCompletionPopup && (
+        <TaskCompletionPopup
+          task={selectedTask}
+          handleClose={() => {
+            setShowTaskCompletionPopup(false);
+            setSelectedTask(null);
+          }}
+          handleFinalClose={() => {
+            setUpdateTaskStatus(selectedTask);
+            handleTaskUpdate(selectedTask);
+            setShowTaskCompletionPopup(false);
+            setSelectedTask(null);
+          }}
+        />
+      )}
       <div
         className="DashboardTopMenu DashboardBgLines position-relative"
         ref={overFlowRef}
@@ -250,7 +258,7 @@ function Dashboard() {
           </div>
         </div>
         <div className="dashboardBoxes">
-          <div className="custom_box"  onClick={() => navigate('/jobs/tasks')}>
+          <div className="custom_box" onClick={() => navigate("/jobs/tasks")}>
             <h3>
               <CountUp
                 start={0}
@@ -261,7 +269,7 @@ function Dashboard() {
             </h3>
             <p>Total Tasks</p>
           </div>
-          <div className="custom_box" onClick={() => navigate('/jobs/tasks')}>
+          <div className="custom_box" onClick={() => navigate("/jobs/tasks")}>
             <h3>
               <CountUp
                 start={0}
@@ -272,7 +280,7 @@ function Dashboard() {
             </h3>
             <p>Tasks Due</p>
           </div>
-          <div className="custom_box" onClick={() => navigate('/jobs')}>
+          <div className="custom_box" onClick={() => navigate("/jobs")}>
             <h3>
               <CountUp
                 start={0}
@@ -283,7 +291,7 @@ function Dashboard() {
             </h3>
             <p>Follow Up Jobs</p>
           </div>
-          <div className="custom_box" onClick={() => navigate('/jobs')}>
+          <div className="custom_box" onClick={() => navigate("/jobs")}>
             <h3>
               <CountUp
                 start={0}
@@ -355,8 +363,10 @@ function Dashboard() {
                               }`}
                               onClick={() => {
                                 if (task.status === "completed") return;
-                                setSelectedTask(task)
-                                setShowTaskCompletionPopup(true)
+                                setSelectedTask(task);
+                                setUpdateTaskStatus(task);
+                                handleTaskUpdate(task);
+                                // setShowTaskCompletionPopup(true)
                               }}
                             ></div>
                             <div>
@@ -364,7 +374,11 @@ function Dashboard() {
                               <div className="taskHeading">{trimmedTitle}</div>
                               <div className="taskDate">
                                 <span>Due Date</span>
-                                <span>{moment(task.due_date || new Date()).local().format('DD MMMM, YYYY')}</span>
+                                <span>
+                                  {moment(task.due_date || new Date())
+                                    .local()
+                                    .format("DD MMMM, YYYY")}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -390,8 +404,12 @@ function Dashboard() {
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
-                                               border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                                                                             "1px solid rgb(105, 103, 103)",
+                                              border:
+                                                CollaboratorBorders[user.id] ||
+                                                CollaboratorNameBorders[
+                                                  user.name
+                                                ] ||
+                                                "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -454,7 +472,9 @@ function Dashboard() {
               <div
                 className="addNewTaskBtn d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none"
                 onClick={() => {
-                  navigate("/jobs", { state: {selectedJob, key:'job-task'} });
+                  navigate("/jobs", {
+                    state: { selectedJob, key: "job-task" },
+                  });
                 }}
               >
                 <div className="taskCount text-center">
@@ -478,42 +498,51 @@ function Dashboard() {
                         >
                           <div className="d-flex align-items-start gap-3 w-100">
                             <div className="w-100 listContent d-flex align-items-start gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                                <div
-                                  className={`InitialsBoxUser`}
-                                  style={{
-                                    minWidth: "40px",
-                                    border: CollaboratorNameBorders[chat.user?.name] || "1px solid rgb(105, 103, 103)",
-                                  }}
-                                >
-                                  {chat.user?.name
-                                    ?.split(" ")
-                                    .map((part) => part.charAt(0).toUpperCase())
-                                    .join("")}
-                                </div>
+                              <div
+                                className={`InitialsBoxUser`}
+                                style={{
+                                  minWidth: "40px",
+                                  border:
+                                    CollaboratorNameBorders[chat.user?.name] ||
+                                    "1px solid rgb(105, 103, 103)",
+                                }}
+                              >
+                                {chat.user?.name
+                                  ?.split(" ")
+                                  .map((part) => part.charAt(0).toUpperCase())
+                                  .join("")}
+                              </div>
                               <div className="w-100 d-flex align-items-start justify-content-end flex-column">
-                            <div>
-                              <div className="chatHeading">
-                                {chat.user.name}
-                              </div>
-                              <div className="chatTime">
-                                | &nbsp; {formatJobNumber(selectedJob.id)}{" "}
-                                &nbsp; | &nbsp; {selectedJob.title}
-                              </div>
-                              <div className="chatMsg">
-                                {renderMessage(trimmedTitle)}
-                              </div>
-                            </div>
-                        <div className="chatBtnDiv ">
-                          <p>Lastest Update:  {moment(chat.updated_at).local().format("DD MMMM, YYYY")}</p>
-                          <button
-                            className="Btn"
-                            onClick={() => {
-                              navigate("/jobs", { state: {selectedJob, key:'job-task'} });
-                            }}
-                          >
-                            Reply
-                          </button>
-                        </div>
+                                <div>
+                                  <div className="chatHeading">
+                                    {chat.user.name}
+                                  </div>
+                                  <div className="chatTime">
+                                    | &nbsp; {formatJobNumber(selectedJob.id)}{" "}
+                                    &nbsp; | &nbsp; {selectedJob.title}
+                                  </div>
+                                  <div className="chatMsg">
+                                    {renderMessage(trimmedTitle)}
+                                  </div>
+                                </div>
+                                <div className="chatBtnDiv ">
+                                  <p>
+                                    Lastest Update:{" "}
+                                    {moment(chat.updated_at)
+                                      .local()
+                                      .format("DD MMMM, YYYY")}
+                                  </p>
+                                  <button
+                                    className="Btn"
+                                    onClick={() => {
+                                      navigate("/jobs", {
+                                        state: { selectedJob, key: "job-task" },
+                                      });
+                                    }}
+                                  >
+                                    Reply
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>

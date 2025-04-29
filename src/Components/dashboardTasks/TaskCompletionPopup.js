@@ -84,14 +84,14 @@ const TaskCompletionPopup = React.forwardRef(
 
     const handleSubmitEmail = async () => {
       try {
+        console.log("data", emailData)
         const requestBody = emailData?.map((data) => ({
           attachments: data.attachments,
           subject: data.subject,
           to: data.to,
           cc: data.cc,
-          body: data.content,
-        }));
-        console.log("requesting attachments", requestBody)
+          body: data.content || "No Content Provided",
+        }));  
 
         setLoading(true);
 

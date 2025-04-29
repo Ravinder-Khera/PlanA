@@ -9,7 +9,7 @@ import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import moment from "moment";
 import TaskCompletionPopup from "../../Components/dashboardTasks/TaskCompletionPopup";
-import { CollaboratorBorders, CollaboratorNameBorders } from "../../helper";
+import { addNotification, CollaboratorBorders, CollaboratorNameBorders } from "../../helper";
 
 const renderMessage = (text) => {
   // Regular expression to match words enclosed in {}
@@ -56,7 +56,6 @@ function TimelinePage() {
     const newRandomNumber = Math.floor(Math.random() * 100);
     setRandomNumber(newRandomNumber);
   }, []);
- 
 
   const taskHandle = () => {
     const currentDate = new Date();
@@ -140,10 +139,16 @@ function TimelinePage() {
       const response = await updateTask({ updatedTask: reqBody }, task.id);
       if (response.res) {
         setReloadTask((prevValue) => !prevValue);
-        setTimeout(() => {
-          setUpdateTaskStatus(null);
-        }, 1000);
         console.log("task status updated");
+        setSelectedTask(null);
+        if (reqBody?.status === "completed") {
+          const name = localStorage.getItem("user");
+          addNotification("success", `Task Completed by ${name}`);
+        }
+        addNotification("success", "Task Updated");
+        // setTimeout(() => {
+        //   setUpdateTaskStatus(null);
+        // }, 2000);
       }
     } catch (error) {
       console.log("error while updating task", error);
@@ -250,7 +255,10 @@ function TimelinePage() {
                               onClick={() => {
                                 if (task.status === "completed") return;
                                 setSelectedTask(task);
-                                setShowTaskCompletionPopup(true);
+                                setUpdateTaskStatus(task);
+                                handleTaskUpdate(task);
+
+                                // setShowTaskCompletionPopup(true);
                               }}
                             ></div>
                             <div>
@@ -287,8 +295,12 @@ function TimelinePage() {
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
-                                              border:   CollaboratorBorders[user.id] || CollaboratorNameBorders[user.name] || 
-                                                                                                                            "1px solid rgb(105, 103, 103)",
+                                              border:
+                                                CollaboratorBorders[user.id] ||
+                                                CollaboratorNameBorders[
+                                                  user.name
+                                                ] ||
+                                                "1px solid rgb(105, 103, 103)",
                                             }}
                                           >
                                             {initials}
@@ -363,68 +375,77 @@ function TimelinePage() {
             </div>
             <div className={`dashboard_task`}>
               <div className="taskDetails">
-                  {chats && chats.length > 0 ? (
-                                 chats.map((chat, index) => {
-                                   const trimmedTitle =
-                                     chat.body.length > 100
-                                       ? chat.body.substring(0, 100) + "..."
-                                       : chat.body;
-                                   return (
-                                     <div key={index} className={`chatDiv `}>
-                                       <div
-                                         className="d-flex align-items-center justify-content-start"
-                                         style={{ gap: "19px" }}
-                                       >
-                                         <div className="d-flex align-items-start gap-3 w-100">
-                                           <div className="w-100 listContent d-flex align-items-start gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                                               <div
-                                                 className={`InitialsBoxUser`}
-                                                 style={{
-                                                   minWidth: "40px",
-                                                   border: CollaboratorNameBorders[chat.user?.name] || "1px solid rgb(105, 103, 103)",
-                                                 }}
-                                               >
-                                                 {chat.user?.name
-                                                   ?.split(" ")
-                                                   .map((part) => part.charAt(0).toUpperCase())
-                                                   .join("")}
-                                               </div>
-                                             <div className="w-100 d-flex align-items-start justify-content-end flex-column">
-                                           <div>
-                                             <div className="chatHeading">
-                                               {chat.user.name}
-                                             </div>
-                                             <div className="chatTime">
-                                               | &nbsp; {formatJobNumber(selectedJob.id)}{" "}
-                                               &nbsp; | &nbsp; {selectedJob.title}
-                                             </div>
-                                             <div className="chatMsg">
-                                               {renderMessage(trimmedTitle)}
-                                             </div>
-                                           </div>
-                                       <div className="chatBtnDiv ">
-                                         <p>Lastest Update:  {moment(chat.updated_at).local().format("DD MMMM, YYYY")}</p>
-                                         <button
-                                           className="Btn"
-                                           onClick={() => {
-                                             navigate("/jobs", { state: {selectedJob, key:'job-task'} });
-                                           }}
-                                         >
-                                           Reply
-                                         </button>
-                                       </div>
-                                             </div>
-                                           </div>
-                                         </div>
-                                       </div>
-                                     </div>
-                                   );
-                                 })
-                               ) : (
-                                 <div className="taskCount text-center">
-                                   <p>No Comments</p>
-                                 </div>
-                               )}
+                {chats && chats.length > 0 ? (
+                  chats.map((chat, index) => {
+                    const trimmedTitle =
+                      chat.body.length > 100
+                        ? chat.body.substring(0, 100) + "..."
+                        : chat.body;
+                    return (
+                      <div key={index} className={`chatDiv `}>
+                        <div
+                          className="d-flex align-items-center justify-content-start"
+                          style={{ gap: "19px" }}
+                        >
+                          <div className="d-flex align-items-start gap-3 w-100">
+                            <div className="w-100 listContent d-flex align-items-start gap-2 justify-content-start navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                              <div
+                                className={`InitialsBoxUser`}
+                                style={{
+                                  minWidth: "40px",
+                                  border:
+                                    CollaboratorNameBorders[chat.user?.name] ||
+                                    "1px solid rgb(105, 103, 103)",
+                                }}
+                              >
+                                {chat.user?.name
+                                  ?.split(" ")
+                                  .map((part) => part.charAt(0).toUpperCase())
+                                  .join("")}
+                              </div>
+                              <div className="w-100 d-flex align-items-start justify-content-end flex-column">
+                                <div>
+                                  <div className="chatHeading">
+                                    {chat.user.name}
+                                  </div>
+                                  <div className="chatTime">
+                                    | &nbsp; {formatJobNumber(selectedJob.id)}{" "}
+                                    &nbsp; | &nbsp; {selectedJob.title}
+                                  </div>
+                                  <div className="chatMsg">
+                                    {renderMessage(trimmedTitle)}
+                                  </div>
+                                </div>
+                                <div className="chatBtnDiv ">
+                                  <p>
+                                    Lastest Update:{" "}
+                                    {moment(chat.updated_at)
+                                      .local()
+                                      .format("DD MMMM, YYYY")}
+                                  </p>
+                                  <button
+                                    className="Btn"
+                                    onClick={() => {
+                                      navigate("/jobs", {
+                                        state: { selectedJob, key: "job-task" },
+                                      });
+                                    }}
+                                  >
+                                    Reply
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="taskCount text-center">
+                    <p>No Comments</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

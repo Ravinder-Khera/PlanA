@@ -76,6 +76,11 @@ function DashboardMenuList() {
       addNotification("success", `New Comment: ${data?.userName}`);
       console.log("New Comment-",data)
     });
+    channel.bind("task-completed", (data) => {
+      addNotification("success", data.message);
+      console.log("Task Completed-",data)
+    });
+
 
     channel.bind("pusher:subscription_error", (status) => {
       console.error(`Subscription failed:`, status);
