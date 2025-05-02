@@ -199,8 +199,10 @@ function Dashboard() {
         if (reqBody?.status === "completed") {
           const name = localStorage.getItem("user");
           addNotification("success", `Task Completed by ${name}`);
+        }else{
+
+          addNotification("success", "Task Updated");
         }
-        addNotification("success", "Task Updated");
       }
     } catch (error) {
       console.log("error while updating task", error);

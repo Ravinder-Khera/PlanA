@@ -1089,9 +1089,11 @@ const Jobs = () => {
       if(newData?.updatedTask?.status === "completed"){
         const name = localStorage.getItem("user")
         addNotification("success", `Task Completed by ${name}`)
+      }else{
+
+        addNotification("success", "Task Updated");
       }
-      addNotification("success", "Task Updated");
-      console.log("Task Update successful", response.res);
+      console.log("Task Update successful",newData?.updatedTask, response.res);
     } else {
       console.error("Task Update failed:", response.error);
       toast.error(response.error?.message || "Failed to Update the task");

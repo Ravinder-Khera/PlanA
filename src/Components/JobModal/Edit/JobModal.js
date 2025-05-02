@@ -2932,8 +2932,13 @@ export const NewJobModal = ({
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
-      addNotification("success", "Task Updated");
-      console.log("Task Update successful", response.res);
+      if (newData?.updatedTask?.status === "completed") {
+        const name = localStorage.getItem("user");
+        addNotification("success", `Task Completed by ${name}`);
+      } else {
+        addNotification("success", "Task Updated");
+        console.log("Task Update successful", response.res);
+      }
     } else {
       console.error("Task Update failed:", response.error);
       toast.error(response.error?.message || "Failed to Update the task");
@@ -3456,8 +3461,13 @@ export const NewJobModalWithTasks = ({
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
-      addNotification("success", "Task Updated");
-      console.log("Task Update successful", response.res);
+      if (newData?.updatedTask?.status === "completed") {
+        const name = localStorage.getItem("user");
+        addNotification("success", `Task Completed by ${name}`);
+      } else {
+        addNotification("success", "Task Updated");
+        console.log("Task Update successful", response.res);
+      }
     } else {
       console.error("Task Update failed:", response.error);
       toast.error(response.error?.message || "Failed to Update the task");
