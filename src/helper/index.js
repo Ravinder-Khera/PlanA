@@ -571,3 +571,18 @@ export function addNotification(type, message) {
 
   localStorage.setItem("notifications", JSON.stringify(existingNotifications));
 }
+
+
+export function sortTasksByDueDateProximity(tasks) {
+  const today = new Date();
+
+  return tasks.slice().sort((a, b) => {
+    const aDue = new Date(a.due_date);
+    const bDue = new Date(b.due_date);
+
+    const aDiff = Math.abs(aDue - today);
+    const bDiff = Math.abs(bDue - today);
+
+    return aDiff - bDiff;
+  });
+}

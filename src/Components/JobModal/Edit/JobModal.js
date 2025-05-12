@@ -3952,6 +3952,10 @@ export const NewTaskModal = ({
         toast.error("Error: Stage must be selected before saving.");
         return;
       }
+      if (!dueDateRef.current) {
+        toast.error("Error: Due Date must be selected before saving.");
+        return;
+      }
 
       onCreateTask(newTask);
     } else {
@@ -4831,6 +4835,10 @@ export const UpdateTaskModal = React.forwardRef(
       }
       if (!stageRef?.current?.id) {
         toast.error("Error: Stage must be selected before saving.");
+        return;
+      }
+      if (!dueDateRef.current) {
+        toast.error("Error: Due date must be selected before saving.");
         return;
       }
       if (
@@ -5857,6 +5865,10 @@ export const CreateTaskModal = memo(
         ) {
           if (!stageRef?.current?.id) {
             toast.error("Error: Stage must be selected before saving.");
+            return;
+          }
+          if (!dueDateRef.current) {
+            toast.error("Error: Due date must be selected before saving.");
             return;
           }
           console.log(
