@@ -28,7 +28,7 @@ import {
   SettingsIcon,
   TaskIcon2,
   TimelineIcon,
-  User
+  User,
 } from "./assets/svg";
 import Dashboard from "./pages/Dashboard/dashboard";
 import TimelinePage from "./pages/Dashboard/timeline";
@@ -54,41 +54,47 @@ function DashboardMenuList() {
   const [loading, setLoading] = useState(false);
   const menuRef = useRef(null);
   const menuRefLoggedIn = useRef(null);
-  const [loggedInUserId, setLoggedInUserId] = useState(null)
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
 
- 
   useEffect(() => {
     if (!loggedInUserId) return;
-    
+
     const channel = pusher.subscribe(`user-${loggedInUserId}`);
     channel.bind("pusher:subscription_succeeded", () => {
       console.log(`Successfully subscribed to user-${loggedInUserId}`);
     });
     channel.bind("new-task-assignment", () => {
       addNotification("success", "New Task Allocated");
-      console.log("New Task Assigned-",loggedInUserId)
+      console.log("New Task Assigned-", loggedInUserId);
     });
     channel.bind("new-job-assignment", () => {
       addNotification("success", "New Job Allocated");
-      console.log("New Job Assigned-",loggedInUserId)
+      console.log("New Job Assigned-", loggedInUserId);
     });
     channel.bind("new-comment", (data) => {
       addNotification("success", `New Comment: ${data?.userName}`);
-      console.log("New Comment-",data)
+      console.log("New Comment-", data);
     });
     channel.bind("task-completed", (data) => {
       addNotification("success", data.message);
-      console.log("Task Completed-",data)
+      console.log("Task Completed-", data);
     });
-
+    channel.bind("job-due-reminder", (data) => {
+      addNotification("reminder", `Job: ${data.message}`);
+      console.log("Job Due Reminder-", data);
+    });
+    channel.bind("task-due-reminder", (data) => {
+      addNotification("reminder", `Task: ${data.message}`);
+      console.log("Task Due Reminder-", data);
+    });
 
     channel.bind("pusher:subscription_error", (status) => {
       console.error(`Subscription failed:`, status);
     });
-  
+
     return () => {
-      console.log(`unsubscriber from user-${loggedInUserId}`)
-      channel.unbind_all()
+      console.log(`unsubscriber from user-${loggedInUserId}`);
+      channel.unbind_all();
       pusher.unsubscribe(`user-${loggedInUserId}`);
     };
   }, [loggedInUserId]);
@@ -199,15 +205,14 @@ function DashboardMenuList() {
         const authToken = localStorage.getItem("authToken");
         let response = await getProfile(authToken);
         if (response.res) {
-          setLoggedInUserId(response.res.user.id)
+          setLoggedInUserId(response.res.user.id);
           setUser(response.res.user.name);
           setUserImg(response.res.user.profile_pic);
           localStorage.setItem("user", response.res.user.name);
-          const passwordLastChangedDate = response?.res?.user?.password_last_changed ?  new Date(
-            response?.res?.user?.password_last_changed
-          ) :  new Date(
-            response?.res?.user?.created_at
-          );
+          const passwordLastChangedDate = response?.res?.user
+            ?.password_last_changed
+            ? new Date(response?.res?.user?.password_last_changed)
+            : new Date(response?.res?.user?.created_at);
           // Calculate the target dates
           const currentDate = new Date();
           const sixMonthsAgoPlusThirtyDays = new Date(passwordLastChangedDate);
@@ -232,20 +237,17 @@ function DashboardMenuList() {
           if (
             currentDate.toDateString() === OneDayBeforeSixMonths.toDateString()
           ) {
-          
-            addNotification("info","Your Password Is About To Expire" )
+            addNotification("info", "Your Password Is About To Expire");
           } else if (
             currentDate.toDateString() ===
             fiveDaysBeforeSixMonths.toDateString()
           ) {
-           
-            addNotification("info","Your Password Is About To Expire" )
+            addNotification("info", "Your Password Is About To Expire");
           } else if (
             currentDate.toDateString() ===
             sixMonthsAgoPlusThirtyDays.toDateString()
           ) {
-            
-            addNotification("info","Your Password Is About To Expire" )
+            addNotification("info", "Your Password Is About To Expire");
           }
         } else {
           console.error("profile error:", response.error);
@@ -604,7 +606,6 @@ function DashboardMenuList() {
 function RightSide() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { pathname } = useLocation();
-  
 
   useEffect(() => {
     const checkAuthToken = () => {
@@ -621,7 +622,8 @@ function RightSide() {
     <div className="RightSide " id="rightSCroll">
       {isLoggedIn ? (
         <>
-          {(pathname.toLowerCase() !== "/jobs" && pathname.toLowerCase() !== "/jobs/tasks" )  && <NavMenu />}
+          {pathname.toLowerCase() !== "/jobs" &&
+            pathname.toLowerCase() !== "/jobs/tasks" && <NavMenu />}
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -651,7 +653,7 @@ function RightSide() {
 function App() {
   useEffect(() => {
     const id = localStorage.getItem("jobId");
-    if(!id) return
+    if (!id) return;
     const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
       cluster: process.env.REACT_APP_CLUSTER,
       encrypted: true,
