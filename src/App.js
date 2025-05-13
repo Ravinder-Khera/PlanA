@@ -208,7 +208,8 @@ function DashboardMenuList() {
           setLoggedInUserId(response.res.user.id);
           setUser(response.res.user.name);
           setUserImg(response.res.user.profile_pic);
-          localStorage.setItem("user", response.res.user.name);
+          localStorage.setItem("user", response?.res?.user?.name);
+          localStorage.setItem("userInitials", response?.res?.user?.initials);
           const passwordLastChangedDate = response?.res?.user
             ?.password_last_changed
             ? new Date(response?.res?.user?.password_last_changed)

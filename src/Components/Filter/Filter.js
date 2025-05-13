@@ -688,11 +688,7 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
           <div className="FilterBoxes selectFilters">
             {usersList
               ? usersList.map((user, index) => {
-                  const initials = user.name
-                    .split(" ")
-                    .map((part) => part.charAt(0).toUpperCase())
-                    .join("");
-                    console.log("user", user.id)
+                  const initials = user?.initials
                   return (
                     <div
                       key={index}

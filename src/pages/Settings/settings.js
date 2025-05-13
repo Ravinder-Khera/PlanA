@@ -630,7 +630,8 @@ function SettingsPage() {
       let response = await getProfile(authToken);
       if (response.res) {
         setUser(response.res.user.name);
-        localStorage.setItem("user", response.res.user.name);
+        localStorage.setItem("user", response?.res?.user?.name);
+        localStorage.setItem("userInitials", response?.res?.user?.initials);
         setFirstName(response.res.user.name.split(" ")[0]);
         const lastName = response.res.user.name.split(" ").slice(1).join(" ");
         setLastName(lastName);

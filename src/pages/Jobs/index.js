@@ -595,6 +595,7 @@ const Jobs = () => {
 
   const handleCancelAddJob = () => {
     setShowAddJobRow(false);
+    setUsersList(fullUsersList);
     setNewJobId(["", "", "", "", ""]);
     setNewJobIdNumber(Number("00000"));
     setNewJobIdFilled(false);
@@ -701,6 +702,7 @@ const Jobs = () => {
         addJobRowRefLeft.current.contains(event.target)
       ) {
         if (newJobIdNumber === 0 || !addJobName) {
+          setUsersList(fullUsersList);
           return;
         } else {
           createNewJobRequest();
@@ -711,6 +713,7 @@ const Jobs = () => {
         addJobRowRefRight.current.contains(event.target)
       ) {
         if (newJobIdNumber === 0 || !addJobName) {
+          setUsersList(fullUsersList);
           return;
         } else {
           createNewJobRequest();
@@ -2268,12 +2271,7 @@ const Jobs = () => {
                                     {newJobCollaboratorsList
                                       .slice(0, 3)
                                       .map((user, index) => {
-                                        const initials = user?.name
-                                          ?.split(" ")
-                                          .map((part) =>
-                                            part.charAt(0).toUpperCase()
-                                          )
-                                          .join("");
+                                        const initials = user?.initials
 
                                         return (
                                           <div
@@ -2334,12 +2332,7 @@ const Jobs = () => {
                                   <div className="addedCollabs">
                                     {newJobCollaboratorsList.map(
                                       (user, index) => {
-                                        const initials = user?.name
-                                          ?.split(" ")
-                                          .map((part) =>
-                                            part.charAt(0).toUpperCase()
-                                          )
-                                          .join("");
+                                        const initials = user?.initials
 
                                         return (
                                           <div
@@ -2373,12 +2366,7 @@ const Jobs = () => {
                                 )}
                                 {usersList
                                   ? usersList.map((user, index) => {
-                                      const initials = user?.name
-                                        ?.split(" ")
-                                        .map((part) =>
-                                          part.charAt(0).toUpperCase()
-                                        )
-                                        .join("");
+                                      const initials = user?.initials
 
                                       return (
                                         <div
@@ -2627,12 +2615,7 @@ const Jobs = () => {
                                       {job?.collaborators
                                         .slice(0, 3)
                                         .map((user, index) => {
-                                          const initials = user?.name
-                                            ?.split(" ")
-                                            .map((part) =>
-                                              part.charAt(0).toUpperCase()
-                                            )
-                                            .join("");
+                                          const initials = user?.initials
 
                                           return (
                                             <div
@@ -2693,12 +2676,7 @@ const Jobs = () => {
                                       <div className="addedCollabs">
                                         {newJobCollaboratorsList.map(
                                           (user, index) => {
-                                            const initials = user?.name
-                                              ?.split(" ")
-                                              .map((part) =>
-                                                part.charAt(0).toUpperCase()
-                                              )
-                                              .join("");
+                                            const initials = user?.initials
 
                                             return (
                                               <div
@@ -2732,12 +2710,7 @@ const Jobs = () => {
                                     )}
                                     {usersList
                                       ? usersList.map((user, index) => {
-                                          const initials = user?.name
-                                            ?.split(" ")
-                                            .map((part) =>
-                                              part.charAt(0).toUpperCase()
-                                            )
-                                            .join("");
+                                          const initials = user?.initials
 
                                           return (
                                             <div

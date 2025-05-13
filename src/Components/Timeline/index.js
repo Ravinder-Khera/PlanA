@@ -866,14 +866,8 @@ function Timeline({
                                                     {job?.collaborators
                                                       ?.slice(0, 3)
                                                       .map((user, index) => {
-                                                        const initials = user
-                                                          ?.split(" ")
-                                                          .map((part) =>
-                                                            part
-                                                              .charAt(0)
-                                                              .toUpperCase()
-                                                          )
-                                                          .join("");
+                                                        const initials = user?.initials
+                                                          console.log(user)
                                                         return (
                                                           <div
                                                             key={index}
@@ -997,14 +991,7 @@ function Timeline({
                                                     {job?.collaborators
                                                       ?.slice(0, 3)
                                                       .map((user, index) => {
-                                                        const initials = user
-                                                          ?.split(" ")
-                                                          .map((part) =>
-                                                            part
-                                                              .charAt(0)
-                                                              .toUpperCase()
-                                                          )
-                                                          .join("");
+                                                        const initials = user?.initials
 
                                                         return (
                                                           <div

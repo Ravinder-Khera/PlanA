@@ -139,7 +139,8 @@ function MobileMenu() {
       if (response.res) {
         setUser(response.res.user.name);
         setUserImg(response.res.user.profile_pic);
-        localStorage.setItem("user", response.res.user.name);
+        localStorage.setItem("user", response?.res?.user?.name);
+        localStorage.setItem("userInitials", response?.res?.user?.initials);
       } else {
         console.error("profile error:", response.error);
       }

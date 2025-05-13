@@ -400,10 +400,7 @@ function TimelinePage() {
                                     "1px solid rgb(105, 103, 103)",
                                 }}
                               >
-                                {chat.user?.name
-                                  ?.split(" ")
-                                  .map((part) => part.charAt(0).toUpperCase())
-                                  .join("")}
+                                {chat.user?.initials}
                               </div>
                               <div className="w-100 d-flex align-items-start justify-content-end flex-column">
                                 <div>

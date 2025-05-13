@@ -1058,10 +1058,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                               minWidth: "40px",
                             }}
                           >
-                            {msg.user?.name
-                              .split(" ")
-                              .map((part) => part.charAt(0).toUpperCase())
-                              .join("")}
+                             {msg.user?.initials}
                           </div>
                           <div className="msg-body">
                             <div className="msg">
@@ -1091,10 +1088,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                               minWidth: "40px",
                             }}
                           >
-                            {msg.user?.name
-                              .split(" ")
-                              .map((part) => part.charAt(0).toUpperCase())
-                              .join("")}
+                            {msg.user?.initials}
                           </div>
                           <div className="msg-body">
                             <div className="msg">
@@ -1130,10 +1124,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                               minWidth: "40px",
                             }}
                           >
-                            {msg.user?.name
-                              .split(" ")
-                              .map((part) => part.charAt(0).toUpperCase())
-                              .join("")}
+                             {msg.user?.initials}
                           </div>
                           <div className="msg-body">
                             <div className="msg">
@@ -1188,10 +1179,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                               minWidth: "40px",
                             }}
                           >
-                            {msg.user?.name
-                              .split(" ")
-                              .map((part) => part.charAt(0).toUpperCase())
-                              .join("")}
+                             {msg.user?.initials}
                           </div>
                           <div className="msg-body">
                             <div className="msg">
@@ -1257,10 +1245,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                 }}
               >
                 {localStorage
-                  .getItem("user")
-                  ?.split(" ")
-                  .map((part) => part.charAt(0).toUpperCase())
-                  .join("")}
+                  .getItem("userInitials")}
               </div>
               <div className="msg-body">
                 <div className="msg">
@@ -1291,10 +1276,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                 }}
               >
                 {localStorage
-                  .getItem("user")
-                  ?.split(" ")
-                  .map((part) => part.charAt(0).toUpperCase())
-                  .join("")}
+                  .getItem("userInitials")}
               </div>
               <div className="msg-body">
                 <div className="msg">
@@ -1375,10 +1357,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
               <div className="newJobItemDropBox chat-tag">
                 {filteredUsers?.length > 0
                   ? filteredUsers.map((user, index) => {
-                      const initials = user.name
-                        .split(" ")
-                        .map((part) => part.charAt(0).toUpperCase())
-                        .join("");
+                      const initials = user?.initials
 
                       return (
                         <div
@@ -1616,7 +1595,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       channel.unbind("message.created", handleMessage);
       pusher.unsubscribe(`job.${JobId}`);
     };
-  }, []);
+  }, [JobId]);
 
   eventEmitter.removeAllListeners("newMessage");
   eventEmitter.on("newMessage", (data) => {
@@ -1648,6 +1627,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const sortedAttachments = response2.res?.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
+        console.log('sortedMessages------>>>>', sortedMessages)
 
         setChats(sortedMessages);
         setAttachments(sortedAttachments);
@@ -1682,7 +1662,6 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const sortedMessages = combinedArray.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
-
         setComments(sortedMessages);
       } else {
         setComments([]);
@@ -1700,9 +1679,11 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const debouncedSendMessage = debounce(async (body) => {
     try {
       setLoading(true);
+      console.log("aopi call")
       const response = await sendMessage(JobId, { body, ids: userIds });
       if (!response.error) {
-        if(!subscribed)
+        console.log("subs--->", subscribed)
+        // if(!subscribed)
         fetchChats();
         // addNotification("user", "New Comment: " + userDetails?.name);
         setBody("");
@@ -1731,7 +1712,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       if (!response.error) {
         setComments((prevComments) => [
           ...prevComments,
-          { ...response.res, user: { name: localStorage.getItem("user") } },
+          { ...response.res, user: { name: localStorage.getItem("user"), initials: localStorage.getItem("userInitials") }  },
         ]);
 
         setNewComment({
@@ -1761,6 +1742,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       toast.error("Message cannot be empty");
       return;
     }
+    console.log("sending msg....")
     debouncedSendMessage(body);
   };
 
@@ -2017,10 +1999,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                   minWidth: "40px",
                                 }}
                               >
-                                {msg.user?.name
-                                  .split(" ")
-                                  .map((part) => part.charAt(0).toUpperCase())
-                                  .join("")}
+                                {msg.user?.initials}
                               </div>
                               <div className="msg-body">
                                 <div className="msg">
@@ -2052,10 +2031,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                   minWidth: "40px",
                                 }}
                               >
-                                {msg.user?.name
-                                  .split(" ")
-                                  .map((part) => part.charAt(0).toUpperCase())
-                                  .join("")}
+                                 {msg.user?.initials}
                               </div>
                               <div className="msg-body">
                                 <div className="msg">
@@ -2097,10 +2073,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                     }}
                   >
                     {localStorage
-                      .getItem("user")
-                      ?.split(" ")
-                      .map((part) => part.charAt(0).toUpperCase())
-                      .join("")}
+                      .getItem("userInitials")}
                   </div>
                   <div className="msg-body">
                     <div className="msg">
@@ -2138,10 +2111,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
             }}
           >
             {localStorage
-              .getItem("user")
-              .split(" ")
-              .map((part) => part.charAt(0).toUpperCase())
-              .join("")}
+              .getItem("userInitials")}
           </div>
           <div className="imgUploadArea addJobImgUploadArea2">
             <form onSubmit={handleSendComment} className="position-relative">
@@ -2178,10 +2148,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                 <div className="newJobItemDropBox chat-tag" ref={userRef2}>
                   {filteredUsers2?.length > 0
                     ? filteredUsers2.map((user, index) => {
-                        const initials = user.name
-                          .split(" ")
-                          .map((part) => part.charAt(0).toUpperCase())
-                          .join("");
+                        const initials = user?.initials
 
                         return (
                           <div
@@ -2241,10 +2208,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                              {msg.user?.name
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("")}
+                               {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -2276,10 +2240,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                              {msg.user?.name
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("")}
+                               {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -2317,10 +2278,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                              {msg.user?.name
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("")}
+                              {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -2375,10 +2333,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                              {msg.user?.name
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("")}
+                               {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -2444,10 +2399,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                   }}
                 >
                   {localStorage
-                    .getItem("user")
-                    ?.split(" ")
-                    .map((part) => part.charAt(0).toUpperCase())
-                    .join("")}
+                    .getItem("userInitials")}
                 </div>
                 <div className="msg-body">
                   <div className="msg">
@@ -2478,10 +2430,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                   }}
                 >
                   {localStorage
-                    .getItem("user")
-                    ?.split(" ")
-                    .map((part) => part.charAt(0).toUpperCase())
-                    .join("")}
+                    .getItem("userInitials")}
                 </div>
                 <div className="msg-body">
                   <div className="msg">
@@ -2563,10 +2512,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               <div className="newJobItemDropBox chat-tag" ref={userRef}>
                 {filteredUsers?.length > 0
                   ? filteredUsers.map((user, index) => {
-                      const initials = user.name
-                        .split(" ")
-                        .map((part) => part.charAt(0).toUpperCase())
-                        .join("");
+                      const initials = user?.initials
 
                       return (
                         <div
@@ -2777,7 +2723,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
       if (!response.error) {
         setChats((prevComments) => [
           ...prevComments,
-          { ...response.res, user: { name: localStorage.getItem("user") } },
+          { ...response.res, user: { name: localStorage.getItem("user"), initials: localStorage.getItem("userInitials") } },
         ]);
 
         addNotification("user", "New Comment: " + userDetails.name);
@@ -3048,10 +2994,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                              {msg.user?.name
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("")}
+                              {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -3083,10 +3026,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                              {msg.user?.name
-                                .split(" ")
-                                .map((part) => part.charAt(0).toUpperCase())
-                                .join("")}
+                               {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -3126,10 +3066,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                   }}
                 >
                   {localStorage
-                    .getItem("user")
-                    ?.split(" ")
-                    .map((part) => part.charAt(0).toUpperCase())
-                    .join("")}
+                    .getItem("userInitials")}
                 </div>
                 <div className="msg-body">
                   <div className="msg">
@@ -3167,10 +3104,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
           }}
         >
           {localStorage
-            .getItem("user")
-            .split(" ")
-            .map((part) => part.charAt(0).toUpperCase())
-            .join("")}
+            .getItem("userInitials")}
         </div>
         <div className="imgUploadArea addJobImgUploadArea2">
           <form onSubmit={handleSendMessage} className="position-relative">
@@ -3207,10 +3141,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
               <div className="newJobItemDropBox chat-tag" ref={userRef}>
                 {filteredUsers?.length > 0
                   ? filteredUsers.map((user, index) => {
-                      const initials = user.name
-                        .split(" ")
-                        .map((part) => part.charAt(0).toUpperCase())
-                        .join("");
+                      const initials = user?.initials
 
                       return (
                         <div

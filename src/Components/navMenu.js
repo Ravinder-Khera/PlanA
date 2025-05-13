@@ -11,6 +11,7 @@ import { getJobs, getProfile } from "../services/auth";
 function NavMenu() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState("");
+  const [initials, setInitials] = useState("");
   const [userImg, setUserImg] = useState("");
   const [userDesignation, setUserDesignation] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
@@ -165,6 +166,7 @@ function NavMenu() {
       let response = await getProfile(authToken);
       if (response.res) {
         setUser(response.res.user.name);
+        setInitials(response.res.user.initials)
         setUserImg(response.res.user.profile_pic);
         setUserDesignation(response.res.user.designation);
         if (
@@ -173,7 +175,8 @@ function NavMenu() {
         ) {
           addNotification("user", "Finish Creating Your Profile");
         }
-        localStorage.setItem("user", response.res.user.name);
+        localStorage.setItem("user", response?.res?.user?.name);
+        localStorage.setItem("userInitials", response?.res?.user?.initials);
       } else {
         console.error("profile error:", response.error);
       }
@@ -379,12 +382,9 @@ function NavMenu() {
                       justifyContent: "center",
                     }}
                   >
-                    {user === ""
+                    {initials === ""
                       ? "WU"
-                      : user
-                          .split(" ")
-                          .map((part) => part.charAt(0).toUpperCase())
-                          .join("")}
+                      : initials}
                   </div>
                 </Link>
                 <div className="addNewTaskDiv d-flex align-items-center justify-content-center gap-2">

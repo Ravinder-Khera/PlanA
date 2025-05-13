@@ -4274,12 +4274,7 @@ export const NewTaskModal = ({
                                   {newJobCollaboratorsList
                                     ?.slice(0, 3)
                                     .map((user, index) => {
-                                      const initials = user.name
-                                        ?.split(" ")
-                                        .map((part) =>
-                                          part.charAt(0).toUpperCase()
-                                        )
-                                        .join("");
+                                      const initials = user?.initials
 
                                       return (
                                         <div
@@ -4342,12 +4337,7 @@ export const NewTaskModal = ({
                                   <div className="addedCollabs">
                                     {newJobCollaboratorsList.map(
                                       (user, index) => {
-                                        const initials = user.name
-                                          ?.split(" ")
-                                          .map((part) =>
-                                            part.charAt(0).toUpperCase()
-                                          )
-                                          .join("");
+                                        const initials = user?.initials
 
                                         return (
                                           <div
@@ -4381,12 +4371,7 @@ export const NewTaskModal = ({
                                 )}
                                 {usersList
                                   ? usersList.map((user, index) => {
-                                      const initials = user.name
-                                        ?.split(" ")
-                                        .map((part) =>
-                                          part.charAt(0).toUpperCase()
-                                        )
-                                        .join("");
+                                      const initials = user?.initials
 
                                       return (
                                         <div
@@ -5253,12 +5238,7 @@ export const UpdateTaskModal = React.forwardRef(
                                     {newJobCollaboratorsList
                                       .slice(0, 3)
                                       .map((user, index) => {
-                                        const initials = user.name
-                                          ?.split(" ")
-                                          .map((part) =>
-                                            part.charAt(0).toUpperCase()
-                                          )
-                                          .join("");
+                                        const initials = user?.initials
 
                                         return (
                                           <div
@@ -5323,12 +5303,7 @@ export const UpdateTaskModal = React.forwardRef(
                                     <div className="addedCollabs">
                                       {newJobCollaboratorsList.map(
                                         (user, index) => {
-                                          const initials = user.name
-                                            ?.split(" ")
-                                            .map((part) =>
-                                              part.charAt(0).toUpperCase()
-                                            )
-                                            .join("");
+                                          const initials = user?.initials
 
                                           return (
                                             <div
@@ -5362,12 +5337,7 @@ export const UpdateTaskModal = React.forwardRef(
                                   )}
                                   {usersList
                                     ? usersList.map((user, index) => {
-                                        const initials = user.name
-                                          ?.split(" ")
-                                          .map((part) =>
-                                            part.charAt(0).toUpperCase()
-                                          )
-                                          .join("");
+                                        const initials = user?.initials
 
                                         return (
                                           <div
@@ -6311,12 +6281,7 @@ export const CreateTaskModal = memo(
                                       {newJobCollaboratorsList
                                         .slice(0, 3)
                                         .map((user, index) => {
-                                          const initials = user.name
-                                            ?.split(" ")
-                                            .map((part) =>
-                                              part.charAt(0).toUpperCase()
-                                            )
-                                            .join("");
+                                          const initials = user?.initials
 
                                           return (
                                             <div
@@ -6381,12 +6346,7 @@ export const CreateTaskModal = memo(
                                       <div className="addedCollabs">
                                         {newJobCollaboratorsList.map(
                                           (user, index) => {
-                                            const initials = user.name
-                                              ?.split(" ")
-                                              .map((part) =>
-                                                part.charAt(0).toUpperCase()
-                                              )
-                                              .join("");
+                                            const initials = user?.initials
 
                                             return (
                                               <div
@@ -6420,12 +6380,7 @@ export const CreateTaskModal = memo(
                                     )}
                                     {usersList
                                       ? usersList.map((user, index) => {
-                                          const initials = user.name
-                                            ?.split(" ")
-                                            .map((part) =>
-                                              part.charAt(0).toUpperCase()
-                                            )
-                                            .join("");
+                                          const initials = user?.initials
 
                                           return (
                                             <div

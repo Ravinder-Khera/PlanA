@@ -507,6 +507,7 @@ function ViewTaskPage() {
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
+      handleJobFilter()
       addNotification("success", "Task Updated")
       console.log("Task Update successful", response.res);
     } else {
