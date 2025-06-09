@@ -14,6 +14,7 @@ import {
   deleteTask,
   getJobIds,
   getSingleJob,
+  getSingleTask,
   getTasksByUser,
   getUserByRole,
   updateTask,
@@ -23,7 +24,7 @@ import "./viewTasks.scss";
 import moment from "moment";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import TaskFilter from "../../Components/Filter/TaskFilter";
@@ -34,7 +35,14 @@ import {
 import { formatJobNumber } from "../Jobs";
 import ToggleButton from "../../Components/ToggleButton";
 import { addNotification } from "../../helper";
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 function ViewTaskPage() {
+   const navigate = useNavigate();
+   const location = useLocation()
+    const query = useQuery();
+    const taskId = query.get("taskId");
   const [loading, setLoading] = useState(true);
   const [taskTab, setTaskTab] = useState("to-do");
   const [addTaskJobDropdown, setAddTaskJobDropdown] = useState(false);
@@ -60,7 +68,6 @@ function ViewTaskPage() {
   const filterRef = useRef(null);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [currentFilteredPage, setCurrentFilteredPage] = useState(1);
   const [pageUrls, setPageUrls] = useState([]);
@@ -96,6 +103,29 @@ function ViewTaskPage() {
   const [isOn, setIsOn] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const notificationRef = useRef(null);
+
+  useEffect(() => {
+    if (taskId) {
+      fetchTaskFromTaskID(taskId);
+    }
+  }, [taskId]);
+
+  const fetchTaskFromTaskID = async (taskId) => {
+    try {
+      const taskRes = await getSingleTask(taskId);
+      handleActiveTask(taskRes?.res?.task);
+    } catch (error) {
+      console.log("error in fetchTaskFromTaskID", error)
+    } finally {
+
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.delete("taskId");
+      const newPath =
+        location.pathname +
+        (searchParams.toString() ? `?${searchParams.toString()}` : "");
+      navigate(newPath, { replace: true });
+    }
+  };
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "notifications") {
@@ -263,6 +293,9 @@ function ViewTaskPage() {
     key: "selection",
   });
 
+
+  
+
   useEffect(() => {
     let handler = (e) => {
       if (filterRef.current && !filterRef.current.contains(e.target)) {
@@ -313,7 +346,6 @@ function ViewTaskPage() {
         const response = await getJobIds(authToken);
         if (response.res) {
           setJobList(response.res);
-          console.log("jobs-", response.res);
         } else {
           console.error("Failed to fetch tasks:", response.error);
           setLoading(false);
@@ -455,7 +487,7 @@ function ViewTaskPage() {
   const handleActiveTask = async (task) => {
     // Reset the active task before setting the new one
     setActiveTask(null);
-
+    console.log("handleActiveTask", task)
     // Delay to ensure state reset takes effect before setting the new task
     setTimeout(() => {
       setActiveTask(task);

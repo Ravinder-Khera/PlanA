@@ -73,7 +73,6 @@ function TimelinePage() {
     const nearestTask =
       sortedTasks?.length > 2 ? sortedTasks?.slice(0, 2) : sortedTasks;
     setTaskCount(sortedTasks?.length);
-    console.log("nearestTask", nearestTask);
     setSelectedJobTask(nearestTask);
     fetchChats(selectedJob.id);
   };
@@ -139,7 +138,6 @@ function TimelinePage() {
       const response = await updateTask({ updatedTask: reqBody }, task.id);
       if (response.res) {
         setReloadTask((prevValue) => !prevValue);
-        console.log("task status updated");
         setSelectedTask(null);
         if (reqBody?.status === "completed") {
           const name = localStorage.getItem("user");

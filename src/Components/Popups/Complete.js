@@ -134,7 +134,6 @@ const Complete = ({ data, handleClose,scrollRef }) => {
         },
          taskId
       );
-      console.log("update Task --", response);
       if (response.res) {
         setLoading(false);
         handleClose();

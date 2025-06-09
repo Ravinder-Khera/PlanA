@@ -1,8 +1,7 @@
 import moment from "moment";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Calendar } from "react-date-range";
 import { Bars } from "react-loader-spinner";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -30,7 +29,6 @@ import {
   arraysEqualById,
   CollaboratorBorders,
   CollaboratorNameBorders,
-  MAX_CALENDAR_YEAR,
   sortTasksByDueDateProximity,
   StatusList,
 } from "../../helper";
@@ -107,6 +105,11 @@ export const formatJobNumber = (jobNum) => {
     return jobStr;
   }
 };
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 const Jobs = () => {
   const containerRef = useRef(null);
   const filterRef = useRef(null);
@@ -121,7 +124,9 @@ const Jobs = () => {
   const searchBarRef = useRef(null);
   const [newJob, setNewJob] = useState(false);
   const location = useLocation();
-
+  const navigate = useNavigate();
+  const query = useQuery();
+  const jobId = query.get("jobId");
   const [filteredJobs, setFilteredJobs] = useState("");
   const [originalJobs, setOriginalJobs] = useState("");
   const [searchedInput, setSearchedInput] = useState("");
@@ -182,15 +187,37 @@ const Jobs = () => {
 
   const [activeJob, setActiveJob] = useState(null);
   const [activeTaskJob, setActiveTaskJob] = useState(null);
-  const [activeTaskJobId, setActiveTaskJobId] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [updateJobId, setUpdateJobId] = useState(null);
 
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
-  const [editedJobDueDate, setEditedJobDueDate] = useState(null);
   const [collabChanged, setCollabChanged] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const { state } = location;
 
+  useEffect(() => {
+    if (jobId) {
+      fetchJobFromJobID(jobId);
+    }
+  }, [jobId]);
+
+  const fetchJobFromJobID = async (jobId) => {
+    try {
+      const jobRes = await getSingleJob(jobId);
+      console.log("jobRes", jobRes);
+      handleOpenJobWithTask(jobRes.res);
+    } catch (error) {
+      console.log("error in fetchJobFromJobID", error)
+    } finally {
+ 
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.delete("jobId");
+      const newPath =
+        location.pathname +
+        (searchParams.toString() ? `?${searchParams.toString()}` : "");
+      navigate(newPath, { replace: true });
+    }
+  };
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "notifications") {
@@ -308,7 +335,6 @@ const Jobs = () => {
     }
   };
 
-  const { state } = location;
   useEffect(() => {
     if (
       state !== 1 &&
@@ -357,32 +383,13 @@ const Jobs = () => {
     }
   };
 
-  const handleNextPage = (e) => {
-    e.preventDefault();
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePrevPage = (e) => {
-    e.preventDefault();
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handlePageChange = (url) => {
-    const pageNumber = parseInt(url.match(/page=(\d+)/)[1]);
-    setCurrentPage(pageNumber);
-  };
-
   useEffect(() => {
     let handler = (e) => {
       if (
         notificationRef.current &&
         !notificationRef.current.contains(e.target)
       ) {
-        console.log("clicked job")
+        console.log("clicked job");
         setNotificationDropDown(false);
       }
     };
@@ -428,17 +435,17 @@ const Jobs = () => {
     try {
       const res = await getJobs(currentPage);
       const data = res?.res?.data || [];
-      const sortedJobs = data.map(job => {
+      const sortedJobs = data.map((job) => {
         const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
         const nearestDueDate = sortedTasks[0]?.due_date || null;
-      
+
         return {
           ...job,
           tasks: sortedTasks,
-          due_date: nearestDueDate
+          due_date: nearestDueDate,
         };
-      }); 
-      
+      });
+
       // Update jobs state
       setFilteredJobs(sortedJobs);
       setOriginalJobs(sortedJobs);
@@ -453,7 +460,6 @@ const Jobs = () => {
           stage: findNearestStage(selectedJob),
         });
       }
-
 
       // Extract users and update pagination data
       if (data.length > 0) {
@@ -476,7 +482,7 @@ const Jobs = () => {
   const handleScroll = useCallback(async () => {
     const container = containerRef.current;
     if (!container) return;
-    
+
     // Check if the container has been scrolled to the bottom
     if (
       container.scrollTop + container.clientHeight >= container.scrollHeight &&
@@ -488,19 +494,18 @@ const Jobs = () => {
         const res = await getJobs(loadMorePage + 1);
         const data = res?.res?.data;
         setLoadTotalPage(res?.res?.last_page);
-       
-        const sortedJobs = data.map(job => {
+
+        const sortedJobs = data.map((job) => {
           const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
           const nearestDueDate = sortedTasks[0]?.due_date || null;
-        
+
           return {
             ...job,
             tasks: sortedTasks,
-            due_date: nearestDueDate
+            due_date: nearestDueDate,
           };
-        }); 
-        
-     
+        });
+
         setFilteredJobs((prevJobs) => [...prevJobs, ...sortedJobs]);
         setOriginalJobs((prevJobs) => [...prevJobs, ...sortedJobs]);
       } catch (error) {
@@ -661,7 +666,7 @@ const Jobs = () => {
     synchronizeRowHeights();
     if (showPopup) setShowNewJobModal(true);
   };
- 
+
   const handleAddNewJob = async () => {
     try {
       const year = new Date().getFullYear();
@@ -802,16 +807,6 @@ const Jobs = () => {
     }, 0);
   };
 
-  const handleSelectDueDate = (date) => {
-    setNewJobActiveBoxLeft("");
-    setNewJobActiveBoxRight("");
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    let formattedDueDate = `${year}-${month}-${day}`;
-    setSelectedNewJobDueDate(formattedDueDate);
-  };
-
   const handleTitleClick = async (job) => {
     setActiveJobField("Name");
     setEditedValue(job.title);
@@ -886,44 +881,6 @@ const Jobs = () => {
     );
   };
 
-  const handleDueDateClick = (job) => {
-    setActiveJobField("DueDate");
-    setEditedJobDueDate(new Date(job.due_date));
-    if (activeJob?.id === job?.id) {
-      return;
-    }
-    setActiveJob(job);
-    setUpdateJobId(job.id);
-  };
-
-  const handleDueDateChange = (date) => {
-    setActiveJobField("");
-    setNewJobActiveBoxRight("");
-
-    // Use UTC to avoid timezone shifts
-    const utcDate = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-    );
-
-    const year = utcDate.getUTCFullYear();
-    const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(utcDate.getUTCDate()).padStart(2, "0");
-
-    // Format the date as YYYY-MM-DD
-    let formattedDueDate = `${year}-${month}-${day}`;
-
-    setEditedJobDueDate(formattedDueDate);
-
-    // Update the due_date in the filteredJobs array
-    setFilteredJobs((prevJobs) =>
-      prevJobs.map((job) =>
-        job.id === activeJob?.id
-          ? { ...job, due_date: utcDate.toISOString()?.split("T")[0] }
-          : job
-      )
-    );
-  };
-
   const handleTitleUpdate = () => {
     setActiveJobField("");
   };
@@ -966,7 +923,7 @@ const Jobs = () => {
       ) {
         const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
         const originalJob = originalJobs.find((job) => job.id === updateJobId);
-       
+
         setUsersList(fullUsersList);
         const isJobChanged = (updatedJob, originalJob) => {
           if (!updatedJob || !originalJob) {
@@ -984,13 +941,15 @@ const Jobs = () => {
           );
           console.log(
             "job data comparison",
-            (updatedJob?.title || "") !== (originalJob?.title || ""),updatedJob?.collaborators, originalJob?.collaborators,
-              !arraysEqualById(
-                updatedJob?.collaborators || [],
-                originalJob?.collaborators || []
-              ) ,
-              (updatedJob?.status || "") !== (originalJob?.status || "") ,
-              (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
+            (updatedJob?.title || "") !== (originalJob?.title || ""),
+            updatedJob?.collaborators,
+            originalJob?.collaborators,
+            !arraysEqualById(
+              updatedJob?.collaborators || [],
+              originalJob?.collaborators || []
+            ),
+            (updatedJob?.status || "") !== (originalJob?.status || ""),
+            (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
           );
 
           return (
@@ -1107,9 +1066,9 @@ const Jobs = () => {
               }
             : task
         );
-  
+
         const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
-  
+
         return {
           ...job,
           tasks: sortedTasks,
@@ -1117,23 +1076,27 @@ const Jobs = () => {
         };
       })
     );
-  
+
     setShowUpdateTaskModal(false);
-  
+
     try {
       const response = await updateTask(newData, taskId);
-  
+
       if (response.res) {
         // fetchJobs();
-        setCurrentPage(1)
+        setCurrentPage(1);
         if (newData?.updatedTask?.status === "completed") {
           const name = localStorage.getItem("user");
           addNotification("success", `Task Completed by ${name}`);
         } else {
           addNotification("success", "Task Updated");
         }
-  
-        console.log("Task Update successful", newData?.updatedTask, response.res);
+
+        console.log(
+          "Task Update successful",
+          newData?.updatedTask,
+          response.res
+        );
       } else {
         throw new Error(response.error?.message || "Failed to Update the task");
       }
@@ -1142,16 +1105,15 @@ const Jobs = () => {
       toast.error(error.message);
     }
   };
-  
 
   const handleCreateTask = async (newData, taskId) => {
     console.log(newData?.newTask?.title);
-  
+
     // Temporarily add the task to the UI with sorting and due_date update
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => {
         if (job.id !== taskId) return job;
-  
+
         const updatedTasks = sortTasksByDueDateProximity([
           {
             id: "temp",
@@ -1162,7 +1124,7 @@ const Jobs = () => {
           },
           ...(job.tasks || []),
         ]);
-  
+
         return {
           ...job,
           tasks: updatedTasks,
@@ -1170,26 +1132,26 @@ const Jobs = () => {
         };
       })
     );
-  
+
     setShowAddTaskModal(false);
-  
+
     // Send API request to create task
     try {
       const response = await createTask(newData.newTask, taskId);
-  
+
       if (response.res) {
         const { task } = response.res;
-  
+
         // Replace temp task with actual task, re-sort, and update due_date
         setFilteredJobs((prevJobs) =>
           prevJobs.map((job) => {
             if (job.id !== taskId) return job;
-  
+
             const updatedTasks = sortTasksByDueDateProximity([
               task,
               ...job.tasks.filter((t) => t.id !== "temp"),
             ]);
-  
+
             return {
               ...job,
               tasks: updatedTasks,
@@ -1197,7 +1159,7 @@ const Jobs = () => {
             };
           })
         );
-  
+
         addNotification("success", "Task Created");
         toast.success("Task added successfully!");
       } else {
@@ -1207,23 +1169,24 @@ const Jobs = () => {
       console.error("Task create failed:", error.message);
       toast.error(error.message);
       addNotification("error", "Task Creation Failed");
-  
+
       // Rollback: Remove the temporary task if API fails
       setFilteredJobs((prevJobs) =>
         prevJobs.map((job) => {
           if (job.id !== taskId) return job;
-  
+
           const updatedTasks = job.tasks.filter((t) => t.id !== "temp");
           return {
             ...job,
             tasks: updatedTasks,
-            due_date: updatedTasks?.length ? sortTasksByDueDateProximity(updatedTasks)?.[0]?.due_date : null,
+            due_date: updatedTasks?.length
+              ? sortTasksByDueDateProximity(updatedTasks)?.[0]?.due_date
+              : null,
           };
         })
       );
     }
   };
-  
 
   const handleTaskDelete = async (task) => {
     try {
@@ -1256,9 +1219,9 @@ const Jobs = () => {
                   ? { ...task, title: updatedTask?.title }
                   : task
               );
-  
+
               const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
-  
+
               return {
                 ...job,
                 tasks: sortedTasks,
@@ -1319,7 +1282,7 @@ const Jobs = () => {
     try {
       const response = await getJobByNum(jobNum);
       if (response.res) {
-        console.log(response.res);
+        console.log("jobId response", response.res);
         return response.res;
       } else {
         console.error("get task failed:", response.error);
@@ -1353,7 +1316,7 @@ const Jobs = () => {
         return job;
       })
     );
-    
+
     setShowNewJobAddTaskModal(false);
     const jobToUpdate = await handleJobId(task.job_num);
     const taskToUpdate = { ...task, job_id: jobToUpdate?.id };
@@ -1379,9 +1342,9 @@ const Jobs = () => {
       );
 
       addNotification("success", "Task Created");
-      console.log("Task create successful",taskToUpdate, response.res);
+      console.log("Task create successful", taskToUpdate, response.res);
     } else {
-      addNotification("error", "Task Creation Failed")
+      addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);
       toast.error(response.error?.message || "Failed to add the task");
     }
@@ -1454,6 +1417,7 @@ const Jobs = () => {
   };
 
   const handleOpenJobWithTask = async (job) => {
+    console.log("handleOpenJobWithTask job", job);
     setActiveJob(job);
     setUpdateJobId(job.id);
     setShowNewJobModalWithTasks(true);
@@ -1489,16 +1453,16 @@ const Jobs = () => {
         const { job } = response.res;
         setNewJob(true);
         handleOpenJobWithTask(job);
-        const sortedJobs = job.map(job => {
+        const sortedJobs = job.map((job) => {
           const sortedTasks = sortTasksByDueDateProximity(job?.tasks || []);
           const nearestDueDate = sortedTasks?.[0]?.due_date || null;
-        
+
           return {
             ...job,
             tasks: sortedTasks,
-            due_date: nearestDueDate
+            due_date: nearestDueDate,
           };
-        }); 
+        });
         setFilteredJobs((prevJobs) => [sortedJobs, ...prevJobs]);
         addNotification("success", "Job Created");
       } else {
@@ -1854,7 +1818,9 @@ const Jobs = () => {
                 onClick={() => setNotificationDropDown(true)}
               >
                 <div className="notifyIcon notificationWhite mx-0">
-                {notifications?.length > 0 &&  <div className="activeNotification"></div>}
+                  {notifications?.length > 0 && (
+                    <div className="activeNotification"></div>
+                  )}
                   <div className="addNewTaskDiv">
                     <div className="bellIcon addTaskJobDiv">
                       <div>
@@ -1870,25 +1836,27 @@ const Jobs = () => {
                               {notifications.length > 0 ? (
                                 notifications.map((notification, index) => (
                                   <div
-                                  className={`notificationClass ${notification.class}-class ${
-                                    deletingId === notification.id
-                                      ? "deleting"
-                                      : ""
-                                  }`}
-                                >
-                                  <div className="notificationMsg">
-                                    <div className="notificationIcon"></div>
-                                    <div className="notificationText">
-                                      {notification.message}
+                                    className={`notificationClass ${
+                                      notification.class
+                                    }-class ${
+                                      deletingId === notification.id
+                                        ? "deleting"
+                                        : ""
+                                    }`}
+                                  >
+                                    <div className="notificationMsg">
+                                      <div className="notificationIcon"></div>
+                                      <div className="notificationText">
+                                        {notification.message}
+                                      </div>
                                     </div>
+                                    <button
+                                      className="notificationCloseBtn"
+                                      onClick={() =>
+                                        handleRemoveNotification(notification)
+                                      }
+                                    />
                                   </div>
-                                  <button
-                                    className="notificationCloseBtn"
-                                    onClick={() =>
-                                      handleRemoveNotification(notification)
-                                    }
-                                  />
-                                </div>
                                 ))
                               ) : (
                                 <div className="notificationClass info-class">
@@ -2117,7 +2085,7 @@ const Jobs = () => {
                                     !newJobIdExist && (
                                       <span
                                         onClick={() => {
-                                          setNewJobActiveBoxLeft("")
+                                          setNewJobActiveBoxLeft("");
                                           handleJobOpenWhileCreating();
                                         }}
                                       >
@@ -2128,7 +2096,6 @@ const Jobs = () => {
                               </>
                             )}
                           </td>
-                         
                         </tr>
                       )}
                       {filteredJobs && filteredJobs?.length > 0 ? (
@@ -2189,7 +2156,7 @@ const Jobs = () => {
                               <span
                                 onClick={() => {
                                   setActiveJob(job);
-                                  setActiveJobField("")
+                                  setActiveJobField("");
                                   // setShowNewJobModal(true);
                                   handleOpenJobWithTask(job);
                                 }}
@@ -2197,7 +2164,6 @@ const Jobs = () => {
                                 <ArrowRight />
                               </span>
                             </td>
-                           
                           </tr>
                         ))
                       ) : (
@@ -2222,9 +2188,9 @@ const Jobs = () => {
                     <table className="table table-borderless text-light">
                       <thead className="sticky-header-right">
                         <tr>
-                        <th scope="col" style={{ width: "185px" }}>
-                          <div className="headerDiv">Collaborators</div>
-                        </th>
+                          <th scope="col" style={{ width: "185px" }}>
+                            <div className="headerDiv">Collaborators</div>
+                          </th>
                           <th scope="col">
                             <div className="headerDiv">Status</div>
                           </th>
@@ -2254,92 +2220,128 @@ const Jobs = () => {
                             style={{ borderLeft: "none" }}
                             ref={addJobRowRefRight}
                           >
-                             <td
-                            className={`text-center clickBox collab ${
-                              newJobActiveBoxLeft === "AddCollaborators" &&
-                              "active"
-                            }`}
-                            onClick={() => {
-                              setNewJobActiveBoxLeft("AddCollaborators");
-                              setNewJobActiveBoxRight("");
-                            }}
-                          >
-                            <div className="collaboratorsBox">
-                              <div className=" d-flex align-items-center justify-content-center">
-                                {newJobCollaboratorsList.length > 0 && (
-                                  <>
-                                    {newJobCollaboratorsList
-                                      .slice(0, 3)
-                                      .map((user, index) => {
-                                        const initials = user?.initials
+                            <td
+                              className={`text-center clickBox collab ${
+                                newJobActiveBoxLeft === "AddCollaborators" &&
+                                "active"
+                              }`}
+                              onClick={() => {
+                                setNewJobActiveBoxLeft("AddCollaborators");
+                                setNewJobActiveBoxRight("");
+                              }}
+                            >
+                              <div className="collaboratorsBox">
+                                <div className=" d-flex align-items-center justify-content-center">
+                                  {newJobCollaboratorsList.length > 0 && (
+                                    <>
+                                      {newJobCollaboratorsList
+                                        .slice(0, 3)
+                                        .map((user, index) => {
+                                          const initials = user?.initials;
 
-                                        return (
-                                          <div
-                                            key={index}
-                                            className={`collaboratorsBoxUser`}
-                                            style={{
-                                              minWidth: "40px",
-                                              zIndex: index,
-                                              cursor: "pointer",
-                                              border:
-                                                CollaboratorBorders[user?.id] ||
-                                                CollaboratorNameBorders[
-                                                  user?.name
-                                                ] ||
-                                                "1px solid rgb(105, 103, 103)",
-                                            }}
-                                          >
-                                            {initials}
-                                          </div>
-                                        );
-                                      })}
+                                          return (
+                                            <div
+                                              key={index}
+                                              className={`collaboratorsBoxUser`}
+                                              style={{
+                                                minWidth: "40px",
+                                                zIndex: index,
+                                                cursor: "pointer",
+                                                border:
+                                                  CollaboratorBorders[
+                                                    user?.id
+                                                  ] ||
+                                                  CollaboratorNameBorders[
+                                                    user?.name
+                                                  ] ||
+                                                  "1px solid rgb(105, 103, 103)",
+                                              }}
+                                            >
+                                              {initials}
+                                            </div>
+                                          );
+                                        })}
 
-                                    {newJobCollaboratorsList.length > 3 && (
-                                      <div
-                                        className={`collaboratorsBoxUser`}
-                                        style={{
-                                          minWidth: "40px",
-                                          zIndex: 4,
-                                        }}
-                                      >
-                                        +{newJobCollaboratorsList.length - 3}
-                                      </div>
-                                    )}
-                                  </>
-                                )}
+                                      {newJobCollaboratorsList.length > 3 && (
+                                        <div
+                                          className={`collaboratorsBoxUser`}
+                                          style={{
+                                            minWidth: "40px",
+                                            zIndex: 4,
+                                          }}
+                                        >
+                                          +{newJobCollaboratorsList.length - 3}
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                            {newJobCollaboratorsList.length === 0 && (
-                              <div
-                                className={`clickBoxtext`}
-                                onClick={() => {
-                                  setNewJobActiveBoxLeft("AddCollaborators");
-                                  setNewJobActiveBoxRight("");
-                                }}
-                              >
-                                Add Collaborators
-                              </div>
-                            )}
-                            {newJobActiveBoxLeft === "AddCollaborators" && (
-                              <div
-                                className={`newJobItemDropBoxtwo`}
-                                style={{
-                                  minWidth: "415px",
-                                  maxWidth: "max-content",
-                                }}
-                              >
-                                {newJobCollaboratorsList.length > 0 && (
-                                  <div className="addedCollabs">
-                                    {newJobCollaboratorsList.map(
-                                      (user, index) => {
-                                        const initials = user?.initials
+                              {newJobCollaboratorsList.length === 0 && (
+                                <div
+                                  className={`clickBoxtext`}
+                                  onClick={() => {
+                                    setNewJobActiveBoxLeft("AddCollaborators");
+                                    setNewJobActiveBoxRight("");
+                                  }}
+                                >
+                                  Add Collaborators
+                                </div>
+                              )}
+                              {newJobActiveBoxLeft === "AddCollaborators" && (
+                                <div
+                                  className={`newJobItemDropBoxtwo`}
+                                  style={{
+                                    minWidth: "415px",
+                                    maxWidth: "max-content",
+                                  }}
+                                >
+                                  {newJobCollaboratorsList.length > 0 && (
+                                    <div className="addedCollabs">
+                                      {newJobCollaboratorsList.map(
+                                        (user, index) => {
+                                          const initials = user?.initials;
+
+                                          return (
+                                            <div
+                                              className="selectCollaboratorsBox"
+                                              key={index}
+                                              onClick={() =>
+                                                handleRemoveCollaborator(user)
+                                              }
+                                            >
+                                              <div
+                                                className={`collaboratorsBoxUser`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  border:
+                                                    CollaboratorBorders[
+                                                      user?.id
+                                                    ] ||
+                                                    CollaboratorNameBorders[
+                                                      user?.name
+                                                    ] ||
+                                                    "1px solid rgb(105, 103, 103)",
+                                                }}
+                                              >
+                                                {initials}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  )}
+                                  {usersList
+                                    ? usersList.map((user, index) => {
+                                        const initials = user?.initials;
 
                                         return (
                                           <div
                                             className="selectCollaboratorsBox"
                                             key={index}
                                             onClick={() =>
-                                              handleRemoveCollaborator(user)
+                                              handleSelectCollaborator(user)
                                             }
                                           >
                                             <div
@@ -2358,51 +2360,19 @@ const Jobs = () => {
                                             >
                                               {initials}
                                             </div>
+                                            <div className="userName">
+                                              {user.name}
+                                            </div>
+                                            <div className="userMail">
+                                              {user.email}
+                                            </div>
                                           </div>
                                         );
-                                      }
-                                    )}
-                                  </div>
-                                )}
-                                {usersList
-                                  ? usersList.map((user, index) => {
-                                      const initials = user?.initials
-
-                                      return (
-                                        <div
-                                          className="selectCollaboratorsBox"
-                                          key={index}
-                                          onClick={() =>
-                                            handleSelectCollaborator(user)
-                                          }
-                                        >
-                                          <div
-                                            className={`collaboratorsBoxUser`}
-                                            style={{
-                                              minWidth: "40px",
-                                              border:
-                                                CollaboratorBorders[user?.id] ||
-                                                CollaboratorNameBorders[
-                                                  user?.name
-                                                ] ||
-                                                "1px solid rgb(105, 103, 103)",
-                                            }}
-                                          >
-                                            {initials}
-                                          </div>
-                                          <div className="userName">
-                                            {user.name}
-                                          </div>
-                                          <div className="userMail">
-                                            {user.email}
-                                          </div>
-                                        </div>
-                                      );
-                                    })
-                                  : "No users found"}
-                              </div>
-                            )}
-                          </td>
+                                      })
+                                    : "No users found"}
+                                </div>
+                              )}
+                            </td>
                             <td
                               className={`text-center clickBox ${
                                 newJobActiveBoxRight === "SelectStatus" &&
@@ -2561,7 +2531,8 @@ const Jobs = () => {
                             <td
                               className={`px-3 clickBox ${
                                 newJobActiveBoxRight === "AddTask" && "active"
-                              }`} colSpan={2}
+                              }`}
+                              colSpan={2}
                             >
                               <div
                                 className={`clickBoxtext disabled`}
@@ -2604,86 +2575,122 @@ const Jobs = () => {
                                   : ""
                               }`}
                             >
-                               <td
-                              className={`text-center clickBox collab`}
-                              onClick={() => handleCollaboratorClick(job)}
-                            >
-                              <div className="collaboratorsBox">
-                                <div className=" d-flex align-items-center justify-content-center">
-                                  {job?.collaborators?.length > 0 && (
-                                    <>
-                                      {job?.collaborators
-                                        .slice(0, 3)
-                                        .map((user, index) => {
-                                          const initials = user?.initials
+                              <td
+                                className={`text-center clickBox collab`}
+                                onClick={() => handleCollaboratorClick(job)}
+                              >
+                                <div className="collaboratorsBox">
+                                  <div className=" d-flex align-items-center justify-content-center">
+                                    {job?.collaborators?.length > 0 && (
+                                      <>
+                                        {job?.collaborators
+                                          .slice(0, 3)
+                                          .map((user, index) => {
+                                            const initials = user?.initials;
 
-                                          return (
-                                            <div
-                                              key={index}
-                                              className={`collaboratorsBoxUser`}
-                                              style={{
-                                                minWidth: "40px",
-                                                zIndex: index,
-                                                border:
-                                                  CollaboratorBorders[
-                                                    user.id
-                                                  ] ||
-                                                  CollaboratorNameBorders[
-                                                    user.name
-                                                  ] ||
-                                                  "1px solid rgb(105, 103, 103)",
-                                              }}
-                                            >
-                                              {initials}
-                                            </div>
-                                          );
-                                        })}
+                                            return (
+                                              <div
+                                                key={index}
+                                                className={`collaboratorsBoxUser`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  zIndex: index,
+                                                  border:
+                                                    CollaboratorBorders[
+                                                      user.id
+                                                    ] ||
+                                                    CollaboratorNameBorders[
+                                                      user.name
+                                                    ] ||
+                                                    "1px solid rgb(105, 103, 103)",
+                                                }}
+                                              >
+                                                {initials}
+                                              </div>
+                                            );
+                                          })}
 
-                                      {job?.collaborators?.length > 3 && (
-                                        <div
-                                          className={`collaboratorsBoxUser`}
-                                          style={{
-                                            minWidth: "40px",
-                                            zIndex:
-                                              job?.collaborators?.length || 4,
-                                          }}
-                                        >
-                                          +{job?.collaborators.length - 3}
+                                        {job?.collaborators?.length > 3 && (
+                                          <div
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex:
+                                                job?.collaborators?.length || 4,
+                                            }}
+                                          >
+                                            +{job?.collaborators.length - 3}
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                    {job.collaborators?.length === 0 && (
+                                      <div
+                                        className="collaboratorsBoxUser disabled m-0"
+                                        style={{ minWidth: "40px" }}
+                                      >
+                                        N/A
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                {activeJob?.id === job.id &&
+                                  activeJobField === "Collaborators" && (
+                                    <div
+                                      className={`newJobItemDropBoxtwo`}
+                                      style={{
+                                        minWidth: "415px",
+                                        maxWidth: "max-content",
+                                      }}
+                                    >
+                                      {newJobCollaboratorsList.length > 0 && (
+                                        <div className="addedCollabs">
+                                          {newJobCollaboratorsList.map(
+                                            (user, index) => {
+                                              const initials = user?.initials;
+
+                                              return (
+                                                <div
+                                                  className="selectCollaboratorsBox"
+                                                  key={index}
+                                                  onClick={() =>
+                                                    handleRemoveCollaborator(
+                                                      user
+                                                    )
+                                                  }
+                                                >
+                                                  <div
+                                                    className={`collaboratorsBoxUser`}
+                                                    style={{
+                                                      minWidth: "40px",
+                                                      border:
+                                                        CollaboratorBorders[
+                                                          user.id
+                                                        ] ||
+                                                        CollaboratorNameBorders[
+                                                          user.name
+                                                        ] ||
+                                                        "1px solid rgb(105, 103, 103)",
+                                                    }}
+                                                  >
+                                                    {initials}
+                                                  </div>
+                                                </div>
+                                              );
+                                            }
+                                          )}
                                         </div>
                                       )}
-                                    </>
-                                  )}
-                                  {job.collaborators?.length === 0 && (
-                                    <div
-                                      className="collaboratorsBoxUser disabled m-0"
-                                      style={{ minWidth: "40px" }}
-                                    >
-                                      N/A
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              {activeJob?.id === job.id &&
-                                activeJobField === "Collaborators" && (
-                                  <div
-                                    className={`newJobItemDropBoxtwo`}
-                                    style={{
-                                      minWidth: "415px",
-                                      maxWidth: "max-content",
-                                    }}
-                                  >
-                                    {newJobCollaboratorsList.length > 0 && (
-                                      <div className="addedCollabs">
-                                        {newJobCollaboratorsList.map(
-                                          (user, index) => {
-                                            const initials = user?.initials
+                                      {usersList
+                                        ? usersList.map((user, index) => {
+                                            const initials = user?.initials;
 
                                             return (
                                               <div
                                                 className="selectCollaboratorsBox"
                                                 key={index}
                                                 onClick={() =>
-                                                  handleRemoveCollaborator(user)
+                                                  handleSelectCollaborator(user)
                                                 }
                                               >
                                                 <div
@@ -2702,53 +2709,19 @@ const Jobs = () => {
                                                 >
                                                   {initials}
                                                 </div>
+                                                <div className="userName">
+                                                  {user.name}
+                                                </div>
+                                                <div className="userMail">
+                                                  {user.email}
+                                                </div>
                                               </div>
                                             );
-                                          }
-                                        )}
-                                      </div>
-                                    )}
-                                    {usersList
-                                      ? usersList.map((user, index) => {
-                                          const initials = user?.initials
-
-                                          return (
-                                            <div
-                                              className="selectCollaboratorsBox"
-                                              key={index}
-                                              onClick={() =>
-                                                handleSelectCollaborator(user)
-                                              }
-                                            >
-                                              <div
-                                                className={`collaboratorsBoxUser`}
-                                                style={{
-                                                  minWidth: "40px",
-                                                  border:
-                                                    CollaboratorBorders[
-                                                      user.id
-                                                    ] ||
-                                                    CollaboratorNameBorders[
-                                                      user.name
-                                                    ] ||
-                                                    "1px solid rgb(105, 103, 103)",
-                                                }}
-                                              >
-                                                {initials}
-                                              </div>
-                                              <div className="userName">
-                                                {user.name}
-                                              </div>
-                                              <div className="userMail">
-                                                {user.email}
-                                              </div>
-                                            </div>
-                                          );
-                                        })
-                                      : "No users found"}
-                                  </div>
-                                )}
-                            </td>
+                                          })
+                                        : "No users found"}
+                                    </div>
+                                  )}
+                              </td>
                               <td className={`text-center clickBox`}>
                                 <span
                                   className={`statusBtn ${
@@ -2880,7 +2853,8 @@ const Jobs = () => {
                                     <>
                                       {job?.tasks
                                         .slice(
-                                          0,1
+                                          0,
+                                          1
                                           // showAllTasks ? job?.tasks.length : 3
                                         )
                                         .map((task, index) => {

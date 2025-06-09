@@ -605,7 +605,7 @@ function DashboardMenuList() {
 }
 
 function RightSide() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null); // null = unknown, false = not logged in
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -615,22 +615,24 @@ function RightSide() {
     };
 
     checkAuthToken();
-    const interval = setInterval(checkAuthToken, 1000);
-    return () => clearInterval(interval);
   }, []);
 
+  if (isLoggedIn === null) {
+    // Still checking auth status, render nothing or a loading spinner
+    return <div className="RightSide">Loading...</div>;
+  }
+
   return (
-    <div className="RightSide " id="rightSCroll">
+    <div className="RightSide" id="rightSCroll">
       {isLoggedIn ? (
         <>
           {pathname.toLowerCase() !== "/jobs" &&
             pathname.toLowerCase() !== "/jobs/tasks" && <NavMenu />}
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/timeline" element={<TimelinePage />} />
             <Route path="/jobs/tasks" element={<ViewTaskPage />} />
-            {/* <Route path="/dashboard/tasks/:id" element={<ViewTaskPage />} /> */}
             <Route path="/invoice" element={<Invoice />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/settings" element={<SettingsPage />} />
@@ -641,7 +643,6 @@ function RightSide() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/signup" element={<SignUp />} /> */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<PasswordReset />} />
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -650,6 +651,8 @@ function RightSide() {
     </div>
   );
 }
+
+
 
 function App() {
   useEffect(() => {

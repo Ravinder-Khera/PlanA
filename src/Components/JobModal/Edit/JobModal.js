@@ -347,20 +347,9 @@ const JobModal = ({
     }
   };
 
-  // const handleStageCheckBoxSelect = (e, id) => {
-  //   console.log("checked", e.target.checked, id);
-  //   const { checked } = e.target;
-  //   if (checked) {
-  //     setSelectedStage((prevIds) => (prevIds ? [...prevIds, id] : [id]));
-  //   } else {
-  //     setSelectedStage((prevIds) =>
-  //       prevIds ? prevIds.filter((selectedId) => selectedId !== id) : []
-  //     );
-  //   }
-  // };
+
 
   const handleTasksCheckBoxSelect = (e, id) => {
-    console.log("checked", e.target.checked, id, selectedTab);
     const { checked } = e.target;
     if (checked) {
       setSelectedTasks((prevIds) => (prevIds ? [...prevIds, id] : [id]));
@@ -375,7 +364,6 @@ const JobModal = ({
   const handleSelectDueDate = (date) => {
     setSelectDueDate(false);
     setSelectedDueDate(date);
-    console.log("in handleSelectDueDate", date);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
@@ -442,7 +430,7 @@ const JobModal = ({
           console.error(`Task with id ${task.id} not found.`);
           return;
         }
-        console.log("updatedTasks", updatedTasks);
+   
         if (selectedTab === "to-do") {
           updatedTasks = tasks?.filter((task) => task.status !== "completed");
         } else {
@@ -492,7 +480,6 @@ const JobModal = ({
           assessment_manager: AssessmentManager,
         },
       };
-      console.log("reqBody", reqBody);
       const response = await updateJobs(reqBody);
       if (response.res) {
         addNotification("success", "Task Updated");
@@ -512,7 +499,6 @@ const JobModal = ({
 
   // for new task
   const handleAssigneeClick = (userId) => {
-    console.log("userId", userId);
     setSelectedAssignee((prevUsers) => {
       if (prevUsers?.some((itemId) => itemId === userId)) {
         return prevUsers?.filter((itemId) => itemId !== userId);
@@ -1256,11 +1242,7 @@ const JobModal = ({
                                               Assignees
                                             </label>
                                             <div className="addedAssigneeBorder">
-                                              {console.log(
-                                                "assignee",
-                                                assignee,
-                                                taskSelectedAssignee
-                                              )}
+                                             
                                               {assignee &&
                                                 assignee
                                                   .filter((user) =>
@@ -2143,7 +2125,6 @@ const JobModal = ({
                                               key={i}
                                               className={`addTaskJobStageItem ${key}`}
                                               onClick={() => {
-                                                console.log("keyyy", key);
                                                 setNewTask({
                                                   ...newTask,
                                                   stageTitle: key,
@@ -2823,7 +2804,6 @@ export const NewJobModal = ({
       const response = await deleteJob(job.id);
       if (response.res) {
         addNotification("success", "Job Deleted");
-        console.log("Job delete successful", response.res);
       } else {
         console.error("Job delete failed:", response.error);
         addNotification("error", "Job Deletion Failed");
@@ -2864,13 +2844,7 @@ export const NewJobModal = ({
   };
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-    console.log(
-      "NewJobModal handleCreateModalTask",
-      newData,
-      taskId,
-      users,
-      stage
-    );
+  
     setJobTasks((prevTasks) => [
       {
         title: newData?.newTask?.title,
@@ -2910,7 +2884,6 @@ export const NewJobModal = ({
     newJobCollaboratorsList,
     stage
   ) => {
-    console.log(taskId, " - ", activeTask.id, " - ", newData);
 
     setJobTasks((prevTasks) =>
       prevTasks.map((task) =>
@@ -3440,7 +3413,7 @@ export const NewJobModalWithTasks = ({
     newJobCollaboratorsList,
     stage
   ) => {
-    console.log("handleUpdateTask", taskId, jobTasks, newData);
+
     setJobTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId
@@ -3483,7 +3456,6 @@ export const NewJobModalWithTasks = ({
     try {
       const response = await deleteTask(task.id);
       if (response.res) {
-        console.log("Job delete successful", response.res);
         addNotification("success", "Task Deleted");
       } else {
         addNotification("error", "Task Deletion Failed");
@@ -3905,7 +3877,7 @@ export const NewTaskModal = ({
       let response = await getTaskStages(authToken);
       if (response.res) {
         setStageList(response.res);
-        console.log("stages", response.res);
+
       } else {
         console.error("Failed to fetch Users:", response.error);
       }
@@ -3946,7 +3918,7 @@ export const NewTaskModal = ({
       stage_id: stageRef?.current?.id,
       description: descriptionRef.current,
     };
-    console.log("stage", stageRef);
+
     if (titleRef.current && titleRef.current.trim() !== "") {
       if (!stageRef.current?.id) {
         toast.error("Error: Stage must be selected before saving.");
@@ -4615,7 +4587,7 @@ export const UpdateTaskModal = React.forwardRef(
     },
     ref
   ) => {
-    console.log("task=======>>>>>>>>>>>>>>", task);
+
     const [loader, setLoader] = useState(false);
     const [title, setTitle] = useState(task?.title || "");
     const [description, setDescription] = useState(task?.description || "");
@@ -4721,7 +4693,6 @@ export const UpdateTaskModal = React.forwardRef(
 
     useEffect(() => {
       if (task?.users) {
-        console.log("users------------------>", task.users);
         setNewJobCollaboratorsListId(task?.users.map((user) => user.id));
         newJobCollaboratorsListIdRef.current = task?.users.map(
           (user) => user.id
@@ -4736,10 +4707,7 @@ export const UpdateTaskModal = React.forwardRef(
           let response = await getTaskStages(authToken);
           if (response.res) {
             setStageList(response.res);
-            console.log("setStage :", task?.stage_id);
-
-            // setStage(response.res.filter((stage) => stage.id === task?.stage_id))
-            console.log("stages", response.res);
+        
           } else {
             console.error("Failed to fetch Users:", response.error);
           }
@@ -4807,13 +4775,7 @@ export const UpdateTaskModal = React.forwardRef(
         stage_id: stageRef.current?.id,
         description: descriptionRef.current,
       };
-      console.log(
-        newJobCollaboratorsListId,
-        newJobCollaboratorsList,
-        asigneeRef.current,
-        taskStatusRef.current,
-        task.status
-      );
+    
       if (!titleRef.current) {
         toast.error("Please enter task title.");
         return;
@@ -5779,7 +5741,6 @@ export const CreateTaskModal = memo(
           let response = await getTaskStages(authToken);
           if (response.res) {
             setStageList(response.res);
-            console.log("stages", response.res);
           } else {
             console.error("Failed to fetch Users:", response.error);
           }
@@ -5841,13 +5802,7 @@ export const CreateTaskModal = memo(
             toast.error("Error: Due date must be selected before saving.");
             return;
           }
-          console.log(
-            "Create task request body",
-            { newTask: newTaskData },
-            taskRef.current?.id,
-            newJobCollaboratorsListIdRef.current,
-            stageRef.current
-          );
+     
           onCreateTask(
             { newTask: newTaskData },
             taskRef.current?.id,

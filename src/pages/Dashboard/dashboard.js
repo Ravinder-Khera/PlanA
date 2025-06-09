@@ -88,7 +88,6 @@ function Dashboard() {
       const response1 = await getJobComments(jobId);
       if (!response1.error) {
         const combinedArray = [...response1.res];
-        console.log("combined array: " + combinedArray);
         const sortedMessages = combinedArray.sort((a, b) => {
           const dateA = new Date(a.created_at);
           const dateB = new Date(b.created_at);
@@ -149,7 +148,6 @@ function Dashboard() {
     const nearestTask =
       sortedTasks?.length > 2 ? sortedTasks?.slice(0, 2) : sortedTasks;
     setTaskCount(sortedTasks?.length);
-    console.log("nearestTask", nearestTask);
     setSelectedJobTask(nearestTask);
     fetchChats(selectedJob.id);
   };
@@ -194,7 +192,6 @@ function Dashboard() {
         setTimeout(() => {
           setUpdateTaskStatus(null);
         }, 1000);
-        console.log("task status updated");
         setSelectedTask(null);
         if (reqBody?.status === "completed") {
           const name = localStorage.getItem("user");

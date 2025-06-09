@@ -352,7 +352,6 @@ function Timeline({
           setJobs(data);
           extractUsersFromStages(data);
           if (!dateChanged) setSelectionRangeFromJobs(data);
-          console.log("data", data);
         }
       } catch (error) {
         console.log("error while fetching jobs", error);
@@ -867,7 +866,7 @@ function Timeline({
                                                       ?.slice(0, 3)
                                                       .map((user, index) => {
                                                         const initials = user?.initials
-                                                          console.log(user)
+                                            
                                                         return (
                                                           <div
                                                             key={index}

@@ -284,7 +284,6 @@ function TaskPage() {
         { status: "completed" },
         cleanedTaskId
       );
-      console.log("update Task --", response);
       if (response.res) {
         const listItem = document.querySelector(`#stage_${cleanedTaskId}`);
         if (listItem) {
@@ -372,7 +371,6 @@ function TaskPage() {
         { assignee_ids: selectedAssignee },
         taskId
       );
-      console.log("update Task --", response);
       const filterString = localStorage.getItem('filterString');
       if (response.res) {
         if(filterString){
@@ -547,9 +545,8 @@ function TaskPage() {
           assignee_ids: selectedUsers,
         }
       );
-      console.log("create Task --", response,);
       if (response.res) {
-        console.log("create Task successful", response);
+
      
         addNotification("success", "Task Created")
         toast.success("Task created successfully", {
@@ -607,7 +604,6 @@ function TaskPage() {
     const newUserDropdownStates = [...userDropdownStates];
     newUserDropdownStates[index] = !newUserDropdownStates[index];
     const taskUsersIds = tasksToDo[index].users.map((user) => user.id);
-    console.log("taskUsersIds", taskUsersIds);
     setUserDropdownStates(newUserDropdownStates);
     setSelectedAssignee(taskUsersIds);
   };
@@ -639,7 +635,7 @@ function TaskPage() {
         const response = await getJobIds(authToken);
         if (response.res) {
           setJobList(response.res);
-          console.log("jobs-", response.res);
+
         } else {
           console.error("Failed to fetch tasks:", response.error);
           setLoading(false);
@@ -726,7 +722,7 @@ function TaskPage() {
   }
 
   const handleJob = async (job_id) => {
-    console.log(job_id,`${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/job/${job_id}`);
+
     try {
       setLoading(true);
       const authToken = localStorage.getItem("authToken");
@@ -827,7 +823,6 @@ function TaskPage() {
       const response = await getTasksByFilter(filterString+`&status=${taskTab}&start_date=${selectionRange.startDate.toISOString().slice(0, 10)}&end_date=${selectionRange.endDate.toISOString().slice(0, 10)}&page=${page}`);
       if (!response.error) {
         let filterTab = response?.res.data.filter(item => item.status === taskTab);
-        console.log(filterTab,taskTab);
         setFilteredTasks(filterTab)
         setFilteredTotalPages(response?.res.last_page)
         setFilteredPageUrls(response?.res.links.slice(1, -1))
@@ -850,7 +845,6 @@ function TaskPage() {
           // const response = await getTasksByFilter(filterString+`&status=${taskTab}&start_date=${selectionRange.startDate.toISOString().slice(0, 10)}&end_date=${selectionRange.endDate.toISOString().slice(0, 10)}&page=${page}`);
           if (!response.error) {
             let filterTab = response?.res.data.filter(item => item.status === taskTab);
-            console.log(filterTab,taskTab);
             setFilteredTasks(filterTab)
             setFilteredTotalPages(response?.res.last_page)
             setFilteredPageUrls(response?.res.links.slice(1, -1))
