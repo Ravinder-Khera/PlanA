@@ -1100,6 +1100,11 @@
                                   border: 1px solid #1fb4e3;
                                   background: rgba(31, 180, 227, 0.4);
                                 }
+                                &.design,
+                                &.Design {
+                                  border: 1px solid #ffacfe;
+                                  background: rgba(255, 172, 254, 0.4);
+                                }
 
                                 &.Information,
                                 &.Info {
@@ -2141,7 +2146,7 @@
               max-height: 190px;
               overflow-y: auto;
               z-index: 4;
-              &.create-task-modal{
+              &.create-task-modal {
                 position: absolute;
                 top: calc(100% - 40px);
                 right: 5%;
@@ -2323,12 +2328,12 @@
                   letter-spacing: -0.48px;
                   min-height: 28px;
                   align-content: center;
-                  min-width:100px;
+                  min-width: 100px;
                   padding: 7.5px 12px;
                   border: 1px solid #fff;
                   background: rgba(255, 255, 255, 0.25);
                   color: #fff;
-                 
+
                   &.pending {
                     background: #1fb4e366;
                     border: 1px solid #1fb4e3;
@@ -2397,7 +2402,11 @@
                     border: 1px solid #ff40be;
                     background: rgba(255, 64, 190, 0.4);
                   }
-
+                  &.stage_design,
+                  &.stage_Design {
+                    border: 1px solid #ffacfe;
+                    background: rgba(255, 172, 254, 0.4);
+                  }
                   &.stage_Unknown,
                   &.stage_undefined {
                     border: 1px solid #fff;
@@ -2616,7 +2625,11 @@
               &.Info {
                 color: rgba(138, 80, 197);
               }
-
+              &.design,
+              &.Design {
+                border: 1px solid #ffacfe;
+                background: rgba(255, 172, 254, 0.4);
+              }
               &.Inform,
               &.Public {
                 color: rgba(255, 92, 0);
@@ -3803,7 +3816,11 @@
       &.Info {
         color: rgba(138, 80, 197);
       }
-
+      &.design,
+      &.Design {
+        border: 1px solid #ffacfe;
+        background: rgba(255, 172, 254, 0.4);
+      }
       &.Inform,
       &.Public {
         color: rgba(255, 92, 0);
@@ -3838,6 +3855,11 @@
         border: 1px solid #1fb4e3;
         background: rgba(31, 180, 227, 0.4);
       }
+      &.stage_design,
+                  &.stage_Design {
+                    border: 1px solid #ffacfe;
+                    background: rgba(255, 172, 254, 0.4);
+                  }
 
       &.stage_Information,
       &.stage_Info {

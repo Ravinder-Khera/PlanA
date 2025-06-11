@@ -39,10 +39,10 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 function ViewTaskPage() {
-   const navigate = useNavigate();
-   const location = useLocation()
-    const query = useQuery();
-    const taskId = query.get("taskId");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const query = useQuery();
+  const taskId = query.get("taskId");
   const [loading, setLoading] = useState(true);
   const [taskTab, setTaskTab] = useState("to-do");
   const [addTaskJobDropdown, setAddTaskJobDropdown] = useState(false);
@@ -115,9 +115,8 @@ function ViewTaskPage() {
       const taskRes = await getSingleTask(taskId);
       handleActiveTask(taskRes?.res?.task);
     } catch (error) {
-      console.log("error in fetchTaskFromTaskID", error)
+      console.log("error in fetchTaskFromTaskID", error);
     } finally {
-
       const searchParams = new URLSearchParams(location.search);
       searchParams.delete("taskId");
       const newPath =
@@ -163,7 +162,6 @@ function ViewTaskPage() {
       clearInterval(interval);
     };
   }, [storageUpdated]);
-
 
   const handleRemoveNotification = async (notificationToRemove) => {
     setDeletingId(notificationToRemove.id);
@@ -292,9 +290,6 @@ function ViewTaskPage() {
     endDate: lastDayOfMonth,
     key: "selection",
   });
-
-
-  
 
   useEffect(() => {
     let handler = (e) => {
@@ -452,10 +447,10 @@ function ViewTaskPage() {
       setFilteredTasks((prevTasks) =>
         prevTasks.map((t) => (t.id === "temp" ? task : t))
       );
-      addNotification("success", "Task Created")
+      addNotification("success", "Task Created");
       console.log("Task create successful", response.res);
     } else {
-      addNotification("error", "Task Creation Failed")
+      addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);
       toast.error(response.error?.message || "Failed to add the task");
       // Optionally, remove the temporary task if the creation fails
@@ -487,7 +482,7 @@ function ViewTaskPage() {
   const handleActiveTask = async (task) => {
     // Reset the active task before setting the new one
     setActiveTask(null);
-    console.log("handleActiveTask", task)
+    console.log("handleActiveTask", task);
     // Delay to ensure state reset takes effect before setting the new task
     setTimeout(() => {
       setActiveTask(task);
@@ -499,7 +494,7 @@ function ViewTaskPage() {
     try {
       const response = await deleteTask(task.id);
       if (response.res) {
-          addNotification("success", "Task Deleted")
+        addNotification("success", "Task Deleted");
         console.log("Job delete successful", response.res);
       } else {
         console.error("Job delete failed:", response.error);
@@ -539,11 +534,11 @@ function ViewTaskPage() {
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
-      handleJobFilter()
-      addNotification("success", "Task Updated")
+      handleJobFilter();
+      // addNotification("success", "Task Updated")
       console.log("Task Update successful", response.res);
     } else {
-      addNotification("error", "Task Update Failed")
+      addNotification("error", "Task Update Failed");
       console.error("Task Update failed:", response.error);
       toast.error(response.error?.message || "Failed to Update the task");
     }
@@ -680,7 +675,7 @@ function ViewTaskPage() {
 
       <div
         className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap"
-        style={{ zIndex: "2" }}
+        style={{ zIndex: "2", justifyContent:"space-between" }}
       >
         <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
           <h2>Tasks</h2>
@@ -828,7 +823,9 @@ function ViewTaskPage() {
               onClick={() => setNotificationDropDown(true)}
             >
               <div className="notifyIcon notificationWhite mx-0">
-              {notifications?.length > 0 &&  <div className="activeNotification"></div>}
+                {notifications?.length > 0 && (
+                  <div className="activeNotification"></div>
+                )}
                 <div className="addNewTaskDiv">
                   <div className="bellIcon addTaskJobDiv">
                     <div>
@@ -844,25 +841,27 @@ function ViewTaskPage() {
                             {notifications?.length > 0 ? (
                               notifications?.map((notification, index) => (
                                 <div
-                                className={`notificationClass ${notification.class}-class ${
-                                  deletingId === notification.id
-                                    ? "deleting"
-                                    : ""
-                                }`}
-                              >
-                                <div className="notificationMsg">
-                                  <div className="notificationIcon"></div>
-                                  <div className="notificationText">
-                                    {notification.message}
+                                  className={`notificationClass ${
+                                    notification.class
+                                  }-class ${
+                                    deletingId === notification.id
+                                      ? "deleting"
+                                      : ""
+                                  }`}
+                                >
+                                  <div className="notificationMsg">
+                                    <div className="notificationIcon"></div>
+                                    <div className="notificationText">
+                                      {notification.message}
+                                    </div>
                                   </div>
+                                  <button
+                                    className="notificationCloseBtn"
+                                    onClick={() =>
+                                      handleRemoveNotification(notification)
+                                    }
+                                  />
                                 </div>
-                                <button
-                                  className="notificationCloseBtn"
-                                  onClick={() =>
-                                    handleRemoveNotification(notification)
-                                  }
-                                />
-                              </div>
                               ))
                             ) : (
                               <div className="notificationClass info-class">
@@ -872,7 +871,6 @@ function ViewTaskPage() {
                                     No Notifications
                                   </div>
                                 </div>
-                               
                               </div>
                             )}
                           </div>
@@ -983,13 +981,21 @@ function ViewTaskPage() {
               >
                 <div className="listContent">Title</div>
                 <div className="listContent centerContent">
-                  <div className="centerText">Stage</div>
-                  <div className="centerText">Job No.</div>
+                  <div className="centerText text-start">Stage</div>
+
+                  <div
+                    className="centerText"
+                    style={{
+                      textAlign: "left",
+                    }}
+                  >
+                    Job Name
+                  </div>
                 </div>
                 <div className="listContent navMenuDiv p-0 bg-transparent shadow-none d-flex justify-content-end">
                   <div
                     className="d-flex w-100 align-items-center gap-2 justify-content-end"
-                    style={{ maxWidth: "375px" }}
+                    style={{ maxWidth: "500px" }}
                   >
                     <div
                       className="centerText text-center"
@@ -1008,6 +1014,12 @@ function ViewTaskPage() {
                       style={{ flex: "1" }}
                     >
                       Days Left
+                    </div>
+                    <div
+                      className="centerText text-center"
+                      style={{ flex: "1" }}
+                    >
+                      Job No.
                     </div>
                   </div>
                 </div>
@@ -1028,20 +1040,26 @@ function ViewTaskPage() {
                     }}
                   >
                     <div
-                      className={`listContent listTitle justify-content-between`}
+                      className={`listContent listTitle`}
+                      style={{
+                        justifyContent: 'space-between'
+                      }}
                     >
                       <p
-                        title={task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                        title={task?.title?.replace(/\b\w/g, (char) =>
+                          char.toUpperCase()
+                        )}
                         style={{
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: 2,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
-                          whiteSpace: "normal",
-                          maxWidth: "350px",
+                          whiteSpace: "nowrap",
+                          width: "280px",
+                          
                         }}
                       >
-                        {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                        {task?.title?.replace(/\b\w/g, (char) =>
+                          char.toUpperCase()
+                        )}
                       </p>
 
                       <p style={{ marginRight: "30px", cursor: "pointer" }}>
@@ -1050,18 +1068,38 @@ function ViewTaskPage() {
                     </div>
                     <div className="listContent centerContent">
                       <div
-                        className={`centerText stageBtn btn_${task?.stage?.title}`}
+                        className={`centerText stageBtn btn_${task?.stage?.title}`}  style={{
+                          maxWidth: "150px",
+                        }}
                       >
                         {task?.stage?.title ? task?.stage?.title : "N/A"}
                       </div>
-                      <div className={`JobBtn`}>
-                        {task?.job_num ? formatJobNumber(task?.job_num) : "N/A"}
+                      <div
+                        title={task?.job_title?.replace(/\b\w/g, (char) =>
+                          char.toUpperCase()
+                        )}
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          width: "250px"
+                        }}
+                      >
+                        {task?.job_title?.replace(/\b\w/g, (char) =>
+                          char.toUpperCase()
+                        )}
+                        {task?.job_title?.replace(/\b\w/g, (char) =>
+                          char.toUpperCase()
+                        )}
+                        {task?.job_title?.replace(/\b\w/g, (char) =>
+                          char.toUpperCase()
+                        )}
                       </div>
                     </div>
                     <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
                       <div
                         className="d-flex w-100 align-items-center gap-2 justify-content-end"
-                        style={{ maxWidth: "375px" }}
+                        style={{ maxWidth: "500px" }}
                       >
                         <div
                           style={{ flex: "1", maxWidth: "100px" }}
@@ -1091,6 +1129,11 @@ function ViewTaskPage() {
                                   .diff(moment().startOf("day"), "days");
                                 return `${diff} day${diff === 1 ? "" : "s"}`;
                               })()}
+                        </div>
+                        <div style={{ flex: "1" }} className={`JobBtn`}>
+                          {task?.job_num
+                            ? formatJobNumber(task?.job_num)
+                            : "N/A"}
                         </div>
                       </div>
                     </div>

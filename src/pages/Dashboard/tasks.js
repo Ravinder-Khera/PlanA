@@ -381,7 +381,7 @@ function TaskPage() {
         }setSelectedAssignee([]);
         setUserDropdownStates([]);
       
-        addNotification("success", "Task Updated")
+        // addNotification("success", "Task Updated")
         toast.success("Assignee added to Task", {
           position: window.innerWidth < 992 ? 'bottom-center' : 'top-center',
           autoClose: 5000,

@@ -617,7 +617,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    .activeNotification{
+    .activeNotification {
       position: absolute;
       left: 0;
       top: 0;
@@ -1605,6 +1605,7 @@ body {
         &.listTitle {
           display: flex;
           align-items: center;
+           
           @media screen and (max-width: 992px) {
             max-width: calc(100% - 60px);
             min-width: auto;
@@ -1681,7 +1682,6 @@ body {
         align-content: center;
         min-width: max-content;
         padding: 7.5px 12px;
-      
       }
 
       &.stage_Application {
@@ -1694,7 +1694,7 @@ body {
       }
 
       &.stage_Referral {
-        background: #235e71;
+        background: rgb(35, 94, 113);
 
         .btn_Referral {
           border: 1px solid #1fb4e3;
@@ -1973,6 +1973,93 @@ body {
   }
 }
 
+.jobsortDropDown {
+  position: absolute;
+  left: 100px;
+  top: 80%;
+  z-index: 999;
+  .dashboardFilterDropDownContent {
+    .selectFilterDiv {
+      display: flex;
+      min-width: 450px;
+      border-radius: 2px;
+      background: #353535;
+      gap: 16px;
+      padding: 12px 16px;
+      justify-content: space-between;
+      align-items: center;
+      .selectBox {
+        border-radius: 2px;
+        background: #252525;
+        width: 100%;
+        color: #e2e31f;
+        text-align: left;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        letter-spacing: -0.64px;
+        padding: 11px 14px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='8' viewBox='0 0 13 8' fill='none'%3E%3Cpath d='M12.7499 1.77428L7.09964 7.42456C7.0209 7.50357 6.92733 7.56627 6.82431 7.60904C6.72129 7.65182 6.61084 7.67384 6.49929 7.67384C6.38774 7.67384 6.27729 7.65182 6.17427 7.60904C6.07125 7.56627 5.97769 7.50357 5.89895 7.42456L0.24867 1.77428C0.0894494 1.61506 -2.37257e-09 1.39911 0 1.17394C2.37257e-09 0.948765 0.0894494 0.732816 0.24867 0.573595C0.407891 0.414374 0.62384 0.324925 0.849012 0.324925C1.07418 0.324925 1.29013 0.414374 1.44935 0.573595L6.5 5.62424L11.5506 0.572889C11.7099 0.413668 11.9258 0.324219 12.151 0.324219C12.3762 0.324219 12.5921 0.413668 12.7513 0.572889C12.9105 0.73211 13 0.948059 13 1.17323C13 1.3984 12.9105 1.61435 12.7513 1.77357L12.7499 1.77428Z' fill='white'/%3E%3C/svg%3E");
+        background-position: right 16px center;
+        background-repeat: no-repeat;
+        cursor: pointer;
+      }
+      button {
+        border-radius: 1px;
+        border: 2px solid #e2e31f;
+        color: #fff;
+        padding: 8px;
+        background: transparent;
+        text-align: center;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        letter-spacing: -0.64px;
+      }
+    }
+    .filterOptionsDiv {
+      // margin-top: 8px;
+      // border-radius: 8px;
+      background: #353535;
+      max-width: 650px;
+      padding: 27px 20px;
+      .filterOptionsScroll {
+        max-height: 200px;
+        overflow-y: auto;
+        .filterOption {
+          color: #fff;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: normal;
+          letter-spacing: -0.64px;
+          background: transparent;
+          transition: all 0.5s ease;
+          padding: 14px 28px;
+          &:hover {
+            background: linear-gradient(
+              90deg,
+              #e2e31f 0%,
+              rgba(226, 227, 31, 0) 100%
+            );
+            color: #000;
+          }
+          &.active {
+            background: linear-gradient(
+              90deg,
+              #e2e31f 0%,
+              rgba(226, 227, 31, 0) 100%
+            );
+            color: #000;
+          }
+        }
+      }
+    }
+  }
+}
+
 .addNewTaskBtn {
   color: #e2e31f;
   font-size: 14px;
@@ -2025,6 +2112,11 @@ body {
     &.Decision {
       border: 1px solid #ff40be;
       background: rgba(255, 64, 190, 0.4);
+    }
+    &.design,
+    &.Design {
+      border: 1px solid #ffacfe;
+      background: rgba(255, 172, 254, 0.4);
     }
   }
 
@@ -2357,6 +2449,11 @@ body {
             &.Decision {
               border: 1px solid #ff40be;
               background: rgba(255, 64, 190, 0.4);
+            }
+            &.design,
+            &.Design {
+              border: 1px solid #ffacfe;
+              background: rgba(255, 172, 254, 0.4);
             }
           }
 
@@ -3128,12 +3225,31 @@ body {
               background: rgba(255, 64, 190, 0.4);
             }
             .jobProgressDiv {
-              background: #ff40be;
+              background: rgb(255, 64, 190);
               color: rgba(255, 64, 190, 0.4);
             }
             .jobDateDiv {
               .text {
                 color: #ff40be;
+              }
+            }
+          }
+          &.design,
+          &.Design {
+            background: transparent;
+            .timeLineJobItemDiv {
+              border: 1px solid #ffacfe;
+            }
+            .jobProgressBg {
+              background: rgba(255, 172, 254, 0.4);
+            }
+            .jobProgressDiv {
+              background: rgb(255, 172, 254);
+              color: rgba(255, 172, 254, 0.4);
+            }
+            .jobDateDiv {
+              .text {
+                color: rgb(255, 172, 254);
               }
             }
           }
@@ -3378,7 +3494,7 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100%;
-  }
+}
 
 .notificationClass .notificationMsg {
   margin: auto 0;
@@ -3443,7 +3559,6 @@ body {
 .notificationClass.reminder-class .notificationMsg .notificationIcon {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 16 16'%3E%3Cpath fill='%23c7c711' d='m8.93 6.588l-2.29.287l-.082.38l.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319c.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246c-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0a1 1 0 0 1 2 0'/%3E%3C/svg%3E");
 }
-
 
 @keyframes slideUp {
   from {
@@ -4031,6 +4146,11 @@ body {
           border: 1px solid #ddd;
           background: rgb(221 221 221 / 40%);
         }
+        &.design,
+        &.Design {
+          border: 1px solid #ffacfe;
+          background: rgba(255, 172, 254, 0.4);
+        }
       }
     }
   }
@@ -4168,6 +4288,11 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         border: 1px solid #1fb4e3;
         background: rgba(31, 180, 227, 0.4);
       }
+        &.design,
+    &.Design {
+      border: 1px solid #ffacfe;
+      background: rgba(255, 172, 254, 0.4);
+    }
 
       &.Information,
       &.Info {
@@ -4405,7 +4530,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         &::-webkit-scrollbar-track {
           background: #353535; /* Background of the scrollbar track */
         }
-        .editor-class{
+        .editor-class {
           width: 100%;
         }
       }
@@ -4860,18 +4985,18 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
 .toggle-container {
   width: 50px;
   height: 25px;
-  background-color:#353535 ;
+  background-color: #353535;
   border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: background 0.3s ease;
-  &.on{
-    background-color:#e2e31f ;
+  &.on {
+    background-color: #e2e31f;
   }
   &.off {
-    background-color:#353535 ;
+    background-color: #353535;
   }
 }
 
@@ -4890,18 +5015,17 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
   }
 }
 
-.task-toggle-text{
-  color: #E2E31F;
-font-family: Archivo;
-font-size: 16px;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
-letter-spacing: -0.64px;
+.task-toggle-text {
+  color: #e2e31f;
+  font-family: Archivo;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.64px;
 }
 
-
-.yellow-edit-button{
+.yellow-edit-button {
   border-radius: 1px;
   border: 1px solid #e2e31f;
   background: #e2e31f;
@@ -4911,7 +5035,7 @@ letter-spacing: -0.64px;
 }
 .notifyIcon {
   position: relative;
-  .activeNotification{
+  .activeNotification {
     position: absolute;
     left: 0;
     top: 0;
@@ -4923,53 +5047,51 @@ letter-spacing: -0.64px;
   }
 }
 
-
-
-
-.billingDetails{
+.billingDetails {
   margin-top: 40px;
   margin-bottom: 40px;
-  .billingInfo{
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      .heading{
-          text-align: start;
-          color: #FFF;
-          font-style: normal;
-          line-height: normal;     
-          margin: 0;     
-          font-size: 16px;
-          font-weight: normal;
-          min-width: 150px;                              
+  .billingInfo {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    .heading {
+      text-align: start;
+      color: #fff;
+      font-style: normal;
+      line-height: normal;
+      margin: 0;
+      font-size: 16px;
+      font-weight: normal;
+      min-width: 150px;
+    }
+    .BoldHeading {
+      font-weight: 900;
+      font-size: 24px;
+    }
+    input,
+    textarea {
+      background: transparent;
+      color: #fff;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      letter-spacing: -0.96px;
+      outline: none;
+      border: none;
+      &::placeholder {
+        color: #fff;
       }
-      .BoldHeading{
-          font-weight: 900;
-          font-size: 24px;
-      }
-      input , textarea{
-          background: transparent;
-          color: #fff;
-          font-size: 18px;
-          font-style: normal;
-          font-weight: 500;
-          line-height: normal;
-          letter-spacing: -0.96px;       
-          outline: none;
-          border: none;     
-          &::placeholder {
-              color: #fff;
-          }
 
-          &::-moz-placeholder {
-              color: #fff;
-              opacity: 1;
-          }                            
+      &::-moz-placeholder {
+        color: #fff;
+        opacity: 1;
       }
-      .penImage{
-          max-width: 40px;
-          cursor: pointer;
-      }
+    }
+    .penImage {
+      max-width: 40px;
+      cursor: pointer;
+    }
   }
 }
 
@@ -4986,1663 +5108,1659 @@ letter-spacing: -0.64px;
   background: rgba(0, 0, 0, 0.3137254902);
 
   button {
-      border-width: 0;
+    border-width: 0;
   }
 
   p {
-      margin: 0;
+    margin: 0;
   }
 
   .pop-wrapper {
-      background: rgba(37, 37, 37, 0.85);
-      padding: 15px 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      color: white;
-      text-align: center;
-      position: relative;
-      height: 100vh;
-      width: 100%;
+    background: rgba(37, 37, 37, 0.85);
+    padding: 15px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    color: white;
+    text-align: center;
+    position: relative;
+    height: 100vh;
+    width: 100%;
 
-      .wrapper {
+    .wrapper {
+      // background: #353535;
+      // height: 100vh;
+      // position: relative;
+      // z-index: 99999;
+      .pop-container {
+        max-width: 1426px;
+        width: 100%;
+        // height: 300px;
+        background-color: #353535;
+        margin: 0 auto;
+        padding: 0;
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 800px;
+        // overflow-y: auto;
+        // overflow-x: hidden;
 
-          // background: #353535;
-          // height: 100vh;
-          // position: relative;
-          // z-index: 99999;
-          .pop-container {
-              max-width: 1426px;
+        .popup-content {
+          display: flex;
+          .datePickerDiv {
+            box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.3);
+          }
+          .popup-section-left {
+            max-width: 929px;
+            width: 100%;
+            background-color: #353535;
+            height: 800px;
+            overflow-y: auto;
+
+            /* width */
+            &::-webkit-scrollbar {
+              width: 5px;
+              z-index: 99999;
+            }
+
+            /* Track */
+            //   &::-webkit-scrollbar-track {
+            //     background: #00000071;
+            //     z-index: 99999;
+            //   }
+
+            /* Handle */
+            ::-webkit-scrollbar-thumb {
+              background: #3f3f3f77;
+              z-index: 99999;
+            }
+
+            /* Handle on hover */
+            ::-webkit-scrollbar-thumb:hover {
+              background: #555;
+              z-index: 99999;
+            }
+
+            .top-right-content {
               width: 100%;
-              // height: 300px;
-              background-color: #353535;
+              max-width: 734px;
               margin: 0 auto;
-              padding: 0;
-              position: absolute;
-              top: 10%;
-              left: 50%;
-              transform: translateX(-50%);
-              height: 800px;
-              // overflow-y: auto;
-              // overflow-x: hidden;
 
-              .popup-content {
+              .discription-heading {
+                margin-top: 37px;
+
+                h1 {
+                  color: #e2e31f;
+                  font-size: 16px !important;
+                  margin-bottom: 13px;
+                  text-align: start;
+                }
+
+                textarea {
+                  width: 100%;
+                  text-align: left;
+                  border: none;
+                  outline: none;
+                  background: transparent;
                   display: flex;
-                  .datePickerDiv{
-                      box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.30);
+                  font-size: 14px;
+                  color: #ffffff;
+                  max-width: 650px;
+                  font-weight: 400;
+                  line-height: 15.23px;
+
+                  &::placeholder {
+                    color: #ffffff;
                   }
-                  .popup-section-left {
-                      max-width: 929px;
-                      width: 100%;
-                      background-color: #353535;
-                      height: 800px;
-                      overflow-y: auto;
+                }
 
-                      /* width */
-                      &::-webkit-scrollbar {
-                          width: 5px;
-                          z-index: 99999;
+                // p {
+                //     font-size: 14px;
+                //     color: #FFFFFF;
+                //     max-width: 650px;
+                //     font-weight: 400;
+                //     line-height: 15.23px;
+
+                // }
+              }
+              .billingDetails {
+                margin-top: 40px;
+                margin-bottom: 40px;
+                .billingInfo {
+                  display: flex;
+                  gap: 20px;
+                  align-items: center;
+                  .heading {
+                    text-align: start;
+                    color: #fff;
+                    font-style: normal;
+                    line-height: normal;
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: normal;
+                    min-width: 150px;
+                  }
+                  .BoldHeading {
+                    font-weight: 900;
+                    font-size: 24px;
+                  }
+                  input,
+                  textarea {
+                    background: transparent;
+                    color: #fff;
+                    font-size: 18px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: normal;
+                    letter-spacing: -0.96px;
+                    outline: none;
+                    border: none;
+                    &::placeholder {
+                      color: #fff;
+                    }
+
+                    &::-moz-placeholder {
+                      color: #fff;
+                      opacity: 1;
+                    }
+                  }
+                  .penImage {
+                    max-width: 40px;
+                    cursor: pointer;
+                  }
+                }
+              }
+              .dueDateDiv {
+                .addTaskJobDiv {
+                  // display: flex;
+                  // justify-content: end;
+                  float: right;
+                  transform: translateY(calc(0% + 10px));
+                  position: relative;
+                  z-index: 1;
+                }
+                .addTaskDueDateBtn {
+                  svg {
+                    fill: #e2e31f;
+                    path {
+                      fill: #e2e31f;
+                    }
+                  }
+                }
+              }
+              .Addslider-container {
+                max-width: 650px;
+                width: 100%;
+                margin-left: 40px;
+
+                .slider-box {
+                  width: 200px;
+                  height: 174px;
+                  // background: #3B9239;
+                  margin: 80px auto;
+                  display: flex;
+                  flex-direction: column;
+                  filter: blur(2px);
+
+                  .card-slider {
+                    background: #7272724d;
+                    display: flex;
+                    justify-content: center;
+                    flex-direction: column;
+                    height: 100%;
+                    margin-top: 30px;
+                    align-items: center;
+                    position: relative;
+                    border-radius: 6.58px;
+
+                    button {
+                      display: none !important;
+                      .add-task-svg {
+                        display: none;
                       }
+                    }
+                  }
+                }
 
-                      /* Track */
-                      //   &::-webkit-scrollbar-track {
-                      //     background: #00000071;
-                      //     z-index: 99999;
-                      //   }
+                .slick-slider {
+                  min-height: 400px;
+                }
 
-                      /* Handle */
-                      ::-webkit-scrollbar-thumb {
-                          background: #3f3f3f77;
-                          z-index: 99999;
+                .slick-arrow {
+                  display: none !important;
+                }
 
-                      }
+                .slick-prev {
+                  left: -41px;
+                  background-image: url("../public/assets/Frame\ 39.png");
+                  background-size: contain;
+                  z-index: 1;
+                  width: 36px;
+                  height: 36px;
+                  background-repeat: no-repeat;
+                  display: none;
 
-                      /* Handle on hover */
-                      ::-webkit-scrollbar-thumb:hover {
-                          background: #555;
-                          z-index: 99999;
-                      }
+                  &::before {
+                    content: "";
+                    display: none;
+                  }
+                }
 
-                      .top-right-content {
+                // .slick-next {
+                //     right: -43px;
+                //     background-image: url("../../../public/assets/Frame\ 40\ \(1\).png");
+                //     background-size: contain;
+                //     z-index: 1;
+                //     width: 36px;
+                //     height: 36px;
+                //     background-repeat: no-repeat;
+
+                //     &::before {
+                //         content: "";
+                //     }
+                // }
+
+                .slick-active {
+                  .slider-box {
+                    transition: 0.5s;
+
+                    &.active {
+                      transform: scale(1.2);
+                      filter: blur(0px);
+
+                      .card-slider {
+                        border: 1px solid #ffffff;
+                        background: #ffffff33;
+
+                        h1 {
+                          font-family: Archivo;
+                          font-size: 16px;
+                          font-weight: 600;
+                          line-height: 17.41px;
+                          letter-spacing: -0.04em;
+                          text-align: center;
+                          margin-bottom: 0;
+                        }
+
+                        p {
+                          font-family: Archivo;
+                          font-size: 14px;
+                          font-weight: 300;
+                          line-height: 15.23px;
+                          letter-spacing: -0.04em;
+                          text-align: center;
+                        }
+
+                        button {
+                          max-width: 171px;
                           width: 100%;
-                          max-width: 734px;
-                          margin: 0 auto;
-
-                          .discription-heading {
-                              margin-top: 37px;
-
-                              h1 {
-                                  color: #E2E31F;
-                                  font-size: 16px !important;
-                                  margin-bottom: 13px;
-                                  text-align: start;
-                              }
-
-                              textarea {
-                                  width: 100%;
-                                  text-align: left;
-                                  border: none;
-                                  outline: none;
-                                  background: transparent;
-                                  display: flex;
-                                  font-size: 14px;
-                                  color: #FFFFFF;
-                                  max-width: 650px;
-                                  font-weight: 400;
-                                  line-height: 15.23px;
-
-                                  &::placeholder {
-                                      color: #FFFFFF;
-                                  }
-                              }
-
-                              // p {
-                              //     font-size: 14px;
-                              //     color: #FFFFFF;
-                              //     max-width: 650px;
-                              //     font-weight: 400;
-                              //     line-height: 15.23px;
-
-                              // }
-
-
+                          height: 40px;
+                          background: #e2e31f;
+                          border: none;
+                          border-radius: 1px;
+                          margin-top: 5px;
+                          font-family: Archivo;
+                          font-size: 16px;
+                          font-weight: 500;
+                          line-height: 17.41px;
+                          letter-spacing: -0.04em;
+                          text-align: center;
+                          display: block !important;
+                          .add-task-svg {
+                            display: block;
+                            height: 12px;
+                            width: 12px;
+                            margin-right: 3px;
                           }
-                          .billingDetails{
-                              margin-top: 40px;
-                              margin-bottom: 40px;
-                              .billingInfo{
-                                  display: flex;
-                                  gap: 20px;
-                                  align-items: center;
-                                  .heading{
-                                      text-align: start;
-                                      color: #FFF;
-                                      font-style: normal;
-                                      line-height: normal;     
-                                      margin: 0;     
-                                      font-size: 16px;
-                                      font-weight: normal;
-                                      min-width: 150px;                              
-                                  }
-                                  .BoldHeading{
-                                      font-weight: 900;
-                                      font-size: 24px;
-                                  }
-                                  input , textarea{
-                                      background: transparent;
-                                      color: #fff;
-                                      font-size: 18px;
-                                      font-style: normal;
-                                      font-weight: 500;
-                                      line-height: normal;
-                                      letter-spacing: -0.96px;       
-                                      outline: none;
-                                      border: none;     
-                                      &::placeholder {
-                                          color: #fff;
-                                      }
-                      
-                                      &::-moz-placeholder {
-                                          color: #fff;
-                                          opacity: 1;
-                                      }                            
-                                  }
-                                  .penImage{
-                                      max-width: 40px;
-                                      cursor: pointer;
-                                  }
-                              }
-                          }
-                          .dueDateDiv{
-                              .addTaskJobDiv{
-                                  // display: flex;
-                                  // justify-content: end;
-                                  float: right;
-                                  transform: translateY(calc(0% + 10px));
-                                  position: relative;
-                                  z-index: 1;
-                              }
-                              .addTaskDueDateBtn{
-                                  svg{
-                                      fill: #E2E31F;
-                                      path{
-                                          fill: #E2E31F;
-                                      }
-                                  }
-                              }
-                          }
-                          .Addslider-container {
-                              max-width: 650px;
-                              width: 100%;
-                              margin-left: 40px;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
 
-                              .slider-box {
-                                  width: 200px;
-                                  height: 174px;
-                                  // background: #3B9239;
-                                  margin: 80px auto;
-                                  display: flex;
-                                  flex-direction: column;
-                                  filter: blur(2px);
+            .position {
+              .title {
+                .addInput {
+                  background: transparent;
+                  border: none;
+                  outline: none;
+                  color: #e2e31f;
+                  font-size: 24px;
+                  font-weight: 700;
+                  border-bottom: 1px solid #e2e31f;
 
-                                  .card-slider {
-                                      background: #7272724D;
-                                      display: flex;
-                                      justify-content: center;
-                                      flex-direction: column;
-                                      height: 100%;
-                                      margin-top: 30px;
-                                      align-items: center;
-                                      position: relative;
-                                      border-radius:
-                                          6.58px;
+                  &::placeholder {
+                    color: #e2e31f !important;
+                  }
+                }
 
-                                      button {
-                                          display: none !important;
-                                          .add-task-svg {
-                                              display: none;
-                                          }
-                                      }
+                .LocationInput {
+                  color: #ffffff;
+                  border: none;
+                  outline: none;
+                  background: transparent;
 
-                                  }
-                              }
+                  &::placeholder {
+                    color: #ffffff;
+                  }
+                }
 
-                              .slick-slider {
-                                  min-height: 400px;
-                              }
+                h1 {
+                  font-size: 24px;
+                  font-weight: 800;
+                  line-height: 35px;
+                  color: #e2e31f;
+                  letter-spacing: -4%;
+                  display: flex;
+                }
 
-                              .slick-arrow {
-                                  display: none !important;
-                              }
+                p {
+                  color: #ffffff;
+                  font-weight: 300;
+                  font-size: 16px;
+                  line-height: 18px;
+                  letter-spacing: -4%;
+                  text-align: start;
+                }
 
-                              .slick-prev {
-                                  left: -41px;
-                                  background-image: url("../public/assets/Frame\ 39.png");
-                                  background-size: contain;
-                                  z-index: 1;
-                                  width: 36px;
-                                  height: 36px;
-                                  background-repeat: no-repeat;
-                                  display: none;
+                span {
+                  width: 36px;
+                  height: 36px;
+                  cursor: pointer;
 
-                                  &::before {
-                                      content: "";
-                                      display: none;
-                                  }
-                              }
+                  .penImage {
+                    margin-top: 0 !important;
+                  }
+                }
+              }
 
-                              // .slick-next {
-                              //     right: -43px;
-                              //     background-image: url("../../../public/assets/Frame\ 40\ \(1\).png");
-                              //     background-size: contain;
-                              //     z-index: 1;
-                              //     width: 36px;
-                              //     height: 36px;
-                              //     background-repeat: no-repeat;
+              .aprication-btn {
+                background: #3b923999;
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: 700;
+                line-height: 15.26px;
+                letter-spacing: -4%;
+                border: 1px solid #3b9239;
+                width: 176px;
+                border-radius: 4px;
+                height: 40px;
+              }
 
-                              //     &::before {
-                              //         content: "";
-                              //     }
-                              // }
+              .groupImage {
+                width: 127px !important;
+                height: 44px !important;
+                margin-top: 0 !important;
+              }
+            }
 
-                              .slick-active {
+            .top-section {
+              // padding: 30px 20px 30px 46px;
 
+              .topsection-left {
+                display: flex;
+                justify-content: space-between;
+                gap: 20px;
+                // background: #353535;
+                position: relative;
+                @media screen and (max-width: 992px) {
+                  flex-wrap: wrap;
+                }
+                // height: calc(100% - 28px);
+                &.invoice {
+                  &::before {
+                    height: 100%;
+                  }
+                  &::after {
+                    top: calc(100% - 30px);
+                    height: 55px;
+                    background: linear-gradient(
+                      180deg,
+                      #353535 27%,
+                      #353535 97%,
+                      rgba(53, 53, 53, 0) 174%
+                    );
+                    z-index: -1;
+                  }
+                  .stageBtn {
+                    background: #252525;
+                    cursor: pointer;
+                    &.paid {
+                      background: rgba(59, 146, 57, 0.6);
+                    }
+                    &.unpaid {
+                      background: rgba(255, 0, 0, 0.4);
+                    }
+                  }
+                }
+                &::before {
+                  content: "";
+                  position: absolute;
+                  width: 100%;
+                  height: calc(100% - 30px);
+                  background: #353535;
+                  z-index: -1;
+                  top: 0;
+                  left: 0;
+                }
 
-                                  .slider-box {
-                                      transition: 0.5s;
+                &::after {
+                  content: "";
+                  position: absolute;
+                  width: 100%;
+                  top: calc(100% - 30px);
+                  height: 50px;
+                  background: linear-gradient(
+                    180deg,
+                    #353535 27%,
+                    rgba(53, 53, 53, 0) 114%
+                  );
+                  z-index: -1;
+                }
 
+                img.back-icon,
+                img.penImage {
+                  margin-top: 13px;
+                  width: 36px;
+                  height: 36px;
+                }
 
-                                      &.active {
-                                          transform: scale(1.2);
-                                          filter: blur(0px);
+                .top-left-content {
+                  display: flex;
+                  gap: 20px;
+                  // justify-content: space-between;
+                  max-width: 1426px;
 
-                                          .card-slider {
-                                              border: 1px solid #FFFFFF;
-                                              background: #FFFFFF33;
+                  // background-color: #353535;
+                  width: 100%;
+                  height: 135px;
+                  padding: 26px 33px 0px 46px;
+                }
+              }
 
-                                              h1 {
-                                                  font-family: Archivo;
-                                                  font-size: 16px;
-                                                  font-weight: 600;
-                                                  line-height: 17.41px;
-                                                  letter-spacing: -0.04em;
-                                                  text-align: center;
-                                                  margin-bottom: 0;
+              .progress-bar-container {
+                margin-top: 22px;
+                width: 100%;
+                height: 2px;
+                background-color: #252525 !important;
+                position: relative;
+                display: block;
 
-                                              }
+                .progress-upper {
+                  position: relative;
+                  width: 25%;
+                  background-color: white;
+                  top: 0;
+                  height: 2px;
 
-                                              p {
-                                                  font-family: Archivo;
-                                                  font-size: 14px;
-                                                  font-weight: 300;
-                                                  line-height: 15.23px;
-                                                  letter-spacing: -0.04em;
-                                                  text-align: center;
+                  &::after {
+                    content: "";
+                    position: absolute;
+                    right: 0;
+                    width: 10px;
+                    height: 10px;
+                    background-color: white;
+                    border-radius: 100%;
+                    top: -4px;
+                    z-index: 1;
+                  }
+                }
 
-                                              }
+                .progress-text {
+                  // width: 25%;
+                  position: absolute;
+                  right: 0;
+                  transform: translate(40%, 50%);
 
-                                              button {
-                                                  max-width: 171px;
-                                                  width: 100%;
-                                                  height: 40px;
-                                                  background: #E2E31F;
-                                                  border: none;
-                                                  border-radius: 1px;
-                                                  margin-top: 5px;
-                                                  font-family: Archivo;
-                                                  font-size: 16px;
-                                                  font-weight: 500;
-                                                  line-height: 17.41px;
-                                                  letter-spacing: -0.04em;
-                                                  text-align: center;
-                                                  display: block !important;
-                                                  .add-task-svg {
-                                                      display: block;
-                                                      height: 12px;
-                                                      width: 12px;
-                                                      margin-right: 3px;
-                                                  }
+                  p {
+                    text-align: right;
+                    border: 1px solid #ffffff;
+                    padding: 10px 27px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    line-height: 13px;
+                    letter-spacing: -4%;
+                    color: #ffffff;
+                    font-weight: 600;
+                  }
+                }
+              }
+            }
 
+            .table-section {
+              max-width: 750px;
+              width: 100%;
+              margin: 0 auto;
 
+              .table-top-section {
+                display: flex;
+                justify-content: space-between;
 
-                                              }
-                                          }
+                .tableTopLeft {
+                  display: flex;
+                  gap: 10px;
+                  align-items: center;
 
-                                      }
-                                  }
+                  h1 {
+                    color: #e2e31f;
+                    font-size: 16px;
+                    font-weight: 900;
+                    line-height: 17px;
+                    margin-bottom: 0;
+                  }
 
+                  p {
+                    color: #ffffff;
+                    font-size: 13px;
+                    font-weight: 400;
+                    line-height: 13px;
+                    border-bottom: 1px solid #ffffff;
+                    margin-bottom: 0;
+                    cursor: pointer;
+                  }
+                }
 
+                .tableTopRight {
+                  display: flex;
+                  gap: 15px;
+                  align-items: center;
 
-                              }
+                  img {
+                    width: 13px;
+                    height: 13px;
+                  }
 
-                          }
+                  button {
+                    background: #e2e31f;
+                    //    padding: 10px 27px;
+                    width: 83px;
+                    height: 28px;
+                    color: #000000;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    font-weight: 300;
+                    border: none;
+                    transition: 0.5s;
 
+                    &:hover {
+                      background: transparent;
+                      color: #e2e31f;
+                      border: 1px solid #e2e31f;
+                    }
+                  }
+                }
+              }
 
+              .table-main-section {
+                ul {
+                  padding-inline-start: 0px;
+
+                  li {
+                    .svg-box {
+                      border: 2px solid #e2e31f;
+                      width: 15px;
+                      height: 15px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      cursor: pointer;
+                    }
+
+                    .svg-box-2 {
+                      border: 2px solid #e2e31f;
+                      width: 15px;
+                      height: 15px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      background-color: #e2e31f;
+                      cursor: pointer;
+                    }
+
+                    display: flex;
+                    gap: 12px;
+                    align-items: center;
+                    margin-bottom: 15px;
+
+                    .application-lodge {
+                      background: #252525;
+                      padding: 9px 9px;
+
+                      .task-desc-input {
+                        background: transparent;
+                        border: none;
+                        outline: none;
+                        color: #ffff;
                       }
 
-                      .position {
-                          .title {
-                              .addInput {
-                                  background: transparent;
-                                  border: none;
-                                  outline: none;
-                                  color: #E2E31F;
-                                  font-size: 24px;
-                                  font-weight: 700;
-                                  border-bottom: 1px solid #e2e31f;
+                      .addStage-btn {
+                        font-size: 12px;
+                        font-weight: 400;
+                        color: rgba(95, 95, 95, 1);
+                        text-decoration: underline;
+                        text-underline-offset: 4px;
+                        cursor: pointer;
+                      }
 
-                                  &::placeholder {
-                                      color: #E2E31F !important;
+                      p {
+                        padding: 0;
+                        margin: 0;
 
-                                  }
+                        &.text_Application {
+                          color: #3b9239;
+                        }
+
+                        &.text_Referral {
+                          color: #1fb4e3;
+                        }
+
+                        &.text_Information,
+                        &.text_Info {
+                          color: #8a50c5;
+                        }
+
+                        &.text_Inform,
+                        &.text_Public {
+                          color: #ff5c00;
+                        }
+
+                        &.text_Decision {
+                          color: #ff40be;
+                        }
+
+                        &.text_Unknown {
+                          color: #fff;
+                        }
+                      }
+
+                      .stage-addTaskJobDiv {
+                        position: relative;
+
+                        .stage-addTaskJobDropdown {
+                          position: absolute;
+                          left: 0;
+                          top: calc(100% + 22px);
+                          z-index: 99;
+
+                          &.right {
+                            right: 0;
+                            left: auto;
+                          }
+
+                          .addTaskJobSearchDiv {
+                            border-radius: 2px;
+                            background: #353535;
+                            padding: 12px 13px 13px 14px;
+                            display: flex;
+                            justify-content: space-between;
+                            gap: 8px;
+
+                            .searchBox {
+                              border-radius: 2px;
+                              padding: 11px 14px;
+                              background: #252525;
+                              display: flex;
+                              gap: 8px;
+                              align-items: center;
+
+                              input {
+                                background: transparent;
+                                border: none;
+                                outline: none;
+                                color: #e2e31f;
+                                font-size: 16px;
+                                font-style: normal;
+                                font-weight: 500;
+                                line-height: normal;
+                                letter-spacing: -0.64px;
+
+                                &::placeholder {
+                                  color: #e2e31f;
+                                }
+
+                                &::-moz-placeholder {
+                                  color: #e2e31f;
+                                  opacity: 1;
+                                }
+                              }
+                            }
+
+                            .divider {
+                              width: 1px;
+                              background: #fff;
+                              border-radius: 2px;
+                            }
+                          }
+
+                          .addTaskJobListScroll {
+                            border-radius: 8px;
+                            background: #353535;
+                            padding: 27px 18px 23px 21px;
+                            margin-top: 7px;
+
+                            .addTaskJobListItems {
+                              max-height: 300px;
+                              overflow-y: auto;
+
+                              &::-webkit-scrollbar {
+                                width: 4px;
                               }
 
-                              .LocationInput {
-                                  color: #FFFFFF;
-                                  border: none;
-                                  outline: none;
-                                  background: transparent;
-
-                                  &::placeholder {
-                                      color: #FFFFFF;
-                                  }
-
-
+                              &:-moz-scrollbar {
+                                width: 4px;
                               }
 
-                              h1 {
-                                  font-size: 24px;
-                                  font-weight: 800;
-                                  line-height: 35px;
-                                  color: #E2E31F;
-                                  letter-spacing: -4%;
-                                  display: flex;
+                              &::-webkit-scrollbar-track {
+                                border-radius: 2px;
+                                background: rgb(255, 255, 255);
+                                background: linear-gradient(
+                                  90deg,
+                                  rgba(255, 255, 255, 0) 0%,
+                                  rgba(113, 113, 113, 1) 30%,
+                                  rgba(113, 113, 113, 1) 70%,
+                                  rgba(255, 255, 255, 0) 100%
+                                );
+                              }
 
+                              &:-moz-scrollbar-track {
+                                border-radius: 2px;
+                                background: rgb(255, 255, 255);
+                                background: linear-gradient(
+                                  90deg,
+                                  rgba(255, 255, 255, 0) 0%,
+                                  rgba(113, 113, 113, 1) 30%,
+                                  rgba(113, 113, 113, 1) 70%,
+                                  rgba(255, 255, 255, 0) 100%
+                                );
+                              }
 
+                              &::-webkit-scrollbar-thumb {
+                                background: #fff;
+                                border-radius: 4px;
+                              }
 
+                              &:-moz-scrollbar-thumb {
+                                background: #fff;
+                                border-radius: 4px;
+                              }
+
+                              .addTaskJobListItem {
+                                padding: 14px 21px 15px 24px;
+                                margin-bottom: 2px;
+                                font-size: 16px;
+                                font-style: normal;
+                                font-weight: 600;
+                                line-height: normal;
+                                letter-spacing: -0.64px;
+                                transition: all 0.5s ease;
+                                min-width: max-content;
+                                color: #fff;
+                                cursor: pointer;
+                                background: linear-gradient(
+                                  90deg,
+                                  #e3e31f00 0%,
+                                  rgba(226, 227, 31, 0) 100%
+                                );
+
+                                &:hover,
+                                &.active {
+                                  background: linear-gradient(
+                                    90deg,
+                                    #e2e31f 0%,
+                                    rgba(226, 227, 31, 0) 100%
+                                  );
+                                  color: #000;
+                                }
+                              }
+
+                              .addTaskJobStageItem {
+                                min-width: max-content;
+                                padding: 14px 21px 15px 24px;
+                                font-size: 16px;
+                                font-style: normal;
+                                font-weight: 600;
+                                line-height: normal;
+                                letter-spacing: -0.64px;
+                                transition: all 0.5s ease;
+                                border-radius: 4px;
+                                color: #fff;
+                                cursor: pointer;
+                                border: 1px solid #fff;
+                                background: rgba(255, 255, 255, 0.25);
+                                margin-bottom: 7px;
+
+                                &.Application {
+                                  border: 1px solid #3b9239;
+                                  background: rgba(59, 146, 57, 0.6);
+                                }
+
+                                &.Referral {
+                                  border: 1px solid #1fb4e3;
+                                  background: rgba(31, 180, 227, 0.4);
+                                }
+
+                                &.Information,
+                                &.Info {
+                                  border: 1px solid #8a50c5;
+                                  background: rgba(138, 80, 197, 0.49);
+                                }
+
+                                &.Public,
+                                &.Inform {
+                                  border: 1px solid #ff5c00;
+                                  background: rgba(255, 92, 0, 0.55);
+                                }
+
+                                &.Decision {
+                                  border: 1px solid #ff40be;
+                                  background: rgba(255, 64, 190, 0.4);
+                                }
+                                  &.design,
+    &.Design {
+      border: 1px solid #ffacfe;
+      background: rgba(255, 172, 254, 0.4);
+    }
+                              }
+
+                              label {
+                                color: #e2e31f;
+                                font-size: 14px;
+                                font-style: normal;
+                                font-weight: 300;
+                                line-height: normal;
+                                letter-spacing: -0.56px;
+                                margin-bottom: 24px;
+
+                                &.addedAssignees {
+                                  font-size: 16px;
+                                  font-weight: 600;
+                                  line-height: normal;
+                                  letter-spacing: -0.64px;
+                                  margin-bottom: 16px;
+                                }
+                              }
+
+                              .addedAssigneeBorder {
+                                border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                              }
+
+                              .addAssigneeDiv {
+                                display: flex;
+                                justify-content: flex-start;
+                                gap: 16px;
+                                margin-bottom: 21px;
+                                transition: all 0.5s ease;
+                                min-width: max-content;
+                                color: #fff;
+                                cursor: pointer;
+
+                                h4 {
+                                  color: #e2e31f;
+                                  font-size: 16px;
+                                  font-style: normal;
+                                  font-weight: 600;
+                                  line-height: normal;
+                                  letter-spacing: -0.64px;
+                                  margin: 0;
+                                }
+
+                                p {
+                                  margin: 0;
+                                  color: #fff;
+                                  font-size: 12px;
+                                  font-style: normal;
+                                  font-weight: 300;
+                                  line-height: normal;
+                                  letter-spacing: -0.48px;
+                                }
+
+                                .checkAddBtn {
+                                  margin-left: auto;
+                                  padding: 0 20px;
+                                  font-size: 20px;
+                                  color: #e2e31f;
+                                }
+
+                                &.active {
+                                  color: #000;
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+
+                      .application-lodge-btn {
+                        max-width: 94px;
+                        width: 100%;
+                        height: 28px;
+                        color: #ffffff;
+                        border-radius: 5.66px;
+                        font-size: 12px;
+                        border: 1px solid #fff;
+                        background: rgba(255, 255, 255, 0.25);
+
+                        &.btn_Application {
+                          border: 1px solid #3b9239;
+                          background: rgba(59, 146, 57, 0.6);
+                        }
+
+                        &.btn_Referral {
+                          border: 1px solid #1fb4e3;
+                          background: rgba(31, 180, 227, 0.4);
+                        }
+
+                        &.btn_Information,
+                        &.btn_Info {
+                          border: 1px solid #8a50c5;
+                          background: rgba(138, 80, 197, 0.49);
+                        }
+
+                        &.btn_Inform,
+                        &.btn_Public {
+                          border: 1px solid #ff5c00;
+                          background: rgba(255, 92, 0, 0.55);
+                        }
+
+                        &.btn_Decision {
+                          border: 1px solid #ff40be;
+                          background: rgba(255, 64, 190, 0.4);
+                        }
+
+                        &.btn_Unknown {
+                          border: 1px solid #fff;
+                          background: rgba(255, 255, 255, 0.25);
+                        }
+                      }
+                    }
+
+                    .addTaskJobDiv {
+                      position: relative;
+
+                      .addTaskJobDropdown {
+                        position: absolute;
+                        left: 0;
+                        top: calc(100% + 22px);
+                        z-index: 99;
+
+                        &.right {
+                          right: 0;
+                          left: auto;
+                        }
+
+                        .addTaskJobSearchDiv {
+                          border-radius: 2px;
+                          background: #353535;
+                          padding: 12px 13px 13px 14px;
+                          display: flex;
+                          justify-content: space-between;
+                          gap: 8px;
+
+                          .searchBox {
+                            border-radius: 2px;
+                            padding: 11px 14px;
+                            background: #252525;
+                            display: flex;
+                            gap: 8px;
+                            align-items: center;
+
+                            input {
+                              background: transparent;
+                              border: none;
+                              outline: none;
+                              color: #e2e31f;
+                              font-size: 16px;
+                              font-style: normal;
+                              font-weight: 500;
+                              line-height: normal;
+                              letter-spacing: -0.64px;
+
+                              &::placeholder {
+                                color: #e2e31f;
+                              }
+
+                              &::-moz-placeholder {
+                                color: #e2e31f;
+                                opacity: 1;
+                              }
+                            }
+                          }
+
+                          .divider {
+                            width: 1px;
+                            background: #fff;
+                            border-radius: 2px;
+                          }
+                        }
+
+                        .addTaskJobListScroll {
+                          border-radius: 8px;
+                          background: #353535;
+                          padding: 27px 18px 23px 21px;
+                          margin-top: 7px;
+
+                          .addTaskJobListItems {
+                            max-height: 300px;
+                            overflow-y: auto;
+
+                            &::-webkit-scrollbar {
+                              width: 4px;
+                            }
+
+                            &:-moz-scrollbar {
+                              width: 4px;
+                            }
+
+                            &::-webkit-scrollbar-track {
+                              border-radius: 2px;
+                              background: rgb(255, 255, 255);
+                              background: linear-gradient(
+                                90deg,
+                                rgba(255, 255, 255, 0) 0%,
+                                rgba(113, 113, 113, 1) 30%,
+                                rgba(113, 113, 113, 1) 70%,
+                                rgba(255, 255, 255, 0) 100%
+                              );
+                            }
+
+                            &:-moz-scrollbar-track {
+                              border-radius: 2px;
+                              background: rgb(255, 255, 255);
+                              background: linear-gradient(
+                                90deg,
+                                rgba(255, 255, 255, 0) 0%,
+                                rgba(113, 113, 113, 1) 30%,
+                                rgba(113, 113, 113, 1) 70%,
+                                rgba(255, 255, 255, 0) 100%
+                              );
+                            }
+
+                            &::-webkit-scrollbar-thumb {
+                              background: #fff;
+                              border-radius: 4px;
+                            }
+
+                            &:-moz-scrollbar-thumb {
+                              background: #fff;
+                              border-radius: 4px;
+                            }
+
+                            .addTaskJobListItem {
+                              padding: 14px 21px 15px 24px;
+                              margin-bottom: 2px;
+                              font-size: 16px;
+                              font-style: normal;
+                              font-weight: 600;
+                              line-height: normal;
+                              letter-spacing: -0.64px;
+                              transition: all 0.5s ease;
+                              min-width: max-content;
+                              color: #fff;
+                              cursor: pointer;
+                              background: linear-gradient(
+                                90deg,
+                                #e3e31f00 0%,
+                                rgba(226, 227, 31, 0) 100%
+                              );
+
+                              &:hover,
+                              &.active {
+                                background: linear-gradient(
+                                  90deg,
+                                  #e2e31f 0%,
+                                  rgba(226, 227, 31, 0) 100%
+                                );
+                                color: #000;
+                              }
+                            }
+
+                            .addTaskJobStageItem {
+                              min-width: max-content;
+                              padding: 14px 21px 15px 24px;
+                              font-size: 16px;
+                              font-style: normal;
+                              font-weight: 600;
+                              line-height: normal;
+                              letter-spacing: -0.64px;
+                              transition: all 0.5s ease;
+                              border-radius: 4px;
+                              color: #fff;
+                              cursor: pointer;
+                              border: 1px solid #fff;
+                              background: rgba(255, 255, 255, 0.25);
+                              margin-bottom: 7px;
+
+                              &.Application {
+                                border: 1px solid #3b9239;
+                                background: rgba(59, 146, 57, 0.6);
+                              }
+
+                              &.Referral {
+                                border: 1px solid #1fb4e3;
+                                background: rgba(31, 180, 227, 0.4);
+                              }
+                                &.design,
+    &.Design {
+      border: 1px solid #ffacfe;
+      background: rgba(255, 172, 254, 0.4);
+    }
+
+                              &.Information,
+                              &.Info {
+                                border: 1px solid #8a50c5;
+                                background: rgba(138, 80, 197, 0.49);
+                              }
+
+                              &.Inform,
+                              &.Public {
+                                border: 1px solid #ff5c00;
+                                background: rgba(255, 92, 0, 0.55);
+                              }
+
+                              &.Decision {
+                                border: 1px solid #ff40be;
+                                background: rgba(255, 64, 190, 0.4);
+                              }
+                            }
+
+                            label {
+                              color: #e2e31f;
+                              font-size: 14px;
+                              font-style: normal;
+                              font-weight: 300;
+                              line-height: normal;
+                              letter-spacing: -0.56px;
+                              margin-bottom: 24px;
+
+                              &.addedAssignees {
+                                font-size: 16px;
+                                font-weight: 600;
+                                line-height: normal;
+                                letter-spacing: -0.64px;
+                                margin-bottom: 16px;
+                              }
+                            }
+
+                            .addedAssigneeBorder {
+                              border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                            }
+
+                            .addAssigneeDiv {
+                              display: flex;
+                              justify-content: flex-start;
+                              gap: 16px;
+                              margin-bottom: 21px;
+                              transition: all 0.5s ease;
+                              min-width: max-content;
+                              color: #fff;
+                              cursor: pointer;
+
+                              h4 {
+                                color: #e2e31f;
+                                font-size: 16px;
+                                font-style: normal;
+                                font-weight: 600;
+                                line-height: normal;
+                                letter-spacing: -0.64px;
+                                margin: 0;
                               }
 
                               p {
-                                  color: #FFFFFF;
-                                  font-weight: 300;
-                                  font-size: 16px;
-                                  line-height: 18px;
-                                  letter-spacing: -4%;
-                                  text-align: start;
-
-
+                                margin: 0;
+                                color: #fff;
+                                font-size: 12px;
+                                font-style: normal;
+                                font-weight: 300;
+                                line-height: normal;
+                                letter-spacing: -0.48px;
                               }
 
-                              span {
-                                  width: 36px;
-                                  height: 36px;
-                                  cursor: pointer;
-
-                                  .penImage {
-                                      margin-top: 0 !important;
-                                  }
+                              .checkAddBtn {
+                                margin-left: auto;
+                                padding: 0 20px;
+                                font-size: 20px;
+                                color: #e2e31f;
                               }
+
+                              &.active {
+                                color: #000;
+                              }
+                            }
                           }
-
-                          .aprication-btn {
-                              background: #3B923999;
-                              color: #FFFFFF;
-                              font-size: 14px;
-                              font-weight: 700;
-                              line-height: 15.26px;
-                              letter-spacing: -4%;
-                              border: 1px solid #3B9239;
-                              width: 176px;
-                              border-radius: 4px;
-                              height: 40px;
-
-                          }
-
-
-
-                          .groupImage {
-                              width: 127px !important;
-                              height: 44px !important;
-                              margin-top: 0 !important;
-                          }
-
+                        }
                       }
+                    }
 
+                    .table-checkbox {
+                      width: 24px;
+                      height: 24px;
 
-                      .top-section {
-                          // padding: 30px 20px 30px 46px;
-
-
-
-                          .topsection-left {
-                              display: flex;
-                              justify-content: space-between;
-                              gap: 20px;
-                              // background: #353535;
-                              position: relative;
-                              @media screen and (max-width:992px) {
-                                  flex-wrap: wrap;
-                              }
-                              // height: calc(100% - 28px);
-                              &.invoice{
-                                  &::before {
-                                      height: 100%;
-                                  }
-                                  &::after {
-                                      top: calc(100% - 30px);
-                                      height: 55px;
-                                      background: linear-gradient(180deg, #353535 27%, #353535 97%, rgba(53, 53, 53, 0) 174%);
-                                      z-index: -1;
-  
-                                  }
-                                  .stageBtn{
-                                      background: #252525;
-                                      cursor: pointer;
-                                      &.paid{
-                                          background: rgba(59, 146, 57, 0.6);
-                                      }
-                                      &.unpaid{
-                                          background: rgba(255, 0, 0, 0.4);
-                                      }
-                                  }
-                              }
-                              &::before {
-                                  content: "";
-                                  position: absolute;
-                                  width: 100%;
-                                  height: calc(100% - 30px);
-                                  background: #353535;
-                                  z-index: -1;
-                                  top: 0;
-                                  left: 0;
-
-                              }
-
-                              &::after {
-                                  content: "";
-                                  position: absolute;
-                                  width: 100%;
-                                  top: calc(100% - 30px);
-                                  height: 50px;
-                                  background: linear-gradient(180deg, #353535 27%, rgba(53, 53, 53, 0) 114%);
-                                  z-index: -1;
-
-                              }
-
-
-                              img.back-icon, img.penImage {
-                                  margin-top: 13px;
-                                  width: 36px;
-                                  height: 36px;
-                              }
-
-                              .top-left-content {
-                                  display: flex;
-                                  gap: 20px;
-                                  // justify-content: space-between;
-                                  max-width: 1426px;
-
-                                  // background-color: #353535;
-                                  width: 100%;
-                                  height: 135px;
-                                  padding: 26px 33px 0px 46px;
-
-
-
-
-
-
-                              }
-
-
-                          }
-
-                          .progress-bar-container {
-                              margin-top: 22px;
-                              width: 100%;
-                              height: 2px;
-                              background-color: #252525 !important;
-                              position: relative;
-                              display: block;
-
-                              .progress-upper {
-                                  position: relative;
-                                  width: 25%;
-                                  background-color: white;
-                                  top: 0;
-                                  height: 2px;
-
-                                  &::after {
-                                      content: "";
-                                      position: absolute;
-                                      right: 0;
-                                      width: 10px;
-                                      height: 10px;
-                                      background-color: white;
-                                      border-radius: 100%;
-                                      top: -4px;
-                                      z-index: 1;
-
-
-                                  }
-
-
-                              }
-
-                              .progress-text {
-                                  // width: 25%;
-                                  position: absolute;
-                                  right: 0;
-                                  transform: translate(40%, 50%);
-
-
-                                  p {
-                                      text-align: right;
-                                      border: 1px solid #FFFFFF;
-                                      padding: 10px 27px;
-                                      border-radius: 4px;
-                                      font-size: 12px;
-                                      line-height: 13px;
-                                      letter-spacing: -4%;
-                                      color: #FFFFFF;
-                                      font-weight: 600;
-
-
-                                  }
-
-                              }
-                          }
-
-
-
-
-
+                      input {
+                        color: #e2e31f !important;
                       }
+                    }
+                  }
+                }
+              }
+            }
 
-                      .table-section {
-                          max-width: 750px;
-                          width: 100%;
-                          margin: 0 auto;
+            .progressInputSection {
+              max-width: 750px;
+              width: 100%;
+              margin: 0 auto;
+              margin-top: 36px;
 
-                          .table-top-section {
-                              display: flex;
-                              justify-content: space-between;
+              p {
+                max-width: 176px;
+                height: 46px;
+                width: 100%;
+                background: #252525;
+                color: #e2e31f;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 0;
+              }
 
-                              .tableTopLeft {
-                                  display: flex;
-                                  gap: 10px;
-                                  align-items: center;
+              input,
+              .input-box {
+                width: 100%;
 
-                                  h1 {
-                                      color: #E2E31F;
-                                      font-size: 16px;
-                                      font-weight: 900;
-                                      line-height: 17px;
-                                      margin-bottom: 0;
+                background: transparent;
+                border: 1px solid #e2e31f;
 
-                                  }
+                padding: 0px 10px;
 
-                                  p {
-                                      color: #FFFFFF;
-                                      font-size: 13px;
-                                      font-weight: 400;
-                                      line-height: 13px;
-                                      border-bottom: 1px solid #FFFFFF;
-                                      margin-bottom: 0;
-                                      cursor: pointer;
+                &::placeholder {
+                  color: #ffffffab;
+                }
 
-                                  }
-                              }
+                &:focus {
+                  outline: none;
+                }
+              }
 
-                              .tableTopRight {
-                                  display: flex;
-                                  gap: 15px;
-                                  align-items: center;
+              .btm-statusBtn {
+                padding: 7px 37px;
+                border-radius: 5px;
+                color: #ffffff;
+                text-transform: capitalize;
+                font-size: 14px;
+                font-weight: 700;
+                background: rgb(113, 113, 113);
+                border: 1px solid rgb(92 89 89 / 15%);
 
-                                  img {
-                                      width: 13px;
-                                      height: 13px;
-                                  }
+                &.pending {
+                  background: #1fb4e366;
+                  border: 1px solid #1fb4e3;
+                }
 
-                                  button {
-                                      background: #E2E31F;
-                                      //    padding: 10px 27px;
-                                      width: 83px;
-                                      height: 28px;
-                                      color: #000000;
-                                      font-size: 12px;
-                                      border-radius: 4px;
-                                      font-weight: 300;
-                                      border: none;
-                                      transition: 0.5s;
+                &.in-progress {
+                  background: #c5b9507d;
+                  border: 1px solid #c5b450;
+                }
 
-                                      &:hover {
-                                          background: transparent;
-                                          color: #E2E31F;
-                                          border: 1px solid #E2E31F;
-                                      }
+                &.completed {
+                  background: #3b923999;
+                  border: 1px solid #3b9239;
+                }
 
+                &.not-started {
+                  background: #ff000066;
+                  border: 1px solid #ff0000;
+                }
 
-                                  }
-                              }
-                          }
+                &.on-hold {
+                  background: rgb(113, 113, 113);
+                  border: 1px solid rgb(92 89 89 / 15%);
+                }
+              }
 
-                          .table-main-section {
-                              ul {
-                                  padding-inline-start: 0px;
+              .showMore {
+                margin-bottom: 100px;
 
-                                  li {
-                                      .svg-box {
-                                          border: 2px solid #e2e31f;
-                                          width: 15px;
-                                          height: 15px;
-                                          display: flex;
-                                          align-items: center;
-                                          justify-content: center;
-                                          cursor: pointer;
-                                      }
+                img {
+                  width: 36px;
+                  height: 36px;
+                }
 
-                                      .svg-box-2 {
-                                          border: 2px solid #e2e31f;
-                                          width: 15px;
-                                          height: 15px;
-                                          display: flex;
-                                          align-items: center;
-                                          justify-content: center;
-                                          background-color: #e2e31f;
-                                          cursor: pointer;
-                                      }
-
-                                      display: flex;
-                                      gap: 12px;
-                                      align-items: center;
-                                      margin-bottom: 15px;
-
-                                      .application-lodge {
-                                          background: #252525;
-                                          padding: 9px 9px;
-
-                                          .task-desc-input {
-                                              background: transparent;
-                                              border: none;
-                                              outline: none;
-                                              color: #ffff;
-                                          }
-
-                                          .addStage-btn {
-                                              font-size: 12px;
-                                              font-weight: 400;
-                                              color: rgba(95, 95, 95, 1);
-                                              text-decoration: underline;
-                                              text-underline-offset: 4px;
-                                              cursor: pointer;
-                                          }
-
-                                          p {
-
-                                              padding: 0;
-                                              margin: 0;
-
-                                              &.text_Application {
-                                                  color: #3B9239;
-
-                                              }
-
-                                              &.text_Referral {
-                                                  color: #1FB4E3;
-
-                                              }
-
-                                              &.text_Information, &.text_Info {
-                                                  color: #8A50C5;
-
-                                              }
-
-                                              &.text_Inform, &.text_Public {
-                                                  color: #FF5C00;
-
-                                              }
-
-                                              &.text_Decision {
-                                                  color: #FF40BE;
-
-                                              }
-
-                                              &.text_Unknown {
-                                                  color: #FFF;
-
-                                              }
-
-                                          }
-
-                                          .stage-addTaskJobDiv {
-                                              position: relative;
-                                      
-                                              .stage-addTaskJobDropdown {
-                                                  position: absolute;
-                                                  left: 0;
-                                                  top: calc(100% + 22px);
-                                                  z-index: 99;
-                                      
-                                                  &.right {
-                                                      right: 0;
-                                                      left: auto;
-                                                  }
-                                      
-                                                  .addTaskJobSearchDiv {
-                                                      border-radius: 2px;
-                                                      background: #353535;
-                                                      padding: 12px 13px 13px 14px;
-                                                      display: flex;
-                                                      justify-content: space-between;
-                                                      gap: 8px;
-                                      
-                                                      .searchBox {
-                                                          border-radius: 2px;
-                                                          padding: 11px 14px;
-                                                          background: #252525;
-                                                          display: flex;
-                                                          gap: 8px;
-                                                          align-items: center;
-                                      
-                                                          input {
-                                                              background: transparent;
-                                                              border: none;
-                                                              outline: none;
-                                                              color: #E2E31F;
-                                                              font-size: 16px;
-                                                              font-style: normal;
-                                                              font-weight: 500;
-                                                              line-height: normal;
-                                                              letter-spacing: -0.64px;
-                                      
-                                                              &::placeholder {
-                                                                  color: #E2E31F;
-                                                              }
-                                      
-                                                              &::-moz-placeholder {
-                                                                  color: #E2E31F;
-                                                                  opacity: 1;
-                                                              }
-                                                          }
-                                                      }
-                                      
-                                                      .divider {
-                                                          width: 1px;
-                                                          background: #fff;
-                                                          border-radius: 2px;
-                                                      }
-                                                  }
-                                      
-                                                  .addTaskJobListScroll {
-                                                      border-radius: 8px;
-                                                      background: #353535;
-                                                      padding: 27px 18px 23px 21px;
-                                                      margin-top: 7px;
-                                      
-                                                      .addTaskJobListItems {
-                                                          max-height: 300px;
-                                                          overflow-y: auto;
-                                      
-                                                          &::-webkit-scrollbar {
-                                                              width: 4px;
-                                                          }
-                                      
-                                                          &:-moz-scrollbar {
-                                                              width: 4px;
-                                                          }
-                                      
-                                                          &::-webkit-scrollbar-track {
-                                                              border-radius: 2px;
-                                                              background: rgb(255, 255, 255);
-                                                              background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
-                                                          }
-                                      
-                                                          &:-moz-scrollbar-track {
-                                                              border-radius: 2px;
-                                                              background: rgb(255, 255, 255);
-                                                              background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
-                                                          }
-                                      
-                                                          &::-webkit-scrollbar-thumb {
-                                                              background: #fff;
-                                                              border-radius: 4px;
-                                                          }
-                                      
-                                                          &:-moz-scrollbar-thumb {
-                                                              background: #fff;
-                                                              border-radius: 4px;
-                                                          }
-                                      
-                                                          .addTaskJobListItem {
-                                                              padding: 14px 21px 15px 24px;
-                                                              margin-bottom: 2px;
-                                                              font-size: 16px;
-                                                              font-style: normal;
-                                                              font-weight: 600;
-                                                              line-height: normal;
-                                                              letter-spacing: -0.64px;
-                                                              transition: all 0.5s ease;
-                                                              min-width: max-content;
-                                                              color: #fff;
-                                                              cursor: pointer;
-                                                              background: linear-gradient(90deg, #e3e31f00 0%, rgba(226, 227, 31, 0.00) 100%);
-                                      
-                                                              &:hover,
-                                                              &.active {
-                                                                  background: linear-gradient(90deg, #E2E31F 0%, rgba(226, 227, 31, 0.00) 100%);
-                                                                  color: #000;
-                                                              }
-                                                          }
-                                      
-                                                          .addTaskJobStageItem {
-                                                              min-width: max-content;
-                                                              padding: 14px 21px 15px 24px;
-                                                              font-size: 16px;
-                                                              font-style: normal;
-                                                              font-weight: 600;
-                                                              line-height: normal;
-                                                              letter-spacing: -0.64px;
-                                                              transition: all 0.5s ease;
-                                                              border-radius: 4px;
-                                                              color: #FFF;
-                                                              cursor: pointer;
-                                                              border: 1px solid #FFF;
-                                                              background: rgba(255, 255, 255, 0.25);
-                                                              margin-bottom: 7px;
-                                      
-                                                              &.Application {
-                                                                  border: 1px solid #3B9239;
-                                                                  background: rgba(59, 146, 57, 0.60);
-                                                              }
-                                      
-                                                              &.Referral {
-                                                                  border: 1px solid #1FB4E3;
-                                                                  background: rgba(31, 180, 227, 0.40);
-                                                              }
-                                      
-                                                               &.Information,  &.Info  {
-                                                                  border: 1px solid #8A50C5;
-                                                                  background: rgba(138, 80, 197, 0.49);
-                                                              }
-                                      
-                                                              &.Public,&.Inform {
-                                                                  border: 1px solid #FF5C00;
-                                                                  background: rgba(255, 92, 0, 0.55);
-                                                              }
-                                      
-                                                              &.Decision {
-                                                                  border: 1px solid #FF40BE;
-                                                                  background: rgba(255, 64, 190, 0.40);
-                                                              }
-                                      
-                                                          }
-                                      
-                                                          label {
-                                                              color: #E2E31F;
-                                                              font-size: 14px;
-                                                              font-style: normal;
-                                                              font-weight: 300;
-                                                              line-height: normal;
-                                                              letter-spacing: -0.56px;
-                                                              margin-bottom: 24px;
-                                      
-                                                              &.addedAssignees {
-                                                                  font-size: 16px;
-                                                                  font-weight: 600;
-                                                                  line-height: normal;
-                                                                  letter-spacing: -0.64px;
-                                                                  margin-bottom: 16px;
-                                                              }
-                                                          }
-                                      
-                                                          .addedAssigneeBorder {
-                                                              border-bottom: 1px solid rgb(226, 227, 31, 0.15);
-                                                          }
-                                      
-                                                          .addAssigneeDiv {
-                                                              display: flex;
-                                                              justify-content: flex-start;
-                                                              gap: 16px;
-                                                              margin-bottom: 21px;
-                                                              transition: all 0.5s ease;
-                                                              min-width: max-content;
-                                                              color: #fff;
-                                                              cursor: pointer;
-                                      
-                                                              h4 {
-                                                                  color: #E2E31F;
-                                                                  font-size: 16px;
-                                                                  font-style: normal;
-                                                                  font-weight: 600;
-                                                                  line-height: normal;
-                                                                  letter-spacing: -0.64px;
-                                                                  margin: 0;
-                                                              }
-                                      
-                                                              p {
-                                                                  margin: 0;
-                                                                  color: #FFF;
-                                                                  font-size: 12px;
-                                                                  font-style: normal;
-                                                                  font-weight: 300;
-                                                                  line-height: normal;
-                                                                  letter-spacing: -0.48px;
-                                                              }
-                                      
-                                                              .checkAddBtn {
-                                                                  margin-left: auto;
-                                                                  padding: 0 20px;
-                                                                  font-size: 20px;
-                                                                  color: #E2E31F;
-                                                              }
-                                      
-                                                              &.active {
-                                                                  color: #000;
-                                                              }
-                                                          }
-                                                      }
-                                                  }
-                                              }
-                                          }
-
-                                          .application-lodge-btn {
-                                              max-width: 94px;
-                                              width: 100%;
-                                              height: 28px;
-                                              color: #FFFFFF;
-                                              border-radius: 5.66px;
-                                              font-size: 12px;
-                                              border: 1px solid #FFF;
-                                              background: rgba(255, 255, 255, 0.25);
-
-                                              &.btn_Application {
-                                                  border: 1px solid #3B9239;
-                                                  background: rgba(59, 146, 57, 0.60);
-                                              }
-
-                                              &.btn_Referral {
-                                                  border: 1px solid #1FB4E3;
-                                                  background: rgba(31, 180, 227, 0.40);
-                                              }
-
-                                              &.btn_Information,  &.btn_Info {
-                                                  border: 1px solid #8A50C5;
-                                                  background: rgba(138, 80, 197, 0.49);
-                                              }
-
-                                              &.btn_Inform, &.btn_Public {
-                                                  border: 1px solid #FF5C00;
-                                                  background: rgba(255, 92, 0, 0.55);
-                                              }
-
-                                              &.btn_Decision {
-                                                  border: 1px solid #FF40BE;
-                                                  background: rgba(255, 64, 190, 0.40);
-                                              }
-
-                                              &.btn_Unknown {
-                                                  border: 1px solid #FFF;
-                                                  background: rgba(255, 255, 255, 0.25);
-                                              }
-                                          }
-
-                                          
-
-                                      }
-
-                                     
-  .addTaskJobDiv {
-      position: relative;
-
-      .addTaskJobDropdown {
-          position: absolute;
-          left: 0;
-          top: calc(100% + 22px);
-          z-index: 99;
-
-          &.right {
-              right: 0;
-              left: auto;
-          }
-
-          .addTaskJobSearchDiv {
-              border-radius: 2px;
-              background: #353535;
-              padding: 12px 13px 13px 14px;
-              display: flex;
-              justify-content: space-between;
-              gap: 8px;
-
-              .searchBox {
-                  border-radius: 2px;
-                  padding: 11px 14px;
-                  background: #252525;
+                .showMoreLine {
+                  width: 100%;
                   display: flex;
-                  gap: 8px;
-                  align-items: center;
+                  justify-content: space-between;
+                  background: #252525;
 
-                  input {
-                      background: transparent;
-                      border: none;
-                      outline: none;
-                      color: #E2E31F;
-                      font-size: 16px;
-                      font-style: normal;
-                      font-weight: 500;
-                      line-height: normal;
-                      letter-spacing: -0.64px;
-
-                      &::placeholder {
-                          color: #E2E31F;
-                      }
-
-                      &::-moz-placeholder {
-                          color: #E2E31F;
-                          opacity: 1;
-                      }
+                  p {
+                    color: #5f5f5f;
+                    background: none;
+                    height: 37px;
                   }
+                }
               }
 
-              .divider {
-                  width: 1px;
-                  background: #fff;
-                  border-radius: 2px;
-              }
-          }
+              .status-addTaskJobDiv {
+                position: relative;
 
-          .addTaskJobListScroll {
-              border-radius: 8px;
-              background: #353535;
-              padding: 27px 18px 23px 21px;
-              margin-top: 7px;
+                .status-addTaskJobDropdown {
+                  position: absolute;
+                  left: 0;
+                  top: calc(100% + 0px);
+                  z-index: 99;
 
-              .addTaskJobListItems {
-                  max-height: 300px;
-                  overflow-y: auto;
-
-                  &::-webkit-scrollbar {
-                      width: 4px;
+                  &.right {
+                    right: 0;
+                    left: auto;
                   }
 
-                  &:-moz-scrollbar {
-                      width: 4px;
-                  }
+                  .addTaskJobListScroll {
+                    border-radius: 8px;
+                    background: #353535;
+                    padding: 27px 18px 23px 21px;
+                    margin-top: 7px;
 
-                  &::-webkit-scrollbar-track {
-                      border-radius: 2px;
-                      background: rgb(255, 255, 255);
-                      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
-                  }
+                    .addTaskJobListItems {
+                      max-height: 300px;
+                      overflow-y: auto;
 
-                  &:-moz-scrollbar-track {
-                      border-radius: 2px;
-                      background: rgb(255, 255, 255);
-                      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
-                  }
+                      &::-webkit-scrollbar {
+                        width: 4px;
+                      }
 
-                  &::-webkit-scrollbar-thumb {
-                      background: #fff;
-                      border-radius: 4px;
-                  }
+                      &:-moz-scrollbar {
+                        width: 4px;
+                      }
 
-                  &:-moz-scrollbar-thumb {
-                      background: #fff;
-                      border-radius: 4px;
-                  }
+                      &::-webkit-scrollbar-track {
+                        border-radius: 2px;
+                        background: rgb(255, 255, 255);
+                        background: linear-gradient(
+                          90deg,
+                          rgba(255, 255, 255, 0) 0%,
+                          rgba(113, 113, 113, 1) 30%,
+                          rgba(113, 113, 113, 1) 70%,
+                          rgba(255, 255, 255, 0) 100%
+                        );
+                      }
 
-                  .addTaskJobListItem {
-                      padding: 14px 21px 15px 24px;
-                      margin-bottom: 2px;
-                      font-size: 16px;
-                      font-style: normal;
-                      font-weight: 600;
-                      line-height: normal;
-                      letter-spacing: -0.64px;
-                      transition: all 0.5s ease;
-                      min-width: max-content;
-                      color: #fff;
-                      cursor: pointer;
-                      background: linear-gradient(90deg, #e3e31f00 0%, rgba(226, 227, 31, 0.00) 100%);
+                      &:-moz-scrollbar-track {
+                        border-radius: 2px;
+                        background: rgb(255, 255, 255);
+                        background: linear-gradient(
+                          90deg,
+                          rgba(255, 255, 255, 0) 0%,
+                          rgba(113, 113, 113, 1) 30%,
+                          rgba(113, 113, 113, 1) 70%,
+                          rgba(255, 255, 255, 0) 100%
+                        );
+                      }
 
-                      &:hover,
-                      &.active {
-                          background: linear-gradient(90deg, #E2E31F 0%, rgba(226, 227, 31, 0.00) 100%);
+                      &::-webkit-scrollbar-thumb {
+                        background: #fff;
+                        border-radius: 4px;
+                      }
+
+                      &:-moz-scrollbar-thumb {
+                        background: #fff;
+                        border-radius: 4px;
+                      }
+
+                      .addTaskJobListItem {
+                        padding: 14px 21px 15px 24px;
+                        margin-bottom: 2px;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        transition: all 0.5s ease;
+                        min-width: max-content;
+                        color: #fff;
+                        cursor: pointer;
+                        background: linear-gradient(
+                          90deg,
+                          #e3e31f00 0%,
+                          rgba(226, 227, 31, 0) 100%
+                        );
+
+                        &:hover,
+                        &.active {
+                          background: linear-gradient(
+                            90deg,
+                            #e2e31f 0%,
+                            rgba(226, 227, 31, 0) 100%
+                          );
                           color: #000;
-                      }
-                  }
-
-                  .addTaskJobStageItem {
-                      min-width: max-content;
-                      padding: 14px 21px 15px 24px;
-                      font-size: 16px;
-                      font-style: normal;
-                      font-weight: 600;
-                      line-height: normal;
-                      letter-spacing: -0.64px;
-                      transition: all 0.5s ease;
-                      border-radius: 4px;
-                      color: #FFF;
-                      cursor: pointer;
-                      border: 1px solid #FFF;
-                      background: rgba(255, 255, 255, 0.25);
-                      margin-bottom: 7px;
-
-                      &.Application {
-                          border: 1px solid #3B9239;
-                          background: rgba(59, 146, 57, 0.60);
+                        }
                       }
 
-                      &.Referral {
-                          border: 1px solid #1FB4E3;
-                          background: rgba(31, 180, 227, 0.40);
+                      .addTaskJobStageItem {
+                        min-width: max-content;
+                        padding: 14px 21px 15px 24px;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: -0.64px;
+                        transition: all 0.5s ease;
+                        border-radius: 4px;
+                        color: #fff;
+                        cursor: pointer;
+                        border: 1px solid #fff;
+                        background: rgba(255, 255, 255, 0.25);
+                        margin-bottom: 7px;
+
+                        &.pending {
+                          background: #1fb4e366;
+                          border: 1px solid #1fb4e3;
+                        }
+
+                        &.in-progress {
+                          background: #c5b9507d;
+                          border: 1px solid #c5b450;
+                        }
+
+                        &.completed {
+                          background: #3b923999;
+                          border: 1px solid #3b9239;
+                        }
+
+                        &.not-started {
+                          background: #ff000066;
+                          border: 1px solid #ff0000;
+                        }
+
+                        &.on-hold {
+                          background: rgb(113, 113, 113);
+                          border: 1px solid rgb(92 89 89 / 15%);
+                        }
                       }
 
-                       &.Information, &.Info  {
-                          border: 1px solid #8A50C5;
-                          background: rgba(138, 80, 197, 0.49);
-                      }
+                      label {
+                        color: #e2e31f;
+                        font-size: 14px;
+                        font-style: normal;
+                        font-weight: 300;
+                        line-height: normal;
+                        letter-spacing: -0.56px;
+                        margin-bottom: 24px;
 
-                      &.Inform, &.Public {
-                          border: 1px solid #FF5C00;
-                          background: rgba(255, 92, 0, 0.55);
-                      }
-
-                      &.Decision {
-                          border: 1px solid #FF40BE;
-                          background: rgba(255, 64, 190, 0.40);
-                      }
-
-                  }
-
-                  label {
-                      color: #E2E31F;
-                      font-size: 14px;
-                      font-style: normal;
-                      font-weight: 300;
-                      line-height: normal;
-                      letter-spacing: -0.56px;
-                      margin-bottom: 24px;
-
-                      &.addedAssignees {
+                        &.addedAssignees {
                           font-size: 16px;
                           font-weight: 600;
                           line-height: normal;
                           letter-spacing: -0.64px;
                           margin-bottom: 16px;
+                        }
                       }
+                    }
                   }
-
-                  .addedAssigneeBorder {
-                      border-bottom: 1px solid rgb(226, 227, 31, 0.15);
-                  }
-
-                  .addAssigneeDiv {
-                      display: flex;
-                      justify-content: flex-start;
-                      gap: 16px;
-                      margin-bottom: 21px;
-                      transition: all 0.5s ease;
-                      min-width: max-content;
-                      color: #fff;
-                      cursor: pointer;
-
-                      h4 {
-                          color: #E2E31F;
-                          font-size: 16px;
-                          font-style: normal;
-                          font-weight: 600;
-                          line-height: normal;
-                          letter-spacing: -0.64px;
-                          margin: 0;
-                      }
-
-                      p {
-                          margin: 0;
-                          color: #FFF;
-                          font-size: 12px;
-                          font-style: normal;
-                          font-weight: 300;
-                          line-height: normal;
-                          letter-spacing: -0.48px;
-                      }
-
-                      .checkAddBtn {
-                          margin-left: auto;
-                          padding: 0 20px;
-                          font-size: 20px;
-                          color: #E2E31F;
-                      }
-
-                      &.active {
-                          color: #000;
-                      }
-                  }
+                }
               }
+
+              .save-btn {
+                padding: 7px 37px;
+                border-radius: 5px;
+                color: #ffffff;
+                text-transform: capitalize;
+                font-size: 14px;
+                font-weight: 700;
+                background: #1fb4e366;
+                border: 1px solid #1fb4e3;
+              }
+            }
           }
 
-         
-      }
-  }
-
-                                      .table-checkbox {
-                                          width: 24px;
-                                          height: 24px;
-
-                                          input {
-                                              color: #E2E31F !important;
-                                          }
-                                      }
-                                  }
-                              }
-                          }
-                      }
-
-                      .progressInputSection {
-                          max-width: 750px;
-                          width: 100%;
-                          margin: 0 auto;
-                          margin-top: 36px;
-
-                          p {
-                              max-width: 176px;
-                              height: 46px;
-                              width: 100%;
-                              background: #252525;
-                              color: #E2E31F;
-                              display: flex;
-                              justify-content: center;
-                              align-items: center;
-                              margin-bottom: 0;
-
-
-                          }
-
-                          input,
-                          .input-box {
-                              width: 100%;
-
-                              background: transparent;
-                              border: 1px solid #E2E31F;
-
-                              padding: 0px 10px;
-
-                              &::placeholder {
-                                  color: #ffffffab;
-                              }
-
-                              &:focus {
-
-                                  outline: none;
-                              }
-                          }
-
-
-                          .btm-statusBtn {
-                              padding: 7px 37px;
-                              border-radius: 5px;
-                              color: #FFFFFF;
-                              text-transform: capitalize;
-                              font-size: 14px;
-                              font-weight: 700;
-                              background: rgb(113, 113, 113);
-                              border: 1px solid rgb(92 89 89 / 15%);
-
-                              &.pending {
-                                  background: #1FB4E366;
-                                  border: 1px solid #1FB4E3;
-
-                              }
-
-                              &.in-progress {
-                                  background: #c5b9507d;
-                                  border: 1px solid #c5b450;
-
-                              }
-
-                              &.completed {
-                                  background: #3B923999;
-                                  border: 1px solid #3B9239;
-
-                              }
-
-                              &.not-started {
-                                  background: #ff000066;
-                                  border: 1px solid #ff0000;
-
-                              }
-
-                              &.on-hold {
-                                  background: rgb(113, 113, 113);
-                                  border: 1px solid rgb(92 89 89 / 15%);
-
-                              }
-
-                          }
-
-                          .showMore {
-                              margin-bottom: 100px;
-
-                              img {
-                                  width: 36px;
-                                  height: 36px;
-                              }
-
-                              .showMoreLine {
-                                  width: 100%;
-                                  display: flex;
-                                  justify-content: space-between;
-                                  background: #252525;
-
-                                  p {
-                                      color: #5F5F5F;
-                                      background: none;
-                                      height: 37px;
-                                  }
-                              }
-                          }
-
-                          .status-addTaskJobDiv {
-                              position: relative;
-
-                              .status-addTaskJobDropdown {
-                                  position: absolute;
-                                  left: 0;
-                                  top: calc(100% + 0px);
-                                  z-index: 99;
-
-                                  &.right {
-                                      right: 0;
-                                      left: auto;
-                                  }
-
-
-
-                                  .addTaskJobListScroll {
-                                      border-radius: 8px;
-                                      background: #353535;
-                                      padding: 27px 18px 23px 21px;
-                                      margin-top: 7px;
-
-                                      .addTaskJobListItems {
-                                          max-height: 300px;
-                                          overflow-y: auto;
-
-                                          &::-webkit-scrollbar {
-                                              width: 4px;
-                                          }
-
-                                          &:-moz-scrollbar {
-                                              width: 4px;
-                                          }
-
-                                          &::-webkit-scrollbar-track {
-                                              border-radius: 2px;
-                                              background: rgb(255, 255, 255);
-                                              background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
-                                          }
-
-                                          &:-moz-scrollbar-track {
-                                              border-radius: 2px;
-                                              background: rgb(255, 255, 255);
-                                              background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
-                                          }
-
-                                          &::-webkit-scrollbar-thumb {
-                                              background: #fff;
-                                              border-radius: 4px;
-                                          }
-
-                                          &:-moz-scrollbar-thumb {
-                                              background: #fff;
-                                              border-radius: 4px;
-                                          }
-
-                                          .addTaskJobListItem {
-                                              padding: 14px 21px 15px 24px;
-                                              margin-bottom: 2px;
-                                              font-size: 16px;
-                                              font-style: normal;
-                                              font-weight: 600;
-                                              line-height: normal;
-                                              letter-spacing: -0.64px;
-                                              transition: all 0.5s ease;
-                                              min-width: max-content;
-                                              color: #fff;
-                                              cursor: pointer;
-                                              background: linear-gradient(90deg, #e3e31f00 0%, rgba(226, 227, 31, 0.00) 100%);
-
-                                              &:hover,
-                                              &.active {
-                                                  background: linear-gradient(90deg, #E2E31F 0%, rgba(226, 227, 31, 0.00) 100%);
-                                                  color: #000;
-                                              }
-                                          }
-
-                                          .addTaskJobStageItem {
-                                              min-width: max-content;
-                                              padding: 14px 21px 15px 24px;
-                                              font-size: 16px;
-                                              font-style: normal;
-                                              font-weight: 600;
-                                              line-height: normal;
-                                              letter-spacing: -0.64px;
-                                              transition: all 0.5s ease;
-                                              border-radius: 4px;
-                                              color: #FFF;
-                                              cursor: pointer;
-                                              border: 1px solid #FFF;
-                                              background: rgba(255, 255, 255, 0.25);
-                                              margin-bottom: 7px;
-
-                                              &.pending {
-                                                  background: #1FB4E366;
-                                                  border: 1px solid #1FB4E3;
-
-                                              }
-
-                                              &.in-progress {
-                                                  background: #c5b9507d;
-                                                  border: 1px solid #c5b450;
-
-                                              }
-
-                                              &.completed {
-                                                  background: #3B923999;
-                                                  border: 1px solid #3B9239;
-
-                                              }
-
-                                              &.not-started {
-                                                  background: #ff000066;
-                                                  border: 1px solid #ff0000;
-
-                                              }
-
-                                              &.on-hold {
-                                                  background: rgb(113, 113, 113);
-                                                  border: 1px solid rgb(92 89 89 / 15%);
-                                              }
-
-                                          }
-
-                                          label {
-                                              color: #E2E31F;
-                                              font-size: 14px;
-                                              font-style: normal;
-                                              font-weight: 300;
-                                              line-height: normal;
-                                              letter-spacing: -0.56px;
-                                              margin-bottom: 24px;
-
-                                              &.addedAssignees {
-                                                  font-size: 16px;
-                                                  font-weight: 600;
-                                                  line-height: normal;
-                                                  letter-spacing: -0.64px;
-                                                  margin-bottom: 16px;
-                                              }
-                                          }
-
-
-                                      }
-                                  }
-                              }
-                          }
-
-                          .save-btn {
-                              padding: 7px 37px;
-                              border-radius: 5px;
-                              color: #FFFFFF;
-                              text-transform: capitalize;
-                              font-size: 14px;
-                              font-weight: 700;
-                              background: #1FB4E366;
-                              border: 1px solid #1FB4E3;
-                          }
-                      }
-
-
-
-                  }
-
-                  .popup-section-right {
-                      max-width: 497px;
-                      width: 100%;
-                      background-color: black;
-                      padding-top: 10px;
-                      .chats-section{
-                          .tab-content {
-                              overflow-y: auto;
-                              height: 647px;
-                          } 
-                      }
-                  }
-
-                  .addAssigneeDropdown1 {
-                      position: absolute;
-                      left: 0;
-                      top: 230px;
-                      z-index: 99;
-                      width: 100%;
-                      height: 100%;
-                      // background: rgba(37, 37, 37, 0.60);
-                      // backdrop-filter: blur(2px);
-                      display: flex;
-                      justify-content: flex-end;
-                      align-items: center;
-              
-                      .addTaskJobListScroll {
-                          border-radius: 8px;
-                          background: #353535;
-                          padding: 27px 18px 23px 21px;
-                          margin-top: 7px;
-                          max-width: max-content;
-                          width: 100%;
-              
-                          .addTaskJobListItems {
-                              max-height: 300px;
-                              overflow-y: auto;
-              
-                              &::-webkit-scrollbar {
-                                  width: 4px;
-                              }
-              
-                              &:-moz-scrollbar {
-                                  width: 4px;
-                              }
-              
-                              &::-webkit-scrollbar-track {
-                                  border-radius: 2px;
-                                  background: rgb(255, 255, 255);
-                                  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
-                              }
-              
-                              &:-moz-scrollbar-track {
-                                  border-radius: 2px;
-                                  background: rgb(255, 255, 255);
-                                  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(113, 113, 113, 1) 30%, rgba(113, 113, 113, 1) 70%, rgba(255, 255, 255, 0) 100%);
-                              }
-              
-                              &::-webkit-scrollbar-thumb {
-                                  background: #fff;
-                                  border-radius: 4px;
-                              }
-              
-                              &:-moz-scrollbar-thumb {
-                                  background: #fff;
-                                  border-radius: 4px;
-                              }
-              
-                              label {
-                                  color: #E2E31F;
-                                  font-size: 14px;
-                                  font-style: normal;
-                                  font-weight: 300;
-                                  line-height: normal;
-                                  letter-spacing: -0.56px;
-                                  margin-bottom: 24px;
-              
-                                  &.addedAssignees {
-                                      font-size: 16px;
-                                      font-weight: 600;
-                                      line-height: normal;
-                                      letter-spacing: -0.64px;
-                                      margin-bottom: 16px;
-                                  }
-                              }
-              
-                              .addedAssigneeBorder {
-                                  border-bottom: 1px solid rgb(226, 227, 31, 0.15);
-                              }
-              
-                              .addAssigneeDiv {
-                                  display: flex;
-                                  justify-content: flex-start;
-                                  gap: 16px;
-                                  margin-bottom: 21px;
-                                  transition: all 0.5s ease;
-                                  min-width: max-content;
-                                  color: #fff;
-                                  cursor: pointer;
-              
-                                  h4 {
-                                      color: #E2E31F;
-                                      font-size: 16px;
-                                      font-style: normal;
-                                      font-weight: 600;
-                                      line-height: normal;
-                                      letter-spacing: -0.64px;
-                                      margin: 0;
-                                  }
-              
-                                  p {
-                                      margin: 0;
-                                      color: #FFF;
-                                      font-size: 12px;
-                                      font-style: normal;
-                                      font-weight: 300;
-                                      line-height: normal;
-                                      letter-spacing: -0.48px;
-                                  }
-              
-                                  .checkAddBtn {
-                                      margin-left: auto;
-                                      padding: 0 20px;
-                                      font-size: 20px;
-                                      color: #E2E31F;
-                                  }
-              
-                                  &.active {
-                                      color: #000;
-                                  }
-                              }
-                          }
-                      }
-                  }
+          .popup-section-right {
+            max-width: 497px;
+            width: 100%;
+            background-color: black;
+            padding-top: 10px;
+            .chats-section {
+              .tab-content {
+                overflow-y: auto;
+                height: 647px;
               }
+            }
           }
-      }
 
+          .addAssigneeDropdown1 {
+            position: absolute;
+            left: 0;
+            top: 230px;
+            z-index: 99;
+            width: 100%;
+            height: 100%;
+            // background: rgba(37, 37, 37, 0.60);
+            // backdrop-filter: blur(2px);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+
+            .addTaskJobListScroll {
+              border-radius: 8px;
+              background: #353535;
+              padding: 27px 18px 23px 21px;
+              margin-top: 7px;
+              max-width: max-content;
+              width: 100%;
+
+              .addTaskJobListItems {
+                max-height: 300px;
+                overflow-y: auto;
+
+                &::-webkit-scrollbar {
+                  width: 4px;
+                }
+
+                &:-moz-scrollbar {
+                  width: 4px;
+                }
+
+                &::-webkit-scrollbar-track {
+                  border-radius: 2px;
+                  background: rgb(255, 255, 255);
+                  background: linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(113, 113, 113, 1) 30%,
+                    rgba(113, 113, 113, 1) 70%,
+                    rgba(255, 255, 255, 0) 100%
+                  );
+                }
+
+                &:-moz-scrollbar-track {
+                  border-radius: 2px;
+                  background: rgb(255, 255, 255);
+                  background: linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(113, 113, 113, 1) 30%,
+                    rgba(113, 113, 113, 1) 70%,
+                    rgba(255, 255, 255, 0) 100%
+                  );
+                }
+
+                &::-webkit-scrollbar-thumb {
+                  background: #fff;
+                  border-radius: 4px;
+                }
+
+                &:-moz-scrollbar-thumb {
+                  background: #fff;
+                  border-radius: 4px;
+                }
+
+                label {
+                  color: #e2e31f;
+                  font-size: 14px;
+                  font-style: normal;
+                  font-weight: 300;
+                  line-height: normal;
+                  letter-spacing: -0.56px;
+                  margin-bottom: 24px;
+
+                  &.addedAssignees {
+                    font-size: 16px;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                    margin-bottom: 16px;
+                  }
+                }
+
+                .addedAssigneeBorder {
+                  border-bottom: 1px solid rgb(226, 227, 31, 0.15);
+                }
+
+                .addAssigneeDiv {
+                  display: flex;
+                  justify-content: flex-start;
+                  gap: 16px;
+                  margin-bottom: 21px;
+                  transition: all 0.5s ease;
+                  min-width: max-content;
+                  color: #fff;
+                  cursor: pointer;
+
+                  h4 {
+                    color: #e2e31f;
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    letter-spacing: -0.64px;
+                    margin: 0;
+                  }
+
+                  p {
+                    margin: 0;
+                    color: #fff;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 300;
+                    line-height: normal;
+                    letter-spacing: -0.48px;
+                  }
+
+                  .checkAddBtn {
+                    margin-left: auto;
+                    padding: 0 20px;
+                    font-size: 20px;
+                    color: #e2e31f;
+                  }
+
+                  &.active {
+                    color: #000;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
-

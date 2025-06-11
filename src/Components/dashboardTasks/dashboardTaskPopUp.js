@@ -376,7 +376,7 @@ const DashboardTask = ({
       console.log("reqBody", reqBody);
       const response = await updateJobs(reqBody);
       if (response.res) {
-        addNotification("success", "Job Updated")
+        // addNotification("success", "Job Updated")
         toast.success(`${response.res.message}`);
       } else {
 

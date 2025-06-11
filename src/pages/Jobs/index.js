@@ -1,7 +1,7 @@
 import moment from "moment";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -13,6 +13,7 @@ import {
   NewFilterIcon,
   RightArrow,
   Search,
+  SortIcon,
 } from "../../assets/svg";
 import ErrorToast from "../../Components/ErrorToast";
 import Filter from "../../Components/Filter/Filter";
@@ -26,11 +27,10 @@ import {
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import {
   addNotification,
-  arraysEqualById,
-  CollaboratorBorders,
-  CollaboratorNameBorders,
+  CollaboratorNameBG,
+  CollaboratorNameColor,
   sortTasksByDueDateProximity,
-  StatusList,
+  StatusList
 } from "../../helper";
 import {
   createJobs,
@@ -47,6 +47,7 @@ import {
   updateTask,
 } from "../../services/auth";
 import "./Jobs.scss";
+import Sort from "../../Components/Filter/Sort";
 const renderComment = (message) => {
   if (!message) return <p className="no-comment">No Comments</p>;
   const renderMessage = (text) => {
@@ -138,7 +139,7 @@ const Jobs = () => {
   const [activeJobField, setActiveJobField] = useState("");
   const [selectSearchOptions, setSelectSearchOptions] = useState("");
   const [showingSearchOptions, setShowingSearchOptions] = useState("");
-
+  const [showSort, setShowSort] = useState(false)
   const [showFilter, setShowFilter] = useState(false);
   const [showAddJoRow, setShowAddJobRow] = useState(false);
   const [notificationDropDown, setNotificationDropDown] = useState(false);
@@ -194,6 +195,7 @@ const Jobs = () => {
   const [collabChanged, setCollabChanged] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const { state } = location;
+  const prevPathRef = useRef(location.pathname);
 
   useEffect(() => {
     if (jobId) {
@@ -207,9 +209,8 @@ const Jobs = () => {
       console.log("jobRes", jobRes);
       handleOpenJobWithTask(jobRes.res);
     } catch (error) {
-      console.log("error in fetchJobFromJobID", error)
+      console.log("error in fetchJobFromJobID", error);
     } finally {
- 
       const searchParams = new URLSearchParams(location.search);
       searchParams.delete("jobId");
       const newPath =
@@ -405,6 +406,7 @@ const Jobs = () => {
     let handler = (e) => {
       if (filterRef.current && !filterRef.current.contains(e.target)) {
         setShowFilter(false);
+        setShowSort(false)
       }
     };
 
@@ -885,35 +887,67 @@ const Jobs = () => {
     setActiveJobField("");
   };
 
-  useEffect(() => {
-    const handleUpdateJob = async (updatedJob) => {
-      try {
-        let oldCollaboratorsId = updatedJob.collaborators?.map(
-          (collaborator) => collaborator.id
+  //update job click outside
+  // Helper: Compare arrays of collaborators by ID
+  const arraysEqualById = (a = [], b = []) => {
+    const idsA = a.map((item) => item.id).sort();
+    const idsB = b.map((item) => item.id).sort();
+    return JSON.stringify(idsA) === JSON.stringify(idsB);
+  };
+
+  // Helper: Check if a job has changed
+  const isJobChanged = (updatedJob, originalJob) => {
+    if (!updatedJob || !originalJob) return false;
+
+    setCollabChanged(
+      !arraysEqualById(
+        updatedJob?.collaborators || [],
+        originalJob?.collaborators || []
+      )
+    );
+
+    return (
+      updatedJob?.title !== originalJob?.title ||
+      !arraysEqualById(
+        updatedJob?.collaborators || [],
+        originalJob?.collaborators || []
+      ) ||
+      updatedJob?.status !== originalJob?.status ||
+      updatedJob?.due_date !== originalJob?.due_date
+    );
+  };
+
+  // Helper: Perform job update request
+  const handleUpdateJob = async (updatedJob) => {
+    if (!updatedJob) return;
+
+    try {
+      const oldCollaboratorsId = updatedJob.collaborators?.map((c) => c.id);
+      const reqBody = {
+        job_id: updatedJob.id,
+        dataObj: {
+          title: updatedJob.title,
+          collaborators: collabChanged
+            ? newJobCollaboratorsListId
+            : oldCollaboratorsId,
+          status: updatedJob.status,
+          due_date: updatedJob.due_date,
+        },
+      };
+
+      const response = await updateJobs(reqBody);
+      if (!response?.res) {
+        toast.error(
+          `Job Update Failed: ${response.error?.message || "Unknown error"}`
         );
-        const reqBody = {
-          job_id: updatedJob.id,
-          dataObj: {
-            title: updatedJob.title,
-            collaborators: collabChanged
-              ? newJobCollaboratorsListId
-              : oldCollaboratorsId,
-            status: updatedJob.status,
-            due_date: updatedJob.due_date,
-          },
-        };
-        // fetchUsers();
-        const response = await updateJobs(reqBody);
-        if (!response.res) {
-          addNotification("error", "Job Update Failed");
-          toast.error(`${response.error.message}`);
-        } else {
-          addNotification("success", "Job Updated");
-        }
-      } catch (error) {
-        console.log("error in updating jobs", error);
       }
-    };
+    } catch (error) {
+      console.error("Error in updating jobs", error);
+    }
+  };
+
+  // 📌 Effect 1: Detect mousedown outside to trigger update
+  useEffect(() => {
     const handleClickOutside = async (event) => {
       if (
         tableActiveRowLeftRef.current &&
@@ -921,52 +955,21 @@ const Jobs = () => {
         tableActiveRowRightRef.current &&
         !tableActiveRowRightRef.current.contains(event.target)
       ) {
+        if (!filteredJobs?.length || !originalJobs?.length || !updateJobId)
+          return;
+
         const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
         const originalJob = originalJobs.find((job) => job.id === updateJobId);
 
-        setUsersList(fullUsersList);
-        const isJobChanged = (updatedJob, originalJob) => {
-          if (!updatedJob || !originalJob) {
-            console.error(
-              "isJobChanged called with undefined or null values:",
-              { updatedJob, originalJob }
-            );
-            return false;
-          }
-          setCollabChanged(
-            arraysEqualById(
-              updatedJob?.collaborators || [],
-              originalJob?.collaborators || []
-            )
-          );
-          console.log(
-            "job data comparison",
-            (updatedJob?.title || "") !== (originalJob?.title || ""),
-            updatedJob?.collaborators,
-            originalJob?.collaborators,
-            !arraysEqualById(
-              updatedJob?.collaborators || [],
-              originalJob?.collaborators || []
-            ),
-            (updatedJob?.status || "") !== (originalJob?.status || ""),
-            (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
-          );
+        if (!updatedJob || !originalJob) return;
 
-          return (
-            (updatedJob?.title || "") !== (originalJob?.title || "") ||
-            !arraysEqualById(
-              updatedJob?.collaborators || [],
-              originalJob?.collaborators || []
-            ) ||
-            (updatedJob?.status || "") !== (originalJob?.status || "") ||
-            (updatedJob?.due_date || null) !== (originalJob?.due_date || null)
-          );
-        };
+        setUsersList(fullUsersList);
 
         if (isJobChanged(updatedJob, originalJob)) {
-          handleUpdateJob(updatedJob);
+          await handleUpdateJob(updatedJob);
           synchronizeRowHeights();
         }
+
         if (!showNewJobModal && !showNewJobModalWithTasks) {
           setActiveJob(null);
           setNewJobCollaboratorsList([]);
@@ -975,20 +978,48 @@ const Jobs = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [
     updateJobId,
-    editedValue,
-    activeJob,
     filteredJobs,
     originalJobs,
     newJobCollaboratorsListId,
     showNewJobModal,
     showNewJobModalWithTasks,
   ]);
+
+  // 📌 Effect 2: Save on pathname change or unmount
+  useEffect(() => {
+    const prevPath = prevPathRef.current;
+    const currentPath = location.pathname;
+
+    if (prevPath !== currentPath) {
+      if (!filteredJobs?.length || !originalJobs?.length || !updateJobId)
+        return;
+
+      const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
+      const originalJob = originalJobs.find((job) => job.id === updateJobId);
+
+      if (updatedJob && originalJob && isJobChanged(updatedJob, originalJob)) {
+        handleUpdateJob(updatedJob);
+      }
+
+      prevPathRef.current = currentPath;
+    }
+
+    // Save on unmount
+    return () => {
+      if (!filteredJobs?.length || !originalJobs?.length || !updateJobId)
+        return;
+
+      const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
+      const originalJob = originalJobs.find((job) => job.id === updateJobId);
+
+      if (updatedJob && originalJob && isJobChanged(updatedJob, originalJob)) {
+        handleUpdateJob(updatedJob);
+      }
+    };
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleDoubleClick = (event) => {
@@ -1037,7 +1068,7 @@ const Jobs = () => {
         addNotification("error", "Job Update Failed");
         toast.error(`${response.error.message}`);
       } else {
-        addNotification("success", "Job Updated");
+        // addNotification("success", "Job Updated");
       }
     } catch (error) {
       console.error("Error updating job:", error);
@@ -1089,7 +1120,7 @@ const Jobs = () => {
           const name = localStorage.getItem("user");
           addNotification("success", `Task Completed by ${name}`);
         } else {
-          addNotification("success", "Task Updated");
+          // addNotification("success", "Task Updated");
         }
 
         console.log(
@@ -1655,7 +1686,7 @@ const Jobs = () => {
       <div className="jobsBg">
         <div
           className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap"
-          style={{ zIndex: "2" }}
+          style={{ zIndex: "2" , justifyContent:"space-between"  }}
         >
           <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
             <h2>Jobs</h2>
@@ -1771,13 +1802,15 @@ const Jobs = () => {
               </form>
             </div>
             <div
-              className="d-flex  align-items-baseline addNewTaskDiv position-relative"
+              className="d-flex  gap-3 align-items-baseline addNewTaskDiv position-relative"
               style={{ cursor: "pointer" }}
               ref={filterRef}
             >
               <div
                 className="d-flex align-items-center gap-2  "
-                onClick={() => setShowFilter(!showFilter)}
+                onClick={() =>{ 
+                  setShowSort(false)
+                  setShowFilter(!showFilter)}}
               >
                 <NewFilterIcon />
                 <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
@@ -1791,6 +1824,26 @@ const Jobs = () => {
                   setFilteredJobs={setFilteredJobs}
                   setLoading={setLoading}
                   closeFilter={() => setShowFilter(false)}
+                />
+              )}
+              <div
+                className="d-flex align-items-center gap-2  "
+                onClick={() =>{ 
+                  setShowFilter(false)
+                  setShowSort(!showSort)}}
+              >
+                <SortIcon />
+                <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
+                  Sort
+                </p>
+              </div>
+               {showSort && (
+                <Sort
+                  setFilteredString={setFilteredString}
+                  setFilteredQuery={setFilteredQuery}
+                  setFilteredJobs={setFilteredJobs}
+                  setLoading={setLoading}
+                  closeFilter={() => setShowSort(false)}
                 />
               )}
             </div>
@@ -1880,7 +1933,7 @@ const Jobs = () => {
             </div>
           </div>
         </div>
-        <div className="JobsHeading d-flex align-items-center justify-content-between">
+        <div className="JobsHeading d-flex align-items-center justify-content-between" style={{ justifyContent:"space-between" }}>
           <div className="d-flex align-items-center justify-content-start gap-3">
             <div className="delete-box">
               <div className="delete-item d-flex align-items-center flex-wrap gap-2">
@@ -2247,14 +2300,15 @@ const Jobs = () => {
                                                 minWidth: "40px",
                                                 zIndex: index,
                                                 cursor: "pointer",
-                                                border:
-                                                  CollaboratorBorders[
-                                                    user?.id
-                                                  ] ||
-                                                  CollaboratorNameBorders[
-                                                    user?.name
-                                                  ] ||
-                                                  "1px solid rgb(105, 103, 103)",
+                                                 border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[
+                                                      user?.name
+                                                    ] || "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user?.name
+                                                    ] || "#fff",
                                               }}
                                             >
                                               {initials}
@@ -2314,14 +2368,15 @@ const Jobs = () => {
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border:
-                                                    CollaboratorBorders[
-                                                      user?.id
-                                                    ] ||
-                                                    CollaboratorNameBorders[
+                                                  border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[
                                                       user?.name
-                                                    ] ||
-                                                    "1px solid rgb(105, 103, 103)",
+                                                    ] || "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user?.name
+                                                    ] || "#fff",
                                                 }}
                                               >
                                                 {initials}
@@ -2348,14 +2403,15 @@ const Jobs = () => {
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                border:
-                                                  CollaboratorBorders[
-                                                    user?.id
-                                                  ] ||
-                                                  CollaboratorNameBorders[
-                                                    user?.name
-                                                  ] ||
-                                                  "1px solid rgb(105, 103, 103)",
+                                                 border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[
+                                                      user?.name
+                                                    ] || "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user?.name
+                                                    ] || "#fff",
                                               }}
                                             >
                                               {initials}
@@ -2595,14 +2651,15 @@ const Jobs = () => {
                                                 style={{
                                                   minWidth: "40px",
                                                   zIndex: index,
-                                                  border:
-                                                    CollaboratorBorders[
-                                                      user.id
-                                                    ] ||
-                                                    CollaboratorNameBorders[
-                                                      user.name
-                                                    ] ||
-                                                    "1px solid rgb(105, 103, 103)",
+                                                   border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[
+                                                      user?.name
+                                                    ] || "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user?.name
+                                                    ] || "#fff",
                                                 }}
                                               >
                                                 {initials}
@@ -2663,14 +2720,15 @@ const Jobs = () => {
                                                     className={`collaboratorsBoxUser`}
                                                     style={{
                                                       minWidth: "40px",
-                                                      border:
-                                                        CollaboratorBorders[
-                                                          user.id
-                                                        ] ||
-                                                        CollaboratorNameBorders[
-                                                          user.name
-                                                        ] ||
-                                                        "1px solid rgb(105, 103, 103)",
+                                                      border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[
+                                                      user?.name
+                                                    ] || "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user?.name
+                                                    ] || "#fff",
                                                     }}
                                                   >
                                                     {initials}
@@ -2697,14 +2755,15 @@ const Jobs = () => {
                                                   className={`collaboratorsBoxUser`}
                                                   style={{
                                                     minWidth: "40px",
-                                                    border:
-                                                      CollaboratorBorders[
-                                                        user.id
-                                                      ] ||
-                                                      CollaboratorNameBorders[
-                                                        user.name
-                                                      ] ||
-                                                      "1px solid rgb(105, 103, 103)",
+                                                     border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[
+                                                      user?.name
+                                                    ] || "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user?.name
+                                                    ] || "#fff",
                                                   }}
                                                 >
                                                   {initials}

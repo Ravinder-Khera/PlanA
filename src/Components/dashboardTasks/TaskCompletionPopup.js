@@ -1,4 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
+import { Bars } from "react-loader-spinner";
+import pngFIle from "../../assets/common/pngFile.svg";
 import {
   CrossIcon,
   EditIcon,
@@ -6,12 +9,13 @@ import {
   RightArrow,
   UploadIcon,
 } from "../../assets/svg";
-import pngFIle from "../../assets/common/pngFile.svg";
-import moment from "moment";
-import { addNotification, CollaboratorBorders, CollaboratorNameBorders, getEmailsByStageAndTitle } from "../../helper";
-import EditorComponent from "./Editor";
-import { Bars } from "react-loader-spinner";
+import {
+  CollaboratorNameBG,
+  CollaboratorNameColor,
+  getEmailsByStageAndTitle
+} from "../../helper";
 import { sendEmail } from "../../services/chat_attachment";
+import EditorComponent from "./Editor";
 
 const TaskCompletionPopup = React.forwardRef(
   ({ task, handleClose, handleFinalClose, nestedChildRef }, ref) => {
@@ -84,14 +88,14 @@ const TaskCompletionPopup = React.forwardRef(
 
     const handleSubmitEmail = async () => {
       try {
-        console.log("data", emailData)
+        console.log("data", emailData);
         const requestBody = emailData?.map((data) => ({
           attachments: data.attachments,
           subject: data.subject,
           to: data.to,
           cc: data.cc,
           body: data.content || "No Content Provided",
-        }));  
+        }));
 
         setLoading(true);
 
@@ -123,7 +127,6 @@ const TaskCompletionPopup = React.forwardRef(
 
         // Check if all emails were sent successfully
         if (responses.every((response) => response.res)) {
-          
           setShowDetails(2);
         } else {
           console.error("Some emails failed to send:", responses);
@@ -159,10 +162,16 @@ const TaskCompletionPopup = React.forwardRef(
           />
         )}
         {showDetails === 2 && (
-          <NotificationSent handleClose={handleFinalClose} ref={nestedChildRef ? nestedChildRef : ref} />
+          <NotificationSent
+            handleClose={handleFinalClose}
+            ref={nestedChildRef ? nestedChildRef : ref}
+          />
         )}
         {!showDetails && (
-          <div className="task-completion-overlay" ref={nestedChildRef ? nestedChildRef : ref}>
+          <div
+            className="task-completion-overlay"
+            ref={nestedChildRef ? nestedChildRef : ref}
+          >
             <div
               className="task-container"
               ref={popupRef}
@@ -187,7 +196,12 @@ const TaskCompletionPopup = React.forwardRef(
                     <div className={`markTaskComplete active `}></div>
                     <div>
                       <div className="taskHeading">| {task.id} |</div>
-                      <div className="taskHeading" style={{textTransform: 'capitalize'}}>{trimmedTitle}</div>
+                      <div
+                        className="taskHeading"
+                        style={{ textTransform: "capitalize" }}
+                      >
+                        {trimmedTitle}
+                      </div>
                       <div className="taskDate">
                         <span>Due Date</span>
                         <span>
@@ -216,7 +230,13 @@ const TaskCompletionPopup = React.forwardRef(
                                   style={{
                                     minWidth: "40px",
                                     zIndex: index,
-                                     border:  CollaboratorBorders[user.id] || CollaboratorNameBorders[user?.name] || "1px solid rgb(105, 103, 103)",
+                                    border: "1px solid #767676",
+                                    backgroundColor:
+                                      CollaboratorNameBG[user?.name] ||
+                                      "#353535",
+                                    color:
+                                      CollaboratorNameColor[user?.name] ||
+                                      "#fff",
                                   }}
                                 >
                                   {initials}
@@ -591,7 +611,7 @@ export const NotificationSent = React.forwardRef(({ handleClose }, ref) => {
     };
   }, []);
   return (
-    <div className="task-completion-overlay" ref={ref} >
+    <div className="task-completion-overlay" ref={ref}>
       <div
         className="task-container"
         ref={popupRef}

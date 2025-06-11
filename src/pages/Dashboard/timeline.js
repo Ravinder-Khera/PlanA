@@ -1,15 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Bars } from "react-loader-spinner";
-import Timeline from "../../Components/Timeline";
-import { AddIcon, AddTaskGreyButton } from "../../assets/svg";
-import { updateTask } from "../../services/auth";
-import { useNavigate } from "react-router-dom";
-import { getJobComments, getMessages } from "../../services/chat_attachment";
-import { formatJobNumber } from "../Jobs";
-import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
 import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import { Bars } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
+import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
+import Timeline from "../../Components/Timeline";
 import TaskCompletionPopup from "../../Components/dashboardTasks/TaskCompletionPopup";
-import { addNotification, CollaboratorBorders, CollaboratorNameBorders } from "../../helper";
+import { AddIcon, AddTaskGreyButton } from "../../assets/svg";
+import {
+  addNotification,
+  CollaboratorNameBG,
+  CollaboratorNameColor
+} from "../../helper";
+import { updateTask } from "../../services/auth";
+import { getJobComments } from "../../services/chat_attachment";
+import { formatJobNumber } from "../Jobs";
 
 const renderMessage = (text) => {
   // Regular expression to match words enclosed in {}
@@ -142,9 +146,8 @@ function TimelinePage() {
         if (reqBody?.status === "completed") {
           const name = localStorage.getItem("user");
           addNotification("success", `Task Completed by ${name}`);
-        }else{
-
-          addNotification("success", "Task Updated");
+        } else {
+          // addNotification("success", "Task Updated");
         }
         // setTimeout(() => {
         //   setUpdateTaskStatus(null);
@@ -295,12 +298,15 @@ function TimelinePage() {
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
-                                              border:
-                                                CollaboratorBorders[user.id] ||
-                                                CollaboratorNameBorders[
-                                                  user.name
-                                                ] ||
-                                                "1px solid rgb(105, 103, 103)",
+                                              border: "1px solid #767676",
+                                              backgroundColor:
+                                                CollaboratorNameBG[
+                                                  user?.name
+                                                ] || "#353535",
+                                              color:
+                                                CollaboratorNameColor[
+                                                  user?.name
+                                                ] || "#fff",
                                             }}
                                           >
                                             {initials}
@@ -393,9 +399,13 @@ function TimelinePage() {
                                 className={`InitialsBoxUser`}
                                 style={{
                                   minWidth: "40px",
-                                  border:
-                                    CollaboratorNameBorders[chat.user?.name] ||
-                                    "1px solid rgb(105, 103, 103)",
+                                  border: "1px solid #767676",
+                                  backgroundColor:
+                                    CollaboratorNameBG[chat?.user?.name] ||
+                                    "#353535",
+                                  color:
+                                    CollaboratorNameColor[chat?.user?.name] ||
+                                    "#fff",
                                 }}
                               >
                                 {chat.user?.initials}

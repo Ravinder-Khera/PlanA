@@ -556,6 +556,49 @@ export const CollaboratorNameBorders = {
   "Julian Hayes": "1px solid #864EE0",
 };
 
+
+
+export const CollaboratorNameBG = {
+  "Adam Nagel": "#C21807",                  // Chili Red (actual: #C21807)
+  "Peter Catchlove": "#73182C",         // QLD Maroon
+  "Garrett McVilly": "#90D5FF",         // Light Blue
+  "Holly Ilka": "#26FF00",                 // Lime Green (actual: #26FF00)
+  "Eddie Gaydon": "#46198E",            // Dark Purple
+  "Oscar Delaney": "#E3881F",           // Orange
+  "Matt Geyle": "#FFF200",              // Full Yellow
+  "Harrison Southwell": "#D5B895",      // Beige
+  "Scarlett": "#1D5600",                // Dark Green
+  "Joshua Dixon": "#FFFFFF",            // White
+  "Luke Jones": "#1100FF",              // Dark Blue
+  "Georgina McNee": "#FFB6C1",          // Light pink
+  "Emily Hutchinson": "#F068FF",        // Hot pink / fuchsia
+  "Kym Allison": "#68FFF0",             // Turquoise
+  "Web User": "#84AC9A",
+  "Julian Hayes": "#864EE0",
+  "Josh Dixon": "#FFFFFF",              // Alias of Joshua Dixon
+};
+
+export const CollaboratorNameColor = {
+  "Adam Nagel": "#fff",                  // Chili Red (actual: #C21807)
+  "Peter Catchlove": "#fff",         // QLD Maroon
+  "Garrett McVilly": "#353535",         // Light Blue
+  "Holly Ilka": "#353535",                 // Lime Green (actual: #26FF00)
+  "Eddie Gaydon": "#fff",            // Dark Purple
+  "Oscar Delaney": "#fff",           // Orange
+  "Matt Geyle": "#353535",              // Full Yellow
+  "Harrison Southwell": "#353535",      // Beige
+  "Scarlett": "#fff",                // Dark Green
+  "Joshua Dixon": "#353535",            // White
+  "Luke Jones": "#fff",              // Dark Blue
+  "Georgina McNee": "#353535",          // Light pink
+  "Emily Hutchinson": "#353535",        // Hot pink / fuchsia
+  "Kym Allison": "#353535",             // Turquoise
+  "Web User": "#fff",
+  "Julian Hayes": "#fff",
+  "Josh Dixon": "#353535",              // Alias of Joshua Dixon
+};
+
+
 export function addNotification(type, message) {
   const notificationData = {
     class: type,

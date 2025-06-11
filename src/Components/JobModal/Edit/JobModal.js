@@ -20,8 +20,8 @@ import {
   addNotification,
   AllStages,
   arraysEqualByIdV2,
-  CollaboratorBorders,
-  CollaboratorNameBorders,
+  CollaboratorNameBG,
+  CollaboratorNameColor,
   compareTaskArray,
   MAX_CALENDAR_YEAR,
   StageList,
@@ -30,7 +30,6 @@ import {
 import { formatJobNumber } from "../../../pages/Jobs";
 import {
   createTask,
-  createTaskStage,
   deleteJob,
   deleteTask,
   getJobsByUser,
@@ -43,7 +42,6 @@ import {
 import AdhocTaskCompletionPopup from "../../dashboardTasks/AdhocTemplate";
 import TaskCompletionPopup from "../../dashboardTasks/TaskCompletionPopup";
 import ChatAndAttachment, {
-  AddNewJobChatAndAttachment,
   ChatAndComment,
   CommentBox,
 } from "./ChatAndAttachment";
@@ -347,8 +345,6 @@ const JobModal = ({
     }
   };
 
-
-
   const handleTasksCheckBoxSelect = (e, id) => {
     const { checked } = e.target;
     if (checked) {
@@ -430,7 +426,7 @@ const JobModal = ({
           console.error(`Task with id ${task.id} not found.`);
           return;
         }
-   
+
         if (selectedTab === "to-do") {
           updatedTasks = tasks?.filter((task) => task.status !== "completed");
         } else {
@@ -439,7 +435,7 @@ const JobModal = ({
         setFilteredTasks(updatedTasks);
         fetchJobs();
 
-        addNotification("success", "Task Updated");
+        // addNotification("success", "Task Updated");
         toast.success("Task Updated Successfully!");
       } else {
         addNotification("error", "Task Update Failed");
@@ -482,7 +478,7 @@ const JobModal = ({
       };
       const response = await updateJobs(reqBody);
       if (response.res) {
-        addNotification("success", "Task Updated");
+        // addNotification("success", "Task Updated");
         toast.success(`${response.res.message}`);
       } else {
         console.error("jobs update failed:", response.error);
@@ -600,7 +596,7 @@ const JobModal = ({
         setTimeout(() => {
           fetchJobs();
           setSelectedTasks();
-          addNotification("success", "Task Updated");
+          // addNotification("success", "Task Updated");
           toast.success("Task Status Updated Successfully.");
         }, 1000);
       } else {
@@ -1242,7 +1238,6 @@ const JobModal = ({
                                               Assignees
                                             </label>
                                             <div className="addedAssigneeBorder">
-                                             
                                               {assignee &&
                                                 assignee
                                                   .filter((user) =>
@@ -2390,7 +2385,7 @@ const JobModal = ({
                               onChange={handleSelectDueDate}
                               value={selectedDueDate}
                               calendarType="ISO 8601"
-                              minDate={new Date()}
+                              // minDate={new Date()}
                               rangeColors={["#E2E31F"]}
                             />
                           </div>
@@ -2844,7 +2839,6 @@ export const NewJobModal = ({
   };
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-  
     setJobTasks((prevTasks) => [
       {
         title: newData?.newTask?.title,
@@ -2884,7 +2878,6 @@ export const NewJobModal = ({
     newJobCollaboratorsList,
     stage
   ) => {
-
     setJobTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId
@@ -2909,7 +2902,7 @@ export const NewJobModal = ({
         const name = localStorage.getItem("user");
         addNotification("success", `Task Completed by ${name}`);
       } else {
-        addNotification("success", "Task Updated");
+        // addNotification("success", "Task Updated");
         console.log("Task Update successful", response.res);
       }
     } else {
@@ -3227,6 +3220,7 @@ export const NewJobModalWithTasks = ({
   newJob,
   handleDelete: handleDeleteProp,
 }) => {
+  console.log("NewJobModalWithTasks", job);
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -3413,7 +3407,6 @@ export const NewJobModalWithTasks = ({
     newJobCollaboratorsList,
     stage
   ) => {
-
     setJobTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId
@@ -3438,7 +3431,7 @@ export const NewJobModalWithTasks = ({
         const name = localStorage.getItem("user");
         addNotification("success", `Task Completed by ${name}`);
       } else {
-        addNotification("success", "Task Updated");
+        // addNotification("success", "Task Updated");
         console.log("Task Update successful", response.res);
       }
     } else {
@@ -3877,7 +3870,6 @@ export const NewTaskModal = ({
       let response = await getTaskStages(authToken);
       if (response.res) {
         setStageList(response.res);
-
       } else {
         console.error("Failed to fetch Users:", response.error);
       }
@@ -4214,8 +4206,10 @@ export const NewTaskModal = ({
                             (dueDateObj - now) / (1000 * 60 * 60 * 24)
                           );
 
-                          return daysLeft > 0 ? (
+                          return daysLeft >= 1 ? (
                             `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
+                          ) : daysLeft <= 0 ? (
+                            `${0} days`
                           ) : (
                             <span style={{ color: "#616161" }}>No Data</span>
                           );
@@ -4246,7 +4240,7 @@ export const NewTaskModal = ({
                                   {newJobCollaboratorsList
                                     ?.slice(0, 3)
                                     .map((user, index) => {
-                                      const initials = user?.initials
+                                      const initials = user?.initials;
 
                                       return (
                                         <div
@@ -4255,12 +4249,14 @@ export const NewTaskModal = ({
                                           style={{
                                             minWidth: "40px",
                                             zIndex: index,
-                                            border:
-                                              CollaboratorBorders[user.id] ||
-                                              CollaboratorNameBorders[
-                                                user.name
-                                              ] ||
-                                              "1px solid rgb(105, 103, 103)",
+                                            border: "1px solid #767676",
+                                            backgroundColor:
+                                              CollaboratorNameBG[user?.name] ||
+                                              "#353535",
+                                            color:
+                                              CollaboratorNameColor[
+                                                user?.name
+                                              ] || "#fff",
                                           }}
                                         >
                                           {initials}
@@ -4309,7 +4305,7 @@ export const NewTaskModal = ({
                                   <div className="addedCollabs">
                                     {newJobCollaboratorsList.map(
                                       (user, index) => {
-                                        const initials = user?.initials
+                                        const initials = user?.initials;
 
                                         return (
                                           <div
@@ -4323,14 +4319,15 @@ export const NewTaskModal = ({
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                border:
-                                                  CollaboratorBorders[
-                                                    user.id
-                                                  ] ||
-                                                  CollaboratorNameBorders[
-                                                    user.name
-                                                  ] ||
-                                                  "1px solid rgb(105, 103, 103)",
+                                                border: "1px solid #767676",
+                                                backgroundColor:
+                                                  CollaboratorNameBG[
+                                                    user?.name
+                                                  ] || "#353535",
+                                                color:
+                                                  CollaboratorNameColor[
+                                                    user?.name
+                                                  ] || "#fff",
                                               }}
                                             >
                                               {initials}
@@ -4343,7 +4340,7 @@ export const NewTaskModal = ({
                                 )}
                                 {usersList
                                   ? usersList.map((user, index) => {
-                                      const initials = user?.initials
+                                      const initials = user?.initials;
 
                                       return (
                                         <div
@@ -4357,12 +4354,15 @@ export const NewTaskModal = ({
                                             className={`collaboratorsBoxUser`}
                                             style={{
                                               minWidth: "40px",
-                                              border:
-                                                CollaboratorBorders[user.id] ||
-                                                CollaboratorNameBorders[
-                                                  user.name
-                                                ] ||
-                                                "1px solid rgb(105, 103, 103)",
+                                              border: "1px solid #767676",
+                                              backgroundColor:
+                                                CollaboratorNameBG[
+                                                  user?.name
+                                                ] || "#353535",
+                                              color:
+                                                CollaboratorNameColor[
+                                                  user?.name
+                                                ] || "#fff",
                                             }}
                                           >
                                             {initials}
@@ -4479,7 +4479,7 @@ export const NewTaskModal = ({
                                   value={new Date(dueDate)}
                                   calendarType="ISO 8601"
                                   rangeColors={["#E2E31F"]}
-                                  minDate={new Date()}
+                                  // minDate={new Date()}
                                   maxDate={
                                     new Date(
                                       new Date().setFullYear(
@@ -4587,7 +4587,7 @@ export const UpdateTaskModal = React.forwardRef(
     },
     ref
   ) => {
-
+    console.log("UpdateTaskModal Task", task);
     const [loader, setLoader] = useState(false);
     const [title, setTitle] = useState(task?.title || "");
     const [description, setDescription] = useState(task?.description || "");
@@ -4707,7 +4707,6 @@ export const UpdateTaskModal = React.forwardRef(
           let response = await getTaskStages(authToken);
           if (response.res) {
             setStageList(response.res);
-        
           } else {
             console.error("Failed to fetch Users:", response.error);
           }
@@ -4775,7 +4774,7 @@ export const UpdateTaskModal = React.forwardRef(
         stage_id: stageRef.current?.id,
         description: descriptionRef.current,
       };
-    
+
       if (!titleRef.current) {
         toast.error("Please enter task title.");
         return;
@@ -5156,8 +5155,10 @@ export const UpdateTaskModal = React.forwardRef(
                               (dueDateObj - now) / (1000 * 60 * 60 * 24)
                             );
 
-                            return daysLeft > 0 ? (
+                            return daysLeft >= 1 ? (
                               `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
+                            ) : daysLeft <= 0 ? (
+                              `${0} days`
                             ) : (
                               <span style={{ color: "#616161" }}>No Data</span>
                             );
@@ -5200,7 +5201,7 @@ export const UpdateTaskModal = React.forwardRef(
                                     {newJobCollaboratorsList
                                       .slice(0, 3)
                                       .map((user, index) => {
-                                        const initials = user?.initials
+                                        const initials = user?.initials;
 
                                         return (
                                           <div
@@ -5209,12 +5210,15 @@ export const UpdateTaskModal = React.forwardRef(
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
-                                              border:
-                                                CollaboratorBorders[user.id] ||
-                                                CollaboratorNameBorders[
-                                                  user.name
-                                                ] ||
-                                                "1px solid rgb(105, 103, 103)",
+                                              border: "1px solid #767676",
+                                              backgroundColor:
+                                                CollaboratorNameBG[
+                                                  user?.name
+                                                ] || "#353535",
+                                              color:
+                                                CollaboratorNameColor[
+                                                  user?.name
+                                                ] || "#fff",
                                             }}
                                           >
                                             {initials}
@@ -5265,7 +5269,7 @@ export const UpdateTaskModal = React.forwardRef(
                                     <div className="addedCollabs">
                                       {newJobCollaboratorsList.map(
                                         (user, index) => {
-                                          const initials = user?.initials
+                                          const initials = user?.initials;
 
                                           return (
                                             <div
@@ -5279,14 +5283,15 @@ export const UpdateTaskModal = React.forwardRef(
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border:
-                                                    CollaboratorBorders[
-                                                      user.id
-                                                    ] ||
-                                                    CollaboratorNameBorders[
-                                                      user.name
-                                                    ] ||
-                                                    "1px solid rgb(105, 103, 103)",
+                                                  border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[
+                                                      user?.name
+                                                    ] || "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user?.name
+                                                    ] || "#fff",
                                                 }}
                                               >
                                                 {initials}
@@ -5299,7 +5304,7 @@ export const UpdateTaskModal = React.forwardRef(
                                   )}
                                   {usersList
                                     ? usersList.map((user, index) => {
-                                        const initials = user?.initials
+                                        const initials = user?.initials;
 
                                         return (
                                           <div
@@ -5313,14 +5318,15 @@ export const UpdateTaskModal = React.forwardRef(
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                border:
-                                                  CollaboratorBorders[
-                                                    user.id
-                                                  ] ||
-                                                  CollaboratorNameBorders[
-                                                    user.name
-                                                  ] ||
-                                                  "1px solid rgb(105, 103, 103)",
+                                                border: "1px solid #767676",
+                                                backgroundColor:
+                                                  CollaboratorNameBG[
+                                                    user?.name
+                                                  ] || "#353535",
+                                                color:
+                                                  CollaboratorNameColor[
+                                                    user?.name
+                                                  ] || "#fff",
                                               }}
                                             >
                                               {initials}
@@ -5444,7 +5450,7 @@ export const UpdateTaskModal = React.forwardRef(
                                     value={new Date(dueDate)}
                                     calendarType="ISO 8601"
                                     rangeColors={["#E2E31F"]}
-                                    minDate={new Date()}
+                                    // minDate={new Date()}
                                     maxDate={
                                       new Date(
                                         new Date().setFullYear(
@@ -5802,7 +5808,7 @@ export const CreateTaskModal = memo(
             toast.error("Error: Due date must be selected before saving.");
             return;
           }
-     
+
           onCreateTask(
             { newTask: newTaskData },
             taskRef.current?.id,
@@ -6160,10 +6166,12 @@ export const CreateTaskModal = memo(
                                       (dueDateObj - now) / (1000 * 60 * 60 * 24)
                                     );
 
-                                    return daysLeft > 0 ? (
+                                    return daysLeft >= 1 ? (
                                       `${daysLeft} day${
                                         daysLeft === 1 ? "" : "s"
                                       }`
+                                    ) : daysLeft <= 0 ? (
+                                      `${0} days`
                                     ) : (
                                       <span style={{ color: "#616161" }}>
                                         No Data
@@ -6195,8 +6203,10 @@ export const CreateTaskModal = memo(
                                   (dueDateObj - now) / (1000 * 60 * 60 * 24)
                                 );
 
-                                return daysLeft > 0 ? (
+                                return daysLeft >= 1 ? (
                                   `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
+                                ) : daysLeft <= 0 ? (
+                                  `${0} days`
                                 ) : (
                                   <span style={{ color: "#616161" }}>
                                     No Data
@@ -6236,7 +6246,7 @@ export const CreateTaskModal = memo(
                                       {newJobCollaboratorsList
                                         .slice(0, 3)
                                         .map((user, index) => {
-                                          const initials = user?.initials
+                                          const initials = user?.initials;
 
                                           return (
                                             <div
@@ -6245,14 +6255,15 @@ export const CreateTaskModal = memo(
                                               style={{
                                                 minWidth: "40px",
                                                 zIndex: index,
-                                                border:
-                                                  CollaboratorBorders[
-                                                    user.id
-                                                  ] ||
-                                                  CollaboratorNameBorders[
-                                                    user.name
-                                                  ] ||
-                                                  "1px solid rgb(105, 103, 103)",
+                                                border: "1px solid #767676",
+                                                backgroundColor:
+                                                  CollaboratorNameBG[
+                                                    user?.name
+                                                  ] || "#353535",
+                                                color:
+                                                  CollaboratorNameColor[
+                                                    user?.name
+                                                  ] || "#fff",
                                               }}
                                             >
                                               {initials}
@@ -6301,7 +6312,7 @@ export const CreateTaskModal = memo(
                                       <div className="addedCollabs">
                                         {newJobCollaboratorsList.map(
                                           (user, index) => {
-                                            const initials = user?.initials
+                                            const initials = user?.initials;
 
                                             return (
                                               <div
@@ -6315,14 +6326,15 @@ export const CreateTaskModal = memo(
                                                   className={`collaboratorsBoxUser`}
                                                   style={{
                                                     minWidth: "40px",
-                                                    border:
-                                                      CollaboratorBorders[
-                                                        user.id
-                                                      ] ||
-                                                      CollaboratorNameBorders[
-                                                        user.name
-                                                      ] ||
-                                                      "1px solid rgb(105, 103, 103)",
+                                                    border: "1px solid #767676",
+                                                    backgroundColor:
+                                                      CollaboratorNameBG[
+                                                        user?.name
+                                                      ] || "#353535",
+                                                    color:
+                                                      CollaboratorNameColor[
+                                                        user?.name
+                                                      ] || "#fff",
                                                   }}
                                                 >
                                                   {initials}
@@ -6335,7 +6347,7 @@ export const CreateTaskModal = memo(
                                     )}
                                     {usersList
                                       ? usersList.map((user, index) => {
-                                          const initials = user?.initials
+                                          const initials = user?.initials;
 
                                           return (
                                             <div
@@ -6349,14 +6361,15 @@ export const CreateTaskModal = memo(
                                                 className={`collaboratorsBoxUser`}
                                                 style={{
                                                   minWidth: "40px",
-                                                  border:
-                                                    CollaboratorBorders[
-                                                      user.id
-                                                    ] ||
-                                                    CollaboratorNameBorders[
-                                                      user.name
-                                                    ] ||
-                                                    "1px solid rgb(105, 103, 103)",
+                                                  border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[
+                                                      user?.name
+                                                    ] || "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user?.name
+                                                    ] || "#fff",
                                                 }}
                                               >
                                                 {initials}
@@ -6473,7 +6486,7 @@ export const CreateTaskModal = memo(
                                       value={new Date(dueDate)}
                                       calendarType="ISO 8601"
                                       rangeColors={["#E2E31F"]}
-                                      minDate={new Date()}
+                                      // minDate={new Date()}
                                       maxDate={
                                         new Date(
                                           new Date().setFullYear(

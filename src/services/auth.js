@@ -491,7 +491,6 @@ export const getJobs = async (page) => {
       .get("content-type")
       ?.includes("application/json");
     const data = isJson && (await response.json());
-    console.log(response, data);
     if (response.status === 200) {
       return { res: data, error: null };
     } else {
@@ -799,7 +798,7 @@ export const SearchJobs = async (data) => {
   }
 };
 
-export const FilterJobs = async (data) => {
+export const FilterJobs = async (data, query) => {
   const authToken = localStorage.getItem("authToken");
   const requestOptions = {
     method: "POST",
@@ -812,7 +811,7 @@ export const FilterJobs = async (data) => {
   };
   try {
     let response = await fetch(
-      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/job/filter`,
+      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/job/filter?${query}`,
       requestOptions
     );
     const isJson = response.headers

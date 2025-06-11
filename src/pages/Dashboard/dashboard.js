@@ -1,16 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import moment from "moment";
+import { useEffect, useRef, useState } from "react";
 import CountUp from "react-countup";
 import { Bars } from "react-loader-spinner";
-import { getDashboardSummary, updateTask } from "../../services/auth";
-import Timeline from "../../Components/Timeline";
-import { AddIcon, AddTaskGreyButton, User } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
-import { getJobComments, getMessages } from "../../services/chat_attachment";
-import { formatJobNumber } from "../Jobs";
 import TaggedUser from "../../Components/JobModal/Edit/TaggedUser";
+import Timeline from "../../Components/Timeline";
 import TaskCompletionPopup from "../../Components/dashboardTasks/TaskCompletionPopup";
-import moment from "moment";
-import { addNotification, CollaboratorBorders, CollaboratorNameBorders } from "../../helper";
+import { AddIcon, AddTaskGreyButton } from "../../assets/svg";
+import {
+  addNotification,
+  CollaboratorNameBG,
+  CollaboratorNameColor
+} from "../../helper";
+import { getDashboardSummary, updateTask } from "../../services/auth";
+import { getJobComments } from "../../services/chat_attachment";
+import { formatJobNumber } from "../Jobs";
 
 const renderMessage = (text) => {
   // Regular expression to match words enclosed in {}
@@ -196,9 +200,8 @@ function Dashboard() {
         if (reqBody?.status === "completed") {
           const name = localStorage.getItem("user");
           addNotification("success", `Task Completed by ${name}`);
-        }else{
-
-          addNotification("success", "Task Updated");
+        } else {
+          // addNotification("success", "Task Updated");
         }
       }
     } catch (error) {
@@ -389,7 +392,7 @@ function Dashboard() {
                                     {task?.users
                                       .slice(0, 3)
                                       .map((user, index) => {
-                                        const initials = user?.initials
+                                        const initials = user?.initials;
 
                                         return (
                                           <div
@@ -398,12 +401,15 @@ function Dashboard() {
                                             style={{
                                               minWidth: "40px",
                                               zIndex: index,
-                                              border:
-                                                CollaboratorBorders[user.id] ||
-                                                CollaboratorNameBorders[
-                                                  user.name
-                                                ] ||
-                                                "1px solid rgb(105, 103, 103)",
+                                              border: "1px solid #767676",
+                                              backgroundColor:
+                                                CollaboratorNameBG[
+                                                  user?.name
+                                                ] || "#353535",
+                                              color:
+                                                CollaboratorNameColor[
+                                                  user?.name
+                                                ] || "#fff",
                                             }}
                                           >
                                             {initials}
@@ -496,9 +502,13 @@ function Dashboard() {
                                 className={`InitialsBoxUser`}
                                 style={{
                                   minWidth: "40px",
-                                  border:
-                                    CollaboratorNameBorders[chat.user?.name] ||
-                                    "1px solid rgb(105, 103, 103)",
+                                  border: "1px solid #767676",
+                                  backgroundColor:
+                                    CollaboratorNameBG[chat?.user?.name] ||
+                                    "#353535",
+                                  color:
+                                    CollaboratorNameColor[chat?.user?.name] ||
+                                    "#fff",
                                 }}
                               >
                                 {chat.user?.initials}

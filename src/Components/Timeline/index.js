@@ -1,24 +1,22 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Bars } from "react-loader-spinner";
 import moment from "moment";
-import { getJobs, getTimelineJobs } from "../../services/auth";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { DateRangePicker } from "react-date-range";
+import { Bars } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 import {
   AttachmentIcon,
   CommentIcon,
   FilterIcon,
   TaskIcon,
-  User,
 } from "../../assets/svg";
-import { useNavigate } from "react-router-dom";
-import { DateRangePicker } from "react-date-range";
-import { formatJobNumber } from "../../pages/Jobs";
 import {
-  CALENDAR_YEAR,
-  CollaboratorBorders,
-  CollaboratorNameBorders,
+  CollaboratorNameBG,
+  CollaboratorNameColor,
   MAX_CALENDAR_YEAR,
-  MIN_CALENDAR_YEAR,
+  MIN_CALENDAR_YEAR
 } from "../../helper";
+import { formatJobNumber } from "../../pages/Jobs";
+import { getTimelineJobs } from "../../services/auth";
 
 function Timeline({
   timeFrame,
@@ -35,7 +33,7 @@ function Timeline({
     label: "Select Filter",
     value: "",
   });
- 
+
   const [excessCalendarDate, setExcessCalendarDate] = useState(
     timeFrame === "weekly" ? 12 : timeFrame === "monthly" ? 20 : 1
   );
@@ -245,23 +243,22 @@ function Timeline({
   //   [excessCalendarDate, timeFrame]
   // );
 
-
   const setSelectionRangeFromJobs = useCallback(
     (jobs) => {
       let minCreatedAt, maxDueDate;
-  
+
       if (jobs.length > 0) {
         minCreatedAt = new Date(jobs[0].created_at);
         maxDueDate = new Date(jobs[0].due_date);
-  
+
         jobs.forEach((job) => {
           const createdAt = new Date(job.created_at);
           const dueDate = new Date(job.due_date);
-  
+
           if (createdAt < minCreatedAt) {
             minCreatedAt = createdAt;
           }
-  
+
           if (dueDate > maxDueDate) {
             maxDueDate = dueDate;
           }
@@ -271,10 +268,10 @@ function Timeline({
         const today = new Date();
         const defaultStartDate = new Date(today);
         defaultStartDate.setDate(today.getDate() - 7);
-  
+
         const defaultEndDate = new Date(today);
         defaultEndDate.setDate(today.getDate() + 60);
-  
+
         setSelectionRange({
           startDate: defaultStartDate,
           endDate: defaultEndDate,
@@ -282,7 +279,7 @@ function Timeline({
         });
         return;
       }
-  
+
       const currentDate = new Date();
       const adjustedStartDate = new Date(currentDate);
       const minsDaysAre =
@@ -292,14 +289,14 @@ function Timeline({
           ? 15
           : 6;
       adjustedStartDate.setDate(currentDate.getDate() - minsDaysAre);
-  
+
       // Adjust endDate to one month more
       let adjustedEndDate = new Date(maxDueDate);
       adjustedEndDate.setDate(adjustedEndDate.getDate() + excessCalendarDate);
-  
+
       const differenceInDays =
         (adjustedEndDate - adjustedStartDate) / (1000 * 60 * 60 * 24);
-  
+
       if (timeFrame !== undefined && timeFrame === "weekly") {
         if (differenceInDays < 10) {
           adjustedEndDate = new Date(
@@ -315,7 +312,7 @@ function Timeline({
           );
         }
       }
-  
+
       // Set selectionRange
       setSelectionRange({
         startDate: adjustedStartDate,
@@ -325,7 +322,6 @@ function Timeline({
     },
     [excessCalendarDate, timeFrame]
   );
-  
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -865,8 +861,9 @@ function Timeline({
                                                     {job?.collaborators
                                                       ?.slice(0, 3)
                                                       .map((user, index) => {
-                                                        const initials = user?.initials
-                                            
+                                                        const initials =
+                                                          user?.initials;
+
                                                         return (
                                                           <div
                                                             key={index}
@@ -874,7 +871,16 @@ function Timeline({
                                                             style={{
                                                               minWidth: "40px",
                                                               zIndex: index,
-                                                               border: CollaboratorBorders[user?.id] || CollaboratorNameBorders[user] || "1px solid rgb(105, 103, 103)",
+                                                              border:
+                                                                "1px solid #767676",
+                                                              backgroundColor:
+                                                                CollaboratorNameBG[
+                                                                  user
+                                                                ] || "#353535",
+                                                              color:
+                                                                CollaboratorNameColor[
+                                                                  user
+                                                                ] || "#fff",
                                                             }}
                                                           >
                                                             {initials}
@@ -888,8 +894,9 @@ function Timeline({
                                                         className={`collaboratorsBoxUser`}
                                                         style={{
                                                           minWidth: "40px",
-                                                          zIndex: job?.collaborators
-                                                          ?.length,
+                                                          zIndex:
+                                                            job?.collaborators
+                                                              ?.length,
                                                         }}
                                                       >
                                                         +
@@ -979,64 +986,65 @@ function Timeline({
                               </span>
                               <p>{job.description}</p>
                             </div>
-                            
-                             <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
-                                          <div className=" d-flex align-items-center justify-content-end">
-                                            <div className="collaboratorsBox justify-content-end">
-                                              <div className=" d-flex align-items-center justify-content-center">
-                                                {job?.collaborators?.length >
-                                                  0 && (
-                                                  <>
-                                                    {job?.collaborators
-                                                      ?.slice(0, 3)
-                                                      .map((user, index) => {
-                                                        const initials = user?.initials
 
-                                                        return (
-                                                          <div
-                                                            key={index}
-                                                            className={`collaboratorsBoxUser`}
-                                                            style={{
-                                                              minWidth: "40px",
-                                                              zIndex: index,
-                                                               border: CollaboratorBorders[user?.id] || CollaboratorNameBorders[user] || "1px solid rgb(105, 103, 103)",
-                                                            }}
-                                                          >
-                                                            {initials}
-                                                          </div>
-                                                        );
-                                                      })}
+                            <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                              <div className=" d-flex align-items-center justify-content-end">
+                                <div className="collaboratorsBox justify-content-end">
+                                  <div className=" d-flex align-items-center justify-content-center">
+                                    {job?.collaborators?.length > 0 && (
+                                      <>
+                                        {job?.collaborators
+                                          ?.slice(0, 3)
+                                          .map((user, index) => {
+                                            const initials = user?.initials;
 
-                                                    {job?.collaborators
-                                                      ?.length > 3 && (
-                                                      <div
-                                                        className={`collaboratorsBoxUser`}
-                                                        style={{
-                                                          minWidth: "40px",
-                                                          zIndex: job?.collaborators
-                                                          .length,
-                                                        }}
-                                                      >
-                                                        +
-                                                        {job?.collaborators
-                                                          .length - 3}
-                                                      </div>
-                                                    )}
-                                                  </>
-                                                )}
-                                                {job.collaborators?.length ===
-                                                  0 && (
-                                                  <div
-                                                    className="collaboratorsBoxUser disabled m-0"
-                                                    style={{ minWidth: "40px" }}
-                                                  >
-                                                    N/A
-                                                  </div>
-                                                )}
+                                            return (
+                                              <div
+                                                key={index}
+                                                className={`collaboratorsBoxUser`}
+                                                style={{
+                                                  minWidth: "40px",
+                                                  zIndex: index,
+                                                  border: "1px solid #767676",
+                                                  backgroundColor:
+                                                    CollaboratorNameBG[user] ||
+                                                    "#353535",
+                                                  color:
+                                                    CollaboratorNameColor[
+                                                      user
+                                                    ] || "#fff",
+                                                }}
+                                              >
+                                                {initials}
                                               </div>
-                                            </div>
+                                            );
+                                          })}
+
+                                        {job?.collaborators?.length > 3 && (
+                                          <div
+                                            className={`collaboratorsBoxUser`}
+                                            style={{
+                                              minWidth: "40px",
+                                              zIndex: job?.collaborators.length,
+                                            }}
+                                          >
+                                            +{job?.collaborators.length - 3}
                                           </div>
-                                        </div>
+                                        )}
+                                      </>
+                                    )}
+                                    {job.collaborators?.length === 0 && (
+                                      <div
+                                        className="collaboratorsBoxUser disabled m-0"
+                                        style={{ minWidth: "40px" }}
+                                      >
+                                        N/A
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

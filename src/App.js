@@ -10,12 +10,13 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.scss";
 import NavMenu from "./Components/navMenu";
 import "./Components/toaster.scss";
 import eventEmitter from "./Event";
+import pusher from "./Pusher";
 import logo from "./assets/common/LOGO.png";
 import {
   DashboardIcon,
@@ -23,13 +24,13 @@ import {
   InvoiceIcon,
   JobsIcon,
   Key,
-  Lock,
   LogoutIcon,
   SettingsIcon,
   TaskIcon2,
   TimelineIcon,
-  User,
+  User
 } from "./assets/svg";
+import { addNotification } from "./helper";
 import Dashboard from "./pages/Dashboard/dashboard";
 import TimelinePage from "./pages/Dashboard/timeline";
 import ViewTaskPage from "./pages/Dashboard/viewTasks";
@@ -38,11 +39,8 @@ import Jobs from "./pages/Jobs";
 import Login from "./pages/LandingPages/LoginPage/login";
 import { ForgotPassword } from "./pages/LandingPages/Password/forgotPassword";
 import PasswordReset from "./pages/LandingPages/Password/passwordReset";
-import SignUp from "./pages/LandingPages/SignUp/signUp";
 import SettingsPage from "./pages/Settings/settings";
 import { getProfile } from "./services/auth";
-import pusher from "./Pusher";
-import { addNotification } from "./helper";
 
 function DashboardMenuList() {
   const location = useLocation();
@@ -615,7 +613,7 @@ function RightSide() {
     };
 
     checkAuthToken();
-  }, []);
+  }, [pathname]);
 
   if (isLoggedIn === null) {
     // Still checking auth status, render nothing or a loading spinner
@@ -651,8 +649,6 @@ function RightSide() {
     </div>
   );
 }
-
-
 
 function App() {
   useEffect(() => {

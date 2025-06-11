@@ -1,9 +1,9 @@
 import { debounce, throttle } from "lodash";
 import moment from "moment";
-import Pusher from "pusher-js";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import eventEmitter from "../../../Event";
+import pusher from "../../../Pusher";
 import profileChat from "../../../assets/common/Frame 34.png";
 import attachmentsIcon from "../../../assets/common/attachments.svg";
 import cut from "../../../assets/common/cut.svg";
@@ -13,6 +13,11 @@ import download from "../../../assets/icons/download.svg";
 import file from "../../../assets/icons/file.svg";
 import message from "../../../assets/icons/message.svg";
 import { CrossIcon, UploadIcon } from "../../../assets/svg";
+import {
+  addNotification,
+  CollaboratorNameBG,
+  CollaboratorNameColor
+} from "../../../helper";
 import { getProfile } from "../../../services/auth";
 import {
   addAttachments,
@@ -25,12 +30,6 @@ import {
   sendMessage,
 } from "../../../services/chat_attachment";
 import TaggedUser from "./TaggedUser";
-import {
-  addNotification,
-  CollaboratorBorders,
-  CollaboratorNameBorders,
-} from "../../../helper";
-import pusher from "../../../Pusher";
 
 const ChatAndAttachment = ({ JobId }) => {
   const maxLength = 10;
@@ -1058,7 +1057,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                               minWidth: "40px",
                             }}
                           >
-                             {msg.user?.initials}
+                            {msg.user?.initials}
                           </div>
                           <div className="msg-body">
                             <div className="msg">
@@ -1124,7 +1123,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                               minWidth: "40px",
                             }}
                           >
-                             {msg.user?.initials}
+                            {msg.user?.initials}
                           </div>
                           <div className="msg-body">
                             <div className="msg">
@@ -1179,7 +1178,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                               minWidth: "40px",
                             }}
                           >
-                             {msg.user?.initials}
+                            {msg.user?.initials}
                           </div>
                           <div className="msg-body">
                             <div className="msg">
@@ -1244,8 +1243,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                   minWidth: "40px",
                 }}
               >
-                {localStorage
-                  .getItem("userInitials")}
+                {localStorage.getItem("userInitials")}
               </div>
               <div className="msg-body">
                 <div className="msg">
@@ -1275,8 +1273,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
                   minWidth: "40px",
                 }}
               >
-                {localStorage
-                  .getItem("userInitials")}
+                {localStorage.getItem("userInitials")}
               </div>
               <div className="msg-body">
                 <div className="msg">
@@ -1357,7 +1354,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
               <div className="newJobItemDropBox chat-tag">
                 {filteredUsers?.length > 0
                   ? filteredUsers.map((user, index) => {
-                      const initials = user?.initials
+                      const initials = user?.initials;
 
                       return (
                         <div
@@ -1443,7 +1440,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const [filteredUsers2, setFilteredUsers2] = useState(usersList);
   const [userIds, setUserIds] = useState([]);
   const [userIds2, setUserIds2] = useState([]);
-  const [subscribed, setSubscribed] = useState(false)
+  const [subscribed, setSubscribed] = useState(false);
 
   const userRef = useRef(null);
   const userRef2 = useRef(null);
@@ -1570,7 +1567,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
     console.log("subscribing to job:", JobId);
     const handleMessage = (data) => {
       const { message } = data;
-      console.log("New message received:",  message);
+      console.log("New message received:", message);
 
       if (message) {
         setChats((prevChats) => {
@@ -1582,7 +1579,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
 
     channel.bind("message.created", handleMessage);
     channel.bind("pusher:subscription_succeeded", () => {
-      setSubscribed(true)
+      setSubscribed(true);
       console.log(`Successfully subscribed to job.${JobId}`);
     });
 
@@ -1618,7 +1615,6 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         getAttachments(JobId, { signal }),
       ]);
 
-
       if (!response1.error && !response2.error) {
         const combinedArray = [...response1.res, ...response2.res];
         const sortedMessages = combinedArray.sort(
@@ -1627,7 +1623,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const sortedAttachments = response2.res?.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
-        console.log('sortedMessages------>>>>', sortedMessages)
+        console.log("sortedMessages------>>>>", sortedMessages);
 
         setChats(sortedMessages);
         setAttachments(sortedAttachments);
@@ -1679,10 +1675,10 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const debouncedSendMessage = debounce(async (body) => {
     try {
       setLoading(true);
-      console.log("aopi call")
+      console.log("aopi call");
       const response = await sendMessage(JobId, { body, ids: userIds });
       if (!response.error) {
-        console.log("subs--->", subscribed)
+        console.log("subs--->", subscribed);
         // if(!subscribed)
         fetchChats();
         // addNotification("user", "New Comment: " + userDetails?.name);
@@ -1712,7 +1708,13 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       if (!response.error) {
         setComments((prevComments) => [
           ...prevComments,
-          { ...response.res, user: { name: localStorage.getItem("user"), initials: localStorage.getItem("userInitials") }  },
+          {
+            ...response.res,
+            user: {
+              name: localStorage.getItem("user"),
+              initials: localStorage.getItem("userInitials"),
+            },
+          },
         ]);
 
         setNewComment({
@@ -1742,7 +1744,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
       toast.error("Message cannot be empty");
       return;
     }
-    console.log("sending msg....")
+    console.log("sending msg....");
     debouncedSendMessage(body);
   };
 
@@ -2031,7 +2033,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                   minWidth: "40px",
                                 }}
                               >
-                                 {msg.user?.initials}
+                                {msg.user?.initials}
                               </div>
                               <div className="msg-body">
                                 <div className="msg">
@@ -2072,8 +2074,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                       minWidth: "40px",
                     }}
                   >
-                    {localStorage
-                      .getItem("userInitials")}
+                    {localStorage.getItem("userInitials")}
                   </div>
                   <div className="msg-body">
                     <div className="msg">
@@ -2110,8 +2111,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               minWidth: "40px",
             }}
           >
-            {localStorage
-              .getItem("userInitials")}
+            {localStorage.getItem("userInitials")}
           </div>
           <div className="imgUploadArea addJobImgUploadArea2">
             <form onSubmit={handleSendComment} className="position-relative">
@@ -2148,7 +2148,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                 <div className="newJobItemDropBox chat-tag" ref={userRef2}>
                   {filteredUsers2?.length > 0
                     ? filteredUsers2.map((user, index) => {
-                        const initials = user?.initials
+                        const initials = user?.initials;
 
                         return (
                           <div
@@ -2160,10 +2160,12 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                               className={`collaboratorsBoxUser`}
                               style={{
                                 minWidth: "40px",
-                                border:
-                                  CollaboratorBorders[user.id] ||
-                                  CollaboratorNameBorders[user.name] ||
-                                  "1px solid rgb(105, 103, 103)",
+                                border: "1px solid #767676",
+                                backgroundColor:
+                                  CollaboratorNameBG[user?.name] || "#353535",
+                                color:
+                                  CollaboratorNameColor[user?.name] ||
+                                  "#fff",
                               }}
                             >
                               {initials}
@@ -2208,7 +2210,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                               {msg.user?.initials}
+                              {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -2240,7 +2242,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                               {msg.user?.initials}
+                              {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -2333,7 +2335,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                               {msg.user?.initials}
+                              {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -2398,8 +2400,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                     minWidth: "40px",
                   }}
                 >
-                  {localStorage
-                    .getItem("userInitials")}
+                  {localStorage.getItem("userInitials")}
                 </div>
                 <div className="msg-body">
                   <div className="msg">
@@ -2429,8 +2430,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                     minWidth: "40px",
                   }}
                 >
-                  {localStorage
-                    .getItem("userInitials")}
+                  {localStorage.getItem("userInitials")}
                 </div>
                 <div className="msg-body">
                   <div className="msg">
@@ -2512,7 +2512,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               <div className="newJobItemDropBox chat-tag" ref={userRef}>
                 {filteredUsers?.length > 0
                   ? filteredUsers.map((user, index) => {
-                      const initials = user?.initials
+                      const initials = user?.initials;
 
                       return (
                         <div
@@ -2524,10 +2524,11 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                             className={`collaboratorsBoxUser`}
                             style={{
                               minWidth: "40px",
-                              border:
-                                CollaboratorBorders[user.id] ||
-                                CollaboratorNameBorders[user.name] ||
-                                "1px solid rgb(105, 103, 103)",
+                              border: "1px solid #767676",
+                              backgroundColor:
+                                CollaboratorNameBG[user?.name] || "#353535",
+                              color:
+                                CollaboratorNameColor[user?.name] || "#fff",
                             }}
                           >
                             {initials}
@@ -2723,7 +2724,13 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
       if (!response.error) {
         setChats((prevComments) => [
           ...prevComments,
-          { ...response.res, user: { name: localStorage.getItem("user"), initials: localStorage.getItem("userInitials") } },
+          {
+            ...response.res,
+            user: {
+              name: localStorage.getItem("user"),
+              initials: localStorage.getItem("userInitials"),
+            },
+          },
         ]);
 
         addNotification("user", "New Comment: " + userDetails.name);
@@ -2913,7 +2920,6 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
     }
   };
 
-
   return (
     <div className="comment-box">
       <div className="addJobPopUpAttachments">
@@ -3026,7 +3032,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                                 minWidth: "40px",
                               }}
                             >
-                               {msg.user?.initials}
+                              {msg.user?.initials}
                             </div>
                             <div className="msg-body">
                               <div className="msg">
@@ -3065,8 +3071,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                     minWidth: "40px",
                   }}
                 >
-                  {localStorage
-                    .getItem("userInitials")}
+                  {localStorage.getItem("userInitials")}
                 </div>
                 <div className="msg-body">
                   <div className="msg">
@@ -3103,8 +3108,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
             minWidth: "40px",
           }}
         >
-          {localStorage
-            .getItem("userInitials")}
+          {localStorage.getItem("userInitials")}
         </div>
         <div className="imgUploadArea addJobImgUploadArea2">
           <form onSubmit={handleSendMessage} className="position-relative">
@@ -3141,7 +3145,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
               <div className="newJobItemDropBox chat-tag" ref={userRef}>
                 {filteredUsers?.length > 0
                   ? filteredUsers.map((user, index) => {
-                      const initials = user?.initials
+                      const initials = user?.initials;
 
                       return (
                         <div
@@ -3153,10 +3157,11 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
                             className={`collaboratorsBoxUser`}
                             style={{
                               minWidth: "40px",
-                              border:
-                                CollaboratorBorders[user.id] ||
-                                CollaboratorNameBorders[user.name] ||
-                                "1px solid rgb(105, 103, 103)",
+                              border: "1px solid #767676",
+                              backgroundColor:
+                                CollaboratorNameBG[user?.name] || "#353535",
+                              color:
+                                CollaboratorNameColor[user?.name] || "#fff",
                             }}
                           >
                             {initials}
