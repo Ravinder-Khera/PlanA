@@ -1521,6 +1521,7 @@ body {
     position: relative;
     min-height: 450px;
     li {
+      width: 1660px;
       border-radius: 2px;
       display: flex;
       align-items: center;
@@ -1528,6 +1529,7 @@ body {
       padding: 19px 15px 18px 24px;
       margin: 11px auto;
       transition: all 1.5s ease;
+      gap: 45px;
 
       &.addCompleted {
         transform: translateX(100%);
@@ -1548,6 +1550,10 @@ body {
         line-height: normal;
         letter-spacing: -0.64px;
         padding: 27px 24px;
+      }
+      &.tastTitle{
+        justify-content: normal;
+        gap: 45px;
       }
 
       &.completeStage {
@@ -1605,7 +1611,7 @@ body {
         &.listTitle {
           display: flex;
           align-items: center;
-           
+
           @media screen and (max-width: 992px) {
             max-width: calc(100% - 60px);
             min-width: auto;
@@ -1650,7 +1656,75 @@ body {
             }
           }
         }
-
+        &.TastTitleCol1 {
+          width: 562px;
+        }
+        &.TastTitleCol2 {
+          width: 455px;
+          gap: 58px;
+          justify-content: normal;
+          .Task-title-stage {
+            width: 81px;
+            min-width: auto;
+          }
+          .Task-title-job {
+            width: 81px;
+              min-width: auto;
+          }
+        }
+        &.TaskTitleCol3 {
+          width: 517px;
+          .InnerTaskTitleCol3 {
+              // width: 503px;
+            // justify-content: space-between;
+            gap: 61px;
+            .Task-title-status {
+              width: 81px;
+            }
+            .Task-title-date {
+              width: 81px;
+            }
+            .Task-title-days {
+              width: 81px;
+              margin-left: 3px;
+            }
+            .Task-title-job {
+              width: 54px;
+                margin-left: 20px;
+            }
+          }
+        }
+        &.TaskCol1 {
+          width: 552px;
+        }
+        &.TaskCol2 {
+          width: 439px;
+          gap: 50px;
+          .TaskCol2_btn {
+            width: 94px;
+            min-width: auto;
+            padding: 7px 11px;
+          }
+        }
+        &.TaskCol3 {
+          width: 517px;
+          .InnerTaskCol3 {
+            gap: 50px;
+            .TaskCol3_status {
+              padding: 8px 9px;
+              width: 83px;
+            }
+            .TaskCol3_date {
+              width: 96px;
+            }
+            .TaskCol3_days {
+              width: 96px;
+            }
+            .TaskCol3_jobno {
+              width: 83px;
+            }
+          }
+        }
         .revertToDo {
           cursor: pointer;
         }
@@ -1981,11 +2055,11 @@ body {
   .dashboardFilterDropDownContent {
     .selectFilterDiv {
       display: flex;
-      min-width: 450px;
-      border-radius: 2px;
+      min-width: 477px;
+      border-radius: 8px;
       background: #353535;
       gap: 16px;
-      padding: 12px 16px;
+      padding: 12px 16px 13px 16px;
       justify-content: space-between;
       align-items: center;
       .selectBox {
@@ -2009,7 +2083,7 @@ body {
         border-radius: 1px;
         border: 2px solid #e2e31f;
         color: #fff;
-        padding: 8px;
+        padding: 12px 27px;
         background: transparent;
         text-align: center;
         font-size: 16px;
@@ -2023,8 +2097,10 @@ body {
       // margin-top: 8px;
       // border-radius: 8px;
       background: #353535;
-      max-width: 650px;
-      padding: 27px 20px;
+      max-width: 374px;
+      padding: 27px 25px 27px 10px;
+      margin-top: 8px;
+      border-radius: 8px;
       .filterOptionsScroll {
         max-height: 200px;
         overflow-y: auto;
@@ -2037,7 +2113,7 @@ body {
           letter-spacing: -0.64px;
           background: transparent;
           transition: all 0.5s ease;
-          padding: 14px 28px;
+          padding: 14px 36px;
           &:hover {
             background: linear-gradient(
               90deg,
@@ -3786,6 +3862,29 @@ body {
   //   background: linear-gradient(-90deg, #252525 0%, rgba(0, 0, 0, 0) 100%);
   //   z-index: 1;
   // }
+  &.viewTask::before {
+    position: absolute;
+    content: "";
+    width: 30px;
+    height: 100%;
+    top: 0px;
+    right: 3px;
+    background: linear-gradient(-90deg, #252525 0%, rgba(0, 0, 0, 0) 100%);
+    z-index: 2;
+  }
+  &.viewTask::after {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 30px;
+    bottom: 13px;
+    left: 0;
+    background: linear-gradient(0deg, #252525 0%, rgba(0, 0, 0, 0) 100%);
+    z-index: 2;
+    @media screen and (max-width:1900px) {
+      bottom: 5px;
+    }
+  }
   .table-container {
     flex: 1;
     overflow-y: auto;
@@ -4288,11 +4387,11 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         border: 1px solid #1fb4e3;
         background: rgba(31, 180, 227, 0.4);
       }
-        &.design,
-    &.Design {
-      border: 1px solid #ffacfe;
-      background: rgba(255, 172, 254, 0.4);
-    }
+      &.design,
+      &.Design {
+        border: 1px solid #ffacfe;
+        background: rgba(255, 172, 254, 0.4);
+      }
 
       &.Information,
       &.Info {
@@ -5958,11 +6057,11 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
                                   border: 1px solid #ff40be;
                                   background: rgba(255, 64, 190, 0.4);
                                 }
-                                  &.design,
-    &.Design {
-      border: 1px solid #ffacfe;
-      background: rgba(255, 172, 254, 0.4);
-    }
+                                &.design,
+                                &.Design {
+                                  border: 1px solid #ffacfe;
+                                  background: rgba(255, 172, 254, 0.4);
+                                }
                               }
 
                               label {
@@ -6242,11 +6341,11 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
                                 border: 1px solid #1fb4e3;
                                 background: rgba(31, 180, 227, 0.4);
                               }
-                                &.design,
-    &.Design {
-      border: 1px solid #ffacfe;
-      background: rgba(255, 172, 254, 0.4);
-    }
+                              &.design,
+                              &.Design {
+                                border: 1px solid #ffacfe;
+                                background: rgba(255, 172, 254, 0.4);
+                              }
 
                               &.Information,
                               &.Info {

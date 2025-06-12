@@ -12,7 +12,11 @@ import {
   User,
 } from "../../assets/svg";
 import { CollaboratorBorders, StatusList } from "../../helper";
-import { FilterJobs, getJobsByFilter, getUserByRole } from "../../services/auth";
+import {
+  FilterJobs,
+  getJobsByFilter,
+  getUserByRole,
+} from "../../services/auth";
 import "./style.scss";
 
 const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
@@ -394,7 +398,14 @@ const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
   );
 };
 
-const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoading, closeFilter }) => {
+const Filter = ({
+  setFilteredJobs,
+  setFilteredString,
+  setFilteredQuery,
+  setLoading,
+  closeFilter,
+  filteredQuery,
+}) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -451,7 +462,7 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
     },
   ];
 
-  const [filterQuery, setFilterQuery] = useState({perPage:100});
+  const [filterQuery, setFilterQuery] = useState({ page: 1, perPage: 50 });
 
   useEffect(() => {
     fetchUsers();
@@ -488,32 +499,6 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
     }
   };
 
-  const handleItemClick = (data) => {
-    handleResetFields();
-    setSelectedFilter(data.data);
-    setSelectedField(data.field);
-    setSelectShowFilter(false);
-  };
-
-  const handleSelect = (ranges) => {
-    setSelectionRange(ranges.selection);
-    const { startDate, endDate } = ranges.selection;
-    const year = startDate.getFullYear();
-    const month = String(startDate.getMonth() + 1).padStart(2, "0");
-    const day = String(startDate.getDate()).padStart(2, "0");
-    let formattedDueDate = `${year}-${month}-${day}`;
-    setStartDate(formattedDueDate);
-    const end_year = endDate.getFullYear();
-    const end_month = String(endDate.getMonth() + 1).padStart(2, "0");
-    const end_day = String(endDate.getDate()).padStart(2, "0");
-    let end_formattedDueDate = `${end_year}-${end_month}-${end_day}`;
-    setEndDate(end_formattedDueDate);
-  };
-
-  const handleShowDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
-
   const handleResetFields = () => {
     setShowDatePicker(false);
     setStartDate("YYYY-MM-DD");
@@ -526,42 +511,10 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
     setSearchedInput("");
   };
 
-  const handleApply = async () => {
-    let filterString = "";
-    if (selectedField === "due_date") {
-      filterString = `start_date=${startDate}&end_date=${endDate}`;
-    } else if (selectedField === "status") {
-      const value = Object.keys(StatusList).find(
-        (key) => StatusList[key] === searchedInput
-      );
-      filterString = `${selectedField}=${value}`;
-    } else {
-      filterString = `${selectedField}=${searchedInput}`;
-    }
-    setLoading(true);
-    try {
-      const response = await getJobsByFilter(filterString);
-      if (!response.error) {
-        setFilteredJobs(response?.res?.data);
-        handleResetFields();
-        closeFilter();
-      }
-    } catch (error) {
-      console.log("error in applying filter", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAssigneeClick = (user) => {
-    setSearchedInput(user.name);
-    setShowAssignee(false);
-  };
-
   const handleCancel = async () => {
     setSelectedFilters([]);
     setFiltersSeleted(false);
-    setFilterQuery({})
+    setFilterQuery({});
     closeFilter();
   };
 
@@ -573,25 +526,25 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
           statuses: [...(prevQuery.statuses || []), value],
         };
       }
-  
+
       if (type === "collaborator_ids") {
         return {
           ...prevQuery,
           collaborator_ids: [...(prevQuery.collaborator_ids || []), value],
         };
       }
-  
+
       if (type === "due") {
         return {
           ...prevQuery,
           due: [...(prevQuery.due || []), value],
         };
       }
-  
+
       return prevQuery;
     });
   };
-  
+
   const handleRemoveFilter = (type, value) => {
     setFilterQuery((prevQuery) => {
       if (type === "status") {
@@ -600,25 +553,27 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
           statuses: prevQuery.statuses?.filter((status) => status !== value),
         };
       }
-  
+
       if (type === "collaborator_ids") {
         return {
           ...prevQuery,
-          collaborator_ids: prevQuery.collaborator_ids?.filter((id) => id !== value),
+          collaborator_ids: prevQuery.collaborator_ids?.filter(
+            (id) => id !== value
+          ),
         };
       }
-  
+
       if (type === "due") {
         return {
           ...prevQuery,
           due: prevQuery.due?.filter((item) => item !== value),
         };
       }
-  
+
       return prevQuery;
     });
   };
-  
+
   const handleFilterClick = (filter, className, type, value) => {
     const filterObj = { filter, className, type, value };
     if (!selectedFilters.some((item) => item.filter === filter)) {
@@ -626,28 +581,79 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
       setFiltersSeleted(true);
     }
   };
-  
+
   const handleFilterRemove = (value) => {
     setSelectedFilters((prevFilters) =>
       prevFilters.filter((item) => item.value !== value)
     );
-  
+
     if (selectedFilters.length === 1) {
       setFiltersSeleted(false);
     }
   };
-  
-  useEffect(() => {
-    console.log("Filter Query:", filterQuery);
-    console.log("Selected Filters:", selectedFilters);
-  }, [filterQuery, selectedFilters]);
-  
+
   const handleFilterApply = async () => {
     setLoading(true);
+
     try {
-      setFilteredString(selectedFilters);
-      setFilteredQuery(filterQuery)
-      const response = await FilterJobs(filterQuery);
+      setFilteredString((prevString) => {
+        const combined = [...prevString, ...selectedFilters];
+
+        const uniqueByFilter = combined.reduce((acc, item) => {
+          if (!acc.some((existing) => existing.filter === item.filter)) {
+            acc.push(item);
+          }
+          return acc;
+        }, []);
+
+        return uniqueByFilter;
+      });
+
+      // ✅ Merge filterQuery into filteredQuery without replacing arrays
+      setFilteredQuery((prevQuery) => {
+        const mergedQuery = { ...prevQuery };
+
+        // Merge array fields (statuses, collaborator_ids, due)
+        ["statuses", "collaborator_ids", "due"].forEach((key) => {
+          if (filterQuery[key]) {
+            mergedQuery[key] = Array.from(
+              new Set([...(prevQuery[key] || []), ...filterQuery[key]])
+            );
+          }
+        });
+
+        // Merge other non-array fields like sort
+        Object.keys(filterQuery).forEach((key) => {
+          if (!["statuses", "collaborator_ids", "due"].includes(key)) {
+            mergedQuery[key] = filterQuery[key];
+          }
+        });
+
+        return mergedQuery;
+      });
+
+      // Prepare the merged query to call API
+      const prevQuery = {
+        ...filteredQuery,
+        ...filterQuery,
+      };
+
+      // Manually combine arrays for API call too
+      const updatedQuery = { ...prevQuery, page: 1 };
+      ["statuses", "collaborator_ids", "due"].forEach((key) => {
+        if (filteredQuery[key] || filterQuery[key]) {
+          updatedQuery[key] = Array.from(
+            new Set([
+              ...(filteredQuery[key] || []),
+              ...(filterQuery[key] || []),
+            ])
+          );
+        }
+      });
+
+      const sortValue = prevQuery.sort;
+      delete updatedQuery.sort;
+      const response = await FilterJobs(updatedQuery, prevQuery.sort);
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
         closeFilter();
@@ -663,7 +669,10 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
     <>
       {/* <div className="addTaskJobDiv"> */}
       <div className="filterJobsDiv">
-        <div className="filterJobsDivBg" style={{ maxHeight: `${filtersSeleted ? 394 : 180}px` }}>
+        <div
+          className="filterJobsDivBg"
+          style={{ maxHeight: `${filtersSeleted ? 394 : 180}px` }}
+        >
           <div className="filterJobsDivHeading">Filter By</div>
           {filtersSeleted && (
             <>
@@ -673,8 +682,8 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
                     key={index}
                     className={`selectedFilterItem ${item.className}`}
                     onClick={() => {
-                      handleFilterRemove(item.value)
-                      handleRemoveFilter(item.type,item.value)
+                      handleFilterRemove(item.value);
+                      handleRemoveFilter(item.type, item.value);
                     }}
                   >
                     {item.filter}
@@ -688,18 +697,25 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
           <div className="FilterBoxes selectFilters">
             {usersList
               ? usersList.map((user, index) => {
-                  const initials = user?.initials
+                  const initials = user?.initials;
                   return (
                     <div
                       key={index}
                       className={`filterUserBox`}
                       style={{
                         minWidth: "40px",
-                         border: CollaboratorBorders[user.id] || "1px solid rgb(105, 103, 103)",
+                        border:
+                          CollaboratorBorders[user.id] ||
+                          "1px solid rgb(105, 103, 103)",
                       }}
-                      onClick={() =>{
-                        handleFilterClick(initials, "filterUserBox",'collaborator_ids',user.id)
-                        handleselectFilter('collaborator_ids',user.id)
+                      onClick={() => {
+                        handleFilterClick(
+                          initials,
+                          "filterUserBox",
+                          "collaborator_ids",
+                          user.id
+                        );
+                        handleselectFilter("collaborator_ids", user.id);
                       }}
                     >
                       {initials}
@@ -709,45 +725,70 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
               : ""}
             <div
               className="filterStatusBox NotStarted"
-              onClick={() =>{
-                handleFilterClick("Not Started", "filterStatusBox NotStarted",'status','not-started')
-                handleselectFilter('status','not-started')
+              onClick={() => {
+                handleFilterClick(
+                  "Not Started",
+                  "filterStatusBox NotStarted",
+                  "status",
+                  "not-started"
+                );
+                handleselectFilter("status", "not-started");
               }}
             >
               Not Started
             </div>
             <div
               className="filterStatusBox Pending"
-              onClick={() =>{
-                handleFilterClick("Pending", "filterStatusBox Pending",'status','pending')
-                handleselectFilter('status','pending')
+              onClick={() => {
+                handleFilterClick(
+                  "Pending",
+                  "filterStatusBox Pending",
+                  "status",
+                  "pending"
+                );
+                handleselectFilter("status", "pending");
               }}
             >
               Pending
             </div>
             <div
               className="filterStatusBox InProgress"
-              onClick={() =>{
-                handleFilterClick("In Progress", "filterStatusBox InProgress",'status','in-progress')
-                handleselectFilter('status','in-progress')
+              onClick={() => {
+                handleFilterClick(
+                  "In Progress",
+                  "filterStatusBox InProgress",
+                  "status",
+                  "in-progress"
+                );
+                handleselectFilter("status", "in-progress");
               }}
             >
               In Progress
             </div>
             <div
               className="filterStatusBox OnHold"
-              onClick={() =>{
-                handleFilterClick("On Hold", "filterStatusBox OnHold",'status','on-hold')
-                handleselectFilter('status','on-hold')
+              onClick={() => {
+                handleFilterClick(
+                  "On Hold",
+                  "filterStatusBox OnHold",
+                  "status",
+                  "on-hold"
+                );
+                handleselectFilter("status", "on-hold");
               }}
             >
               On Hold
             </div>
             <div
               className="filterStatusBox Completed"
-              onClick={() =>{
-                handleFilterClick("Completed", "filterStatusBox Completed",'status','completed')
-                handleselectFilter('status','completed')
+              onClick={() => {
+                handleFilterClick(
+                  "Completed",
+                  "filterStatusBox Completed",
+                  "status",
+                  "completed"
+                );
+                handleselectFilter("status", "completed");
               }}
             >
               Completed
@@ -770,18 +811,28 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
             </div> */}
             <div
               className="filterProgressBox"
-              onClick={() =>{
-                handleFilterClick("Due This Week", "filterProgressBox",'due','this_week')
-                handleselectFilter('due','this_week')
+              onClick={() => {
+                handleFilterClick(
+                  "Due This Week",
+                  "filterProgressBox",
+                  "due",
+                  "this_week"
+                );
+                handleselectFilter("due", "this_week");
               }}
             >
               Due This Week
             </div>
             <div
               className="filterProgressBox"
-              onClick={() =>{
-                handleFilterClick("<14 Days Left", "filterProgressBox",'due','in_14_days')
-                handleselectFilter('due','in_14_days')
+              onClick={() => {
+                handleFilterClick(
+                  "<14 Days Left",
+                  "filterProgressBox",
+                  "due",
+                  "in_14_days"
+                );
+                handleselectFilter("due", "in_14_days");
               }}
             >
               {"<"}14 Days Left
@@ -813,7 +864,10 @@ const Filter = ({ setFilteredJobs,setFilteredString,setFilteredQuery , setLoadin
           </div>
           {filtersSeleted && (
             <>
-              <div className="filterBtnBox confirmBox" onClick={handleFilterApply}>
+              <div
+                className="filterBtnBox confirmBox"
+                onClick={handleFilterApply}
+              >
                 <span>
                   <TickIcon />
                 </span>

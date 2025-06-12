@@ -4206,13 +4206,9 @@ export const NewTaskModal = ({
                             (dueDateObj - now) / (1000 * 60 * 60 * 24)
                           );
 
-                          return daysLeft >= 1 ? (
-                            `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
-                          ) : daysLeft <= 0 ? (
-                            `${0} days`
-                          ) : (
-                            <span style={{ color: "#616161" }}>No Data</span>
-                          );
+                          return daysLeft >= 1
+                            ? `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
+                            : `${0} days`;
                         })()
                       ) : (
                         <span style={{ color: "#616161" }}>No Data</span>
@@ -5155,13 +5151,9 @@ export const UpdateTaskModal = React.forwardRef(
                               (dueDateObj - now) / (1000 * 60 * 60 * 24)
                             );
 
-                            return daysLeft >= 1 ? (
-                              `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
-                            ) : daysLeft <= 0 ? (
-                              `${0} days`
-                            ) : (
-                              <span style={{ color: "#616161" }}>No Data</span>
-                            );
+                            return daysLeft >= 1
+                              ? `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
+                              : `${0} days`;
                           })()
                         ) : (
                           <span style={{ color: "#616161" }}>No Data</span>
@@ -6166,17 +6158,11 @@ export const CreateTaskModal = memo(
                                       (dueDateObj - now) / (1000 * 60 * 60 * 24)
                                     );
 
-                                    return daysLeft >= 1 ? (
-                                      `${daysLeft} day${
-                                        daysLeft === 1 ? "" : "s"
-                                      }`
-                                    ) : daysLeft <= 0 ? (
-                                      `${0} days`
-                                    ) : (
-                                      <span style={{ color: "#616161" }}>
-                                        No Data
-                                      </span>
-                                    );
+                                    return daysLeft >= 1
+                                      ? `${daysLeft} day${
+                                          daysLeft === 1 ? "" : "s"
+                                        }`
+                                      : `${0} days`;
                                   })()
                                 ) : (
                                   <span style={{ color: "#616161" }}>
@@ -6203,15 +6189,11 @@ export const CreateTaskModal = memo(
                                   (dueDateObj - now) / (1000 * 60 * 60 * 24)
                                 );
 
-                                return daysLeft >= 1 ? (
-                                  `${daysLeft} day${daysLeft === 1 ? "" : "s"}`
-                                ) : daysLeft <= 0 ? (
-                                  `${0} days`
-                                ) : (
-                                  <span style={{ color: "#616161" }}>
-                                    No Data
-                                  </span>
-                                );
+                                return daysLeft >= 1
+                                  ? `${daysLeft} day${
+                                      daysLeft === 1 ? "" : "s"
+                                    }`
+                                  : `${0} days`;
                               })()
                             ) : (
                               <span style={{ color: "#616161" }}>No Data</span>

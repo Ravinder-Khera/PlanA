@@ -556,8 +556,6 @@ export const CollaboratorNameBorders = {
   "Julian Hayes": "1px solid #864EE0",
 };
 
-
-
 export const CollaboratorNameBG = {
   "Adam Nagel": "#C21807",                  // Chili Red (actual: #C21807)
   "Peter Catchlove": "#73182C",         // QLD Maroon
@@ -598,7 +596,6 @@ export const CollaboratorNameColor = {
   "Josh Dixon": "#353535",              // Alias of Joshua Dixon
 };
 
-
 export function addNotification(type, message) {
   const notificationData = {
     class: type,
@@ -615,7 +612,6 @@ export function addNotification(type, message) {
   localStorage.setItem("notifications", JSON.stringify(existingNotifications));
 }
 
-
 export function sortTasksByDueDateProximity(tasks) {
   const today = new Date();
 
@@ -629,3 +625,19 @@ export function sortTasksByDueDateProximity(tasks) {
     return aDiff - bDiff;
   });
 }
+
+export const locationOptions = [
+  { location: "Balonne (S)", state: "QLD" },
+  { location: "Banana (S)", state: "QLD" },
+  { location: "Barcaldine (R)", state: "QLD" },
+  { location: "Barcoo (S)", state: "QLD" },
+  { location: "Blackall-Tambo (R)", state: "QLD" },
+  { location: "Boulia (S)", state: "QLD" },
+  { location: "Brisbane (C)", state: "QLD" },
+  { location: "Bulloo (S)", state: "QLD" },
+  { location: "Bundaberg (R)", state: "QLD" },
+  { location: "Burdekin (S)", state: "QLD" },
+  { location: "Burke (S)", state: "QLD" },
+  
+];
+

@@ -5,6 +5,7 @@ const Sort = ({
   setFilteredJobs,
   setFilteredString,
   setFilteredQuery,
+  filteredQuery,
   setLoading,
   closeFilter,
 }) => {
@@ -17,7 +18,7 @@ const Sort = ({
   const statusFilterData = [
     {
       label: "Days Left",
-      value: "",
+      value: "sort_by=days_left&sort_order_asc",
     },
     {
       label: "Job Name - Alphabetical",
@@ -30,16 +31,44 @@ const Sort = ({
   ];
 
   const handleApplyFilter = async () => {
+    if(!filterString.value) return
     setLoading(true);
     try {
-      const response = await FilterJobs({ perPage: 200 }, filterString.value);
+        const prevQuery = filteredQuery;
+    const updatedQuery = { ...prevQuery, page: 1, perPage: 50 };
+    delete updatedQuery.sort;
+      const response = await FilterJobs(
+        {...updatedQuery },
+        filterString.value
+      );
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
       }
+      setFilteredQuery((prevQuery) => {
+        const updatedQuery = { ...prevQuery, sort: filterString.value };
+        return updatedQuery;
+      });
+
+      setFilteredString((prevString) => {
+        const filteredWithoutSort = prevString.filter(
+          (item) => item.type !== "sort"
+        );
+
+        return [
+          ...filteredWithoutSort,
+          {
+            className: "filterStatusBox OnHold",
+            filter: filterString.label,
+            type: "sort",
+            value: filterString.value,
+          },
+        ];
+      });
     } catch (error) {
       console.log("error in applying filter", error);
     } finally {
       setLoading(false);
+      closeFilter()
     }
   };
 
@@ -65,9 +94,9 @@ const Sort = ({
           >
             <div className="selectBox">{filterString.label}</div>
             <button onClick={handleApplyFilter}>Apply</button>
-            {filterString?.value !== "" && (
+            {/* {filterString?.value !== "" && (
               <button onClick={handleCancelFilter}>Clear</button>
-            )}
+            )} */}
           </div>
           {showFilterDropdown && (
             <div className="filterOptionsDiv">

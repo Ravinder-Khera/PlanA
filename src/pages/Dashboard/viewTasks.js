@@ -797,7 +797,7 @@ function ViewTaskPage() {
                 closeFilter={() => setShowFilter(false)}
                 isOn={isOn}
               />
-            )}
+            )}280px
           </div>
         </div>
         <div className="d-flex gap-3 flex-wrap align-items-center">
@@ -954,16 +954,16 @@ function ViewTaskPage() {
       </div>
 
       <div className="DashboardTopMenu">
-        <div className="d-flex align-items-center justify-content-start gap-2">
+        <div className="d-flex align-items-center justify-content-start gap-2 mb-3">
           <ToggleButton isOn={isOn} setIsOn={setIsOn} />{" "}
           <div className="task-toggle-text"> Completed Tasks</div>
         </div>
-        <div className="pagination-container justify-content-start">
+        <div className="pagination-container justify-content-start viewTask">
           <div className="taskContainer">
             <ul
               style={{
                 position: "relative",
-                overflowY: "auto",
+                overflow: "auto",
                 maxHeight: "800px",
                 zIndex: "1",
                 paddingRight: "10px",
@@ -977,14 +977,14 @@ function ViewTaskPage() {
                   top: 0,
                   zIndex: 200,
                 }}
-                className="heading"
+                className="heading tastTitle"
               >
-                <div className="listContent">Title</div>
-                <div className="listContent centerContent">
-                  <div className="centerText text-start">Stage</div>
+                <div className="listContent TastTitleCol1">Title</div>
+                <div className="listContent centerContent TastTitleCol2">
+                  <div className="centerText text-center Task-title-stage">Stage</div>
 
                   <div
-                    className="centerText"
+                    className="centerText Task-title-job"
                     style={{
                       textAlign: "left",
                     }}
@@ -992,32 +992,32 @@ function ViewTaskPage() {
                     Job Name
                   </div>
                 </div>
-                <div className="listContent navMenuDiv p-0 bg-transparent shadow-none d-flex justify-content-end">
+                <div className="listContent navMenuDiv p-0 bg-transparent shadow-none d-flex  TaskTitleCol3">
                   <div
-                    className="d-flex w-100 align-items-center gap-2 justify-content-end"
-                    style={{ maxWidth: "500px" }}
+                    className="d-flex w-100 align-items-center InnerTaskTitleCol3 "
+                    // style={{ maxWidth: "500px" }}
                   >
                     <div
-                      className="centerText text-center"
-                      style={{ flex: "1", maxWidth: "100px" }}
+                      className="centerText text-center Task-title-status"
+                      // style={{ flex: "1", maxWidth: "100px" }}
                     >
                       Status
                     </div>
                     <div
-                      className="centerText text-center"
-                      style={{ flex: "1" }}
+                      className="centerText text-center Task-title-date"
+                      // style={{ flex: "1" }}
                     >
                       Due Date
                     </div>
                     <div
-                      className="centerText text-center"
-                      style={{ flex: "1" }}
+                      className="centerText text-center Task-title-days"
+                      // style={{ flex: "1" }}
                     >
                       Days Left
                     </div>
                     <div
-                      className="centerText text-center"
-                      style={{ flex: "1" }}
+                      className="centerText text-center Task-title-job"
+                      // style={{ flex: "1" }}
                     >
                       Job No.
                     </div>
@@ -1040,7 +1040,7 @@ function ViewTaskPage() {
                     }}
                   >
                     <div
-                      className={`listContent listTitle`}
+                      className={`listContent listTitle TaskCol1`}
                       style={{
                         justifyContent: 'space-between'
                       }}
@@ -1062,15 +1062,13 @@ function ViewTaskPage() {
                         )}
                       </p>
 
-                      <p style={{ marginRight: "30px", cursor: "pointer" }}>
+                      <p style={{cursor: "pointer" }}>
                         <ArrowRight />
                       </p>
                     </div>
-                    <div className="listContent centerContent">
+                    <div className="listContent centerContent TaskCol2">
                       <div
-                        className={`centerText stageBtn btn_${task?.stage?.title}`}  style={{
-                          maxWidth: "150px",
-                        }}
+                        className={`centerText stageBtn btn_${task?.stage?.title} TaskCol2_btn`} 
                       >
                         {task?.stage?.title ? task?.stage?.title : "N/A"}
                       </div>
@@ -1082,7 +1080,7 @@ function ViewTaskPage() {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
-                          width: "250px"
+                          width: "295px"
                         }}
                       >
                         {task?.job_title?.replace(/\b\w/g, (char) =>
@@ -1096,26 +1094,25 @@ function ViewTaskPage() {
                         )}
                       </div>
                     </div>
-                    <div className="listContent d-flex align-items-center gap-2 justify-content-end navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv">
+                    <div className="listContent d-flex align-items-center gap-2 navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv TaskCol3">
                       <div
-                        className="d-flex w-100 align-items-center gap-2 justify-content-end"
-                        style={{ maxWidth: "500px" }}
+                        className="d-flex w-100 align-items-center  justify-content-between InnerTaskCol3"
                       >
                         <div
-                          style={{ flex: "1", maxWidth: "100px" }}
-                          className={`centerText statusBtn m-0 ${task?.status}`}
+                          // style={{ flex: "1" }}
+                          className={`centerText statusBtn m-0 ${task?.status} TaskCol3_status`}
                         >
                           {task?.status ? task?.status : "N/A"}
                         </div>
                         <div
-                          style={{ flex: "1" }}
-                          className="text-center centerText"
+                          // style={{ flex: "1" }}
+                          className="text-center centerText TaskCol3_date"
                         >
                           {formatDate(task?.due_date)}
                         </div>
                         <div
-                          style={{ flex: "1" }}
-                          className="text-center centerText"
+                          // style={{ flex: "1" }}
+                          className="text-center centerText TaskCol3_days"
                         >
                           {moment(task?.due_date || new Date())
                             .startOf("day")
@@ -1130,7 +1127,9 @@ function ViewTaskPage() {
                                 return `${diff} day${diff === 1 ? "" : "s"}`;
                               })()}
                         </div>
-                        <div style={{ flex: "1" }} className={`JobBtn`}>
+                        <div 
+                        // style={{ flex: "1" }} 
+                        className={`JobBtn TaskCol3_jobno`}>
                           {task?.job_num
                             ? formatJobNumber(task?.job_num)
                             : "N/A"}

@@ -9,14 +9,17 @@ import {
   ArrowRight,
   BellIcon,
   CloseIcon,
+  CrossIcon,
   FilterCrossIcon,
   NewFilterIcon,
   RightArrow,
   Search,
   SortIcon,
+  TickIcon,
 } from "../../assets/svg";
 import ErrorToast from "../../Components/ErrorToast";
 import Filter from "../../Components/Filter/Filter";
+import Sort from "../../Components/Filter/Sort";
 import {
   CreateTaskModal,
   NewJobModal,
@@ -29,8 +32,9 @@ import {
   addNotification,
   CollaboratorNameBG,
   CollaboratorNameColor,
+  locationOptions,
   sortTasksByDueDateProximity,
-  StatusList
+  StatusList,
 } from "../../helper";
 import {
   createJobs,
@@ -47,7 +51,6 @@ import {
   updateTask,
 } from "../../services/auth";
 import "./Jobs.scss";
-import Sort from "../../Components/Filter/Sort";
 const renderComment = (message) => {
   if (!message) return <p className="no-comment">No Comments</p>;
   const renderMessage = (text) => {
@@ -139,7 +142,7 @@ const Jobs = () => {
   const [activeJobField, setActiveJobField] = useState("");
   const [selectSearchOptions, setSelectSearchOptions] = useState("");
   const [showingSearchOptions, setShowingSearchOptions] = useState("");
-  const [showSort, setShowSort] = useState(false)
+  const [showSort, setShowSort] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showAddJoRow, setShowAddJobRow] = useState(false);
   const [notificationDropDown, setNotificationDropDown] = useState(false);
@@ -156,8 +159,8 @@ const Jobs = () => {
   const [storageUpdated, setStorageUpdated] = useState(false);
   const [reloadTabs, setReloadTabs] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showAllTasks, setShowAllTasks] = useState(false);
   const [showSearchOptions, setShowSearchOptions] = useState(false);
+  const [locations, setLocations] = useState(locationOptions);
 
   const [notifications, setNotifications] = useState([]);
   const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
@@ -169,7 +172,7 @@ const Jobs = () => {
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [pageUrls, setPageUrls] = useState([]);
   const [filteredString, setFilteredString] = useState([]);
-  const [filteredQuery, setFilteredQuery] = useState([]);
+  const [filteredQuery, setFilteredQuery] = useState({});
 
   const [newJobIdNumber, setNewJobIdNumber] = useState(Number("00000"));
   const [newJobIdNumberForNewTask, setNewJobIdNumberForNewTask] = useState(
@@ -196,6 +199,12 @@ const Jobs = () => {
   const [deletingId, setDeletingId] = useState(null);
   const { state } = location;
   const prevPathRef = useRef(location.pathname);
+  const [customLocation, setCustomLocation] = useState({
+    location: "",
+    state: "",
+  });
+  const [isCustomLocation, setIsCustomLocation] = useState(false);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     if (jobId) {
@@ -390,7 +399,6 @@ const Jobs = () => {
         notificationRef.current &&
         !notificationRef.current.contains(e.target)
       ) {
-        console.log("clicked job");
         setNotificationDropDown(false);
       }
     };
@@ -406,7 +414,7 @@ const Jobs = () => {
     let handler = (e) => {
       if (filterRef.current && !filterRef.current.contains(e.target)) {
         setShowFilter(false);
-        setShowSort(false)
+        setShowSort(false);
       }
     };
 
@@ -417,7 +425,6 @@ const Jobs = () => {
     };
   }, []);
 
-  // Function to extract users from stages
   function extractUsersFromStages(data) {
     if (!data) return;
     let usersArray;
@@ -469,6 +476,8 @@ const Jobs = () => {
         setTotalPages(res?.res?.last_page || 0);
         setPageUrls(res?.res?.links?.slice(1, -1) || []);
         setReloadTabs((prevReload) => !prevReload);
+        setLoadTotalPage(res?.res?.last_page);
+        setLoadMorePage(loadMorePage + 1);
       }
     } catch (error) {
       console.error("Error while fetching jobs:", error);
@@ -479,7 +488,7 @@ const Jobs = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [fetchJobs]);
+  }, [fetchJobs, reload]);
 
   const handleScroll = useCallback(async () => {
     const container = containerRef.current;
@@ -493,7 +502,22 @@ const Jobs = () => {
     ) {
       setLoading(true);
       try {
-        const res = await getJobs(loadMorePage + 1);
+        let res;
+        const isNonEmpty =
+          filteredQuery && Object.keys(filteredQuery).length > 0;
+        if (isNonEmpty) {
+          const { sort, ...queryWithoutSort } = filteredQuery;
+          console.log("filtered query", sort, filteredQuery);
+          res = await FilterJobs(
+            {
+              ...queryWithoutSort,
+              page: loadMorePage + 1,
+            },
+            sort
+          );
+        } else {
+          res = await getJobs(loadMorePage + 1);
+        }
         const data = res?.res?.data;
         setLoadTotalPage(res?.res?.last_page);
 
@@ -860,6 +884,15 @@ const Jobs = () => {
     setUpdateJobId(job.id);
   };
 
+  const handleLocationClick = (job) => {
+    setActiveJobField("Location");
+    if (activeJob?.id === job?.id) {
+      return;
+    }
+    setActiveJob(job);
+    setUpdateJobId(job.id);
+  };
+
   const handleStatusClick = (job) => {
     setActiveJobField("Status");
     if (activeJob?.id === job?.id) {
@@ -946,7 +979,6 @@ const Jobs = () => {
     }
   };
 
-  // 📌 Effect 1: Detect mousedown outside to trigger update
   useEffect(() => {
     const handleClickOutside = async (event) => {
       if (
@@ -988,7 +1020,6 @@ const Jobs = () => {
     showNewJobModalWithTasks,
   ]);
 
-  // 📌 Effect 2: Save on pathname change or unmount
   useEffect(() => {
     const prevPath = prevPathRef.current;
     const currentPath = location.pathname;
@@ -1327,13 +1358,6 @@ const Jobs = () => {
 
   const handleAddNewJobWithTask = async (task) => {
     setFilteredJobs((prevJobs) =>
-      // prevJobs.map((job) => ({
-      //   ...job,
-      //   tasks:
-      //     job.job_num === task.job_num
-      //       ? [...(job.tasks || []), { ...task, id: "temp" }]
-      //       : job.tasks,
-      // }))
       prevJobs.map((job) => {
         if (job?.job_num === task?.job_num) {
           const updatedTasks = [...(job.tasks || []), { ...task, id: "temp" }];
@@ -1413,32 +1437,86 @@ const Jobs = () => {
     return color;
   };
 
-  const handleRemoveFilter = async (value) => {
-    const updatedQuery = {
-      ...filteredQuery,
-      collaborator_ids: filteredQuery.collaborator_ids?.filter(
-        (id) => id !== value.value
-      ),
-      statuses: filteredQuery.statuses?.filter(
-        (status) => status !== value.value
-      ),
-    };
+  const handleRemoveFilter = async (fq) => {
+    const prevQuery = filteredQuery;
+    const updatedQuery = { ...prevQuery, page: 1 };
 
-    if (updatedQuery.collaborator_ids?.length === 0)
-      delete updatedQuery.collaborator_ids;
-    if (updatedQuery.statuses?.length === 0) delete updatedQuery.statuses;
+    // Remove specific filter type from temp query
+    if (fq?.type === "status") {
+      updatedQuery.statuses = prevQuery.statuses?.filter(
+        (status) => status !== fq.value
+      );
+      if (!updatedQuery.statuses?.length) delete updatedQuery.statuses;
+    }
 
-    setFilteredQuery(updatedQuery);
-    setFilteredString((prevFiltered) =>
-      prevFiltered.filter((item) => item !== value)
+    if (fq?.type === "collaborator_ids") {
+      updatedQuery.collaborator_ids = prevQuery.collaborator_ids?.filter(
+        (id) => id !== fq.value
+      );
+      if (!updatedQuery.collaborator_ids?.length)
+        delete updatedQuery.collaborator_ids;
+    }
+
+    if (fq?.type === "due") {
+      updatedQuery.due = prevQuery.due?.filter((item) => item !== fq.value);
+      if (!updatedQuery.due?.length) delete updatedQuery.due;
+    }
+
+    let sortValue = undefined;
+
+    // If type is not "sort", retain sort and pass it to FilterJobs
+    if (fq?.type !== "sort" && prevQuery?.sort) {
+      sortValue = prevQuery.sort;
+    }
+
+    delete updatedQuery.sort;
+
+    setFilteredQuery((prev) => {
+      const newQuery = { ...prev };
+      if (fq.type === "status") {
+        newQuery.statuses = newQuery.statuses?.filter(
+          (status) => status !== fq.value
+        );
+        if (!newQuery.statuses?.length) delete newQuery.statuses;
+      }
+
+      if (fq.type === "collaborator_ids") {
+        newQuery.collaborator_ids = newQuery.collaborator_ids?.filter(
+          (id) => id !== fq.value
+        );
+        if (!newQuery.collaborator_ids?.length)
+          delete newQuery.collaborator_ids;
+      }
+
+      if (fq.type === "due") {
+        newQuery.due = newQuery.due?.filter((item) => item !== fq.value);
+        if (!newQuery.due?.length) delete newQuery.due;
+      }
+
+      if (fq.type === "sort") {
+        delete newQuery.sort;
+      }
+
+      return newQuery;
+    });
+
+    const updatedFilterStr = filteredString.filter(
+      (item) => item.filter !== fq?.filter
     );
+    setFilteredString(updatedFilterStr);
+    console.log("updatedQuery", updatedQuery, updatedFilterStr);
 
     try {
       setLoading(true);
-      const response = await FilterJobs(updatedQuery);
 
-      if (!response.error) {
-        setFilteredJobs(response?.res?.data);
+      if (!updatedFilterStr || updatedFilterStr?.length === 0) {
+        setFilteredQuery({});
+        setReload(!reload);
+      } else {
+        const response = await FilterJobs(updatedQuery, sortValue);
+        if (!response.error) {
+          setFilteredJobs(response?.res?.data);
+        }
       }
     } catch (error) {
       console.error("Error in applying filter:", error);
@@ -1505,6 +1583,36 @@ const Jobs = () => {
       handleCancelAddJob(); // Reset state after action
       setLoading(false);
     }
+  };
+
+  const handleAddCustomLocation = async () => {
+    const { location, state } = customLocation;
+    if (!location || !state) {
+      toast.error("Please fill all the fields");
+      return;
+    }
+    let tmpLocations = [...locations];
+    tmpLocations.push({
+      location,
+      state,
+    });
+    setLocations(tmpLocations);
+    setCustomLocation({
+      location: "",
+      state: "",
+    });
+    setIsCustomLocation(false);
+  };
+
+  const handleLocationUpdate = (value) => {
+    setActiveJobField("");
+    setFilteredJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.id === activeJob?.id
+          ? { ...job, location: value?.location, state: value?.state }
+          : job
+      )
+    );
   };
 
   return (
@@ -1686,7 +1794,7 @@ const Jobs = () => {
       <div className="jobsBg">
         <div
           className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap"
-          style={{ zIndex: "2" , justifyContent:"space-between"  }}
+          style={{ zIndex: "2", justifyContent: "space-between" }}
         >
           <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
             <h2>Jobs</h2>
@@ -1808,9 +1916,10 @@ const Jobs = () => {
             >
               <div
                 className="d-flex align-items-center gap-2  "
-                onClick={() =>{ 
-                  setShowSort(false)
-                  setShowFilter(!showFilter)}}
+                onClick={() => {
+                  setShowSort(false);
+                  setShowFilter(!showFilter);
+                }}
               >
                 <NewFilterIcon />
                 <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
@@ -1824,23 +1933,26 @@ const Jobs = () => {
                   setFilteredJobs={setFilteredJobs}
                   setLoading={setLoading}
                   closeFilter={() => setShowFilter(false)}
+                  filteredQuery={filteredQuery}
                 />
               )}
               <div
                 className="d-flex align-items-center gap-2  "
-                onClick={() =>{ 
-                  setShowFilter(false)
-                  setShowSort(!showSort)}}
+                onClick={() => {
+                  setShowFilter(false);
+                  setShowSort(!showSort);
+                }}
               >
                 <SortIcon />
                 <p style={{ color: "#E2E31F", fontSize: "14px", margin: "0" }}>
                   Sort
                 </p>
               </div>
-               {showSort && (
+              {showSort && (
                 <Sort
                   setFilteredString={setFilteredString}
                   setFilteredQuery={setFilteredQuery}
+                  filteredQuery={filteredQuery}
                   setFilteredJobs={setFilteredJobs}
                   setLoading={setLoading}
                   closeFilter={() => setShowSort(false)}
@@ -1933,7 +2045,10 @@ const Jobs = () => {
             </div>
           </div>
         </div>
-        <div className="JobsHeading d-flex align-items-center justify-content-between" style={{ justifyContent:"space-between" }}>
+        <div
+          className="JobsHeading d-flex align-items-center justify-content-between"
+          style={{ justifyContent: "space-between" }}
+        >
           <div className="d-flex align-items-center justify-content-start gap-3">
             <div className="delete-box">
               <div className="delete-item d-flex align-items-center flex-wrap gap-2">
@@ -2264,6 +2379,9 @@ const Jobs = () => {
                           <th scope="col">
                             <div className="headerDiv">Comments</div>
                           </th>
+                          <th scope="col">
+                            <div className="headerDiv">Location</div>
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="table_right">
@@ -2300,15 +2418,15 @@ const Jobs = () => {
                                                 minWidth: "40px",
                                                 zIndex: index,
                                                 cursor: "pointer",
-                                                 border: "1px solid #767676",
-                                                  backgroundColor:
-                                                    CollaboratorNameBG[
-                                                      user?.name
-                                                    ] || "#353535",
-                                                  color:
-                                                    CollaboratorNameColor[
-                                                      user?.name
-                                                    ] || "#fff",
+                                                border: "1px solid #767676",
+                                                backgroundColor:
+                                                  CollaboratorNameBG[
+                                                    user?.name
+                                                  ] || "#353535",
+                                                color:
+                                                  CollaboratorNameColor[
+                                                    user?.name
+                                                  ] || "#fff",
                                               }}
                                             >
                                               {initials}
@@ -2403,15 +2521,15 @@ const Jobs = () => {
                                               className={`collaboratorsBoxUser`}
                                               style={{
                                                 minWidth: "40px",
-                                                 border: "1px solid #767676",
-                                                  backgroundColor:
-                                                    CollaboratorNameBG[
-                                                      user?.name
-                                                    ] || "#353535",
-                                                  color:
-                                                    CollaboratorNameColor[
-                                                      user?.name
-                                                    ] || "#fff",
+                                                border: "1px solid #767676",
+                                                backgroundColor:
+                                                  CollaboratorNameBG[
+                                                    user?.name
+                                                  ] || "#353535",
+                                                color:
+                                                  CollaboratorNameColor[
+                                                    user?.name
+                                                  ] || "#fff",
                                               }}
                                             >
                                               {initials}
@@ -2519,49 +2637,7 @@ const Jobs = () => {
                                 </div>
                               )}
                             </td>
-                            {/* <td
-                              className={`text-center clickBox ${
-                                newJobActiveBoxRight === "SetDueDate" &&
-                                "active"
-                              }`}
-                            >
-                              <div
-                                className={`clickBoxtext`}
-                                style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  setNewJobActiveBoxRight("SetDueDate");
-                                  setNewJobActiveBoxLeft("");
-                                }}
-                              >
-                                {selectedNewJobDueDate ? (
-                                  <span style={{ color: "#fff" }}>
-                                    {selectedNewJobDueDate}
-                                  </span>
-                                ) : (
-                                  "Set Due Date"
-                                )}
-                              </div>
-                              {newJobActiveBoxRight === "SetDueDate" && (
-                                <div className="datePickerDiv">
-                                  <Calendar
-                                    date={selectedNewJobDueDate}
-                                    onChange={handleSelectDueDate}
-                                    value={selectedNewJobDueDate}
-                                    calendarType="ISO 8601"
-                                    minDate={new Date()}
-                                    rangeColors={["#E2E31F"]}
-                                    maxDate={
-                                      new Date(
-                                        new Date().setFullYear(
-                                          new Date().getFullYear() +
-                                            MAX_CALENDAR_YEAR
-                                        )
-                                      )
-                                    }
-                                  />
-                                </div>
-                              )}
-                            </td> */}
+
                             <td className="text-center">
                               {selectedNewJobDueDate ? (
                                 moment(selectedNewJobDueDate)
@@ -2651,7 +2727,7 @@ const Jobs = () => {
                                                 style={{
                                                   minWidth: "40px",
                                                   zIndex: index,
-                                                   border: "1px solid #767676",
+                                                  border: "1px solid #767676",
                                                   backgroundColor:
                                                     CollaboratorNameBG[
                                                       user?.name
@@ -2720,15 +2796,16 @@ const Jobs = () => {
                                                     className={`collaboratorsBoxUser`}
                                                     style={{
                                                       minWidth: "40px",
-                                                      border: "1px solid #767676",
-                                                  backgroundColor:
-                                                    CollaboratorNameBG[
-                                                      user?.name
-                                                    ] || "#353535",
-                                                  color:
-                                                    CollaboratorNameColor[
-                                                      user?.name
-                                                    ] || "#fff",
+                                                      border:
+                                                        "1px solid #767676",
+                                                      backgroundColor:
+                                                        CollaboratorNameBG[
+                                                          user?.name
+                                                        ] || "#353535",
+                                                      color:
+                                                        CollaboratorNameColor[
+                                                          user?.name
+                                                        ] || "#fff",
                                                     }}
                                                   >
                                                     {initials}
@@ -2755,15 +2832,15 @@ const Jobs = () => {
                                                   className={`collaboratorsBoxUser`}
                                                   style={{
                                                     minWidth: "40px",
-                                                     border: "1px solid #767676",
-                                                  backgroundColor:
-                                                    CollaboratorNameBG[
-                                                      user?.name
-                                                    ] || "#353535",
-                                                  color:
-                                                    CollaboratorNameColor[
-                                                      user?.name
-                                                    ] || "#fff",
+                                                    border: "1px solid #767676",
+                                                    backgroundColor:
+                                                      CollaboratorNameBG[
+                                                        user?.name
+                                                      ] || "#353535",
+                                                    color:
+                                                      CollaboratorNameColor[
+                                                        user?.name
+                                                      ] || "#fff",
                                                   }}
                                                 >
                                                   {initials}
@@ -2850,38 +2927,7 @@ const Jobs = () => {
                                     </div>
                                   )}
                               </td>
-                              {/* <td className={`text-center clickBox`}>
-                                <div
-                                  className={`clickBoxtext`}
-                                  style={{ cursor: "pointer", color: "#fff" }}
-                                  onClick={() => handleDueDateClick(job)}
-                                >
-                                  {moment(job.due_date)
-                                    .local()
-                                    .format("DD/MM/YYYY")}
-                                </div>
-                                {activeJob?.id === job.id &&
-                                  activeJobField === "DueDate" && (
-                                    <div className="datePickerDiv">
-                                      <Calendar
-                                        date={editedJobDueDate}
-                                        onChange={handleDueDateChange}
-                                        value={editedJobDueDate}
-                                        calendarType="ISO 8601"
-                                        rangeColors={["#E2E31F"]}
-                                        minDate={new Date()}
-                                        maxDate={
-                                          new Date(
-                                            new Date().setFullYear(
-                                              new Date().getFullYear() +
-                                                MAX_CALENDAR_YEAR
-                                            )
-                                          )
-                                        }
-                                      />
-                                    </div>
-                                  )}
-                              </td> */}
+
                               <td className="text-center">
                                 {moment(job?.due_date || new Date())
                                   .startOf("day")
@@ -2980,6 +3026,135 @@ const Jobs = () => {
                                         job?.comments[job?.comments?.length - 1]
                                       )
                                     : renderComment(null)}
+                                </div>
+                              </td>
+                              <td className="px-3">
+                                <div className={`px-3 clickBox`}>
+                                  <div
+                                    className={`clickBoxtext text-center`}
+                                    onClick={() => handleLocationClick(job)}
+                                  >
+                                    {job.location ? (
+                                      <span
+                                        style={{
+                                          color: "#fff",
+                                        }}
+                                      >
+                                        {job.location}
+                                      </span>
+                                    ) : (
+                                      <span>Add Location +</span>
+                                    )}
+                                  </div>
+                                  {activeJob?.id === job.id &&
+                                    activeJobField === "Location" && (
+                                      <div
+                                        className={`newJobItemDropBox location`}
+                                      >
+                                        <div className="locationlist">
+                                          {locations.map((location, index) => {
+                                            return (
+                                              <div
+                                                key={index}
+                                                className="selectCollaboratorsBox"
+                                                onClick={() =>
+                                                  handleLocationUpdate(location)
+                                                }
+                                              >
+                                                <span>{location.location}</span>
+                                                <span>{location.state}</span>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                        <div className="custom-task">
+                                          {isCustomLocation ? (
+                                            <div className="customLocation-container">
+                                              <hr />
+                                              <div className="location-cntr">
+                                                <input
+                                                  type="text"
+                                                  className="location"
+                                                  placeholder="Location Name"
+                                                  value={
+                                                    customLocation.location
+                                                  }
+                                                  onChange={(e) =>
+                                                    setCustomLocation({
+                                                      ...customLocation,
+                                                      location: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                                <input
+                                                  type="text"
+                                                  className="state"
+                                                  placeholder="State"
+                                                  value={customLocation.state}
+                                                  onChange={(e) =>
+                                                    setCustomLocation({
+                                                      ...customLocation,
+                                                      state: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                              </div>
+                                              <div
+                                                className="d-flex align-items-center justify-content-start"
+                                                onClick={
+                                                  handleAddCustomLocation
+                                                }
+                                              >
+                                                <div
+                                                  className="add-btn"
+                                                  style={{ minWidth: "40px" }}
+                                                >
+                                                  <TickIcon />
+                                                </div>{" "}
+                                                Confirm New Custom Location
+                                              </div>
+                                              <div
+                                                className="d-flex align-items-center justify-content-start cancel-cntr"
+                                                onClick={() => {
+                                                  setIsCustomLocation(false);
+                                                  setCustomLocation({
+                                                    location: "",
+                                                    state: "",
+                                                  });
+                                                }}
+                                              >
+                                                <div
+                                                  className="cancel-btn"
+                                                  style={{ minWidth: "40px" }}
+                                                >
+                                                  <CrossIcon />
+                                                </div>{" "}
+                                                Cancel Location
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div
+                                              className="d-flex align-items-center justify-content-start "
+                                              onClick={() => {
+                                                setCustomLocation({
+                                                  location: "",
+                                                  state: "",
+                                                });
+                                                setIsCustomLocation(true);
+                                              }}
+                                            >
+                                              <div
+                                                className="add-btn"
+                                                style={{ minWidth: "40px" }}
+                                              >
+                                                <AddIcon />
+                                              </div>{" "}
+                                              Create Custom Location
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
                                 </div>
                               </td>
                             </tr>
