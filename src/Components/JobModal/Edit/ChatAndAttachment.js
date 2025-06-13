@@ -18,7 +18,7 @@ import {
   CollaboratorNameBG,
   CollaboratorNameColor
 } from "../../../helper";
-import { getProfile } from "../../../services/auth";
+import { getProfile } from "../../../services/api";
 import {
   addAttachments,
   deleteAttachments,

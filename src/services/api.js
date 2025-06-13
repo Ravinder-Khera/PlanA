@@ -1176,3 +1176,130 @@ export const getSingleTask = async (id) => {
     return { res: null, error: error };
   }
 };
+
+export const getStates = async () => {
+    const authToken = localStorage.getItem("authToken");
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+  };
+  try {
+    let response = await fetch(
+      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/states`,
+      requestOptions
+    );
+    const isJson = response.headers
+      .get("content-type")
+      ?.includes("application/json");
+    const data = isJson && (await response.json());
+    // console.log(response,data);
+    if (response.status === 200) {
+      return { res: data, error: null };
+    } else {
+      return { res: null, error: data };
+    }
+  } catch (error) {
+    console.error("There was an error!", error);
+    return { res: null, error: error };
+  }
+}
+
+
+export const getLocations = async () => {
+    const authToken = localStorage.getItem("authToken");
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+  };
+  try {
+    let response = await fetch(
+      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/locations`,
+      requestOptions
+    );
+    const isJson = response.headers
+      .get("content-type")
+      ?.includes("application/json");
+    const data = isJson && (await response.json());
+    // console.log(response,data);
+    if (response.status === 200) {
+      return { res: data, error: null };
+    } else {
+      return { res: null, error: data };
+    }
+  } catch (error) {
+    console.error("There was an error!", error);
+    return { res: null, error: error };
+  }
+}
+
+export const searchLocations = async (search) => {
+    const authToken = localStorage.getItem("authToken");
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+  };
+  try {
+    let response = await fetch(
+      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/locations/search?name=${search}`,
+      requestOptions
+    );
+    const isJson = response.headers
+      .get("content-type")
+      ?.includes("application/json");
+    const data = isJson && (await response.json());
+    // console.log(response,data);
+    if (response.status === 200) {
+      return { res: data, error: null };
+    } else {
+      return { res: null, error: data };
+    }
+  } catch (error) {
+    console.error("There was an error!", error);
+    return { res: null, error: error };
+  }
+}
+
+export const addLocations = async (locationName, stateId) => {
+    const authToken = localStorage.getItem("authToken");
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+    body:JSON.stringify({ "name": locationName, "state_id": stateId })
+  };
+  try {
+    let response = await fetch(
+      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/locations`,
+      requestOptions
+    );
+    const isJson = response.headers
+      .get("content-type")
+      ?.includes("application/json");
+    const data = isJson && (await response.json());
+    // console.log(response,data);
+    if (response.status === 200) {
+      return { res: data, error: null };
+    } else {
+      return { res: null, error: data };
+    }
+  } catch (error) {
+    console.error("There was an error!", error);
+    return { res: null, error: error };
+  }
+}
+

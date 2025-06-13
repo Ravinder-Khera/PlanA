@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Email } from '../../../assets/svg'
-import { forgotPassword } from '../../../services/auth';
+import { forgotPassword } from '../../../services/api';
 import { toast } from 'react-toastify';
 import { Bars } from 'react-loader-spinner'
 

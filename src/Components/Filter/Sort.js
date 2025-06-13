@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FilterJobs } from "../../services/auth";
+import { FilterJobs } from "../../services/api";
 
 const Sort = ({
   setFilteredJobs,
@@ -8,6 +8,8 @@ const Sort = ({
   filteredQuery,
   setLoading,
   closeFilter,
+  setLoadTotalPage,
+  setLoadMorePage,
 }) => {
   const [filterString, setfilterString] = useState({
     label: "Sort By",
@@ -31,18 +33,20 @@ const Sort = ({
   ];
 
   const handleApplyFilter = async () => {
-    if(!filterString.value) return
+    if (!filterString.value) return;
     setLoading(true);
     try {
-        const prevQuery = filteredQuery;
-    const updatedQuery = { ...prevQuery, page: 1, perPage: 50 };
-    delete updatedQuery.sort;
+      const prevQuery = filteredQuery;
+      const updatedQuery = { ...prevQuery, page: 1, perPage: 20 };
+      delete updatedQuery.sort;
       const response = await FilterJobs(
-        {...updatedQuery },
+        { ...updatedQuery },
         filterString.value
       );
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
+        setLoadMorePage(response?.res?.current_page + 1);
+        setLoadTotalPage(response?.res?.last_page);
       }
       setFilteredQuery((prevQuery) => {
         const updatedQuery = { ...prevQuery, sort: filterString.value };
@@ -68,7 +72,7 @@ const Sort = ({
       console.log("error in applying filter", error);
     } finally {
       setLoading(false);
-      closeFilter()
+      closeFilter();
     }
   };
 

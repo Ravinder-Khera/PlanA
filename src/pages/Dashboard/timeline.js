@@ -11,7 +11,7 @@ import {
   CollaboratorNameBG,
   CollaboratorNameColor
 } from "../../helper";
-import { updateTask } from "../../services/auth";
+import { updateTask } from "../../services/api";
 import { getJobComments } from "../../services/chat_attachment";
 import { formatJobNumber } from "../Jobs";
 
@@ -291,6 +291,11 @@ function TimelinePage() {
                                             part.charAt(0).toUpperCase()
                                           )
                                           .join("");
+                                          console.log("user", user.name, CollaboratorNameBG[
+                                                  user?.name
+                                                ], CollaboratorNameColor[
+                                                  user?.name
+                                                ])
                                         return (
                                           <div
                                             key={index}

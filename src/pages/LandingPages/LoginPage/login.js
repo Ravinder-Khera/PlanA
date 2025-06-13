@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ClosedEye, Key, OpenedEye, User } from '../../../assets/svg';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { LogIn, getProfile } from '../../../services/auth';
+import { LogIn, getProfile } from '../../../services/api';
 import { Bars } from 'react-loader-spinner'
 import { connect } from 'react-redux';
 import { loginSuccess } from '../../../services/actions';

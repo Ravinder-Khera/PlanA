@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DeleteIcon, TaskIcon, User } from "../../assets/svg";
 import { Bars } from "react-loader-spinner";
 import { Calendar } from "react-date-range";
-import { createInvoice } from "../../services/auth";
+import { createInvoice } from "../../services/api";
 import { toast } from "react-toastify";
 import { addNotification } from "../../helper";
 

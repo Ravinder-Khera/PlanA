@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AddIcon, DeleteIcon, Print } from "../../assets/svg";
 import { Bars } from "react-loader-spinner";
-import { deleteInvoices } from "../../services/auth";
+import { deleteInvoices } from "../../services/api";
 import { toast } from "react-toastify";
 import InvoicePopup from "./invoicePopup";
 import { addNotification } from "../../helper";

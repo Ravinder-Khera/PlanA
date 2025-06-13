@@ -38,7 +38,7 @@ import {
   getUserByRole,
   updateJobs,
   updateTask,
-} from "../../../services/auth";
+} from "../../../services/api";
 import AdhocTaskCompletionPopup from "../../dashboardTasks/AdhocTemplate";
 import TaskCompletionPopup from "../../dashboardTasks/TaskCompletionPopup";
 import ChatAndAttachment, {

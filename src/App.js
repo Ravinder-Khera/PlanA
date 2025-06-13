@@ -40,7 +40,7 @@ import Login from "./pages/LandingPages/LoginPage/login";
 import { ForgotPassword } from "./pages/LandingPages/Password/forgotPassword";
 import PasswordReset from "./pages/LandingPages/Password/passwordReset";
 import SettingsPage from "./pages/Settings/settings";
-import { getProfile } from "./services/auth";
+import { getProfile } from "./services/api";
 
 function DashboardMenuList() {
   const location = useLocation();

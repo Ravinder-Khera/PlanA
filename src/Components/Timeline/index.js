@@ -16,7 +16,7 @@ import {
   MIN_CALENDAR_YEAR
 } from "../../helper";
 import { formatJobNumber } from "../../pages/Jobs";
-import { getTimelineJobs } from "../../services/auth";
+import { getTimelineJobs } from "../../services/api";
 
 function Timeline({
   timeFrame,
@@ -875,11 +875,11 @@ function Timeline({
                                                                 "1px solid #767676",
                                                               backgroundColor:
                                                                 CollaboratorNameBG[
-                                                                  user
+                                                                  user?.name
                                                                 ] || "#353535",
                                                               color:
                                                                 CollaboratorNameColor[
-                                                                  user
+                                                                  user?.name
                                                                 ] || "#fff",
                                                             }}
                                                           >
@@ -997,7 +997,7 @@ function Timeline({
                                           ?.slice(0, 3)
                                           .map((user, index) => {
                                             const initials = user?.initials;
-
+                                            console.log("user", user)
                                             return (
                                               <div
                                                 key={index}
@@ -1007,11 +1007,11 @@ function Timeline({
                                                   zIndex: index,
                                                   border: "1px solid #767676",
                                                   backgroundColor:
-                                                    CollaboratorNameBG[user] ||
+                                                    CollaboratorNameBG[user?.name] ||
                                                     "#353535",
                                                   color:
                                                     CollaboratorNameColor[
-                                                      user
+                                                      user?.name
                                                     ] || "#fff",
                                                 }}
                                               >

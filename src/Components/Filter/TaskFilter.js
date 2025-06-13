@@ -5,7 +5,7 @@ import {
   getJobsByFilter,
   getTasksByUser,
   getTaskStages
-} from "../../services/auth";
+} from "../../services/api";
 import "./style.scss";
 
 const TaskFilter = ({

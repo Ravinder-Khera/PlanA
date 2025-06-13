@@ -1,3 +1,4 @@
+import moment from "moment";
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid"
 export const arraysEqualById = (arr1, arr2) => {
@@ -642,3 +643,13 @@ export const locationOptions = [
   
 ];
 
+
+export function getDaysLeft(dueDate) {
+  const targetDate = moment(dueDate || new Date()).startOf("day");
+  const today = moment().startOf("day");
+
+  const diff = targetDate.diff(today, "days");
+
+  // If due date is in the past, return 0
+  return diff < 0 ? 0 : diff;
+}

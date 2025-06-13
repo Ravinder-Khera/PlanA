@@ -1167,29 +1167,35 @@
         padding: 20px;
         min-width: 517px;
         max-width: 661px;
-        z-index: 99;
+        z-index: 999;
         max-height: 314px;
-        overflow: hidden !important;
+        min-height: auto;
+        overflow: unset !important;
         .custom-task {
           display: flex;
           align-items: center;
           justify-content: flex-start;
-          margin-top: 15px;
+          // margin-top: 15px;
           color: #e2e31f;
           font-size: 16px;
           cursor: pointer;
-          padding: 8px 20px 20px;
+          padding: 8px 0px 0px;
           cursor: pointer;
-          position: absolute;
-          bottom: 0px;
-          left: 0px;
+          // position: absolute;
+          // bottom: 0px;
+          // left: 0px;
           background: #252525;
-          right: 0px;
+          // right: 0px;
+          // overflow-y: auto;
           .customLocation-container {
             display: flex;
             flex-direction: column;
             gap: 8px;
             width: 100%;
+            hr{
+              background-color: #353535 !important;
+              margin: 10px 0 !important;
+            }
             .location-cntr {
               display: flex;
               align-items: center;
@@ -1198,7 +1204,7 @@
                 border-radius: 2px;
                 padding: 7px 14px;
                 background: #353535;
-                color: #e2e31f;
+                color: #fff;
                 text-align: start;
                 font-family: Archivo;
                 font-size: 12px;
@@ -1210,15 +1216,69 @@
                 &::placeholder {
                   color: #e2e31f;
                 }
-                &:focus, &:focus-visible{
+                &:focus,
+                &:focus-visible {
                   border: none;
-                  outline: none ;
+                  outline: none;
                 }
                 &.location {
                   flex: 1;
                 }
-                &.state{
-                  width: 55px;
+                &.state {
+                  width: 60px;
+                  caret-color: transparent;
+                  cursor: pointer;
+                  text-align: center;
+                }
+              }
+              .state-options-container {
+                position: relative;
+                .state-options {
+                  position: absolute;
+                  top: 32px;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  width: 100%;
+                  background: #353535;
+                  max-height: 300px;
+                  overflow-y: auto;
+                  span {
+                    width: 100%;
+                    text-align: center;
+                    color: #fff;
+                    text-align: center;
+                    font-family: Archivo;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: normal;
+                    letter-spacing: -0.48px;
+                    padding: 8px 0; // Default for all spans
+
+                    &:first-child {
+                      padding: 6px 0 8px 0;
+                    }
+
+                    &:last-child {
+                      padding: 8px 0 6px 0;
+                    }
+                    &:hover {
+                      background: linear-gradient(
+                        90deg,
+                        #e2e31f 0%,
+                        rgba(226, 227, 31, 0) 100%
+                      );
+                    }
+                    &.active {
+                      background: linear-gradient(
+                        90deg,
+                        #e2e31f 0%,
+                        rgba(226, 227, 31, 0) 100%
+                      );
+                    }
+                  }
                 }
               }
             }
@@ -1252,10 +1312,12 @@
           }
         }
         .locationlist {
-          max-height: 314px;
+          max-height: 100px;
           overflow-y: auto;
           position: relative;
-          padding-bottom: 100px;
+          &.custom{
+                max-height: 220px;
+          }
           .addedCollabs {
             display: flex;
             justify-content: flex-start;
@@ -2384,7 +2446,7 @@ thead.sticky-header {
 
 thead.sticky-header-right {
   position: sticky;
-  top: 0;
+  top: -1px;
   background-color: #252525;
   z-index: 100;
 }

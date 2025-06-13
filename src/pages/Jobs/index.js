@@ -32,11 +32,12 @@ import {
   addNotification,
   CollaboratorNameBG,
   CollaboratorNameColor,
-  locationOptions,
+  getDaysLeft,
   sortTasksByDueDateProximity,
   StatusList,
 } from "../../helper";
 import {
+  addLocations,
   createJobs,
   createTask,
   deleteTask,
@@ -44,13 +45,17 @@ import {
   getJobByNum,
   getJobs,
   getJobsNum,
+  getLocations,
   getSingleJob,
+  getStates,
   getUserByRole,
   SearchJobs,
+  searchLocations,
   updateJobs,
   updateTask,
-} from "../../services/auth";
+} from "../../services/api";
 import "./Jobs.scss";
+import useDebounce from "../../Components/useDebounce";
 const renderComment = (message) => {
   if (!message) return <p className="no-comment">No Comments</p>;
   const renderMessage = (text) => {
@@ -162,8 +167,6 @@ const Jobs = () => {
   const [reloadTabs, setReloadTabs] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showSearchOptions, setShowSearchOptions] = useState(false);
-  const [locations, setLocations] = useState(locationOptions);
-
   const [notifications, setNotifications] = useState([]);
   const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState([]);
   const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState(
@@ -204,9 +207,57 @@ const Jobs = () => {
   const [customLocation, setCustomLocation] = useState({
     location: "",
     state: "",
+    state_id: null,
   });
   const [isCustomLocation, setIsCustomLocation] = useState(false);
   const [reload, setReload] = useState(false);
+  const [showStateOptions, setShowStateOptions] = useState(false);
+  const [states, setStates] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [searchLocation, setSearchLocation] = useState("");
+  const debouncedSearchLocation = useDebounce(searchLocation, 300);
+
+  const fetchData = async () => {
+    try {
+      const [statesRes, locationsRes] = await Promise.all([
+        getStates(),
+        getLocations(),
+      ]);
+      console.log("locationsRes", locationsRes);
+      setStates(statesRes.res);
+      if (locationsRes.error) {
+        setLocations([]);
+      } else {
+        setLocations(locationsRes.res);
+      }
+    } catch (error) {
+      console.log("Error in fetching states or locations", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchSearchedLocationData = async (debouncedSearchLocation) => {
+    try {
+      const [locationsRes] = await Promise.all([
+        searchLocations(debouncedSearchLocation),
+      ]);
+      console.log(locationsRes);
+      if (locationsRes.error) {
+        setLocations([]);
+      } else {
+        setLocations(locationsRes.res?.data);
+      }
+    } catch (error) {
+      console.log("Error in fetching states or locations", error);
+    }
+  };
+
+  useEffect(() => {
+    if (debouncedSearchLocation)
+      fetchSearchedLocationData(debouncedSearchLocation);
+    else fetchData();
+  }, [debouncedSearchLocation]);
 
   useEffect(() => {
     if (jobId) {
@@ -335,8 +386,8 @@ const Jobs = () => {
     if (location.state === 1) {
       setShowAddJobRow(true);
       handleAddJobScroll();
-       // Clear the state after using it
-    navigate(location.pathname, { replace: true });
+      // Clear the state after using it
+      navigate(location.pathname, { replace: true });
     }
   }, [location]);
 
@@ -380,8 +431,11 @@ const Jobs = () => {
   const handleSearchApply = async () => {
     setLoading(true);
     try {
+      // var reqData = {
+      //   [selectSearchOptions]: searchedInput,
+      // };
       var reqData = {
-        [selectSearchOptions]: searchedInput,
+        search: searchedInput,
       };
       setShowingSearchOptions(searchedInput);
       const response = await SearchJobs(reqData);
@@ -450,12 +504,12 @@ const Jobs = () => {
       const data = res?.res?.data || [];
       const sortedJobs = data.map((job) => {
         const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
-        const nearestDueDate = sortedTasks[0]?.due_date || null;
+        // const nearestDueDate = sortedTasks[0]?.due_date || null;
 
         return {
           ...job,
           tasks: sortedTasks,
-          due_date: nearestDueDate,
+          // due_date: nearestDueDate,
         };
       });
 
@@ -497,7 +551,7 @@ const Jobs = () => {
   const handleScroll = useCallback(async () => {
     const container = containerRef.current;
     if (!container) return;
-
+    console.log(filteredJobs, loadTotalPage, loadMorePage);
     // Check if the container has been scrolled to the bottom
     if (
       container.scrollTop + container.clientHeight >= container.scrollHeight &&
@@ -514,24 +568,24 @@ const Jobs = () => {
           res = await FilterJobs(
             {
               ...queryWithoutSort,
-              page: loadMorePage + 1,
+              page: loadMorePage,
             },
             sort
           );
         } else {
-          res = await getJobs(loadMorePage + 1);
+          res = await getJobs(loadMorePage);
         }
         const data = res?.res?.data;
         setLoadTotalPage(res?.res?.last_page);
-
+        setLoadMorePage(res?.res?.current_page + 1);
         const sortedJobs = data.map((job) => {
           const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
-          const nearestDueDate = sortedTasks[0]?.due_date || null;
+          // const nearestDueDate = sortedTasks[0]?.due_date || null;
 
           return {
             ...job,
             tasks: sortedTasks,
-            due_date: nearestDueDate,
+            // due_date: nearestDueDate,
           };
         });
 
@@ -542,7 +596,6 @@ const Jobs = () => {
       } finally {
         setLoading(false);
       }
-      setLoadMorePage(loadMorePage + 1);
     }
   }, [loadMorePage, filteredJobs, loadTotalPage]);
 
@@ -643,6 +696,14 @@ const Jobs = () => {
     setNewJobCollaboratorsListId([]);
     setSelectedNewLocation("");
     setSelectedNewState("");
+    setCustomLocation({
+      location: "",
+      state: "",
+      state_id: null,
+    });
+    setIsCustomLocation(false);
+    setShowStateOptions(false);
+    setSearchLocation("");
   };
 
   const handleNewAddTaskClick = () => {
@@ -659,6 +720,7 @@ const Jobs = () => {
         !addJobRowRefRight.current.contains(event.target)
       ) {
         if (newJobIdNumber === 0 || !addJobName) {
+          console.log("cancel2");
           handleCancelAddJob();
         } else {
           createNewJobRequest(false);
@@ -678,6 +740,8 @@ const Jobs = () => {
     newJobCollaboratorsListId,
     selectedNewJobDueDate,
     selectNewJobStatus,
+    selectedNewLocation,
+    selectedNewState,
     fetchJobs,
   ]);
 
@@ -690,6 +754,8 @@ const Jobs = () => {
         collaborators: newJobCollaboratorsListId,
         due_date: selectedNewJobDueDate || formattedDueDate,
         status: selectNewJobStatus || "not-started",
+        location: selectedNewLocation,
+        state: selectedNewState,
       },
       ...prevJobs,
     ]);
@@ -704,6 +770,7 @@ const Jobs = () => {
       const month = String(new Date().getMonth() + 1).padStart(2, "0");
       const day = String(new Date().getDate()).padStart(2, "0");
       let formattedDueDate = `${year}-${month}-${day}`;
+      console.log("selectedNewLocation", selectedNewLocation, selectedNewState);
       const reqBody = {
         job_num: newJobIdNumber,
         title: addJobName,
@@ -729,6 +796,7 @@ const Jobs = () => {
     } catch (error) {
       console.log("error in updating jobs", error);
     } finally {
+      console.log("cancel7");
       handleCancelAddJob(); // Reset state after action
     }
   };
@@ -740,7 +808,7 @@ const Jobs = () => {
         addJobRowRefLeft.current.contains(event.target)
       ) {
         if (newJobIdNumber === 0 || !addJobName) {
-          setUsersList(fullUsersList);
+          handleCancelAddJob();
           return;
         } else {
           createNewJobRequest();
@@ -751,7 +819,7 @@ const Jobs = () => {
         addJobRowRefRight.current.contains(event.target)
       ) {
         if (newJobIdNumber === 0 || !addJobName) {
-          setUsersList(fullUsersList);
+          handleCancelAddJob();
           return;
         } else {
           createNewJobRequest();
@@ -1011,11 +1079,15 @@ const Jobs = () => {
         if (isJobChanged(updatedJob, originalJob)) {
           await handleUpdateJob(updatedJob);
           synchronizeRowHeights();
+          handleCancelAddJob();
+          console.log("cancel4");
         }
 
         if (!showNewJobModal && !showNewJobModalWithTasks) {
           setActiveJob(null);
           setNewJobCollaboratorsList([]);
+          console.log("cancel3");
+          handleCancelAddJob();
         }
       }
     };
@@ -1139,13 +1211,14 @@ const Jobs = () => {
               }
             : task
         );
+        console.log("updatedTasks", updatedTasks)
 
         const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
-
+        console.log("sortedTasks", sortedTasks);
         return {
           ...job,
           tasks: sortedTasks,
-          due_date: sortedTasks?.[0]?.due_date || null,
+          days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
         };
       })
     );
@@ -1201,7 +1274,7 @@ const Jobs = () => {
         return {
           ...job,
           tasks: updatedTasks,
-          due_date: updatedTasks?.[0]?.due_date || null,
+          days_left: getDaysLeft(updatedTasks?.[0]?.due_date || null),
         };
       })
     );
@@ -1228,7 +1301,7 @@ const Jobs = () => {
             return {
               ...job,
               tasks: updatedTasks,
-              due_date: updatedTasks?.[0]?.due_date || null,
+              // due_date: updatedTasks?.[0]?.due_date || null,
             };
           })
         );
@@ -1252,9 +1325,9 @@ const Jobs = () => {
           return {
             ...job,
             tasks: updatedTasks,
-            due_date: updatedTasks?.length
-              ? sortTasksByDueDateProximity(updatedTasks)?.[0]?.due_date
-              : null,
+            // due_date: updatedTasks?.length
+            //   ? sortTasksByDueDateProximity(updatedTasks)?.[0]?.due_date
+            //   : null,
           };
         })
       );
@@ -1298,7 +1371,7 @@ const Jobs = () => {
               return {
                 ...job,
                 tasks: sortedTasks,
-                due_date: sortedTasks?.[0]?.due_date || null,
+                // due_date: sortedTasks?.[0]?.due_date || null,
               };
             }
             return job;
@@ -1376,7 +1449,7 @@ const Jobs = () => {
           return {
             ...job,
             tasks: sortedTasks,
-            due_date: sortedTasks?.[0]?.due_date || null,
+            // due_date: sortedTasks?.[0]?.due_date || null,
           };
         }
         return job;
@@ -1400,7 +1473,7 @@ const Jobs = () => {
             return {
               ...job,
               tasks: sortedTasks,
-              due_date: sortedTasks?.[0]?.due_date || null,
+              days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
             };
           }
           return job;
@@ -1473,6 +1546,13 @@ const Jobs = () => {
       if (!updatedQuery.due?.length) delete updatedQuery.due;
     }
 
+    if (fq?.type === "states") {
+      updatedQuery.states = prevQuery.states?.filter(
+        (item) => item !== fq.value
+      );
+      if (!updatedQuery.states?.length) delete updatedQuery.states;
+    }
+
     let sortValue = undefined;
 
     // If type is not "sort", retain sort and pass it to FilterJobs
@@ -1503,7 +1583,10 @@ const Jobs = () => {
         newQuery.due = newQuery.due?.filter((item) => item !== fq.value);
         if (!newQuery.due?.length) delete newQuery.due;
       }
-
+      if (fq?.type === "states") {
+        newQuery.states = newQuery.states?.filter((item) => item !== fq.value);
+        if (!newQuery.states?.length) delete newQuery.states;
+      }
       if (fq.type === "sort") {
         delete newQuery.sort;
       }
@@ -1515,7 +1598,6 @@ const Jobs = () => {
       (item) => item.filter !== fq?.filter
     );
     setFilteredString(updatedFilterStr);
-    console.log("updatedQuery", updatedQuery, updatedFilterStr);
 
     try {
       setLoading(true);
@@ -1525,8 +1607,11 @@ const Jobs = () => {
         setReload(!reload);
       } else {
         const response = await FilterJobs(updatedQuery, sortValue);
+        console.log("response ", response);
         if (!response.error) {
           setFilteredJobs(response?.res?.data);
+          setLoadMorePage(response?.res.current_page + 1);
+          setLoadTotalPage(response?.res?.last_page);
         }
       }
     } catch (error) {
@@ -1577,12 +1662,12 @@ const Jobs = () => {
         handleOpenJobWithTask(job);
         const sortedJobs = job.map((job) => {
           const sortedTasks = sortTasksByDueDateProximity(job?.tasks || []);
-          const nearestDueDate = sortedTasks?.[0]?.due_date || null;
+          // const nearestDueDate = sortedTasks?.[0]?.due_date || null;
 
           return {
             ...job,
             tasks: sortedTasks,
-            due_date: nearestDueDate,
+            // due_date: nearestDueDate,
           };
         });
         setFilteredJobs((prevJobs) => [sortedJobs, ...prevJobs]);
@@ -1593,28 +1678,39 @@ const Jobs = () => {
     } catch (error) {
       console.log("error in updating jobs", error);
     } finally {
+      console.log("cancel1");
       handleCancelAddJob(); // Reset state after action
       setLoading(false);
     }
   };
 
   const handleAddCustomLocation = async () => {
-    const { location, state } = customLocation;
+    const { location, state, state_id } = customLocation;
     if (!location || !state) {
       toast.error("Please fill all the fields");
       return;
     }
-    let tmpLocations = [...locations];
-    tmpLocations.push({
-      location,
-      state,
-    });
-    setLocations(tmpLocations);
+    setLocations((prev) => [
+      ...prev,
+      {
+        name: location,
+        state_id,
+        state: {
+          name: state,
+          id: state_id,
+        },
+      },
+    ]);
+
     setCustomLocation({
       location: "",
       state: "",
+      state_id: null,
     });
     setIsCustomLocation(false);
+    setShowStateOptions(false);
+    await addLocations(location, state_id); // Save first
+    await fetchData();
   };
 
   const handleLocationUpdate = (value) => {
@@ -1622,10 +1718,19 @@ const Jobs = () => {
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) =>
         job.id === activeJob?.id
-          ? { ...job, location: value?.location, state: value?.state }
+          ? { ...job, location: value?.name, state: value?.state.name }
           : job
       )
     );
+  };
+
+  const handleStateSelect = (value) => {
+    setCustomLocation({
+      ...customLocation,
+      state: value.name,
+      state_id: value.id,
+    });
+    setShowStateOptions(false);
   };
 
   return (
@@ -1827,7 +1932,7 @@ const Jobs = () => {
                   >
                     <Search />
                   </div>
-                  {showSearchOptions ? (
+                  {/* {showSearchOptions ? (
                     <div className="SearchOptionBox">
                       <div
                         className={`searchOptionBtn ${
@@ -1894,13 +1999,25 @@ const Jobs = () => {
                         />
                       )}
                     </div>
-                  ) : (
-                    <input
-                      name="search"
-                      placeholder="Search"
-                      onFocus={() => setShowSearchOptions(true)}
-                    />
-                  )}
+                  ) : ( */}
+                  <input
+                    name="search"
+                    placeholder="Search"
+                    value={searchedInput}
+                    onChange={(e) => {
+                      const value = e.target.value;
+
+                      setSearchedInput(value);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSearchApply();
+                      }
+                    }}
+                    // onFocus={() => setShowSearchOptions(true)}
+                  />
+                  {/* )} */}
 
                   {(searchedInput !== "" || selectSearchOptions !== "") && (
                     <div
@@ -1947,6 +2064,8 @@ const Jobs = () => {
                   setLoading={setLoading}
                   closeFilter={() => setShowFilter(false)}
                   filteredQuery={filteredQuery}
+                  setLoadTotalPage={setLoadTotalPage}
+                  setLoadMorePage={setLoadMorePage}
                 />
               )}
               <div
@@ -1969,6 +2088,8 @@ const Jobs = () => {
                   setFilteredJobs={setFilteredJobs}
                   setLoading={setLoading}
                   closeFilter={() => setShowSort(false)}
+                  setLoadTotalPage={setLoadTotalPage}
+                  setLoadMorePage={setLoadMorePage}
                 />
               )}
             </div>
@@ -2065,38 +2186,39 @@ const Jobs = () => {
           <div className="d-flex align-items-center justify-content-start gap-3">
             <div className="delete-box">
               <div className="delete-item d-flex align-items-center flex-wrap gap-2">
-                {showSearchOptions && selectSearchOptions === "" && (
+                {/* {showSearchOptions && selectSearchOptions === "" && (
                   <>Select which category you would like to search by.</>
-                )}
+                )} */}
                 {showingSearchOptions ? (
                   <>Search Results For: '{showingSearchOptions}'</>
-                ) : selectSearchOptions ? (
-                  <>
-                    {selectSearchOptions === "job_num" && (
-                      <>
-                        Enter the number of the ‘Job’ you would like to search
-                        for.
-                      </>
-                    )}
-                    {selectSearchOptions === "title" && (
-                      <>
-                        Enter the name of the ‘Job Name’ you would like to
-                        search for.
-                      </>
-                    )}
-                    {selectSearchOptions === "collaborator_name" && (
-                      <>
-                        Enter the name of the ‘Collaborator’ you would like to
-                        search for.
-                      </>
-                    )}
-                    {!["job_num", "title", "collaborator_name"].includes(
-                      selectSearchOptions
-                    ) && (
-                      <>Select which category you would like to search by.</>
-                    )}
-                  </>
-                ) : filteredString.length > 0 ? (
+                ) : // : selectSearchOptions ? (
+                //   <>
+                //     {selectSearchOptions === "job_num" && (
+                //       <>
+                //         Enter the number of the ‘Job’ you would like to search
+                //         for.
+                //       </>
+                //     )}
+                //     {selectSearchOptions === "title" && (
+                //       <>
+                //         Enter the name of the ‘Job Name’ you would like to
+                //         search for.
+                //       </>
+                //     )}
+                //     {selectSearchOptions === "collaborator_name" && (
+                //       <>
+                //         Enter the name of the ‘Collaborator’ you would like to
+                //         search for.
+                //       </>
+                //     )}
+                //     {!["job_num", "title", "collaborator_name"].includes(
+                //       selectSearchOptions
+                //     ) && (
+                //       <>Select which category you would like to search by.</>
+                //     )}
+                //   </>
+                // )
+                filteredString.length > 0 ? (
                   <>
                     Filtered By:{" "}
                     {filteredString.map((string, index) => {
@@ -2709,39 +2831,78 @@ const Jobs = () => {
                                   }}
                                 >
                                   {selectedNewLocation ? (
-                                    <span
-                                      style={{
-                                        color: "#fff",
-                                      }}
-                                    >
+                                    // Show selected location text
+                                    <span style={{ color: "#fff" }}>
                                       {selectedNewLocation}
                                     </span>
+                                  ) : newJobActiveBoxRight ===
+                                    "SelectLocation" ? (
+                                    <input
+                                      type="text"
+                                      value={searchLocation}
+                                      onChange={(e) =>
+                                        setSearchLocation(e.target.value)
+                                      }
+                                      style={{
+                                        background: "transparent",
+                                        border: "none",
+                                        outline: "none",
+                                        color: "#fff",
+                                        textAlign: "center",
+                                      }}
+                                      autoFocus
+                                    />
                                   ) : (
                                     <span>Add Location +</span>
                                   )}
                                 </div>
                                 {newJobActiveBoxRight === "SelectLocation" && (
                                   <div className={`newJobItemDropBox location`}>
-                                    <div className="locationlist">
-                                      {locations.map((location, index) => {
-                                        return (
-                                          <div
-                                            key={index}
-                                            className="selectCollaboratorsBox"
-                                            onClick={() => {
-                                              setSelectedNewLocation(
-                                                location.location
-                                              );
-                                              setSelectedNewState(
-                                                location.state
-                                              );
-                                            }}
-                                          >
-                                            <span>{location.location}</span>
-                                            <span>{location.state}</span>
-                                          </div>
-                                        );
-                                      })}
+                                    <div
+                                      className={`locationlist ${
+                                        !isCustomLocation ? "custom" : ""
+                                      }`}
+                                    >
+                                      {locations?.length > 0 &&
+                                        locations?.map((location, index) => {
+                                          return (
+                                            <div
+                                              key={index}
+                                              className="selectCollaboratorsBox"
+                                              onClick={() => {
+                                                setSelectedNewLocation(
+                                                  location?.name
+                                                );
+                                                setSelectedNewState(
+                                                  location?.state?.name
+                                                );
+                                                setIsCustomLocation(false);
+                                                setNewJobActiveBoxRight("");
+                                              }}
+                                            >
+                                              <span>{location?.name}</span>
+                                              <span>
+                                                {location?.state?.name}
+                                              </span>
+                                            </div>
+                                          );
+                                        })}
+
+                                      {locations?.length === 0 && (
+                                        <div
+                                          style={{
+                                            color: "#fff",
+                                            minHeight: "50px",
+                                            textAlign: "center",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            color: "#5c5a5a",
+                                          }}
+                                        >
+                                          No Locations Found
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="custom-task">
                                       {isCustomLocation ? (
@@ -2760,18 +2921,39 @@ const Jobs = () => {
                                                 })
                                               }
                                             />
-                                            <input
-                                              type="text"
-                                              className="state"
-                                              placeholder="State"
-                                              value={customLocation.state}
-                                              onChange={(e) =>
-                                                setCustomLocation({
-                                                  ...customLocation,
-                                                  state: e.target.value,
-                                                })
-                                              }
-                                            />
+                                            <div className="state-options-container">
+                                              <input
+                                                type="text"
+                                                className="state"
+                                                placeholder="State"
+                                                value={customLocation.state}
+                                                onClick={() =>
+                                                  setShowStateOptions(
+                                                    !showStateOptions
+                                                  )
+                                                }
+                                              />
+                                              {showStateOptions &&
+                                                states.length > 0 && (
+                                                  <div className="state-options">
+                                                    {states.map((state) => (
+                                                      <span
+                                                        className={
+                                                          customLocation.state_id ===
+                                                            state.id && "active"
+                                                        }
+                                                        onClick={() =>
+                                                          handleStateSelect(
+                                                            state
+                                                          )
+                                                        }
+                                                      >
+                                                        {state.name}
+                                                      </span>
+                                                    ))}
+                                                  </div>
+                                                )}
+                                            </div>
                                           </div>
                                           <div
                                             className="d-flex align-items-center justify-content-start"
@@ -2792,6 +2974,7 @@ const Jobs = () => {
                                               setCustomLocation({
                                                 location: "",
                                                 state: "",
+                                                state_id: null,
                                               });
                                             }}
                                           >
@@ -2811,6 +2994,7 @@ const Jobs = () => {
                                             setCustomLocation({
                                               location: "",
                                               state: "",
+                                              state_id: null,
                                             });
                                             setIsCustomLocation(true);
                                           }}
@@ -3073,20 +3257,11 @@ const Jobs = () => {
                               </td>
 
                               <td className="text-center">
-                                {moment(job?.due_date || new Date())
-                                  .startOf("day")
-                                  .isBefore(moment().startOf("day"))
+                                {!job?.days_left || job?.days_left <= 0
                                   ? "0 days"
-                                  : (() => {
-                                      const diff = moment(
-                                        job?.due_date || new Date()
-                                      )
-                                        .startOf("day")
-                                        .diff(moment().startOf("day"), "days");
-                                      return `${diff} day${
-                                        diff === 1 ? "" : "s"
-                                      }`;
-                                    })()}
+                                  : `${job?.days_left} day${
+                                      job?.days_left === 1 ? "" : "s"
+                                    }`}
                               </td>
                               <td
                                 style={{
@@ -3178,15 +3353,31 @@ const Jobs = () => {
                                     className={`clickBoxtext text-center`}
                                     onClick={() => handleLocationClick(job)}
                                   >
-                                    {job.location ? (
-                                      <span
+                                    {activeJob?.id === job.id &&
+                                    activeJobField === "Location" ? (
+                                      // Input when Location field is active
+                                      <input
+                                        type="text"
+                                        value={searchLocation}
+                                        onChange={(e) =>
+                                          setSearchLocation(e.target.value)
+                                        }
                                         style={{
+                                          background: "transparent",
+                                          border: "none",
+                                          outline: "none",
                                           color: "#fff",
+                                          textAlign: "center",
                                         }}
-                                      >
+                                        autoFocus
+                                      />
+                                    ) : job.location ? (
+                                      // Show location if exists and not active
+                                      <span style={{ color: "#fff" }}>
                                         {job.location}
                                       </span>
                                     ) : (
+                                      // Show add prompt if location doesn't exist
                                       <span>Add Location +</span>
                                     )}
                                   </div>
@@ -3195,21 +3386,49 @@ const Jobs = () => {
                                       <div
                                         className={`newJobItemDropBox location`}
                                       >
-                                        <div className="locationlist">
-                                          {locations.map((location, index) => {
-                                            return (
-                                              <div
-                                                key={index}
-                                                className="selectCollaboratorsBox"
-                                                onClick={() =>
-                                                  handleLocationUpdate(location)
-                                                }
-                                              >
-                                                <span>{location.location}</span>
-                                                <span>{location.state}</span>
-                                              </div>
-                                            );
-                                          })}
+                                        <div
+                                          className={`locationlist ${
+                                            !isCustomLocation ? "custom" : ""
+                                          }`}
+                                        >
+                                          {locations?.length > 0 &&
+                                            locations?.map(
+                                              (location, index) => {
+                                                return (
+                                                  <div
+                                                    key={index}
+                                                    className="selectCollaboratorsBox"
+                                                    onClick={() =>
+                                                      handleLocationUpdate(
+                                                        location
+                                                      )
+                                                    }
+                                                  >
+                                                    <span>
+                                                      {location?.name}
+                                                    </span>
+                                                    <span>
+                                                      {location?.state?.name}
+                                                    </span>
+                                                  </div>
+                                                );
+                                              }
+                                            )}
+                                          {locations?.length === 0 && (
+                                            <div
+                                              style={{
+                                                color: "#fff",
+                                                minHeight: "50px",
+                                                textAlign: "center",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                color: "#5c5a5a",
+                                              }}
+                                            >
+                                              No Locations Found
+                                            </div>
+                                          )}
                                         </div>
                                         <div className="custom-task">
                                           {isCustomLocation ? (
@@ -3230,18 +3449,40 @@ const Jobs = () => {
                                                     })
                                                   }
                                                 />
-                                                <input
-                                                  type="text"
-                                                  className="state"
-                                                  placeholder="State"
-                                                  value={customLocation.state}
-                                                  onChange={(e) =>
-                                                    setCustomLocation({
-                                                      ...customLocation,
-                                                      state: e.target.value,
-                                                    })
-                                                  }
-                                                />
+                                                <div className="state-options-container">
+                                                  <input
+                                                    type="text"
+                                                    className="state"
+                                                    placeholder="State"
+                                                    value={customLocation.state}
+                                                    onClick={() =>
+                                                      setShowStateOptions(
+                                                        !showStateOptions
+                                                      )
+                                                    }
+                                                  />
+                                                  {showStateOptions &&
+                                                    states.length > 0 && (
+                                                      <div className="state-options">
+                                                        {states.map((state) => (
+                                                          <span
+                                                            className={
+                                                              customLocation.state_id ===
+                                                                state.id &&
+                                                              "active"
+                                                            }
+                                                            onClick={() =>
+                                                              handleStateSelect(
+                                                                state
+                                                              )
+                                                            }
+                                                          >
+                                                            {state.name}
+                                                          </span>
+                                                        ))}
+                                                      </div>
+                                                    )}
+                                                </div>
                                               </div>
                                               <div
                                                 className="d-flex align-items-center justify-content-start"
@@ -3264,6 +3505,7 @@ const Jobs = () => {
                                                   setCustomLocation({
                                                     location: "",
                                                     state: "",
+                                                    state_id: null,
                                                   });
                                                 }}
                                               >
@@ -3283,6 +3525,7 @@ const Jobs = () => {
                                                 setCustomLocation({
                                                   location: "",
                                                   state: "",
+                                                  state_id: null,
                                                 });
                                                 setIsCustomLocation(true);
                                               }}

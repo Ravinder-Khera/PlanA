@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ClosedEye, Key, OpenedEye } from '../../../assets/svg'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { resetPassword } from '../../../services/auth';
+import { resetPassword } from '../../../services/api';
 import { toast } from 'react-toastify';
 import { Bars } from 'react-loader-spinner'
 import PasswordStrengthMeter from '../../../Components/PasswordStrengthMeter';

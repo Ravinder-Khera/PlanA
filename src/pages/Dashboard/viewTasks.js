@@ -18,7 +18,7 @@ import {
   getTasksByUser,
   getUserByRole,
   updateTask,
-} from "../../services/auth";
+} from "../../services/api";
 import "./viewTasks.scss";
 
 import moment from "moment";

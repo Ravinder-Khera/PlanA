@@ -12,11 +12,7 @@ import {
   User,
 } from "../../assets/svg";
 import { CollaboratorBorders, StatusList } from "../../helper";
-import {
-  FilterJobs,
-  getJobsByFilter,
-  getUserByRole,
-} from "../../services/auth";
+import { FilterJobs, getJobsByFilter, getStates, getUserByRole } from "../../services/api";
 import "./style.scss";
 
 const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
@@ -405,6 +401,8 @@ const Filter = ({
   setLoading,
   closeFilter,
   filteredQuery,
+  setLoadTotalPage,
+  setLoadMorePage
 }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
@@ -417,55 +415,16 @@ const Filter = ({
   const [startDate, setStartDate] = useState("YYYY-MM-DD");
   const [endDate, setEndDate] = useState("YYYY-MM-DD");
   const [searchedInput, setSearchedInput] = useState("");
-  const [selectedField, setSelectedField] = useState("");
-  const [showAssignee, setShowAssignee] = useState(false);
-
   const [filtersSeleted, setFiltersSeleted] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
-
   const [usersList, setUsersList] = useState([]);
-
-  const selectDueDateRef = useRef(null);
   const filterJobDropdownRef = useRef(null);
-  const SelectFilterData = [
-    {
-      data: "Title",
-      field: "title",
-    },
-    {
-      data: "Location",
-      field: "location",
-    },
-    {
-      data: "Latest Update",
-      field: "latest_update",
-    },
-    {
-      data: "Description",
-      field: "description",
-    },
-    {
-      data: "Stage",
-      field: "stage_name",
-    },
-    {
-      data: "Assignee",
-      field: "assignee",
-    },
-    {
-      data: "Date",
-      field: "due_date",
-    },
-    {
-      data: "Status",
-      field: "status",
-    },
-  ];
-
-  const [filterQuery, setFilterQuery] = useState({ page: 1, perPage: 50 });
+  const [filterQuery, setFilterQuery] = useState({ page: 1, perPage: 20 });
+  const [states, setStates] = useState([])
 
   useEffect(() => {
     fetchUsers();
+    fetchStates();
   }, []);
 
   useEffect(() => {
@@ -495,21 +454,24 @@ const Filter = ({
         console.error("Failed to fetch Users:", response.error);
       }
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      console.error("Error fetching users:", error);
     }
   };
 
-  const handleResetFields = () => {
-    setShowDatePicker(false);
-    setStartDate("YYYY-MM-DD");
-    setEndDate("YYYY-MM-DD");
-    setSelectionRange({
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-    });
-    setSearchedInput("");
+
+  const fetchStates = async () => {
+    try {
+      let response = await getStates();
+      if (response.res) {
+        setStates(response.res);
+      } else {
+        console.error("Failed to fetchStates:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetchStates:", error);
+    }
   };
+ 
 
   const handleCancel = async () => {
     setSelectedFilters([]);
@@ -541,6 +503,13 @@ const Filter = ({
         };
       }
 
+      if (type === "states") {
+        return {
+          ...prevQuery,
+          states: [...(prevQuery.states || []), value],
+        };
+      }
+
       return prevQuery;
     });
   };
@@ -567,6 +536,14 @@ const Filter = ({
         return {
           ...prevQuery,
           due: prevQuery.due?.filter((item) => item !== value),
+        };
+      }
+
+
+      if (type === "states") {
+        return {
+          ...prevQuery,
+          states: prevQuery.states?.filter((item) => item !== value),
         };
       }
 
@@ -614,7 +591,7 @@ const Filter = ({
         const mergedQuery = { ...prevQuery };
 
         // Merge array fields (statuses, collaborator_ids, due)
-        ["statuses", "collaborator_ids", "due"].forEach((key) => {
+        ["statuses", "collaborator_ids", "due", "states"].forEach((key) => {
           if (filterQuery[key]) {
             mergedQuery[key] = Array.from(
               new Set([...(prevQuery[key] || []), ...filterQuery[key]])
@@ -624,7 +601,7 @@ const Filter = ({
 
         // Merge other non-array fields like sort
         Object.keys(filterQuery).forEach((key) => {
-          if (!["statuses", "collaborator_ids", "due"].includes(key)) {
+          if (!["statuses", "collaborator_ids", "due", "states"].includes(key)) {
             mergedQuery[key] = filterQuery[key];
           }
         });
@@ -640,7 +617,7 @@ const Filter = ({
 
       // Manually combine arrays for API call too
       const updatedQuery = { ...prevQuery, page: 1 };
-      ["statuses", "collaborator_ids", "due"].forEach((key) => {
+      ["statuses", "collaborator_ids", "due","states"].forEach((key) => {
         if (filteredQuery[key] || filterQuery[key]) {
           updatedQuery[key] = Array.from(
             new Set([
@@ -653,9 +630,11 @@ const Filter = ({
 
       const sortValue = prevQuery.sort;
       delete updatedQuery.sort;
-      const response = await FilterJobs(updatedQuery, prevQuery.sort);
+      const response = await FilterJobs(updatedQuery, sortValue);
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
+        setLoadMorePage(response?.res?.current_page + 1);
+        setLoadTotalPage(response?.res?.last_page)
         closeFilter();
       }
     } catch (error) {
@@ -793,22 +772,7 @@ const Filter = ({
             >
               Completed
             </div>
-            {/* <div
-              className="filterProgressBox"
-              onClick={() =>
-                handleFilterClick("<50% Progress", "filterProgressBox")
-              }
-            >
-              {"<"}50% Progress
-            </div> */}
-            {/* <div
-              className="filterProgressBox"
-              onClick={() =>
-                handleFilterClick(">50% Progress", "filterProgressBox")
-              }
-            >
-              {">"}50% Progress
-            </div> */}
+      
             <div
               className="filterProgressBox"
               onClick={() => {
@@ -837,30 +801,23 @@ const Filter = ({
             >
               {"<"}14 Days Left
             </div>
-            {/* <div
+            {states.length > 0 && states?.map((state) => (
+              <div
               className="filterProgressBox"
-              onClick={() =>
-                handleFilterClick("Incomplete Subtask", "filterProgressBox")
-              }
+              onClick={() => {
+                handleFilterClick(
+                    `${state.name} Locations`,
+                  "filterProgressBox",
+                  "states",
+                  state.name
+                );
+                handleselectFilter("states", state.name);
+              }}
             >
-              Incomplete Subtask
-            </div> */}
-            {/* <div
-              className="filterProgressBox"
-              onClick={() =>
-                handleFilterClick("In Progress Subtask", "filterProgressBox")
-              }
-            >
-              In Progress Subtask
-            </div> */}
-            {/* <div
-              className="filterProgressBox"
-              onClick={() =>
-                handleFilterClick("Complete Subtask", "filterProgressBox")
-              }
-            >
-              Complete Subtask
-            </div> */}
+              {state.name} Locations
+            </div>
+            ))}
+       
           </div>
           {filtersSeleted && (
             <>

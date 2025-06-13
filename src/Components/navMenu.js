@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { BellIcon, Search } from "../assets/svg";
 import eventEmitter from "../Event";
 import { addNotification } from "../helper";
-import { getJobs, getProfile } from "../services/auth";
+import { getJobs, getProfile } from "../services/api";
 
 
 function NavMenu() {

@@ -12,7 +12,7 @@ import {
   CollaboratorNameBG,
   CollaboratorNameColor
 } from "../../helper";
-import { getDashboardSummary, updateTask } from "../../services/auth";
+import { getDashboardSummary, updateTask } from "../../services/api";
 import { getJobComments } from "../../services/chat_attachment";
 import { formatJobNumber } from "../Jobs";
 
@@ -393,7 +393,7 @@ function Dashboard() {
                                       .slice(0, 3)
                                       .map((user, index) => {
                                         const initials = user?.initials;
-
+                                        console.log(user?.name)
                                         return (
                                           <div
                                             key={index}

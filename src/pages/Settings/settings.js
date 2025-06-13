@@ -7,7 +7,7 @@ import {
   resetPassword,
   updateProfile,
   updateProfilePicture,
-} from "../../services/auth";
+} from "../../services/api";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import eventEmitter from "../../Event";
