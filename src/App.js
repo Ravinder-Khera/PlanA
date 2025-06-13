@@ -364,7 +364,7 @@ function DashboardMenuList() {
                         <p>Dashboard</p>
                       </Link>
                     </li>
-                    {location.pathname.includes("/dashboard") && (
+                    {/* {location.pathname.includes("/dashboard") && (
                       <div className="dropDownMenu">
                         <li
                           className={
@@ -381,16 +381,9 @@ function DashboardMenuList() {
                             <p>Timeline</p>
                           </Link>
                         </li>
-                        {/* <li
-                        className={location.pathname.includes("/tasks") ? "active" : ""}
-                      >
-                        <Link to="/dashboard/tasks" onClick={handleMenuClose}>
-                          <TaskIcon />
-                          <p>Tasks</p>
-                        </Link>
-                      </li> */}
+                      
                       </div>
-                    )}
+                    )} */}
                     <li
                       className={
                         location.pathname.includes("/jobs") ? "active" : ""

@@ -138,6 +138,8 @@ const Jobs = () => {
   const [newJobActiveBoxRight, setNewJobActiveBoxRight] = useState("");
   const [addJobName, setAddJobName] = useState("");
   const [selectNewJobStatus, setSelectNewJobStatus] = useState("");
+  const [selectedNewLocation, setSelectedNewLocation] = useState("");
+  const [selectedNewState, setSelectedNewState] = useState("");
   const [editedValue, setEditedValue] = useState("");
   const [activeJobField, setActiveJobField] = useState("");
   const [selectSearchOptions, setSelectSearchOptions] = useState("");
@@ -333,6 +335,8 @@ const Jobs = () => {
     if (location.state === 1) {
       setShowAddJobRow(true);
       handleAddJobScroll();
+       // Clear the state after using it
+    navigate(location.pathname, { replace: true });
     }
   }, [location]);
 
@@ -507,7 +511,6 @@ const Jobs = () => {
           filteredQuery && Object.keys(filteredQuery).length > 0;
         if (isNonEmpty) {
           const { sort, ...queryWithoutSort } = filteredQuery;
-          console.log("filtered query", sort, filteredQuery);
           res = await FilterJobs(
             {
               ...queryWithoutSort,
@@ -638,6 +641,8 @@ const Jobs = () => {
     setSelectNewJobStatus("");
     setSelectedNewJobDueDate(null);
     setNewJobCollaboratorsListId([]);
+    setSelectedNewLocation("");
+    setSelectedNewState("");
   };
 
   const handleNewAddTaskClick = () => {
@@ -705,6 +710,8 @@ const Jobs = () => {
         collaborators: newJobCollaboratorsListId,
         due_date: selectedNewJobDueDate || formattedDueDate,
         status: selectNewJobStatus || "not-started",
+        location: selectedNewLocation || "",
+        state: selectedNewState || "",
       };
 
       // API call to create job
@@ -946,7 +953,9 @@ const Jobs = () => {
         originalJob?.collaborators || []
       ) ||
       updatedJob?.status !== originalJob?.status ||
-      updatedJob?.due_date !== originalJob?.due_date
+      updatedJob?.due_date !== originalJob?.due_date ||
+      updatedJob?.location != originalJob?.location ||
+      updatedJob?.state !== originalJob.state
     );
   };
 
@@ -965,6 +974,8 @@ const Jobs = () => {
             : oldCollaboratorsId,
           status: updatedJob.status,
           due_date: updatedJob.due_date,
+          location: updatedJob.location,
+          state: updatedJob.state,
         },
       };
 
@@ -1551,6 +1562,8 @@ const Jobs = () => {
         collaborators: newJobCollaboratorsListId,
         due_date: selectedNewJobDueDate || formattedDueDate,
         status: selectNewJobStatus || "not-started",
+        location: selectedNewLocation || "",
+        state: selectedNewState || "",
       };
 
       // API call to create job
@@ -2637,7 +2650,6 @@ const Jobs = () => {
                                 </div>
                               )}
                             </td>
-
                             <td className="text-center">
                               {selectedNewJobDueDate ? (
                                 moment(selectedNewJobDueDate)
@@ -2684,6 +2696,138 @@ const Jobs = () => {
                             <td className="text-center "></td>
                             <td className="px-3">
                               <div className="jobDescriptionTextDiv"></div>
+                            </td>
+
+                            <td className="px-3">
+                              <div className={`px-3 clickBox`}>
+                                <div
+                                  className={`clickBoxtext text-center`}
+                                  onClick={() => {
+                                    setNewJobActiveBoxRight("SelectLocation");
+                                    setNewJobActiveBoxLeft("");
+                                    setIsCustomLocation(false);
+                                  }}
+                                >
+                                  {selectedNewLocation ? (
+                                    <span
+                                      style={{
+                                        color: "#fff",
+                                      }}
+                                    >
+                                      {selectedNewLocation}
+                                    </span>
+                                  ) : (
+                                    <span>Add Location +</span>
+                                  )}
+                                </div>
+                                {newJobActiveBoxRight === "SelectLocation" && (
+                                  <div className={`newJobItemDropBox location`}>
+                                    <div className="locationlist">
+                                      {locations.map((location, index) => {
+                                        return (
+                                          <div
+                                            key={index}
+                                            className="selectCollaboratorsBox"
+                                            onClick={() => {
+                                              setSelectedNewLocation(
+                                                location.location
+                                              );
+                                              setSelectedNewState(
+                                                location.state
+                                              );
+                                            }}
+                                          >
+                                            <span>{location.location}</span>
+                                            <span>{location.state}</span>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                    <div className="custom-task">
+                                      {isCustomLocation ? (
+                                        <div className="customLocation-container">
+                                          <hr />
+                                          <div className="location-cntr">
+                                            <input
+                                              type="text"
+                                              className="location"
+                                              placeholder="Location Name"
+                                              value={customLocation.location}
+                                              onChange={(e) =>
+                                                setCustomLocation({
+                                                  ...customLocation,
+                                                  location: e.target.value,
+                                                })
+                                              }
+                                            />
+                                            <input
+                                              type="text"
+                                              className="state"
+                                              placeholder="State"
+                                              value={customLocation.state}
+                                              onChange={(e) =>
+                                                setCustomLocation({
+                                                  ...customLocation,
+                                                  state: e.target.value,
+                                                })
+                                              }
+                                            />
+                                          </div>
+                                          <div
+                                            className="d-flex align-items-center justify-content-start"
+                                            onClick={handleAddCustomLocation}
+                                          >
+                                            <div
+                                              className="add-btn"
+                                              style={{ minWidth: "40px" }}
+                                            >
+                                              <TickIcon />
+                                            </div>{" "}
+                                            Confirm New Custom Location
+                                          </div>
+                                          <div
+                                            className="d-flex align-items-center justify-content-start cancel-cntr"
+                                            onClick={() => {
+                                              setIsCustomLocation(false);
+                                              setCustomLocation({
+                                                location: "",
+                                                state: "",
+                                              });
+                                            }}
+                                          >
+                                            <div
+                                              className="cancel-btn"
+                                              style={{ minWidth: "40px" }}
+                                            >
+                                              <CrossIcon />
+                                            </div>{" "}
+                                            Cancel Location
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div
+                                          className="d-flex align-items-center justify-content-start "
+                                          onClick={() => {
+                                            setCustomLocation({
+                                              location: "",
+                                              state: "",
+                                            });
+                                            setIsCustomLocation(true);
+                                          }}
+                                        >
+                                          <div
+                                            className="add-btn"
+                                            style={{ minWidth: "40px" }}
+                                          >
+                                            <AddIcon />
+                                          </div>{" "}
+                                          Create Custom Location
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         )}

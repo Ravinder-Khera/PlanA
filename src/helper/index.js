@@ -202,6 +202,7 @@ export const StageListMapFromDB = {
   Referral: "Referral",
   "Inform Public": "Public Notification",
   Decision: "Decision",
+  "Design Development\/Prelodgement Phase":"Design Development\/Prelodgement Phase"
 };
 
 export const MIN_CALENDAR_YEAR = 5;

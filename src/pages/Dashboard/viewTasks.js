@@ -797,7 +797,7 @@ function ViewTaskPage() {
                 closeFilter={() => setShowFilter(false)}
                 isOn={isOn}
               />
-            )}280px
+            )}
           </div>
         </div>
         <div className="d-flex gap-3 flex-wrap align-items-center">

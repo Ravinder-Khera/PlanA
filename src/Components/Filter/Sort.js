@@ -18,7 +18,7 @@ const Sort = ({
   const statusFilterData = [
     {
       label: "Days Left",
-      value: "sort_by=days_left&sort_order_asc",
+      value: "sort_by=days_left",
     },
     {
       label: "Job Name - Alphabetical",

@@ -316,11 +316,11 @@ const TaskFilter = ({
               stageList?.map((stage) => {
                 return (
                   <div
-                    className={`filterStatusBox stage_${stage?.title}`}
+                    className={`filterStatusBox ${stage?.title?.includes("Design") ? "stage_Design" : `stage_${stage?.title}`}`}
                     onClick={() => {
                       handleFilterClick(
                         stage?.title,
-                        `filterStatusBox stage_${stage?.title}`,
+                        `filterStatusBox ${stage?.title?.includes("Design") ? "stage_Design" : `stage_${stage?.title}`}`,
                         "stage_id",
                         stage?.id
                       );
