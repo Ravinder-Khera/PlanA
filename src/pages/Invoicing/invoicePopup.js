@@ -538,6 +538,7 @@ const InvoicePopup = ({ handleClose }) => {
                           id=""
                           ref={billingToRef}
                           placeholder="Add Name Here.."
+                          style={{  width: "150px"}}
                         />
                         <span>
                           <img
@@ -552,7 +553,7 @@ const InvoicePopup = ({ handleClose }) => {
                         <h3 className="BoldHeading heading">Pay To:<span className="requiredSpan">*</span></h3>
                         <input
                           onChange={handleOnChange}
-                          className="addInput"
+                          className="addPayTo"
                           type="text"
                           name="from"
                           value={state.from}
