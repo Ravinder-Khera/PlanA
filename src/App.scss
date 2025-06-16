@@ -3831,6 +3831,7 @@ body {
 .requiredSpan {
   color: red !important;
   font-weight: 600 !important;
+  margin-left: 4px;
 }
 .pagination-container.job-section {
   display: flex;
@@ -5403,6 +5404,9 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
                       font-weight: 300;
                       line-height: normal;
                       letter-spacing: -0.56px;
+                         &::placeholder {
+                    opacity: 0.7;
+                  }
                     }
                     &.addPayTo {
             color: #fff;
@@ -5412,6 +5416,9 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
             line-height: normal;
             letter-spacing: -0.64px;
             width: 125px;
+                &::placeholder {
+                    opacity: 0.7;
+                  }
           }
                   }
                   .penImage {
@@ -5435,6 +5442,13 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
                     path {
                       fill: #e2e31f;
                     }
+                  }
+                  &.due-date{
+                   
+                    path {
+                      fill: #000 !important;
+                    }
+                  
                   }
                 }
               }
@@ -5583,6 +5597,7 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
 
                   &::placeholder {
                     color: #e2e31f !important;
+                    opacity: 0.7;
                   }
                 }
 

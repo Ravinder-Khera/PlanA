@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { DeleteIcon, TaskIcon, User } from "../../assets/svg";
+import { DeleteIcon, InvoiceDatePicker, TaskIcon, User } from "../../assets/svg";
 import { Bars } from "react-loader-spinner";
 import { Calendar } from "react-date-range";
 import { createInvoice } from "../../services/api";
@@ -534,10 +534,11 @@ const InvoicePopup = ({ handleClose }) => {
                     <div className="dueDateDiv addNewTaskDiv">
                       <div className="centerText  addTaskJobDiv">
                         <div
-                          className="addTaskDueDateBtn"
+                          className="addTaskDueDateBtn due-date"
                           onClick={() => setSelectDueDate(!selectDueDate)}
                         >
-                          <TaskIcon /><span className="requiredSpan">*</span> {selectedDueDate ? formattedDueDate : 'Due Date'}
+                          <InvoiceDatePicker />
+                          <span className="requiredSpan" style={{marginTop:"-10px"}}>*</span> {selectedDueDate ? formattedDueDate : 'Due Date'}
                         </div>
                         {selectDueDate && (
                           <div className="datePickerDiv" style={{right:'0',left:'auto'}} ref={selectDueDateRef}>
@@ -587,6 +588,7 @@ const InvoicePopup = ({ handleClose }) => {
                           ref={payToRef}
                           id=""
                           placeholder="Add Name Here.."
+                          autoComplete="off"
                         />
                         <span>
                           <img
@@ -611,7 +613,7 @@ const InvoicePopup = ({ handleClose }) => {
                         />
                       </div>
 
-                      <div className="billingInfo">
+                      <div className="billingInfo" style={{marginTop:"33px"}}>
                         <h3 className="heading">Bank:</h3>
                         <input
                           onChange={handleOnChange}
@@ -624,7 +626,7 @@ const InvoicePopup = ({ handleClose }) => {
                         />
                       </div>
 
-                      <div className="billingInfo">
+                      <div className="billingInfo" style={{marginTop:"7px"}}>
                         <h3 className=" heading">Account Name:</h3>
                         <input
                           onChange={handleOnChange}
@@ -636,7 +638,7 @@ const InvoicePopup = ({ handleClose }) => {
                           placeholder="Account Name"
                         />
                       </div>
-                      <div className="billingInfo">
+                      <div className="billingInfo" style={{marginTop:"7px"}}>
                         <h3 className=" heading">BSB:</h3>
                         <input
                           onChange={handleOnChange}
@@ -648,7 +650,7 @@ const InvoicePopup = ({ handleClose }) => {
                           placeholder="0000-000"
                         />
                       </div>
-                      <div className="billingInfo">
+                      <div className="billingInfo" style={{marginTop:"7px"}}>
                         <h3 className=" heading">Account Number:</h3>
                         <input
                           onChange={handleOnChange}
@@ -980,7 +982,7 @@ const InvoicePopup = ({ handleClose }) => {
                         />
                       </div>
 
-                      <div className="billingInfo">
+                      <div className="billingInfo" style={{marginTop:"10px"}}>
                         <h3 className="heading">Bank:</h3>
                         <input
                           onChange={handleOnChange}
@@ -994,7 +996,7 @@ const InvoicePopup = ({ handleClose }) => {
                         />
                       </div>
 
-                      <div className="billingInfo">
+                      <div className="billingInfo" style={{marginTop:"7px"}}>
                         <h3 className=" heading">Account Name:</h3>
                         <input
                           onChange={handleOnChange}
@@ -1007,7 +1009,7 @@ const InvoicePopup = ({ handleClose }) => {
                           placeholder="Account Name"
                         />
                       </div>
-                      <div className="billingInfo">
+                      <div className="billingInfo" style={{marginTop:"7px"}}>
                         <h3 className=" heading">BSB:</h3>
                         <input
                           onChange={handleOnChange}
@@ -1020,7 +1022,7 @@ const InvoicePopup = ({ handleClose }) => {
                           placeholder="0000-000"
                         />
                       </div>
-                      <div className="billingInfo">
+                      <div className="billingInfo" style={{marginTop:"7px"}}>
                         <h3 className=" heading">Account Number:</h3>
                         <input
                           onChange={handleOnChange}
