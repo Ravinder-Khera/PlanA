@@ -573,7 +573,9 @@ const InvoicePopup = ({ handleClose }) => {
                             className="penImage"
                             src="/assets/pan.png"
                             alt=""
-                            onClick={()=> billingToRef.current.focus()}
+                            onClick={()=>{ 
+                              console.log("billing focus")
+                              billingToRef.current.focus()}}
                           />
                         </span>
                       </div>
@@ -935,6 +937,7 @@ const InvoicePopup = ({ handleClose }) => {
                             id=""
                             ref={billingToRef}
                             placeholder="Add Name Here.."
+                            style={{  width: "150px"}}
                           />
                           <span>
                             <img

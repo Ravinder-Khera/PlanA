@@ -62,7 +62,7 @@ const Sort = ({
           ...filteredWithoutSort,
           {
             className: "filterStatusBox OnHold",
-            filter: filterString.label,
+            filter: `Sort By: ${filterString.label}`,
             type: "sort",
             value: filterString.value,
           },
