@@ -335,8 +335,8 @@ function ProfilePic({ userPicture, fetchProfileData }) {
               onClick={handleUploadClick}
             />
             <p>
-              <span onClick={handleUploadClick}>Click to upload</span>
-              or drag and dropSVG, PNG, JPG or GIF (max. 800x400px)
+              <span onClick={handleUploadClick}>Click to upload </span>
+              or drag and drop SVG, PNG, JPG or GIF (max. 800x400px)
             </p>
           </div>
         </div>
