@@ -3655,7 +3655,7 @@ export const NewJobModalWithTasks = ({
                                         display: "flex",
                                         justifyContent: "center",
                                         alignItems: "center",
-                                        minWidth: "max-content",
+                                        // minWidth: "max-content",
                                       }}
                                     >
                                       {task?.stage?.title
@@ -4091,6 +4091,8 @@ export const NewTaskModal = ({
                           "1px solid rgba(226, 227, 31, 0.1490196078)",
                         position: "sticky",
                         top: "0",
+                        zIndex: 99,
+                        background: "#252525",
                       }}
                     >
                       <input
@@ -5034,6 +5036,8 @@ export const UpdateTaskModal = React.forwardRef(
                             "1px solid rgba(226, 227, 31, 0.1490196078)",
                           position: "sticky",
                           top: "0",
+                          zIndex: 99,
+                          background: "#252525",
                         }}
                       >
                         <input
@@ -6026,6 +6030,8 @@ export const CreateTaskModal = memo(
                                 "1px solid rgba(226, 227, 31, 0.1490196078)",
                               position: "sticky",
                               top: "0",
+                              zIndex: 99,
+                              background: "#252525",
                             }}
                           >
                             <input

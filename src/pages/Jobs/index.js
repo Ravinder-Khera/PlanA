@@ -223,7 +223,6 @@ const Jobs = () => {
         getStates(),
         getLocations(),
       ]);
-      console.log("locationsRes", locationsRes);
       setStates(statesRes.res);
       if (locationsRes.error) {
         setLocations([]);

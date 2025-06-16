@@ -2406,6 +2406,7 @@
                   &.stage_Design {
                     border: 1px solid #ffacfe;
                     background: rgba(255, 172, 254, 0.4);
+                    min-width: max-content;
                   }
                   &.stage_Unknown,
                   &.stage_undefined {
@@ -2627,8 +2628,7 @@
               }
               &.design,
               &.Design {
-                border: 1px solid #ffacfe;
-                background: rgba(255, 172, 254, 0.4);
+               color: rgb(255, 172, 254);
               }
               &.Inform,
               &.Public {
@@ -2640,6 +2640,9 @@
               }
             }
             .addNewTaskDiv {
+              display: flex;
+              justify-content: end;
+              
               .addTaskJobBtn {
                 border-radius: 4px;
                 color: #fff;
@@ -2651,45 +2654,56 @@
                 letter-spacing: -0.48px;
                 min-height: 28px;
                 align-content: center;
-                min-width: max-content;
+                // min-width: max-content;
                 padding: 7.5px 12px;
                 border: 1px solid #fff;
                 background: rgba(255, 255, 255, 0.25);
 
                 &.stage_Application {
+                  min-width: 100px;
                   border: 1px solid #3b9239;
                   background: rgba(59, 146, 57, 0.6);
                 }
 
                 &.stage_Referral {
+                   min-width: 100px;
                   border: 1px solid #1fb4e3;
                   background: rgba(31, 180, 227, 0.4);
                 }
 
                 &.stage_Information,
                 &.stage_Info {
+                   min-width: 100px;
                   border: 1px solid #8a50c5;
                   background: rgba(138, 80, 197, 0.49);
                 }
 
                 &.stage_Inform,
                 &.stage_Public {
+                   min-width: 100px;
                   border: 1px solid #ff5c00;
                   background: rgba(255, 92, 0, 0.55);
                 }
-
+                &.stage_Design{
+                    min-width: 100px;
+                   border: 1px solid #ffacfe;
+      background: rgba(255, 172, 254, 0.4);
+                }
                 &.stage_Decision {
+                   min-width: 100px;
                   border: 1px solid #ff40be;
                   background: rgba(255, 64, 190, 0.4);
                 }
 
                 &.stage_Unknown,
                 &.stage_undefined {
+                   min-width: 100px;
                   border: 1px solid #fff;
                   background: rgba(255, 255, 255, 0.25);
                 }
 
                 &.stage_select {
+                   max-width: 100px;
                   color: #616161 !important;
                   border: none !important;
                   background: none !important;
@@ -3919,7 +3933,7 @@
   .task-row {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 130px 80px 112px 43px;
+    grid-template-columns: 1fr 270px 80px 112px 43px;
     align-items: center;
   }
   .task-row td.task-title {

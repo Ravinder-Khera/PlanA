@@ -400,7 +400,15 @@ body {
         font-weight: 500;
         line-height: normal;
         letter-spacing: -0.64px;
-
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus,
+        &:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+          -webkit-text-fill-color: #d6d6d6 !important;
+          transition: background-color 5000s ease-in-out 0s !important;
+          caret-color: #fff;
+        }
         &::placeholder {
           color: #e2e31f;
         }
@@ -1453,7 +1461,6 @@ body {
       background: none !important;
       box-shadow: none !important;
     }
-    
   }
 }
 
@@ -1553,7 +1560,7 @@ body {
         letter-spacing: -0.64px;
         padding: 27px 24px;
       }
-      &.tastTitle{
+      &.tastTitle {
         justify-content: normal;
         gap: 45px;
       }
@@ -1671,13 +1678,13 @@ body {
           }
           .Task-title-job {
             width: 81px;
-              min-width: auto;
+            min-width: auto;
           }
         }
         &.TaskTitleCol3 {
           width: 517px;
           .InnerTaskTitleCol3 {
-              // width: 503px;
+            // width: 503px;
             // justify-content: space-between;
             gap: 61px;
             .Task-title-status {
@@ -1692,7 +1699,7 @@ body {
             }
             .Task-title-job {
               width: 54px;
-                margin-left: 20px;
+              margin-left: 20px;
             }
           }
         }
@@ -2677,6 +2684,9 @@ body {
     .rdrMonthAndYearPickers {
       select {
         color: #e2e31f;
+         background: url("data:image/svg+xml;utf8,<svg width=%279px%27 height=%276px%27 viewBox=%270 0 9 6%27 version=%271.1%27 xmlns=%27http://www.w3.org/2000/svg%27 xmlns:xlink=%27http://www.w3.org/1999/xlink%27><g id=%27Artboard%27 stroke=%27none%27 stroke-width=%271%27 fill=%27none%27 fill-rule=%27evenodd%27 transform=%27translate%28-636.000000, -171.000000%29%27 fill-opacity=%270.368716033%27><g id=%27input%27 transform=%27translate%28172.000000, 37.000000%29%27 fill=%27%23FFFFFF%27 fill-rule=%27nonzero%27><g id=%27Group-9%27 transform=%27translate%28323.000000, 127.000000%29%27><path d=%27M142.280245,7.23952813 C141.987305,6.92353472 141.512432,6.92361662 141.219585,7.23971106 C140.926739,7.5558055 140.926815,8.06821394 141.219755,8.38420735 L145.498801,13 L149.780245,8.38162071 C150.073185,8.0656273 150.073261,7.55321886 149.780415,7.23712442 C149.487568,6.92102998 149.012695,6.92094808 148.719755,7.23694149 L145.498801,10.7113732 L142.280245,7.23952813 Z%27 id=%27arrow%27></path></g></g></g></svg>") no-repeat !important;
+    background-position: right 8px center !important;
+
       }
     }
 
@@ -2768,10 +2778,15 @@ body {
       }
 
       .rdrMonthAndYearPickers {
-        select {
-          color: #e2e31f;
-        }
+       select {
+  color: #e2e31f;
+
+    background: url("data:image/svg+xml;utf8,<svg width=%279px%27 height=%276px%27 viewBox=%270 0 9 6%27 version=%271.1%27 xmlns=%27http://www.w3.org/2000/svg%27 xmlns:xlink=%27http://www.w3.org/1999/xlink%27><g id=%27Artboard%27 stroke=%27none%27 stroke-width=%271%27 fill=%27none%27 fill-rule=%27evenodd%27 transform=%27translate%28-636.000000, -171.000000%29%27 fill-opacity=%270.368716033%27><g id=%27input%27 transform=%27translate%28172.000000, 37.000000%29%27 fill=%27%23FFFFFF%27 fill-rule=%27nonzero%27><g id=%27Group-9%27 transform=%27translate%28323.000000, 127.000000%29%27><path d=%27M142.280245,7.23952813 C141.987305,6.92353472 141.512432,6.92361662 141.219585,7.23971106 C140.926739,7.5558055 140.926815,8.06821394 141.219755,8.38420735 L145.498801,13 L149.780245,8.38162071 C150.073185,8.0656273 150.073261,7.55321886 149.780415,7.23712442 C149.487568,6.92102998 149.012695,6.92094808 148.719755,7.23694149 L145.498801,10.7113732 L142.280245,7.23952813 Z%27 id=%27arrow%27></path></g></g></g></svg>") no-repeat !important;
+    background-position: right 8px center !important;
+
+}
       }
+
 
       .rdrMonthsVertical {
         .rdrWeekDay {
@@ -3322,12 +3337,12 @@ body {
               background: rgba(255, 172, 254, 0.4);
             }
             .jobProgressDiv {
-              background:   rgb(173 131 173);
+              background: rgb(173 131 173);
               color: rgba(255, 172, 254, 0.4);
             }
             .jobDateDiv {
               .text {
-                color:   rgb(173 131 173);
+                color: rgb(173 131 173);
               }
             }
           }
@@ -3883,7 +3898,7 @@ body {
     left: 0;
     background: linear-gradient(0deg, #252525 0%, rgba(0, 0, 0, 0) 100%);
     z-index: 2;
-    @media screen and (max-width:1900px) {
+    @media screen and (max-width: 1900px) {
       bottom: 5px;
     }
   }

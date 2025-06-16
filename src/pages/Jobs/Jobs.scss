@@ -91,6 +91,18 @@
           line-height: normal;
           letter-spacing: -0.64px;
           min-height: 28px;
+
+         // WebKit autofill styles override
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    -webkit-text-fill-color: #d6d6d6 !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+caret-color: #fff;
+
+  }
           &::placeholder {
             color: #e2e31f;
           }
@@ -1192,7 +1204,7 @@
             flex-direction: column;
             gap: 8px;
             width: 100%;
-            hr{
+            hr {
               background-color: #353535 !important;
               margin: 10px 0 !important;
             }
@@ -1315,8 +1327,8 @@
           max-height: 100px;
           overflow-y: auto;
           position: relative;
-          &.custom{
-                max-height: 220px;
+          &.custom {
+            max-height: 220px;
           }
           .addedCollabs {
             display: flex;
