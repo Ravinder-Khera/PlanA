@@ -3220,9 +3220,15 @@ export const NewJobModalWithTasks = ({
   newJob,
   handleDelete: handleDeleteProp,
 }) => {
-  console.log("NewJobModalWithTasks", job);
+
   const [loader, setLoader] = useState(false);
-  const [description, setDescription] = useState(job?.description || "");
+ const [description, setDescription] = useState(() => {
+  if (!job?.description || job.description === "No description provided") {
+    return "";
+  }
+  return job.description;
+});
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [jobTasks, setJobTasks] = useState(job?.tasks || []);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
@@ -3299,7 +3305,14 @@ export const NewJobModalWithTasks = ({
   }, [scrollRef]);
 
   useEffect(() => {
-    setDescription(job?.description || "");
+    setDescription(() => {
+  if (!job?.description || job.description === "No description provided") {
+    console.log("desc empty")
+    return "";
+  }
+  console.log("desc")
+  return job.description;
+});
   }, [job, reloadTabs]);
 
   const handleOnChange = (e) => {

@@ -62,7 +62,7 @@ const Sort = ({
           ...filteredWithoutSort,
           {
             className: "filterStatusBox OnHold",
-            filter: `Sort By: ${filterString.label}`,
+            filter: `${filterString.label}`,
             type: "sort",
             value: filterString.value,
           },
@@ -75,6 +75,8 @@ const Sort = ({
       closeFilter();
     }
   };
+
+
 
   const handleCancelFilter = async () => {
     // setSelectedFilters([]);

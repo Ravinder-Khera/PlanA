@@ -753,11 +753,12 @@ const Jobs = () => {
         collaborators: newJobCollaboratorsListId,
         due_date: selectedNewJobDueDate || formattedDueDate,
         status: selectNewJobStatus || "not-started",
-        location: selectedNewLocation,
-        state: selectedNewState,
+        ...(selectedNewLocation && { location: selectedNewLocation }),
+        ...(selectedNewState && { state: selectedNewState }),
       },
       ...prevJobs,
     ]);
+
     handleAddNewJob();
     synchronizeRowHeights();
     if (showPopup) setShowNewJobModal(true);
@@ -776,8 +777,8 @@ const Jobs = () => {
         collaborators: newJobCollaboratorsListId,
         due_date: selectedNewJobDueDate || formattedDueDate,
         status: selectNewJobStatus || "not-started",
-        location: selectedNewLocation || "",
-        state: selectedNewState || "",
+        ...(selectedNewLocation && { location: selectedNewLocation }),
+        ...(selectedNewState && { state: selectedNewState }),
       };
 
       // API call to create job
@@ -1210,7 +1211,7 @@ const Jobs = () => {
               }
             : task
         );
-        console.log("updatedTasks", updatedTasks)
+        console.log("updatedTasks", updatedTasks);
 
         const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
         console.log("sortedTasks", sortedTasks);
@@ -1646,8 +1647,8 @@ const Jobs = () => {
         collaborators: newJobCollaboratorsListId,
         due_date: selectedNewJobDueDate || formattedDueDate,
         status: selectNewJobStatus || "not-started",
-        location: selectedNewLocation || "",
-        state: selectedNewState || "",
+        ...(selectedNewLocation !== "" && { location: selectedNewLocation }),
+        ...(selectedNewState !== "" && { state: selectedNewState }),
       };
 
       // API call to create job
@@ -2185,70 +2186,68 @@ const Jobs = () => {
           <div className="d-flex align-items-center justify-content-start gap-3">
             <div className="delete-box">
               <div className="delete-item d-flex align-items-center flex-wrap gap-2">
-                {/* {showSearchOptions && selectSearchOptions === "" && (
-                  <>Select which category you would like to search by.</>
-                )} */}
                 {showingSearchOptions ? (
                   <>Search Results For: '{showingSearchOptions}'</>
-                ) : // : selectSearchOptions ? (
-                //   <>
-                //     {selectSearchOptions === "job_num" && (
-                //       <>
-                //         Enter the number of the ‘Job’ you would like to search
-                //         for.
-                //       </>
-                //     )}
-                //     {selectSearchOptions === "title" && (
-                //       <>
-                //         Enter the name of the ‘Job Name’ you would like to
-                //         search for.
-                //       </>
-                //     )}
-                //     {selectSearchOptions === "collaborator_name" && (
-                //       <>
-                //         Enter the name of the ‘Collaborator’ you would like to
-                //         search for.
-                //       </>
-                //     )}
-                //     {!["job_num", "title", "collaborator_name"].includes(
-                //       selectSearchOptions
-                //     ) && (
-                //       <>Select which category you would like to search by.</>
-                //     )}
-                //   </>
-                // )
-                filteredString.length > 0 ? (
+                ) : filteredString.length > 0 ? (
                   <>
-                    Filtered By:{" "}
-                    {filteredString.map((string, index) => {
-                      const className =
-                        string.filter.length <= 2
-                          ? "user"
-                          : string.filter.replace(/\s+/g, "-").toLowerCase();
-                      // Assign a random color only once for each `user` string
-                      if (className === "user" && !userColors[string.filter]) {
-                        setUserColors((prevColors) => ({
-                          ...prevColors,
-                          [string.filter]: getRandomColor(),
-                        }));
-                      }
+                    {filteredString.some((f) => f.type !== "sort") && (
+                      <>
+                        Filtered By:{" "}
+                        {filteredString
+                          .filter((f) => f.type !== "sort")
+                          .map((string, index) => {
+                            const className =
+                              string.filter.length <= 2
+                                ? "user"
+                                : string.filter
+                                    .replace(/\s+/g, "-")
+                                    .toLowerCase();
 
-                      // Use the stored color or currentColor
-                      const borderColor =
-                        className === "user"
-                          ? userColors[string.filter]
-                          : "currentColor";
-                      return (
-                        <span
-                          className={`filterItemBox ${className}`}
-                          key={index}
-                          style={{ border: `1px solid ${borderColor}` }}
-                          onClick={() => handleRemoveFilter(string)}
-                        >
-                          {string.filter} <FilterCrossIcon />
-                        </span>
-                      );
-                    })}
+                            // Assign random color for user filters
+                            if (
+                              className === "user" &&
+                              !userColors[string.filter]
+                            ) {
+                              setUserColors((prevColors) => ({
+                                ...prevColors,
+                                [string.filter]: getRandomColor(),
+                              }));
+                            }
+
+                            const borderColor =
+                              className === "user"
+                                ? userColors[string.filter]
+                                : "currentColor";
+
+                            return (
+                              <span
+                                className={`filterItemBox ${className}`}
+                                key={`filter-${index}`}
+                                style={{ border: `1px solid ${borderColor}` }}
+                                onClick={() => handleRemoveFilter(string)}
+                              >
+                                {string.filter} <FilterCrossIcon />
+                              </span>
+                            );
+                          })}
+                      </>
+                    )}
+                    {filteredString.some((f) => f.type === "sort") && (
+                      <>
+                        Sorted By:{" "}
+                        {filteredString
+                          .filter((f) => f.type === "sort")
+                          .map((string, index) => (
+                            <span
+                              className="filterItemBox sort"
+                              key={`sort-${index}`}
+                              onClick={() => handleRemoveFilter(string)}
+                            >
+                              {string.filter} <FilterCrossIcon />
+                            </span>
+                          ))}
+                      </>
+                    )}
                   </>
                 ) : (
                   !showSearchOptions &&
