@@ -3773,9 +3773,16 @@ body {
       align-items: center;
       .itemData {
         padding: 10px 0;
-        min-width: calc(15% - 10px);
+        min-width: calc(14% - 6px);
+        overflow: hidden;
+        text-overflow: ellipsis;
         &:first-child {
-          min-width: calc(55% - 10px);
+          min-width: calc(49% - 10px);
+           max-width: calc(49% - 10px);
+          p{
+            overflow: hidden;
+        text-overflow: ellipsis;
+          }
         }
         text-align: start;
         p {
@@ -3798,9 +3805,9 @@ body {
       background: #353535;
       .itemData {
         padding: 10px 0;
-        min-width: calc(15% - 10px);
+        min-width: calc(14% - 10px);
         &:first-child {
-          min-width: calc(55% - 10px);
+          min-width: calc(49% - 10px);
         }
         text-align: start;
         p {

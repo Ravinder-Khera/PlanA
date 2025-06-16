@@ -95,13 +95,40 @@ const InvoicePopup = ({ handleClose }) => {
     };
   }, []);
 
+
   const handleItemChange = (e) => {
-    const { name, value } = e.target;
-    setItemState((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  const { name, value } = e.target;
+
+  // Allow only numbers and dot
+  if (name === "rate") {
+    const regex = /^\d{0,10}(\.\d{0,4})?$/;
+
+    if (value === '' || regex.test(value)) {
+      setItemState((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  }
+
+  // Only allow positive integers for 'hours'
+  else if (name === "hours") {
+    const intRegex = /^\d*$/;
+
+    if (value === '' || intRegex.test(value)) {
+      setItemState((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  }else{
+     setItemState((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+  }
+};
+
 
   const handleAddItem = () => {
     const newItem = {
@@ -639,7 +666,7 @@ const InvoicePopup = ({ handleClose }) => {
                   <div className="table-section position-relative " style={{zIndex:'0'}}>
                     <div className="table-main-section mt-4">
                       <ul className="invoiceItemUl ">
-                        <li className="addItemInput itemHeading gap-0">
+                        <li className="addItemInput itemHeading ">
                           <div className="itemData">
                             <p>Description <span> (minimum 1 required)</span><span className="requiredSpan">*</span></p>
                           </div>
@@ -655,7 +682,7 @@ const InvoicePopup = ({ handleClose }) => {
                         </li>
                           {items.length > 0 &&
                             items.map((item, index) => (
-                              <li key={index} className="addItemInput position-relative itemInput gap-0">
+                              <li key={index} className="addItemInput position-relative itemInput">
                                 <div className="itemData">
                                   <p>{item['description']}</p>
                                 </div>
@@ -666,7 +693,7 @@ const InvoicePopup = ({ handleClose }) => {
                                   <p>{item['hours']}</p>
                                 </div>
                                 <div className="itemData">
-                                  <p>{item['amount']}</p>
+                                  <p>${item['amount']}</p>
                                 </div>
                                 <div className="editDeleteDiv">
                                   <div className="boxes">
@@ -683,9 +710,10 @@ const InvoicePopup = ({ handleClose }) => {
                                     </span>
                                   </div>
                                 </div>
+                               
                               </li>
                           ))}
-                        <li className="addItemInput gap-0">
+                        <li className="addItemInput ">
                           <input
                             onChange={handleItemChange}
                             className="addInput"
@@ -1095,7 +1123,7 @@ const InvoicePopup = ({ handleClose }) => {
                               <input
                                 onChange={handleItemChange}
                                 className="addInput"
-                                type="number"
+                                type="text"
                                 name="hours"
                                 value={itemState['hours'] || ''}
                                 id=""
@@ -1109,7 +1137,7 @@ const InvoicePopup = ({ handleClose }) => {
                               <input
                                 onChange={handleItemChange}
                                 className="addInput"
-                                type="number"
+                                type="text"
                                 readOnly
                                 name="amount"
                                 value={itemState['rate']* itemState['hours'] || ''}
