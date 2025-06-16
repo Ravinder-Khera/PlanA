@@ -92,17 +92,16 @@
           letter-spacing: -0.64px;
           min-height: 28px;
 
-         // WebKit autofill styles override
-  &:-webkit-autofill,
-  &:-webkit-autofill:hover,
-  &:-webkit-autofill:focus,
-  &:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
-    -webkit-text-fill-color: #d6d6d6 !important;
-    transition: background-color 5000s ease-in-out 0s !important;
-caret-color: #fff;
-
-  }
+          // WebKit autofill styles override
+          &:-webkit-autofill,
+          &:-webkit-autofill:hover,
+          &:-webkit-autofill:focus,
+          &:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+            -webkit-text-fill-color: #d6d6d6 !important;
+            transition: background-color 5000s ease-in-out 0s !important;
+            caret-color: #fff;
+          }
           &::placeholder {
             color: #e2e31f;
           }
@@ -1775,8 +1774,8 @@ caret-color: #fff;
               border: 1px solid #1fb4e3;
               background: rgba(31, 180, 227, 0.4);
             }
-            &.design,
-            &.Design {
+            &.prelodgement,
+            &.Prelodgement {
               border: 1px solid #ffacfe;
               background: rgba(255, 172, 254, 0.4);
             }
@@ -2191,8 +2190,8 @@ caret-color: #fff;
             background: rgba(255, 255, 255, 0.25);
           }
         }
-        &.stage_design,
-        &.stage_Design {
+        &.stage_Prelodgement,
+        &.stage_prelodgement {
           background: rgb(173 131 173);
           .btn_Unknown,
           .btn_undefined {

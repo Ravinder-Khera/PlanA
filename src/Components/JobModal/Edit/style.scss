@@ -1100,8 +1100,8 @@
                                   border: 1px solid #1fb4e3;
                                   background: rgba(31, 180, 227, 0.4);
                                 }
-                                &.design,
-                                &.Design {
+                               &.prelodgement,
+    &.Prelodgement {
                                   border: 1px solid #ffacfe;
                                   background: rgba(255, 172, 254, 0.4);
                                 }
@@ -2402,8 +2402,8 @@
                     border: 1px solid #ff40be;
                     background: rgba(255, 64, 190, 0.4);
                   }
-                  &.stage_design,
-                  &.stage_Design {
+                  &.stage_prelodgement,
+                  &.stage_Prelodgement {
                     border: 1px solid #ffacfe;
                     background: rgba(255, 172, 254, 0.4);
                     min-width: max-content;
@@ -2626,8 +2626,8 @@
               &.Info {
                 color: rgba(138, 80, 197);
               }
-              &.design,
-              &.Design {
+              &.prelodgement,
+              &.Prelodgement {
                color: rgb(255, 172, 254);
               }
               &.Inform,
@@ -2684,7 +2684,7 @@
                   border: 1px solid #ff5c00;
                   background: rgba(255, 92, 0, 0.55);
                 }
-                &.stage_Design{
+                &.stage_Prelodgement, &.stage_prelodgement{
                     min-width: 100px;
                    border: 1px solid #ffacfe;
       background: rgba(255, 172, 254, 0.4);
@@ -3830,8 +3830,8 @@
       &.Info {
         color: rgba(138, 80, 197);
       }
-      &.design,
-      &.Design {
+      &.prelodgement,
+              &.Prelodgement {
         border: 1px solid #ffacfe;
         background: rgba(255, 172, 254, 0.4);
       }
@@ -3869,8 +3869,7 @@
         border: 1px solid #1fb4e3;
         background: rgba(31, 180, 227, 0.4);
       }
-      &.stage_design,
-                  &.stage_Design {
+      &.stage_Prelodgement, &.stage_prelodgement{
                     border: 1px solid #ffacfe;
                     background: rgba(255, 172, 254, 0.4);
                   }

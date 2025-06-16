@@ -449,6 +449,7 @@ function ViewTaskPage() {
       );
       addNotification("success", "Task Created");
       console.log("Task create successful", response.res);
+      handleJobFilter()
     } else {
       addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);

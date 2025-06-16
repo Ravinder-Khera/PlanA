@@ -1816,6 +1816,15 @@ body {
         }
       }
 
+      &.stage_Prelodgement {
+        background: rgba(255, 172, 254, 0.6);
+
+        .btn_Prelodgement {
+            border: 1px solid #ffacfe;
+      background: rgba(255, 172, 254, 0.4);
+        }
+      }
+
       &.stage_Unknown,
       &.stage_undefined {
         background: #353535;
@@ -2198,8 +2207,8 @@ body {
       border: 1px solid #ff40be;
       background: rgba(255, 64, 190, 0.4);
     }
-    &.design,
-    &.Design {
+    &.prelodgement,
+    &.Prelodgement {
       border: 1px solid #ffacfe;
       background: rgba(255, 172, 254, 0.4);
     }
@@ -2535,8 +2544,8 @@ body {
               border: 1px solid #ff40be;
               background: rgba(255, 64, 190, 0.4);
             }
-            &.design,
-            &.Design {
+            &.prelodgement,
+    &.Prelodgement {
               border: 1px solid #ffacfe;
               background: rgba(255, 172, 254, 0.4);
             }
@@ -3326,8 +3335,8 @@ body {
               }
             }
           }
-          &.design,
-          &.Design {
+         &.prelodgement,
+    &.Prelodgement {
             background: transparent;
             .timeLineJobItemDiv {
               border: 1px solid #ffacfe;
@@ -4279,8 +4288,8 @@ body {
           border: 1px solid #ddd;
           background: rgb(221 221 221 / 40%);
         }
-        &.design,
-        &.Design {
+        &.prelodgement,
+    &.Prelodgement {
           border: 1px solid #ffacfe;
           background: rgba(255, 172, 254, 0.4);
         }
@@ -4421,8 +4430,8 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
         border: 1px solid #1fb4e3;
         background: rgba(31, 180, 227, 0.4);
       }
-      &.design,
-      &.Design {
+      &.prelodgement,
+    &.Prelodgement {
         border: 1px solid #ffacfe;
         background: rgba(255, 172, 254, 0.4);
       }
@@ -6123,8 +6132,8 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
                                   border: 1px solid #ff40be;
                                   background: rgba(255, 64, 190, 0.4);
                                 }
-                                &.design,
-                                &.Design {
+                                &.prelodgement,
+    &.Prelodgement {
                                   border: 1px solid #ffacfe;
                                   background: rgba(255, 172, 254, 0.4);
                                 }
@@ -6407,8 +6416,8 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
                                 border: 1px solid #1fb4e3;
                                 background: rgba(31, 180, 227, 0.4);
                               }
-                              &.design,
-                              &.Design {
+                              &.prelodgement,
+    &.Prelodgement {
                                 border: 1px solid #ffacfe;
                                 background: rgba(255, 172, 254, 0.4);
                               }
