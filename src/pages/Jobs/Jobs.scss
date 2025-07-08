@@ -346,7 +346,7 @@
         cursor: pointer;
         svg {
           path {
-            stroke: #feff6f;
+            stroke: #b4b2b2 !important;
           }
         }
         &.user {
@@ -474,6 +474,122 @@
             margin-left: 7px;
           }
         }
+        &.filterStatusBox {
+        padding: 7px 11px;
+        min-width: 83px;
+        text-align: center;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        letter-spacing: -0.48px;
+        border-radius: 4px;
+        color: #fff;
+        &.stage_Application {
+          background: #326631;
+ border: 1px solid #3b9239;
+          .btn_Application {
+            border: 1px solid #3b9239;
+            background: rgba(59, 146, 57, 0.6);
+          }
+        }
+
+        &.stage_Referral {
+          background: #235e71;
+  border: 1px solid #1fb4e3;
+          .btn_Referral {
+            border: 1px solid #1fb4e3;
+            background: rgba(31, 180, 227, 0.4);
+          }
+        }
+
+        &.stage_Information,
+        &.stage_Info {
+          background: #573a73;
+ border: 1px solid #8a50c5;
+          .btn_Information,
+          .btn_Info {
+            border: 1px solid #8a50c5;
+            background: rgba(138, 80, 197, 0.49);
+          }
+        }
+
+        &.stage_Inform,
+        &.stage_Public {
+          background: #9d4311;
+           border: 1px solid #ff5c00;
+          .btn_Inform,
+          .btn_Public {
+            border: 1px solid #ff5c00;
+            background: rgba(255, 92, 0, 0.55);
+          }
+        }
+
+        &.stage_Decision {
+          background: #7c3062;
+ border: 1px solid #ff40be;
+          .btn_Decision {
+            border: 1px solid #ff40be;
+            background: rgba(255, 64, 190, 0.4);
+          }
+        }
+
+        &.stage_Unknown,
+        &.stage_undefined,
+        &.stage_Undefined {
+          background: #353535;
+            border: 1px solid #fff;
+          .btn_Unknown,
+          .btn_undefined {
+            border: 1px solid #fff;
+            background: rgba(255, 255, 255, 0.25);
+          }
+        }
+        &.stage_Prelodgement,
+        &.stage_prelodgement {
+          background: rgb(173 131 173);
+           border: 1px solid #ffacfe;
+          .btn_Unknown,
+          .btn_undefined {
+            border: 1px solid #ffacfe;
+            background: rgba(255, 172, 254, 0.4);
+          }
+        }
+        &.stage_General {
+          background: rgba(162, 100, 255);
+          border: 1px solid #a264ff;
+          .btn_Unknown,
+          .btn_undefined {
+            border: 1px solid #a264ff;
+            background: rgba(162, 100, 255, 0.6);
+          }
+        }
+        &.NotStarted {
+          color: #fff;
+          border: 1px solid #e31f1f;
+          background: rgba(227, 31, 31, 0.5);
+        }
+        &.Pending {
+          color: #fff;
+          border: 1px solid #1fb4e3;
+          background: rgba(31, 180, 227, 0.4);
+        }
+        &.InProgress {
+          color: #fff;
+          border: 1px solid #e3881f;
+          background: rgba(227, 136, 31, 0.6);
+        }
+        &.OnHold {
+          color: #fff;
+          border: 1px solid #ddd;
+          background: rgba(186, 186, 186, 0.6);
+        }
+        &.Completed {
+          color: #fff;
+          border: 1px solid #3b9239;
+          background: #3b923980;
+        }
+      }
       }
     }
   }
@@ -2199,6 +2315,14 @@
             background: rgba(255, 172, 254, 0.4);
           }
         }
+        &.stage_General {
+          background: rgba(162, 100, 255);
+          .btn_Unknown,
+          .btn_undefined {
+            border: 1px solid #a264ff;
+            background: rgba(162, 100, 255, 0.6);
+          }
+        }
         &.NotStarted {
           color: #fff;
           border: 1px solid #e31f1f;
@@ -2246,34 +2370,34 @@
           gap: 8px;
         }
         .filterUserBox {
-          &:nth-child(4n + 1) {
-            svg {
-              path {
-                stroke: #f068ff;
-              }
+          // &:nth-child(4n + 1) {
+          svg {
+            path {
+              stroke: #767676;
             }
           }
-          &:nth-child(4n + 2) {
-            svg {
-              path {
-                stroke: #68fff0;
-              }
-            }
-          }
-          &:nth-child(4n + 3) {
-            svg {
-              path {
-                stroke: #687cff;
-              }
-            }
-          }
-          &:nth-child(4n + 4) {
-            svg {
-              path {
-                stroke: #7f7f7f;
-              }
-            }
-          }
+          // }
+          // &:nth-child(4n + 2) {
+          //   svg {
+          //     path {
+          //       stroke: #68fff0;
+          //     }
+          //   }
+          // }
+          // &:nth-child(4n + 3) {
+          //   svg {
+          //     path {
+          //       stroke: #687cff;
+          //     }
+          //   }
+          // }
+          // &:nth-child(4n + 4) {
+          //   svg {
+          //     path {
+          //       stroke: #7f7f7f;
+          //     }
+          //   }
+          // }
         }
         .filterStatusBox {
           &.NotStarted {

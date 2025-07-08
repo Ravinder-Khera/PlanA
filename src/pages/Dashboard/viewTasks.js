@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import {
   AddIcon,
@@ -32,9 +32,9 @@ import {
   CreateTaskModal,
   UpdateTaskModal,
 } from "../../Components/JobModal/Edit/JobModal";
-import { formatJobNumber } from "../Jobs";
 import ToggleButton from "../../Components/ToggleButton";
 import { addNotification } from "../../helper";
+import { formatJobNumber } from "../Jobs";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -58,25 +58,16 @@ function ViewTaskPage() {
   const [selectDueDate, setSelectDueDate] = useState(false);
   const [selectDueDateMobile, setSelectDueDateMobile] = useState(false);
   const [selectedDueDate, setSelectedDueDate] = useState(null);
-  const [tasksToDo, setTasksToDo] = useState([]);
-  const [tasksCompleted, setTasksCompleted] = useState([]);
   const [jobList, setJobList] = useState([]);
   const [usersList, setUsersList] = useState([]);
   const [userDropdownStates, setUserDropdownStates] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedTask, setSelectedTask] = useState({});
   const filterRef = useRef(null);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentFilteredPage, setCurrentFilteredPage] = useState(1);
-  const [pageUrls, setPageUrls] = useState([]);
-  const [filteredPageUrls, setFilteredPageUrls] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [filteredTotalPages, setFilteredTotalPages] = useState(1);
   const [currentPage2, setCurrentPage2] = useState(1);
-  const [pageUrls2, setPageUrls2] = useState([]);
-  const [totalPages2, setTotalPages2] = useState(1);
   const [showSearchOptions, setShowSearchOptions] = useState(false);
   const [selectSearchOptions, setSelectSearchOptions] = useState("");
   const [showingSearchOptions, setShowingSearchOptions] = useState("");
@@ -103,7 +94,7 @@ function ViewTaskPage() {
   const [isOn, setIsOn] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const notificationRef = useRef(null);
-
+  const containerRef = useRef(null);
   useEffect(() => {
     if (taskId) {
       fetchTaskFromTaskID(taskId);
@@ -184,7 +175,7 @@ function ViewTaskPage() {
         notificationRef.current &&
         !notificationRef.current.contains(e.target)
       ) {
-        console.log("triggerd  notification");
+ 
         setNotificationDropDown(false);
       }
     };
@@ -281,9 +272,11 @@ function ViewTaskPage() {
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-  const [activeTaskJob, setActiveTaskJob] = useState(null);
+  const [activeTaskJob, setActiveTaskJob] = useState([]);
   const [activeTask, setActiveTask] = useState(null);
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
+  const [loadMorePage, setLoadMorePage] = useState(1);
+  const [loadTotalPage, setLoadTotalPage] = useState(null);
 
   const [selectionRange, setSelectionRange] = useState({
     startDate: firstDayOfMonth,
@@ -324,15 +317,15 @@ function ViewTaskPage() {
     };
   }, [userDropdownStates]);
 
-  let formattedDueDate = "";
-  if (selectedDueDate) {
-    const year = selectedDueDate.getFullYear();
-    const month = String(selectedDueDate.getMonth() + 1).padStart(2, "0");
-    const day = String(selectedDueDate.getDate()).padStart(2, "0");
-    formattedDueDate = `${year}-${month}-${day}`;
-  } else {
-    formattedDueDate = "";
-  }
+  // let formattedDueDate = "";
+  // if (selectedDueDate) {
+  //   const year = selectedDueDate.getFullYear();
+  //   const month = String(selectedDueDate.getMonth() + 1).padStart(2, "0");
+  //   const day = String(selectedDueDate.getDate()).padStart(2, "0");
+  //   formattedDueDate = `${year}-${month}-${day}`;
+  // } else {
+  //   formattedDueDate = "";
+  // }
 
   useEffect(() => {
     const fetchJobIds = async () => {
@@ -389,6 +382,10 @@ function ViewTaskPage() {
         setShowSearchOptions(false);
         setSelectSearchOptions("");
         setSearchedInput("");
+        setLoadMorePage(() => 1);
+        setLoadTotalPage(null);
+        // setFilteredTasks([])
+        handleJobFilter(1)
       }
     };
 
@@ -399,16 +396,19 @@ function ViewTaskPage() {
     };
   }, [selectSearchOptions]);
 
-  const handleJobFilter = async () => {
+  const handleJobFilter = async (page = loadMorePage) => {
     try {
+
       const response = await getTasksByUser(
         {},
-        isOn ? "completed=true" : "non_completed=true"
+        isOn ? "completed=true" : "non_completed=true",
+        page
       );
       if (response.res) {
-        setActiveTaskJob(response?.res.data);
-        setFilteredTasks(response?.res?.data);
-        return response.res;
+        setActiveTaskJob([...activeTaskJob, ...response?.res.data]);
+        setFilteredTasks([...filteredTasks, ...response?.res?.data]);
+        setLoadTotalPage(response?.res?.last_page);
+        setLoadMorePage(response?.res?.current_page + 1);
       } else {
         console.error("get task failed:", response.error);
         toast.error(response.error?.message || "Failed to get the job");
@@ -416,11 +416,55 @@ function ViewTaskPage() {
     } catch (error) {
       console.error("Error getting job:", error);
       toast.error("Error getting task");
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
     handleJobFilter();
   }, [isOn]);
+
+  const handleScroll = useCallback(async () => {
+    const container = containerRef.current;
+    if (!container) return;
+    // Check if the container has been scrolled to the bottom
+    if (
+      container.scrollTop + container.clientHeight >= container.scrollHeight &&
+      filteredTasks.length >= 20 &&
+      (loadTotalPage >= loadMorePage || !loadTotalPage)
+    ) {
+      setLoading(true);
+      try {
+        const response = await getTasksByUser(
+          {},
+          isOn ? "completed=true" : "non_completed=true",
+          loadMorePage
+        );
+        if (response.res) {
+          setActiveTaskJob([...activeTaskJob, ...response?.res.data]);
+          setFilteredTasks([...filteredTasks, ...response?.res?.data]);
+          setLoadTotalPage(response?.res?.last_page);
+          setLoadMorePage(response?.res?.current_page + 1);
+        } else {
+          console.error("get task failed:", response.error);
+          toast.error(response.error?.message || "Failed to get the job");
+        }
+      } catch (error) {
+        console.log("error while fetching tasks", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [loadMorePage, setFilteredTasks, loadTotalPage]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    container.addEventListener("scroll", handleScroll);
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
     setFilteredTasks((prevTasks) => [
@@ -448,8 +492,11 @@ function ViewTaskPage() {
         prevTasks.map((t) => (t.id === "temp" ? task : t))
       );
       addNotification("success", "Task Created");
-      console.log("Task create successful", response.res);
-      handleJobFilter()
+      setLoading(true);
+      setFilteredTasks([]);
+      setLoadMorePage(1);
+      setLoadTotalPage(null);
+      handleJobFilter(1);
     } else {
       addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);
@@ -496,7 +543,6 @@ function ViewTaskPage() {
       const response = await deleteTask(task.id);
       if (response.res) {
         addNotification("success", "Task Deleted");
-        console.log("Job delete successful", response.res);
       } else {
         console.error("Job delete failed:", response.error);
         toast.error(response.error?.message || "Failed to delete the job");
@@ -513,7 +559,6 @@ function ViewTaskPage() {
     newJobCollaboratorsList,
     stage
   ) => {
-    console.log(taskId, " - ", activeTask.id, " - ", newData);
 
     setFilteredTasks((prevTasks) =>
       prevTasks.map((task) =>
@@ -535,7 +580,12 @@ function ViewTaskPage() {
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
-      handleJobFilter();
+      // setLoading(true);
+      // setActiveTaskJob([])
+      // setFilteredTasks([]);
+      // setLoadMorePage(1);
+      // setLoadTotalPage(null);
+      // handleJobFilter();
       // addNotification("success", "Task Updated")
       console.log("Task Update successful", response.res);
     } else {
@@ -601,7 +651,7 @@ function ViewTaskPage() {
       delete updatedQuery.status;
     if (!updatedQuery.due_this_week) delete updatedQuery.due_this_week;
     if (!updatedQuery.due_in_14_days) delete updatedQuery.due_in_14_days;
-    console.log("uupdated", updatedQuery);
+    
     setFilteredQuery(updatedQuery);
     setFilteredString((prevFiltered) =>
       prevFiltered.filter((item) => item !== value)
@@ -664,19 +714,19 @@ function ViewTaskPage() {
           scrollRef={taskMobileScrollRef}
           onUpdateTask={handleUpdateTask}
           handleDelete={() => {
-            console.log("task to be deleted", filteredTasks, activeTask);
             setFilteredTasks((prevTask) =>
               prevTask.filter((task) => task.id !== activeTask.id)
             );
             handleTaskDelete(activeTask);
             handleCloseModal();
           }}
+          jobType={activeTask.job_type === "job" ? "Jobs" : "Prospects"}
         />
       )}
 
       <div
         className="JobsHeading position-relative d-flex justify-content-between align-items-center gap-3 flex-wrap"
-        style={{ zIndex: "2", justifyContent:"space-between" }}
+        style={{ zIndex: "2", justifyContent: "space-between" }}
       >
         <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
           <h2>Tasks</h2>
@@ -766,7 +816,9 @@ function ViewTaskPage() {
                       setSearchedInput("");
                       setShowSearchOptions(false);
                       setShowingSearchOptions("");
-                      handleJobFilter();
+                      setLoadMorePage(1);
+                      setLoadTotalPage(null)
+                      handleJobFilter(1);
                     }}
                   >
                     <CloseIcon />
@@ -915,10 +967,7 @@ function ViewTaskPage() {
                 <>
                   Filtered By:{" "}
                   {filteredString.map((string, index) => {
-                    const className =
-                      string.filter.length <= 2
-                        ? "user"
-                        : string.filter.replace(/\s+/g, "-").toLowerCase();
+                    const className = string.className;
                     // Assign a random color only once for each `user` string
                     if (className === "user" && !userColors[string.filter]) {
                       setUserColors((prevColors) => ({
@@ -956,7 +1005,23 @@ function ViewTaskPage() {
 
       <div className="DashboardTopMenu">
         <div className="d-flex align-items-center justify-content-start gap-2 mb-3">
-          <ToggleButton isOn={isOn} setIsOn={setIsOn} />{" "}
+          <ToggleButton
+            isOn={isOn}
+            setIsOn={setIsOn}
+            clearFilter={() => {
+              setLoading(true);
+              setActiveTaskJob([]);
+              setFilteredTasks([]);
+              setLoadMorePage(1);
+              setLoadTotalPage(null);
+              setFilteredQuery({});
+              setFilteredString([]);
+              setSelectSearchOptions("");
+              setSearchedInput("");
+              setShowSearchOptions(false);
+              setShowingSearchOptions("");
+            }}
+          />{" "}
           <div className="task-toggle-text"> Completed Tasks</div>
         </div>
         <div className="pagination-container justify-content-start viewTask">
@@ -965,11 +1030,12 @@ function ViewTaskPage() {
               style={{
                 position: "relative",
                 overflow: "auto",
-                maxHeight: "800px",
+                maxHeight: "calc(100vh - 175px)",
                 zIndex: "1",
                 paddingRight: "10px",
                 scrollBehavior: "smooth",
               }}
+              ref={containerRef}
             >
               <li
                 key={"001"}
@@ -982,7 +1048,9 @@ function ViewTaskPage() {
               >
                 <div className="listContent TastTitleCol1">Title</div>
                 <div className="listContent centerContent TastTitleCol2">
-                  <div className="centerText text-center Task-title-stage">Stage</div>
+                  <div className="centerText text-center Task-title-stage">
+                    Stage
+                  </div>
 
                   <div
                     className="centerText Task-title-job"
@@ -1033,7 +1101,7 @@ function ViewTaskPage() {
                     className={`  stage_` + task?.stage?.title}
                     onClick={() => {
                       if (!task.id) {
-                        console.log("not from db", task);
+                       
                         handleCheckTask(task.job_id, i);
                       } else {
                         handleActiveTask(task);
@@ -1043,7 +1111,7 @@ function ViewTaskPage() {
                     <div
                       className={`listContent listTitle TaskCol1`}
                       style={{
-                        justifyContent: 'space-between'
+                        justifyContent: "space-between",
                       }}
                     >
                       <p
@@ -1055,7 +1123,6 @@ function ViewTaskPage() {
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                           width: "280px",
-                          
                         }}
                       >
                         {task?.title?.replace(/\b\w/g, (char) =>
@@ -1063,13 +1130,13 @@ function ViewTaskPage() {
                         )}
                       </p>
 
-                      <p style={{cursor: "pointer" }}>
+                      <p style={{ cursor: "pointer" }}>
                         <ArrowRight />
                       </p>
                     </div>
                     <div className="listContent centerContent TaskCol2">
                       <div
-                        className={`centerText stageBtn btn_${task?.stage?.title} TaskCol2_btn`} 
+                        className={`centerText stageBtn btn_${task?.stage?.title} TaskCol2_btn`}
                       >
                         {task?.stage?.title ? task?.stage?.title : "N/A"}
                       </div>
@@ -1081,7 +1148,7 @@ function ViewTaskPage() {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
-                          width: "295px"
+                          width: "295px",
                         }}
                       >
                         {task?.job_title?.replace(/\b\w/g, (char) =>
@@ -1096,9 +1163,7 @@ function ViewTaskPage() {
                       </div>
                     </div>
                     <div className="listContent d-flex align-items-center gap-2 navMenuDiv p-0 bg-transparent shadow-none addNewTaskDiv TaskCol3">
-                      <div
-                        className="d-flex w-100 align-items-center  justify-content-between InnerTaskCol3"
-                      >
+                      <div className="d-flex w-100 align-items-center  justify-content-between InnerTaskCol3">
                         <div
                           // style={{ flex: "1" }}
                           className={`centerText statusBtn m-0 ${task?.status} TaskCol3_status`}
@@ -1128,9 +1193,10 @@ function ViewTaskPage() {
                                 return `${diff} day${diff === 1 ? "" : "s"}`;
                               })()}
                         </div>
-                        <div 
-                        // style={{ flex: "1" }} 
-                        className={`JobBtn TaskCol3_jobno`}>
+                        <div
+                          // style={{ flex: "1" }}
+                          className={`JobBtn TaskCol3_jobno`}
+                        >
                           {task?.job_num
                             ? formatJobNumber(task?.job_num)
                             : "N/A"}

@@ -16,7 +16,7 @@ import { CrossIcon, UploadIcon } from "../../../assets/svg";
 import {
   addNotification,
   CollaboratorNameBG,
-  CollaboratorNameColor
+  CollaboratorNameColor,
 } from "../../../helper";
 import { getProfile } from "../../../services/api";
 import {
@@ -880,7 +880,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
         type: "attachment",
         data: selectedFile,
       });
-      console.log("selectedFile: ", selectedFile);
+      
       handleImageUpload(selectedFile);
     }
   };
@@ -903,7 +903,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
   };
 
   const handleImageUpload = async (file) => {
-    console.log("file", file);
+ 
     const reader = new FileReader();
     reader.onload = async () => {
       const formData = new FormData();
@@ -1451,14 +1451,14 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const isToast =
           document.querySelector(".Toastify__toast") &&
           document.querySelector(".Toastify__toast").contains(event.target);
-        console.log("isToast 1 ", isToast);
+  
         if (!isToast) setShowUserList(false);
       }
       if (userRef2.current && !userRef2.current.contains(event.target)) {
         const isToast =
           document.querySelector(".Toastify__toast") &&
           document.querySelector(".Toastify__toast").contains(event.target);
-        console.log("isToast 2", isToast);
+     
         if (!isToast) setShowUserList2(false);
       }
     };
@@ -1571,7 +1571,6 @@ export const ChatAndComment = ({ JobId, usersList }) => {
 
       if (message) {
         setChats((prevChats) => {
-          console.log("Previous chats:", prevChats);
           return [...prevChats, message]; // Create a new array to trigger re-render
         });
       }
@@ -1623,7 +1622,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const sortedAttachments = response2.res?.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
-        console.log("sortedMessages------>>>>", sortedMessages);
+       
 
         setChats(sortedMessages);
         setAttachments(sortedAttachments);
@@ -1675,10 +1674,8 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const debouncedSendMessage = debounce(async (body) => {
     try {
       setLoading(true);
-      console.log("aopi call");
       const response = await sendMessage(JobId, { body, ids: userIds });
       if (!response.error) {
-        console.log("subs--->", subscribed);
         // if(!subscribed)
         fetchChats();
         // addNotification("user", "New Comment: " + userDetails?.name);
@@ -1740,12 +1737,20 @@ export const ChatAndComment = ({ JobId, usersList }) => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!body || body?.trim() === "") {
-      toast.error("Message cannot be empty");
-      return;
+
+    if (newMsg.type === "msg") {
+      if (!body || body?.trim() === "") {
+        toast.error("Message cannot be empty");
+        return;
+      }
+      debouncedSendMessage(body);
+    } else if (newMsg.type === "attachment") {
+      if (!newMsg.data) {
+        toast.error("No file selected.");
+        return;
+      }
+      await handleImageUpload(newMsg.data);
     }
-    console.log("sending msg....");
-    debouncedSendMessage(body);
   };
 
   const handleSendComment = async (e) => {
@@ -1772,9 +1777,9 @@ export const ChatAndComment = ({ JobId, usersList }) => {
           data: selectedFile,
         });
 
-        console.log("selectedFile: ", selectedFile);
+        
 
-        handleImageUpload(selectedFile);
+        // handleImageUpload(selectedFile);
       } else {
         if (attachmentRef.current) {
           attachmentRef.current.value = ""; // Reset the input value
@@ -1811,7 +1816,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   };
 
   const handleImageUpload = async (file) => {
-    console.log("file", file);
+    
     const reader = new FileReader();
     reader.onload = async () => {
       const formData = new FormData();
@@ -1849,7 +1854,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
 
   const handleDownloadFile = async (fileUrl, docName) => {
     try {
-      console.log("url", fileUrl);
+      
       const filePath = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
 
       const response = await fetch(filePath, {
@@ -2164,8 +2169,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                                 backgroundColor:
                                   CollaboratorNameBG[user?.name] || "#353535",
                                 color:
-                                  CollaboratorNameColor[user?.name] ||
-                                  "#fff",
+                                  CollaboratorNameColor[user?.name] || "#fff",
                               }}
                             >
                               {initials}
@@ -2486,16 +2490,17 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               placeholder="Type a message in the chat..."
               onChange={(e) => {
                 const { value } = e.target;
+
                 setBody(value);
                 setNewMsg({
                   type: "msg",
                   data: value,
                 });
-                if (e?.target?.value.endsWith("@")) {
+
+                if (value.endsWith("@")) {
                   setFilteredUsers(usersList);
                   setShowUserList(true);
                 } else if (value.includes("@")) {
-                  // If there's an '@', filter the users based on the text after '@'
                   const searchTerm = value.split("@").pop().trim();
                   const filteredUsers = usersList?.filter((user) =>
                     user?.name?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -2505,7 +2510,11 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                   setShowUserList(false);
                 }
               }}
-              value={body}
+              value={
+                newMsg.type === "attachment" && newMsg.data?.name
+                  ? `📎 ${newMsg.data.name}`
+                  : body
+              }
             />
 
             {showUserList && (
@@ -2672,9 +2681,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
   eventEmitter.removeAllListeners("newMessage");
   eventEmitter.on("newMessage", (data) => {
     const tempChats = data;
-    console.log("tempChats before push", tempChats);
     tempChats?.push(message);
-    console.log("tempChats after push", tempChats);
     setChats(tempChats);
   });
 
@@ -2774,7 +2781,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
           data: selectedFile,
         });
 
-        console.log("selectedFile: ", selectedFile);
+       
 
         handleImageUpload(selectedFile);
       } else {
@@ -2814,7 +2821,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
   };
 
   const handleImageUpload = async (file) => {
-    console.log("file", file);
+   
     const reader = new FileReader();
     reader.onload = async () => {
       const formData = new FormData();
@@ -2888,7 +2895,7 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
 
   const handleDownloadFile = async (fileUrl, docName) => {
     try {
-      console.log("url", fileUrl);
+     
       const filePath = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
 
       const response = await fetch(filePath, {

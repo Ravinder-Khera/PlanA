@@ -141,7 +141,6 @@ function Invoice() {
         ids: selectedIds,
       },authToken);
       if (response.res) {
-        console.log("invoice delete successful", response);
         
         addNotification("success", response.res.deletedCount+' '+ "Invoice Deleted")
         toast.success(`${response.res.deletedCount} ${response.res.message}`, {
@@ -187,7 +186,6 @@ function Invoice() {
 
   const handleInvoiceUpload = (e) => {
     const [{ type }] = e.target.files;
-    console.log("file",type)
     if(type !== "application/pdf"){
       toast.error("Please select a PDF file for upload.")
       invoiceRef.current = null;

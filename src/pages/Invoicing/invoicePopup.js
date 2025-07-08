@@ -337,9 +337,7 @@ const InvoicePopup = ({ handleClose }) => {
           }
         }
       );
-      console.log("create Invoice --", response);
       if (response.res) {
-        console.log("create Task successful", response);
 
       
         addNotification("success", "Invoice Created")
@@ -574,7 +572,6 @@ const InvoicePopup = ({ handleClose }) => {
                             src="/assets/pan.png"
                             alt=""
                             onClick={()=>{ 
-                              console.log("billing focus")
                               billingToRef.current.focus()}}
                           />
                         </span>

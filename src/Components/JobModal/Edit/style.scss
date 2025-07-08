@@ -1100,8 +1100,8 @@
                                   border: 1px solid #1fb4e3;
                                   background: rgba(31, 180, 227, 0.4);
                                 }
-                               &.prelodgement,
-    &.Prelodgement {
+                                &.prelodgement,
+                                &.Prelodgement {
                                   border: 1px solid #ffacfe;
                                   background: rgba(255, 172, 254, 0.4);
                                 }
@@ -2408,6 +2408,10 @@
                     background: rgba(255, 172, 254, 0.4);
                     min-width: max-content;
                   }
+                  &.stage_General {
+                    border: 1px solid #a264ff;
+                    background: rgba(162, 100, 255, 0.6);
+                  }
                   &.stage_Unknown,
                   &.stage_undefined {
                     border: 1px solid #fff;
@@ -2628,7 +2632,10 @@
               }
               &.prelodgement,
               &.Prelodgement {
-               color: rgb(255, 172, 254);
+                color: rgb(255, 172, 254);
+              }
+              &.General{
+                color: rgba(162, 100, 255, 1);
               }
               &.Inform,
               &.Public {
@@ -2642,7 +2649,7 @@
             .addNewTaskDiv {
               display: flex;
               justify-content: end;
-              
+
               .addTaskJobBtn {
                 border-radius: 4px;
                 color: #fff;
@@ -2666,44 +2673,50 @@
                 }
 
                 &.stage_Referral {
-                   min-width: 100px;
+                  min-width: 100px;
                   border: 1px solid #1fb4e3;
                   background: rgba(31, 180, 227, 0.4);
                 }
 
                 &.stage_Information,
                 &.stage_Info {
-                   min-width: 100px;
+                  min-width: 100px;
                   border: 1px solid #8a50c5;
                   background: rgba(138, 80, 197, 0.49);
                 }
 
                 &.stage_Inform,
                 &.stage_Public {
-                   min-width: 100px;
+                  min-width: 100px;
                   border: 1px solid #ff5c00;
                   background: rgba(255, 92, 0, 0.55);
                 }
-                &.stage_Prelodgement, &.stage_prelodgement{
-                    min-width: 100px;
-                   border: 1px solid #ffacfe;
-      background: rgba(255, 172, 254, 0.4);
+                &.stage_Prelodgement,
+                &.stage_prelodgement {
+                  min-width: 100px;
+                  border: 1px solid #ffacfe;
+                  background: rgba(255, 172, 254, 0.4);
+                }
+                &.stage_General {
+                  min-width: 100px;
+                  border: 1px solid #a264ff;
+                  background: rgba(162, 100, 255, 0.6);
                 }
                 &.stage_Decision {
-                   min-width: 100px;
+                  min-width: 100px;
                   border: 1px solid #ff40be;
                   background: rgba(255, 64, 190, 0.4);
                 }
 
                 &.stage_Unknown,
                 &.stage_undefined {
-                   min-width: 100px;
+                  min-width: 100px;
                   border: 1px solid #fff;
                   background: rgba(255, 255, 255, 0.25);
                 }
 
                 &.stage_select {
-                   max-width: 100px;
+                  max-width: 100px;
                   color: #616161 !important;
                   border: none !important;
                   background: none !important;
@@ -2735,7 +2748,7 @@
               background: transparent;
             }
             .task-table-container {
-              max-height: 347px;
+              max-height: 316px;
               overflow-y: hidden;
               margin-top: 12px;
               border-radius: 8px;
@@ -3831,7 +3844,7 @@
         color: rgba(138, 80, 197);
       }
       &.prelodgement,
-              &.Prelodgement {
+      &.Prelodgement {
         border: 1px solid #ffacfe;
         background: rgba(255, 172, 254, 0.4);
       }
@@ -3869,9 +3882,14 @@
         border: 1px solid #1fb4e3;
         background: rgba(31, 180, 227, 0.4);
       }
-      &.stage_Prelodgement, &.stage_prelodgement{
-                    border: 1px solid #ffacfe;
-                    background: rgba(255, 172, 254, 0.4);
+      &.stage_Prelodgement,
+      &.stage_prelodgement {
+        border: 1px solid #ffacfe;
+        background: rgba(255, 172, 254, 0.4);
+      }
+       &.stage_General {
+                    border: 1px solid #a264ff;
+                    background: rgba(162, 100, 255, 0.6);
                   }
 
       &.stage_Information,

@@ -3219,15 +3219,15 @@ export const NewJobModalWithTasks = ({
   usersList,
   newJob,
   handleDelete: handleDeleteProp,
+  jobType,
 }) => {
-
   const [loader, setLoader] = useState(false);
- const [description, setDescription] = useState(() => {
-  if (!job?.description || job.description === "No description provided") {
-    return "";
-  }
-  return job.description;
-});
+  const [description, setDescription] = useState(() => {
+    if (!job?.description || job.description === "No description provided") {
+      return "";
+    }
+    return job.description;
+  });
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [jobTasks, setJobTasks] = useState(job?.tasks || []);
@@ -3306,13 +3306,13 @@ export const NewJobModalWithTasks = ({
 
   useEffect(() => {
     setDescription(() => {
-  if (!job?.description || job.description === "No description provided") {
-    console.log("desc empty")
-    return "";
-  }
-  console.log("desc")
-  return job.description;
-});
+      if (!job?.description || job.description === "No description provided") {
+      
+        return "";
+      }
+      
+      return job.description;
+    });
   }, [job, reloadTabs]);
 
   const handleOnChange = (e) => {
@@ -3380,7 +3380,7 @@ export const NewJobModalWithTasks = ({
   };
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-    console.log("handleCreateModalTask", newData?.newTask);
+   
     setJobTasks((prevTasks) => [
       {
         title: newData?.newTask?.title,
@@ -3512,6 +3512,7 @@ export const NewJobModalWithTasks = ({
           handleDelete={() => {
             setShowAddTaskModal(false);
           }}
+          jobType={jobType}
         />
       )}
       {showEmailPopup && (
@@ -3539,6 +3540,7 @@ export const NewJobModalWithTasks = ({
             handleTaskDelete(activeTask);
             handleCloseModal();
           }}
+          jobType={jobType}
         />
       )}
 
@@ -3711,7 +3713,7 @@ export const NewJobModalWithTasks = ({
                           </tbody>
                         </table>
                       </div>
-                      {jobTasks?.length > 4 && (
+                      {jobTasks?.length > 6 && (
                         <div
                           className={`show-all-tasks ${
                             showAllTasks ? "show-more" : ""
@@ -3760,6 +3762,7 @@ export const NewTaskModal = ({
   onCreateTask,
   reloadTabs,
   scrollRef,
+  jobType,
 }) => {
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState("");
@@ -3799,6 +3802,13 @@ export const NewTaskModal = ({
   const taskStatusRef = useRef(taskStatus);
 
   const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
+
+  useEffect(() => {
+    if (jobType === "Prospects") {
+      handleCreateCustomTask();
+      setStage(stageList[stageList?.length - 1]);
+    }
+  }, [jobType,stageList]);
 
   // Update refs whenever the state changes
   useEffect(() => {
@@ -4047,6 +4057,7 @@ export const NewTaskModal = ({
   };
 
   const handleInputClick = () => {
+    if (jobType === "Prospects") return;
     setIsPopupOpen(true);
   };
 
@@ -4124,12 +4135,14 @@ export const NewTaskModal = ({
                         placeholder={inputPlaceholder ?? "Select Task"}
                         ref={inputRef}
                       />
-                      <div
-                        className="yellow-edit-button"
-                        onClick={() => setIsPopupOpen(true)}
-                      >
-                        <EditIcon />
-                      </div>
+                      {jobType === "Jobs" && (
+                        <div
+                          className="yellow-edit-button"
+                          onClick={() => setIsPopupOpen(true)}
+                        >
+                          <EditIcon />
+                        </div>
+                      )}
                     </div>
 
                     {isPopupOpen && (
@@ -4512,6 +4525,7 @@ export const NewTaskModal = ({
                                 stage ? stage : "disabled"
                               } stage_${stage?.title}`}
                               onClick={() => {
+                                if (jobType === "Prospects") return;
                                 if (firstClick) return;
                                 setStageBox(true);
                               }}
@@ -4526,6 +4540,13 @@ export const NewTaskModal = ({
                               >
                                 <div className="stageListBox">
                                   {stageList.map((stage, index) => {
+                                     const isLastItem =
+                                          index === stageList.length - 1;
+                                        const shouldSkipLast =
+                                          (jobType === "Jobs") &&
+                                          isLastItem;
+
+                                        if (shouldSkipLast) return null;
                                     return (
                                       <div
                                         key={index}
@@ -4595,10 +4616,10 @@ export const UpdateTaskModal = React.forwardRef(
       scrollRef,
       usersList: suggestedUser,
       nestedChildRef,
+      jobType,
     },
     ref
   ) => {
-    console.log("UpdateTaskModal Task", task);
     const [loader, setLoader] = useState(false);
     const [title, setTitle] = useState(task?.title || "");
     const [description, setDescription] = useState(task?.description || "");
@@ -4737,6 +4758,10 @@ export const UpdateTaskModal = React.forwardRef(
         });
       }
     }, [scrollRef]);
+
+    useEffect(() => {
+      setFirstClick(false);
+    }, [jobType]);
 
     useEffect(() => {
       setDescription(task?.description);
@@ -4937,6 +4962,7 @@ export const UpdateTaskModal = React.forwardRef(
     };
 
     const handleInputClick = () => {
+      if (jobType === "Prospects") return;
       setIsPopupOpen(true);
     };
 
@@ -5069,12 +5095,14 @@ export const UpdateTaskModal = React.forwardRef(
                           placeholder={inputPlaceholder ?? "Select Task"}
                           ref={inputRef}
                         />
-                        <div
-                          className="yellow-edit-button"
-                          onClick={() => setIsPopupOpen(true)}
-                        >
-                          <EditIcon />
-                        </div>
+                        {jobType === "Jobs" && (
+                          <div
+                            className="yellow-edit-button"
+                            onClick={() => setIsPopupOpen(true)}
+                          >
+                            <EditIcon />
+                          </div>
+                        )}
                       </div>
                       {isPopupOpen && (
                         <div
@@ -5481,6 +5509,7 @@ export const UpdateTaskModal = React.forwardRef(
                                   stage ? stage : "disabled"
                                 } stage_${stage?.title}`}
                                 onClick={() => {
+                                  if (jobType === "Prospects") return;
                                   if (firstClick) return;
                                   setStageBox(true);
                                 }}
@@ -5494,6 +5523,12 @@ export const UpdateTaskModal = React.forwardRef(
                                 >
                                   <div className="stageListBox">
                                     {stageList.map((stage, index) => {
+                                       const isLastItem =
+                                          index === stageList.length - 1;
+                                        const shouldSkipLast =
+                                          jobType === "Jobs"  &&
+                                          isLastItem;
+                                        if (shouldSkipLast) return null;
                                       return (
                                         <div
                                           key={index}
@@ -5569,9 +5604,11 @@ export const CreateTaskModal = memo(
         newTask,
         usersList: suggestedUser,
         returnToJob,
+        jobType,
       },
       ref
     ) => {
+      const [type, setType] = useState("");
       const [task, setTask] = useState(propTask);
       const [loader, setLoader] = useState(false);
       const [title, setTitle] = useState("");
@@ -5612,6 +5649,12 @@ export const CreateTaskModal = memo(
       const taskStatusRef = useRef(taskStatus);
       const taskRef = useRef(task);
       const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
+      useEffect(() => {
+        if (jobType === "Prospects" || type === "prospect") {
+          handleCreateCustomTask();
+          setStage(stageList[stageList?.length - 1]);
+        }
+      }, [jobType, stageList, type]);
 
       // Update refs whenever the state changes
       useEffect(() => {
@@ -5642,6 +5685,7 @@ export const CreateTaskModal = memo(
       }, [newJobCollaboratorsListId]);
 
       const handleInputClick = () => {
+        if (jobType === "Prospects" || type === "prospect") return;
         setIsPopupOpen(true);
       };
 
@@ -5721,6 +5765,7 @@ export const CreateTaskModal = memo(
           job_num: job?.job_num, // Update the job_num field
           id: job?.id,
         }));
+        setType(job.type);
         setIsJobPopupOpen(false);
       };
 
@@ -6064,12 +6109,14 @@ export const CreateTaskModal = memo(
                               ref={inputRef}
                               autoFocus={!newTask && true}
                             />
-                            <div
-                              className="yellow-edit-button"
-                              onClick={() => setIsPopupOpen(true)}
-                            >
-                              <EditIcon />
-                            </div>
+                            {(jobType === "Jobs" || type === "job") && (
+                              <div
+                                className="yellow-edit-button"
+                                onClick={() => setIsPopupOpen(true)}
+                              >
+                                <EditIcon />
+                              </div>
+                            )}
                           </div>
                         )}
                         {isPopupOpen && (
@@ -6509,6 +6556,11 @@ export const CreateTaskModal = memo(
                                     !stage && "disabled"
                                   } stage_${stage?.title}`}
                                   onClick={() => {
+                                    if (
+                                      jobType === "Prospects" ||
+                                      type === "prospect"
+                                    )
+                                      return;
                                     if (firstClick) return;
                                     setStageBox(true);
                                   }}
@@ -6524,6 +6576,14 @@ export const CreateTaskModal = memo(
                                   >
                                     <div className="stageListBox">
                                       {stageList.map((stage, index) => {
+                                        const isLastItem =
+                                          index === stageList.length - 1;
+                                        const shouldSkipLast =
+                                          (jobType === "Jobs" ||
+                                            type === "job") &&
+                                          isLastItem;
+
+                                        if (shouldSkipLast) return null;
                                         return (
                                           <div
                                             key={index}

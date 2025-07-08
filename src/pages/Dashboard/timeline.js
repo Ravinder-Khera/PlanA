@@ -291,11 +291,7 @@ function TimelinePage() {
                                             part.charAt(0).toUpperCase()
                                           )
                                           .join("");
-                                          console.log("user", user.name, CollaboratorNameBG[
-                                                  user?.name
-                                                ], CollaboratorNameColor[
-                                                  user?.name
-                                                ])
+                                         
                                         return (
                                           <div
                                             key={index}

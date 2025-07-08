@@ -203,7 +203,8 @@ export const StageListMapFromDB = {
   Referral: "Referral",
   "Inform Public": "Public Notification",
   Decision: "Decision",
-  "Prelodgement":"Prelodgement"
+  "Prelodgement":"Prelodgement",
+  "General": "General"
 };
 
 export const MIN_CALENDAR_YEAR = 5;
@@ -498,7 +499,7 @@ export const adHoc = [
 
 export function getEmailsByStageAndTitle(stage, title) {
   const stageEmails = emailConfig[stage];
-  console.log(stageEmails);
+  
   if (!stageEmails) return []; // Return an empty array if stage is not found
 
   if (title && stageEmails[title]) {

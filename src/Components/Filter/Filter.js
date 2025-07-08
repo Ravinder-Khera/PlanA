@@ -11,8 +11,17 @@ import {
   TickIcon,
   User,
 } from "../../assets/svg";
-import { CollaboratorBorders, StatusList } from "../../helper";
-import { FilterJobs, getJobsByFilter, getStates, getUserByRole } from "../../services/api";
+import {
+  CollaboratorNameBG,
+  CollaboratorNameColor,
+  StatusList
+} from "../../helper";
+import {
+  FilterJobs,
+  getJobsByFilter,
+  getStates,
+  getUserByRole,
+} from "../../services/api";
 import "./style.scss";
 
 const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
@@ -402,7 +411,8 @@ const Filter = ({
   closeFilter,
   filteredQuery,
   setLoadTotalPage,
-  setLoadMorePage
+  setLoadMorePage,
+  activeTab
 }) => {
   const [showSelectFIlter, setSelectShowFilter] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
@@ -420,7 +430,7 @@ const Filter = ({
   const [usersList, setUsersList] = useState([]);
   const filterJobDropdownRef = useRef(null);
   const [filterQuery, setFilterQuery] = useState({ page: 1, perPage: 20 });
-  const [states, setStates] = useState([])
+  const [states, setStates] = useState([]);
 
   useEffect(() => {
     fetchUsers();
@@ -458,7 +468,6 @@ const Filter = ({
     }
   };
 
-
   const fetchStates = async () => {
     try {
       let response = await getStates();
@@ -471,7 +480,6 @@ const Filter = ({
       console.error("Error fetchStates:", error);
     }
   };
- 
 
   const handleCancel = async () => {
     setSelectedFilters([]);
@@ -539,7 +547,6 @@ const Filter = ({
         };
       }
 
-
       if (type === "states") {
         return {
           ...prevQuery,
@@ -551,8 +558,8 @@ const Filter = ({
     });
   };
 
-  const handleFilterClick = (filter, className, type, value) => {
-    const filterObj = { filter, className, type, value };
+  const handleFilterClick = (filter, className, type, value, style={}) => {
+    const filterObj = { filter, className, type, value, style };
     if (!selectedFilters.some((item) => item.filter === filter)) {
       setSelectedFilters([...selectedFilters, filterObj]);
       setFiltersSeleted(true);
@@ -601,7 +608,9 @@ const Filter = ({
 
         // Merge other non-array fields like sort
         Object.keys(filterQuery).forEach((key) => {
-          if (!["statuses", "collaborator_ids", "due", "states"].includes(key)) {
+          if (
+            !["statuses", "collaborator_ids", "due", "states"].includes(key)
+          ) {
             mergedQuery[key] = filterQuery[key];
           }
         });
@@ -617,7 +626,7 @@ const Filter = ({
 
       // Manually combine arrays for API call too
       const updatedQuery = { ...prevQuery, page: 1 };
-      ["statuses", "collaborator_ids", "due","states"].forEach((key) => {
+      ["statuses", "collaborator_ids", "due", "states"].forEach((key) => {
         if (filteredQuery[key] || filterQuery[key]) {
           updatedQuery[key] = Array.from(
             new Set([
@@ -630,11 +639,11 @@ const Filter = ({
 
       const sortValue = prevQuery.sort;
       delete updatedQuery.sort;
-      const response = await FilterJobs(updatedQuery, sortValue);
+      const response = await FilterJobs(updatedQuery, sortValue, activeTab === "Jobs" ? 'job' : 'prospect');
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
         setLoadMorePage(response?.res?.current_page + 1);
-        setLoadTotalPage(response?.res?.last_page)
+        setLoadTotalPage(response?.res?.last_page);
         closeFilter();
       }
     } catch (error) {
@@ -660,6 +669,7 @@ const Filter = ({
                   <div
                     key={index}
                     className={`selectedFilterItem ${item.className}`}
+                    style={item.style}
                     onClick={() => {
                       handleFilterRemove(item.value);
                       handleRemoveFilter(item.type, item.value);
@@ -683,16 +693,24 @@ const Filter = ({
                       className={`filterUserBox`}
                       style={{
                         minWidth: "40px",
-                        border:
-                          CollaboratorBorders[user.id] ||
-                          "1px solid rgb(105, 103, 103)",
+                        border: "1px solid #767676",
+                        backgroundColor:
+                          CollaboratorNameBG[user?.name] || "#353535",
+                        color: CollaboratorNameColor[user?.name] || "#fff",
                       }}
                       onClick={() => {
                         handleFilterClick(
                           initials,
-                          "filterUserBox",
+                          "filterUserBox ",
                           "collaborator_ids",
-                          user.id
+                          user.id,
+                          {
+                        minWidth: "40px",
+                        border: "1px solid #767676",
+                        backgroundColor:
+                          CollaboratorNameBG[user?.name] || "#353535",
+                        color: CollaboratorNameColor[user?.name] || "#fff",
+                      }
                         );
                         handleselectFilter("collaborator_ids", user.id);
                       }}
@@ -772,7 +790,7 @@ const Filter = ({
             >
               Completed
             </div>
-      
+
             <div
               className="filterProgressBox"
               onClick={() => {
@@ -801,23 +819,23 @@ const Filter = ({
             >
               {"<"}14 Days Left
             </div>
-            {states.length > 0 && states?.map((state) => (
-              <div
-              className="filterProgressBox"
-              onClick={() => {
-                handleFilterClick(
-                    `${state.name} Locations`,
-                  "filterProgressBox",
-                  "states",
-                  state.name
-                );
-                handleselectFilter("states", state.name);
-              }}
-            >
-              {state.name} Locations
-            </div>
-            ))}
-       
+            {states.length > 0 &&
+              states?.map((state) => (
+                <div
+                  className="filterProgressBox"
+                  onClick={() => {
+                    handleFilterClick(
+                      `${state.name} Locations`,
+                      "filterProgressBox",
+                      "states",
+                      state.name
+                    );
+                    handleselectFilter("states", state.name);
+                  }}
+                >
+                  {state.name} Locations
+                </div>
+              ))}
           </div>
           {filtersSeleted && (
             <>

@@ -997,7 +997,6 @@ function Timeline({
                                           ?.slice(0, 3)
                                           .map((user, index) => {
                                             const initials = user?.initials;
-                                            console.log("user", user)
                                             return (
                                               <div
                                                 key={index}

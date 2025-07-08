@@ -393,7 +393,7 @@ function Dashboard() {
                                       .slice(0, 3)
                                       .map((user, index) => {
                                         const initials = user?.initials;
-                                        console.log(user?.name)
+                                      
                                         return (
                                           <div
                                             key={index}

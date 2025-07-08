@@ -56,6 +56,7 @@ import {
 } from "../../services/api";
 import "./Jobs.scss";
 import useDebounce from "../../Components/useDebounce";
+import ToggleSwitch from "../../Components/ToggleSwitch";
 const renderComment = (message) => {
   if (!message) return <p className="no-comment">No Comments</p>;
   const renderMessage = (text) => {
@@ -198,7 +199,7 @@ const Jobs = () => {
   const [activeTaskJob, setActiveTaskJob] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [updateJobId, setUpdateJobId] = useState(null);
-
+  const [activeTab, setActiveTab] = useState("Jobs");
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
   const [collabChanged, setCollabChanged] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
@@ -241,7 +242,6 @@ const Jobs = () => {
       const [locationsRes] = await Promise.all([
         searchLocations(debouncedSearchLocation),
       ]);
-      console.log(locationsRes);
       if (locationsRes.error) {
         setLocations([]);
       } else {
@@ -267,7 +267,6 @@ const Jobs = () => {
   const fetchJobFromJobID = async (jobId) => {
     try {
       const jobRes = await getSingleJob(jobId);
-      console.log("jobRes", jobRes);
       handleOpenJobWithTask(jobRes.res);
     } catch (error) {
       console.log("error in fetchJobFromJobID", error);
@@ -435,6 +434,7 @@ const Jobs = () => {
       // };
       var reqData = {
         search: searchedInput,
+        type: activeTab === "Jobs" ? "job" : "prospect",
       };
       setShowingSearchOptions(searchedInput);
       const response = await SearchJobs(reqData);
@@ -499,7 +499,10 @@ const Jobs = () => {
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getJobs(currentPage);
+      const res = await getJobs(
+        currentPage,
+        activeTab === "Jobs" ? "job" : "prospect"
+      );
       const data = res?.res?.data || [];
       const sortedJobs = data.map((job) => {
         const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
@@ -541,16 +544,15 @@ const Jobs = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, getJob?.data?.id, state?.id]);
+  }, [currentPage, getJob?.data?.id, state?.id, activeTab]);
 
   useEffect(() => {
     fetchJobs();
-  }, [fetchJobs, reload]);
+  }, [fetchJobs, reload, activeTab]);
 
   const handleScroll = useCallback(async () => {
     const container = containerRef.current;
     if (!container) return;
-    console.log(filteredJobs, loadTotalPage, loadMorePage);
     // Check if the container has been scrolled to the bottom
     if (
       container.scrollTop + container.clientHeight >= container.scrollHeight &&
@@ -569,10 +571,14 @@ const Jobs = () => {
               ...queryWithoutSort,
               page: loadMorePage,
             },
-            sort
+            sort,
+            activeTab === "Jobs" ? "job" : "prospect"
           );
         } else {
-          res = await getJobs(loadMorePage);
+          res = await getJobs(
+            loadMorePage,
+            activeTab === "Jobs" ? "job" : "prospect"
+          );
         }
         const data = res?.res?.data;
         setLoadTotalPage(res?.res?.last_page);
@@ -719,7 +725,6 @@ const Jobs = () => {
         !addJobRowRefRight.current.contains(event.target)
       ) {
         if (newJobIdNumber === 0 || !addJobName) {
-          console.log("cancel2");
           handleCancelAddJob();
         } else {
           createNewJobRequest(false);
@@ -770,8 +775,8 @@ const Jobs = () => {
       const month = String(new Date().getMonth() + 1).padStart(2, "0");
       const day = String(new Date().getDate()).padStart(2, "0");
       let formattedDueDate = `${year}-${month}-${day}`;
-      console.log("selectedNewLocation", selectedNewLocation, selectedNewState);
       const reqBody = {
+        type: activeTab === "Jobs" ? "job" : "prospect",
         job_num: newJobIdNumber,
         title: addJobName,
         collaborators: newJobCollaboratorsListId,
@@ -796,7 +801,6 @@ const Jobs = () => {
     } catch (error) {
       console.log("error in updating jobs", error);
     } finally {
-      console.log("cancel7");
       handleCancelAddJob(); // Reset state after action
     }
   };
@@ -861,6 +865,8 @@ const Jobs = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+
 
   const handleSelectCollaborator = (user) => {
     setTimeout(() => {
@@ -947,7 +953,6 @@ const Jobs = () => {
       (collaborator) => collaborator.id
     );
     setNewJobCollaboratorsListId(CollaboratorsId);
-
     setUsersList((prevList) =>
       prevList.filter((u) => !CollaboratorsId.includes(u.id))
     );
@@ -1033,18 +1038,27 @@ const Jobs = () => {
 
     try {
       const oldCollaboratorsId = updatedJob.collaborators?.map((c) => c.id);
+      
+      const dataObj = {
+        title: updatedJob.title,
+        collaborators: oldCollaboratorsId,
+        status: updatedJob.status,
+        due_date: updatedJob.due_date,
+      };
+
+      // Add location if it's defined and non-empty
+      if (updatedJob.location) {
+        dataObj.location = updatedJob.location;
+      }
+
+      // Add state if it's defined and non-empty
+      if (updatedJob.state) {
+        dataObj.state = updatedJob.state;
+      }
+
       const reqBody = {
         job_id: updatedJob.id,
-        dataObj: {
-          title: updatedJob.title,
-          collaborators: collabChanged
-            ? newJobCollaboratorsListId
-            : oldCollaboratorsId,
-          status: updatedJob.status,
-          due_date: updatedJob.due_date,
-          location: updatedJob.location,
-          state: updatedJob.state,
-        },
+        dataObj,
       };
 
       const response = await updateJobs(reqBody);
@@ -1075,18 +1089,21 @@ const Jobs = () => {
         if (!updatedJob || !originalJob) return;
 
         setUsersList(fullUsersList);
-
+        console.log(
+          updatedJob,
+          originalJob,
+          isJobChanged(updatedJob, originalJob)
+        );
         if (isJobChanged(updatedJob, originalJob)) {
           await handleUpdateJob(updatedJob);
           synchronizeRowHeights();
           handleCancelAddJob();
-          console.log("cancel4");
         }
 
         if (!showNewJobModal && !showNewJobModalWithTasks) {
           setActiveJob(null);
           setNewJobCollaboratorsList([]);
-          console.log("cancel3");
+          setNewJobCollaboratorsListId([]);
           handleCancelAddJob();
         }
       }
@@ -1141,7 +1158,6 @@ const Jobs = () => {
         tableActiveRowLeftRef.current &&
         tableActiveRowLeftRef.current.contains(event.target)
       ) {
-        console.log("table", getJob);
         setShowNewJobModal(true);
       }
       if (
@@ -1211,10 +1227,10 @@ const Jobs = () => {
               }
             : task
         );
-        console.log("updatedTasks", updatedTasks);
+        
 
         const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
-        console.log("sortedTasks", sortedTasks);
+
         return {
           ...job,
           tasks: sortedTasks,
@@ -1238,11 +1254,7 @@ const Jobs = () => {
           // addNotification("success", "Task Updated");
         }
 
-        console.log(
-          "Task Update successful",
-          newData?.updatedTask,
-          response.res
-        );
+       
       } else {
         throw new Error(response.error?.message || "Failed to Update the task");
       }
@@ -1253,7 +1265,7 @@ const Jobs = () => {
   };
 
   const handleCreateTask = async (newData, taskId) => {
-    console.log(newData?.newTask?.title);
+    
 
     // Temporarily add the task to the UI with sorting and due_date update
     setFilteredJobs((prevJobs) =>
@@ -1339,7 +1351,6 @@ const Jobs = () => {
       const response = await deleteTask(task.id);
       if (response.res) {
         addNotification("success", "Task Deleted");
-        console.log("task delete successful", response.res);
       } else {
         console.error("Job delete failed:", response.error);
         toast.error(response.error?.message || "Failed to delete the job");
@@ -1428,7 +1439,6 @@ const Jobs = () => {
     try {
       const response = await getJobByNum(jobNum);
       if (response.res) {
-        console.log("jobId response", response.res);
         return response.res;
       } else {
         console.error("get task failed:", response.error);
@@ -1481,7 +1491,6 @@ const Jobs = () => {
       );
 
       addNotification("success", "Task Created");
-      console.log("Task create successful", taskToUpdate, response.res);
     } else {
       addNotification("error", "Task Creation Failed");
       console.error("Task create failed:", response.error);
@@ -1606,7 +1615,11 @@ const Jobs = () => {
         setFilteredQuery({});
         setReload(!reload);
       } else {
-        const response = await FilterJobs(updatedQuery, sortValue);
+        const response = await FilterJobs(
+          updatedQuery,
+          sortValue,
+          activeTab === "Jobs" ? "job" : "prospect"
+        );
         console.log("response ", response);
         if (!response.error) {
           setFilteredJobs(response?.res?.data);
@@ -1622,14 +1635,13 @@ const Jobs = () => {
   };
 
   const handleOpenJobWithTask = async (job) => {
-    console.log("handleOpenJobWithTask job", job);
     setActiveJob(job);
     setUpdateJobId(job.id);
     setShowNewJobModalWithTasks(true);
+    setActiveJobField("");
   };
 
   const handleErrorToastClose = () => {
-    console.log("handleErrorToastClose");
     setNewJobId(["", "", "", "", ""]);
     setNewJobIdExist(false);
   };
@@ -1637,11 +1649,13 @@ const Jobs = () => {
   const handleJobOpenWhileCreating = async () => {
     try {
       setLoading(true);
+
       const year = new Date().getFullYear();
       const month = String(new Date().getMonth() + 1).padStart(2, "0");
       const day = String(new Date().getDate()).padStart(2, "0");
       let formattedDueDate = `${year}-${month}-${day}`;
       const reqBody = {
+        type: activeTab === "Jobs" ? "job" : "prospect",
         job_num: newJobIdNumber,
         title: addJobName,
         collaborators: newJobCollaboratorsListId,
@@ -1653,23 +1667,21 @@ const Jobs = () => {
 
       // API call to create job
       const response = await createJobs(reqBody);
-      console.log("request body for create job", response);
 
       if (response?.res?.message) {
-        console.log(`${response.res.message}`);
         const { job } = response.res;
         setNewJob(true);
         handleOpenJobWithTask(job);
-        const sortedJobs = job.map((job) => {
-          const sortedTasks = sortTasksByDueDateProximity(job?.tasks || []);
-          // const nearestDueDate = sortedTasks?.[0]?.due_date || null;
 
-          return {
-            ...job,
-            tasks: sortedTasks,
-            // due_date: nearestDueDate,
-          };
-        });
+        const sortedTasks = sortTasksByDueDateProximity(job?.tasks || []);
+        // const nearestDueDate = sortedTasks?.[0]?.due_date || null;
+
+        const sortedJobs = {
+          ...job,
+          tasks: sortedTasks,
+          // due_date: nearestDueDate,
+        };
+
         setFilteredJobs((prevJobs) => [sortedJobs, ...prevJobs]);
         addNotification("success", "Job Created");
       } else {
@@ -1678,7 +1690,7 @@ const Jobs = () => {
     } catch (error) {
       console.log("error in updating jobs", error);
     } finally {
-      console.log("cancel1");
+      
       handleCancelAddJob(); // Reset state after action
       setLoading(false);
     }
@@ -1781,6 +1793,7 @@ const Jobs = () => {
 
       {showNewJobModalWithTasks && (
         <NewJobModalWithTasks
+          jobType={activeTab}
           usersList={fullUsersList}
           job={activeJob}
           newJob={newJob}
@@ -1802,7 +1815,6 @@ const Jobs = () => {
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
           handleDelete={() => {
-            console.log("active job id to be deleted", activeJob);
             setFilteredJobs((prevJobs) =>
               prevJobs.filter((job) => job.id !== activeJob.id)
             );
@@ -1827,6 +1839,7 @@ const Jobs = () => {
           handleDelete={() => {
             setShowNewJobAddTaskModal(false);
           }}
+          jobType={activeTab}
         />
       )}
 
@@ -1838,6 +1851,7 @@ const Jobs = () => {
             setGetJob();
             setShowAddTaskModal(false);
           }}
+          jobType={activeTab}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
@@ -1863,6 +1877,7 @@ const Jobs = () => {
             setGetJob();
             setShowUpdateTaskModal(false);
           }}
+          jobType={activeTab}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
@@ -1915,7 +1930,7 @@ const Jobs = () => {
           style={{ zIndex: "2", justifyContent: "space-between" }}
         >
           <div className="d-flex gap-3 flex-wrap leftGap align-items-center">
-            <h2>Jobs</h2>
+            <h2>{activeTab}</h2>
             <div className="navSearchDiv jobSearchDiv jobSearchBar">
               <form>
                 <div
@@ -2006,7 +2021,6 @@ const Jobs = () => {
                     value={searchedInput}
                     onChange={(e) => {
                       const value = e.target.value;
-
                       setSearchedInput(value);
                     }}
                     onKeyDown={(e) => {
@@ -2066,6 +2080,7 @@ const Jobs = () => {
                   filteredQuery={filteredQuery}
                   setLoadTotalPage={setLoadTotalPage}
                   setLoadMorePage={setLoadMorePage}
+                  activeTab={activeTab}
                 />
               )}
               <div
@@ -2090,11 +2105,26 @@ const Jobs = () => {
                   closeFilter={() => setShowSort(false)}
                   setLoadTotalPage={setLoadTotalPage}
                   setLoadMorePage={setLoadMorePage}
+                  activeTab={activeTab}
                 />
               )}
             </div>
           </div>
           <div className="d-flex gap-3 flex-wrap align-items-center">
+            <ToggleSwitch
+              options={["Jobs", "Prospects"]}
+              initialOption={activeTab}
+              onChange={(value) => {
+                setActiveTab(value);
+                setFilteredQuery({});
+                setFilteredString([]);
+                setUsersList(fullUsersList);
+                setSelectSearchOptions("");
+                setSearchedInput("");
+                setShowSearchOptions(false);
+                setShowingSearchOptions("");
+              }}
+            />
             <div className="addjobs addJobsMobile" style={{ gap: "16px" }}>
               <div
                 className={`d-flex align-items-center`}
@@ -2108,7 +2138,7 @@ const Jobs = () => {
                   <AddIcon />
                 </div>
                 <span style={{ color: `${showAddJoRow ? "#fff" : "#e2e31f"}` }}>
-                  Add Job
+                  Add {activeTab === "Jobs" ? "Job" : "Prospect"}
                 </span>
               </div>
               <div
@@ -2202,8 +2232,6 @@ const Jobs = () => {
                                 : string.filter
                                     .replace(/\s+/g, "-")
                                     .toLowerCase();
-
-                            // Assign random color for user filters
                             if (
                               className === "user" &&
                               !userColors[string.filter]
@@ -2223,7 +2251,10 @@ const Jobs = () => {
                               <span
                                 className={`filterItemBox ${className}`}
                                 key={`filter-${index}`}
-                                style={{ border: `1px solid ${borderColor}` }}
+                                style={{
+                                  border: `1px solid ${borderColor}`,
+                                  ...string.style,
+                                }}
                                 onClick={() => handleRemoveFilter(string)}
                               >
                                 {string.filter} <FilterCrossIcon />
@@ -2252,7 +2283,7 @@ const Jobs = () => {
                 ) : (
                   !showSearchOptions &&
                   selectSearchOptions === "" &&
-                  "Showing All Jobs"
+                  `Showing All ${activeTab}`
                 )}
               </div>
             </div>
@@ -2274,7 +2305,9 @@ const Jobs = () => {
                           <div className="headerDiv">Job No.</div>
                         </th>
                         <th scope="col">
-                          <div className="headerDiv">Job Name</div>
+                          <div className="headerDiv">
+                            {activeTab === "Jobs" ? "" : "Prospect"} Job Name
+                          </div>
                         </th>
                         {/* <th scope="col" style={{ width: "185px" }}>
                           <div className="headerDiv">Collaborators</div>
@@ -2352,6 +2385,9 @@ const Jobs = () => {
                                 ))}
                                 {newJobIdExist && (
                                   <ErrorToast
+                                    activeTab={
+                                      activeTab === "Jobs" ? "" : "prospect"
+                                    }
                                     onClose={() => handleErrorToastClose()}
                                   />
                                 )}
@@ -2372,7 +2408,9 @@ const Jobs = () => {
                                 <div className="d-flex">
                                   <input
                                     className="clickBoxInput"
-                                    placeholder="Enter Job Name"
+                                    placeholder={`Enter ${
+                                      activeTab === "Jobs" ? "" : "Prospect"
+                                    } Job Name`}
                                     type="text"
                                     value={addJobName}
                                     onChange={(e) =>
@@ -3293,8 +3331,10 @@ const Jobs = () => {
                                                     job.id,
                                                     index
                                                   );
+                                                  setActiveJobField("");
                                                 } else {
                                                   setActiveTask(task);
+                                                  setActiveJobField("");
                                                   setShowUpdateTaskModal(true);
                                                 }
                                               }}
@@ -3446,6 +3486,8 @@ const Jobs = () => {
                                                       location: e.target.value,
                                                     })
                                                   }
+                                                  autoComplete="off"
+                                                  data-1password-ignore
                                                 />
                                                 <div className="state-options-container">
                                                   <input
@@ -3458,6 +3500,8 @@ const Jobs = () => {
                                                         !showStateOptions
                                                       )
                                                     }
+                                                    autoComplete="off"
+                                                    data-1password-ignore
                                                   />
                                                   {showStateOptions &&
                                                     states.length > 0 && (

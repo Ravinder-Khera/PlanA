@@ -10,6 +10,7 @@ const Sort = ({
   closeFilter,
   setLoadTotalPage,
   setLoadMorePage,
+  activeTab
 }) => {
   const [filterString, setfilterString] = useState({
     label: "Sort By",
@@ -41,7 +42,8 @@ const Sort = ({
       delete updatedQuery.sort;
       const response = await FilterJobs(
         { ...updatedQuery },
-        filterString.value
+        filterString.value,
+         activeTab === "Jobs" ? 'job' : 'prospect'
       );
       if (!response.error) {
         setFilteredJobs(response?.res?.data);

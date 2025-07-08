@@ -472,7 +472,7 @@ export const getDashboardSummary = async (data) => {
   }
 };
 
-export const getJobs = async (page) => {
+export const getJobs = async (page, type='job') => {
   const authToken = localStorage.getItem("authToken");
   const requestOptions = {
     method: "GET",
@@ -484,7 +484,7 @@ export const getJobs = async (page) => {
   };
   try {
     let response = await fetch(
-      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobs?page=${page}`,
+      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/jobs?page=${page}&type=${type}`,
       requestOptions
     );
     const isJson = response.headers
@@ -651,7 +651,7 @@ export const getJobByNum = async (id) => {
 //     return { res: null, error: error };
 //   }
 // };
-export const getTasksByUser = async (reqData = {}, status = 'non_completed=true') => {
+export const getTasksByUser = async (reqData = {}, status = 'non_completed=true',page=1 ) => {
   const authToken = localStorage.getItem("authToken");
   const requestOptions = {
     method: "GET",
@@ -663,11 +663,11 @@ export const getTasksByUser = async (reqData = {}, status = 'non_completed=true'
   };
 
   try {
-    let url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date&${status}`
+    let url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date&page=${page}&${status}`
     if(status === 'non_completed=true'){
-      url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date&${status}`;
+      url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/tasks?sort=due_date&page=${page}&${status}`;
     }else{
-      url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/completed-tasks?sort=due_date`;
+      url = `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/user/completed-tasks?sort=due_date&page=${page}`;
     }
     
 
@@ -798,7 +798,7 @@ export const SearchJobs = async (data) => {
   }
 };
 
-export const FilterJobs = async (data, query) => {
+export const FilterJobs = async (data, query, type='job') => {
   const authToken = localStorage.getItem("authToken");
   const requestOptions = {
     method: "POST",
@@ -811,7 +811,7 @@ export const FilterJobs = async (data, query) => {
   };
   try {
     let response = await fetch(
-      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/job/filter?${query}`,
+      `${process.env.REACT_APP_USER_API_CLOUD_ENDPOINT}/v2/job/filter?type=${type}&${query}`,
       requestOptions
     );
     const isJson = response.headers

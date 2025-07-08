@@ -1,0 +1,72 @@
+.toggle-switch {
+  display: inline-block;
+  
+  .toggle-container2 {
+    position: relative;
+    display: flex;
+    background: #2D2D2D;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .toggle-option {
+    position: relative;
+    z-index: 2;
+    padding: 7px 50px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    outline: none;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+    min-width: 0;
+
+    &:hover {
+      color: #F0F0F0;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:active {
+      outline: none;
+    }
+
+    &.active {
+      color: #fff;
+    }
+  }
+
+  .toggle-indicator {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    bottom: 1px;
+    width: calc(50% - 1px);
+    background: rgba(150, 151, 33, 1);
+    border-radius: 8px;
+    border: 1px solid #E2E31F;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .toggle-switch {
+    .toggle-option {
+      padding: 10px 24px;
+      font-size: 14px;
+    }
+  }
+}

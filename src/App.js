@@ -150,7 +150,7 @@ function DashboardMenuList() {
         menuRef.current &&
         !menuRef.current.contains(e.target)
       ) {
-        console.log("clicked");
+       
         menuRef.current.classList.remove("show");
       } else if (
         isMenuOpen &&
@@ -659,7 +659,7 @@ function App() {
       }
     };
     console.log("Subscribing to job:", id);
-    console.log("job id", id);
+   
     const channel = pusher.subscribe(`job.${id}`);
     channel.bind("message.created", handleMessage);
 
