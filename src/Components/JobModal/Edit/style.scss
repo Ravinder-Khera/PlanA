@@ -2634,7 +2634,7 @@
               &.Prelodgement {
                 color: rgb(255, 172, 254);
               }
-              &.General{
+              &.General {
                 color: rgba(162, 100, 255, 1);
               }
               &.Inform,
@@ -2748,13 +2748,18 @@
               background: transparent;
             }
             .task-table-container {
-              max-height: 316px;
+              height: 316px;
               overflow-y: hidden;
               margin-top: 12px;
               border-radius: 8px;
+              &.less-task {
+                height: auto;
+              }
             }
+
             .task-table-container.show-more {
               overflow-y: auto !important;
+              height: auto;
             }
             .task-table-container::-webkit-scrollbar {
               width: 4px;
@@ -3763,6 +3768,7 @@
 }
 
 .addJobImgUploadArea {
+  position: relative;
   &.imgUploadArea {
     max-width: 100%;
     border-radius: 4px;
@@ -3798,6 +3804,22 @@
         letter-spacing: -0.64px;
         &::placeholder {
           color: #616161;
+        }
+      }
+    }
+  }
+  .attachment-preview {
+    position: absolute;
+    top: -30px;
+    left: 0px;
+    .remove-attachment-btn {
+      background: none;
+      color: rgb(113, 113, 113);
+      svg {
+        width: 10px;
+        height: 10px;
+        path {
+          fill: #e2e31f;
         }
       }
     }
@@ -3887,10 +3909,10 @@
         border: 1px solid #ffacfe;
         background: rgba(255, 172, 254, 0.4);
       }
-       &.stage_General {
-                    border: 1px solid #a264ff;
-                    background: rgba(162, 100, 255, 0.6);
-                  }
+      &.stage_General {
+        border: 1px solid #a264ff;
+        background: rgba(162, 100, 255, 0.6);
+      }
 
       &.stage_Information,
       &.stage_Info {

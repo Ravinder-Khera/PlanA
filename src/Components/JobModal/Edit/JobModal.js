@@ -24,6 +24,7 @@ import {
   CollaboratorNameColor,
   compareTaskArray,
   MAX_CALENDAR_YEAR,
+  sortTasksByDueDateProximity,
   StageList,
   StatusList,
 } from "../../../helper";
@@ -2694,6 +2695,7 @@ export const NewJobModal = ({
   usersList,
   newJob,
   handleDelete: handleDeleteProp,
+  jobType,
 }) => {
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
@@ -2839,20 +2841,24 @@ export const NewJobModal = ({
   };
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-    setJobTasks((prevTasks) => [
-      {
-        title: newData?.newTask?.title,
-        description: newData?.newTask?.description,
-        stage_id: newData?.newTask?.stage_id,
-        due_date: newData?.newTask?.due_date,
-        status: newData?.newTask?.status,
-        assignee_ids: newData?.newTask?.assignee_ids,
-        users: users,
-        stage: stage,
-        id: "temp",
-      },
-      ...prevTasks,
-    ]);
+    const newTask = {
+      id: "temp",
+      title: newData?.newTask?.title,
+      description: newData?.newTask?.description,
+      stage_id: newData?.newTask?.stage_id,
+      due_date: newData?.newTask?.due_date,
+      status: newData?.newTask?.status,
+      assignee_ids: newData?.newTask?.assignee_ids,
+      users: users,
+      stage: stage,
+    };
+
+    setJobTasks((prevTasks) => {
+      const updatedTasks = [newTask, ...prevTasks];
+      const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
+      return sortedTasks;
+    });
+
     setShowAddTaskModal(false);
     var response = await createTask(newData.newTask, taskId);
     if (response.res) {
@@ -2878,23 +2884,23 @@ export const NewJobModal = ({
     newJobCollaboratorsList,
     stage
   ) => {
-    setJobTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              title: newData?.updatedTask?.title || task?.title,
-              description:
-                newData?.updatedTask?.description || task?.description,
-              stage_id: newData?.updatedTask?.stage_id || task?.stage_id,
-              due_date: newData?.updatedTask?.due_date || task?.due_date,
-              status: newData?.updatedTask?.status || task?.status,
-              users: newJobCollaboratorsList || task?.users,
-              stage: stage || task?.stage,
-            }
-          : task
-      )
+    const updatedTasks = jobTasks.map((task) =>
+      task.id === taskId
+        ? {
+            ...task,
+            title: newData?.updatedTask?.title || task.title,
+            description: newData?.updatedTask?.description || task.description,
+            stage_id: newData?.updatedTask?.stage_id || task.stage_id,
+            due_date: newData?.updatedTask?.due_date || task.due_date,
+            status: newData?.updatedTask?.status || task.status,
+            users: newJobCollaboratorsList || task.users,
+            stage: stage || task.stage,
+          }
+        : task
     );
+
+    const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
+    setJobTasks(sortedTasks);
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
@@ -2970,6 +2976,7 @@ export const NewJobModal = ({
           handleDelete={() => {
             setShowAddTaskModal(false);
           }}
+          jobType={jobType}
         />
       )}
       {showEmailPopup && (
@@ -2997,6 +3004,7 @@ export const NewJobModal = ({
             handleTaskDelete(activeTask);
             handleCloseModal();
           }}
+          jobType={jobType}
         />
       )}
 
@@ -3096,8 +3104,8 @@ export const NewJobModal = ({
 
                       <div
                         className={`task-table-container job-task-table-container ${
-                          showAllTasks ? "show-more" : ""
-                        }`}
+                          jobTasks?.length <= 6 ? "less-task" : ""
+                        } ${showAllTasks ? "show-more" : ""}`}
                       >
                         <table className="task-table">
                           <tbody>
@@ -3166,10 +3174,26 @@ export const NewJobModal = ({
                                   </td>
                                 </tr>
                               ))}
+                            {jobTasks.length === 0 && (
+                              <p
+                                style={{
+                                  color: "#616161",
+                                  fontFamily: "Archivo",
+                                  fontSize: "16px",
+                                  fontStyle: "normal",
+                                  fontWeight: 600,
+                                  lineHeight: "normal",
+                                  letterSpacing: "-0.64px",
+                                  marginBottom: "10px",
+                                }}
+                              >
+                                No task added yet
+                              </p>
+                            )}
                           </tbody>
                         </table>
                       </div>
-                      {jobTasks?.length > 4 && (
+                      {jobTasks?.length > 6 && (
                         <div
                           className={`show-all-tasks ${
                             showAllTasks ? "show-more" : ""
@@ -3307,10 +3331,9 @@ export const NewJobModalWithTasks = ({
   useEffect(() => {
     setDescription(() => {
       if (!job?.description || job.description === "No description provided") {
-      
         return "";
       }
-      
+
       return job.description;
     });
   }, [job, reloadTabs]);
@@ -3380,21 +3403,24 @@ export const NewJobModalWithTasks = ({
   };
 
   const handleCreateModalTask = async (newData, taskId, users, stage) => {
-   
-    setJobTasks((prevTasks) => [
-      {
-        title: newData?.newTask?.title,
-        description: newData?.newTask?.description,
-        stage_id: newData?.newTask?.stage_id,
-        due_date: newData?.newTask?.due_date,
-        status: newData?.newTask?.status,
-        assignee_ids: newData?.newTask?.assignee_ids,
-        users: users,
-        stage: stage,
-        id: "temp",
-      },
-      ...prevTasks,
-    ]);
+    const newTask = {
+      id: "temp",
+      title: newData?.newTask?.title,
+      description: newData?.newTask?.description,
+      stage_id: newData?.newTask?.stage_id,
+      due_date: newData?.newTask?.due_date,
+      status: newData?.newTask?.status,
+      assignee_ids: newData?.newTask?.assignee_ids,
+      users: users,
+      stage: stage,
+    };
+
+    setJobTasks((prevTasks) => {
+      const updatedTasks = [newTask, ...prevTasks];
+      const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
+      return sortedTasks;
+    });
+
     setShowAddTaskModal(false);
     var response = await createTask(newData.newTask, taskId);
     if (response.res) {
@@ -3420,23 +3446,24 @@ export const NewJobModalWithTasks = ({
     newJobCollaboratorsList,
     stage
   ) => {
-    setJobTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              title: newData?.updatedTask?.title || task?.title,
-              description:
-                newData?.updatedTask?.description || task?.description,
-              stage_id: newData?.updatedTask?.stage_id || task?.stage_id,
-              due_date: newData?.updatedTask?.due_date || task?.due_date,
-              status: newData?.updatedTask?.status || task?.status,
-              users: newJobCollaboratorsList || task?.users,
-              stage: stage || task?.stage,
-            }
-          : task
-      )
+    const updatedTasks = jobTasks.map((task) =>
+      task.id === taskId
+        ? {
+            ...task,
+            title: newData?.updatedTask?.title || task.title,
+            description: newData?.updatedTask?.description || task.description,
+            stage_id: newData?.updatedTask?.stage_id || task.stage_id,
+            due_date: newData?.updatedTask?.due_date || task.due_date,
+            status: newData?.updatedTask?.status || task.status,
+            users: newJobCollaboratorsList || task.users,
+            stage: stage || task.stage,
+          }
+        : task
     );
+
+    const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
+    setJobTasks(sortedTasks);
+
     setShowUpdateTaskModal(false);
     var response = await updateTask(newData, taskId);
     if (response.res) {
@@ -3640,8 +3667,8 @@ export const NewJobModalWithTasks = ({
 
                       <div
                         className={`task-table-container job-task-table-container ${
-                          showAllTasks ? "show-more" : ""
-                        }`}
+                          jobTasks?.length <= 6 ? "less-task" : ""
+                        } ${showAllTasks ? "show-more" : ""}`}
                       >
                         <table className="task-table">
                           <tbody>
@@ -3710,6 +3737,22 @@ export const NewJobModalWithTasks = ({
                                   </td>
                                 </tr>
                               ))}
+                            {jobTasks.length === 0 && (
+                              <p
+                                style={{
+                                  color: "#616161",
+                                  fontFamily: "Archivo",
+                                  fontSize: "16px",
+                                  fontStyle: "normal",
+                                  fontWeight: 600,
+                                  lineHeight: "normal",
+                                  letterSpacing: "-0.64px",
+                                  marginBottom: "10px",
+                                }}
+                              >
+                                No task added yet
+                              </p>
+                            )}
                           </tbody>
                         </table>
                       </div>
@@ -3808,7 +3851,7 @@ export const NewTaskModal = ({
       handleCreateCustomTask();
       setStage(stageList[stageList?.length - 1]);
     }
-  }, [jobType,stageList]);
+  }, [jobType, stageList]);
 
   // Update refs whenever the state changes
   useEffect(() => {
@@ -4540,13 +4583,12 @@ export const NewTaskModal = ({
                               >
                                 <div className="stageListBox">
                                   {stageList.map((stage, index) => {
-                                     const isLastItem =
-                                          index === stageList.length - 1;
-                                        const shouldSkipLast =
-                                          (jobType === "Jobs") &&
-                                          isLastItem;
+                                    const isLastItem =
+                                      index === stageList.length - 1;
+                                    const shouldSkipLast =
+                                      jobType === "Jobs" && isLastItem;
 
-                                        if (shouldSkipLast) return null;
+                                    if (shouldSkipLast) return null;
                                     return (
                                       <div
                                         key={index}
@@ -5523,12 +5565,11 @@ export const UpdateTaskModal = React.forwardRef(
                                 >
                                   <div className="stageListBox">
                                     {stageList.map((stage, index) => {
-                                       const isLastItem =
-                                          index === stageList.length - 1;
-                                        const shouldSkipLast =
-                                          jobType === "Jobs"  &&
-                                          isLastItem;
-                                        if (shouldSkipLast) return null;
+                                      const isLastItem =
+                                        index === stageList.length - 1;
+                                      const shouldSkipLast =
+                                        jobType === "Jobs" && isLastItem;
+                                      if (shouldSkipLast) return null;
                                       return (
                                         <div
                                           key={index}

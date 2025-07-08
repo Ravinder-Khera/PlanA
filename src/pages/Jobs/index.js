@@ -414,6 +414,7 @@ const Jobs = () => {
     }
     if (state !== 1 && state?.key === "new-task-job" && state?.selectedJob) {
       handleAddTaskClick(state?.selectedJob);
+      setActiveTab(state?.selectedJob?.type === "job" ? "Jobs" : "Prospects");
     }
     if (
       state !== 1 &&
@@ -422,8 +423,9 @@ const Jobs = () => {
       state?.selectedJob
     ) {
       handleOpenJobWithTask(state?.selectedJob);
+      setActiveTab(state?.selectedJob?.type === "job" ? "Jobs" : "Prospects");
     }
-    fetchJobs();
+    // fetchJobs();
   }, [location, state]);
 
   const handleSearchApply = async () => {
@@ -866,8 +868,6 @@ const Jobs = () => {
     fetchUsers();
   }, []);
 
-
-
   const handleSelectCollaborator = (user) => {
     setTimeout(() => {
       setNewJobCollaboratorsList((prevList) => [...prevList, user]);
@@ -1038,7 +1038,7 @@ const Jobs = () => {
 
     try {
       const oldCollaboratorsId = updatedJob.collaborators?.map((c) => c.id);
-      
+
       const dataObj = {
         title: updatedJob.title,
         collaborators: oldCollaboratorsId,
@@ -1072,40 +1072,81 @@ const Jobs = () => {
     }
   };
 
+  // useEffect(() => {
+  //   const handleClickOutside = async (event) => {
+  //     if (
+  //       tableActiveRowLeftRef.current &&
+  //       !tableActiveRowLeftRef.current.contains(event.target) &&
+  //       tableActiveRowRightRef.current &&
+  //       !tableActiveRowRightRef.current.contains(event.target)
+  //     ) {
+  //       if (!filteredJobs?.length || !originalJobs?.length || !updateJobId)
+  //         return;
+
+  //       const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
+  //       const originalJob = originalJobs.find((job) => job.id === updateJobId);
+
+  //       if (!updatedJob || !originalJob) return;
+
+  //       setUsersList(fullUsersList);
+
+  //       if (isJobChanged(updatedJob, originalJob)) {
+  //         await handleUpdateJob(updatedJob);
+  //         synchronizeRowHeights();
+  //         handleCancelAddJob();
+  //       }
+
+  //       if (!showNewJobModal && !showNewJobModalWithTasks) {
+  //         setActiveJob(null);
+  //         setNewJobCollaboratorsList([]);
+  //         setNewJobCollaboratorsListId([]);
+  //         handleCancelAddJob();
+  //       }
+  //     }
+  //   };
+
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, [
+  //   updateJobId,
+  //   filteredJobs,
+  //   originalJobs,
+  //   newJobCollaboratorsListId,
+  //   showNewJobModal,
+  //   showNewJobModalWithTasks,
+  // ]);
   useEffect(() => {
     const handleClickOutside = async (event) => {
-      if (
-        tableActiveRowLeftRef.current &&
-        !tableActiveRowLeftRef.current.contains(event.target) &&
-        tableActiveRowRightRef.current &&
-        !tableActiveRowRightRef.current.contains(event.target)
-      ) {
-        if (!filteredJobs?.length || !originalJobs?.length || !updateJobId)
-          return;
+      const left = tableActiveRowLeftRef.current;
+      const right = tableActiveRowRightRef.current;
 
-        const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
-        const originalJob = originalJobs.find((job) => job.id === updateJobId);
+      if (!left || !right) return;
+      if (left.contains(event.target) || right.contains(event.target)) return;
 
-        if (!updatedJob || !originalJob) return;
+      // Extra guard (optional)
+      if (document.querySelector(".Toastify__toast")?.contains(event.target))
+        return;
 
-        setUsersList(fullUsersList);
-        console.log(
-          updatedJob,
-          originalJob,
-          isJobChanged(updatedJob, originalJob)
-        );
-        if (isJobChanged(updatedJob, originalJob)) {
-          await handleUpdateJob(updatedJob);
-          synchronizeRowHeights();
-          handleCancelAddJob();
-        }
+      if (!filteredJobs?.length || !originalJobs?.length || !updateJobId)
+        return;
 
-        if (!showNewJobModal && !showNewJobModalWithTasks) {
-          setActiveJob(null);
-          setNewJobCollaboratorsList([]);
-          setNewJobCollaboratorsListId([]);
-          handleCancelAddJob();
-        }
+      const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
+      const originalJob = originalJobs.find((job) => job.id === updateJobId);
+      if (!updatedJob || !originalJob) return;
+
+      setUsersList(fullUsersList);
+
+      if (isJobChanged(updatedJob, originalJob)) {
+        await handleUpdateJob(updatedJob);
+        synchronizeRowHeights();
+        handleCancelAddJob();
+      }
+
+      if (!showNewJobModal && !showNewJobModalWithTasks) {
+        setActiveJob(null);
+        setNewJobCollaboratorsList([]);
+        setNewJobCollaboratorsListId([]);
+        handleCancelAddJob();
       }
     };
 
@@ -1227,7 +1268,6 @@ const Jobs = () => {
               }
             : task
         );
-        
 
         const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
 
@@ -1253,8 +1293,6 @@ const Jobs = () => {
         } else {
           // addNotification("success", "Task Updated");
         }
-
-       
       } else {
         throw new Error(response.error?.message || "Failed to Update the task");
       }
@@ -1265,8 +1303,6 @@ const Jobs = () => {
   };
 
   const handleCreateTask = async (newData, taskId) => {
-    
-
     // Temporarily add the task to the UI with sorting and due_date update
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => {
@@ -1690,7 +1726,6 @@ const Jobs = () => {
     } catch (error) {
       console.log("error in updating jobs", error);
     } finally {
-      
       handleCancelAddJob(); // Reset state after action
       setLoading(false);
     }
@@ -1765,7 +1800,23 @@ const Jobs = () => {
         <NewJobModal
           job={activeJob}
           usersList={fullUsersList}
+          jobType={activeTab}
           handleClose={async (isUpdateRequired) => {
+             console.log("activeJob", activeJob, filteredJobs)
+            if(filteredJobs?.length > 0){
+            const sortedJobs = filteredJobs.map((job) => {
+              if (job.id !== activeJob.id) return job;
+              const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
+              // const nearestDueDate = sortedTasks[0]?.due_date || null;
+
+              return {
+                ...job,
+                tasks: sortedTasks,
+                days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+              };
+            });
+            setFilteredJobs(sortedJobs)
+          }
             setGetJob();
             setActiveJob(null);
             setShowNewJobModal(false);
@@ -1798,6 +1849,21 @@ const Jobs = () => {
           job={activeJob}
           newJob={newJob}
           handleClose={async (isUpdateRequired = false) => {
+            console.log("activeJob", activeJob, filteredJobs)
+            if(filteredJobs?.length > 0){
+            const sortedJobs = filteredJobs.map((job) => {
+              if (job.id !== activeJob.id) return job;
+              const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
+              // const nearestDueDate = sortedTasks[0]?.due_date || null;
+
+              return {
+                ...job,
+                tasks: sortedTasks,
+                days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+              };
+            });
+            setFilteredJobs(sortedJobs)
+          }
             setGetJob();
             setActiveJob(null);
             setShowNewJobModalWithTasks(false);
@@ -1912,6 +1978,7 @@ const Jobs = () => {
               );
             }
           }}
+          jobType={activeTab}
           fetchJobs={fetchJobs}
           reloadTabs={reloadTabs}
           scrollRef={taskMobileScrollRef}
@@ -2958,9 +3025,11 @@ const Jobs = () => {
                                               }
                                             />
                                             <div className="state-options-container">
-                                              <input
-                                                type="text"
-                                                className="state"
+                                              <span
+                                                className={`state-span state ${
+                                                  !customLocation.state &&
+                                                  "placeholder"
+                                                }`}
                                                 placeholder="State"
                                                 value={customLocation.state}
                                                 onClick={() =>
@@ -2968,7 +3037,10 @@ const Jobs = () => {
                                                     !showStateOptions
                                                   )
                                                 }
-                                              />
+                                              >
+                                                {customLocation.state ||
+                                                  "State"}
+                                              </span>
                                               {showStateOptions &&
                                                 states.length > 0 && (
                                                   <div className="state-options">
@@ -3486,13 +3558,13 @@ const Jobs = () => {
                                                       location: e.target.value,
                                                     })
                                                   }
-                                                  autoComplete="off"
-                                                  data-1password-ignore
                                                 />
                                                 <div className="state-options-container">
-                                                  <input
-                                                    type="text"
-                                                    className="state"
+                                                  <span
+                                                    className={`state-span state ${
+                                                      !customLocation.state &&
+                                                      "placeholder"
+                                                    }`}
                                                     placeholder="State"
                                                     value={customLocation.state}
                                                     onClick={() =>
@@ -3500,9 +3572,10 @@ const Jobs = () => {
                                                         !showStateOptions
                                                       )
                                                     }
-                                                    autoComplete="off"
-                                                    data-1password-ignore
-                                                  />
+                                                  >
+                                                    {customLocation.state ||
+                                                      "State"}
+                                                  </span>
                                                   {showStateOptions &&
                                                     states.length > 0 && (
                                                       <div className="state-options">

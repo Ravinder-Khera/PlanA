@@ -880,7 +880,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
         type: "attachment",
         data: selectedFile,
       });
-      
+
       handleImageUpload(selectedFile);
     }
   };
@@ -903,7 +903,6 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
   };
 
   const handleImageUpload = async (file) => {
- 
     const reader = new FileReader();
     reader.onload = async () => {
       const formData = new FormData();
@@ -1417,7 +1416,10 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const [loading, setLoading] = useState(false);
   const [chats, setChats] = useState(null);
   const [comments, setComments] = useState(null);
+
   const [body, setBody] = useState("");
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
+
   const [commentBody, setCommentBody] = useState("");
   const attachmentRef = useRef(null);
   const [attachments, setAttachments] = useState([]);
@@ -1451,14 +1453,14 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const isToast =
           document.querySelector(".Toastify__toast") &&
           document.querySelector(".Toastify__toast").contains(event.target);
-  
+
         if (!isToast) setShowUserList(false);
       }
       if (userRef2.current && !userRef2.current.contains(event.target)) {
         const isToast =
           document.querySelector(".Toastify__toast") &&
           document.querySelector(".Toastify__toast").contains(event.target);
-     
+
         if (!isToast) setShowUserList2(false);
       }
     };
@@ -1622,7 +1624,6 @@ export const ChatAndComment = ({ JobId, usersList }) => {
         const sortedAttachments = response2.res?.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
-       
 
         setChats(sortedMessages);
         setAttachments(sortedAttachments);
@@ -1738,18 +1739,48 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
-    if (newMsg.type === "msg") {
-      if (!body || body?.trim() === "") {
-        toast.error("Message cannot be empty");
-        return;
+    const hasText = body.trim() !== "";
+    const hasAttachment = !!selectedAttachment;
+
+    if (!hasText && !hasAttachment) {
+      toast.error("Please enter a message or attach a file.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (hasText) {
+        const response = await sendMessage(JobId, {
+          body: body.trim(),
+          ids: userIds,
+        });
+        if (response.error) {
+          toast.error("Failed to send message");
+          return;
+        }
+        setBody("");
       }
-      debouncedSendMessage(body);
-    } else if (newMsg.type === "attachment") {
-      if (!newMsg.data) {
-        toast.error("No file selected.");
-        return;
+
+      if (hasAttachment) {
+        const formData = new FormData();
+        formData.append("attachment", selectedAttachment);
+        const uploadRes = await addAttachments(formData, JobId);
+        if (uploadRes.error) {
+          toast.error("Failed to upload attachment");
+          return;
+        }
+        setSelectedAttachment(null);
+        if (attachmentRef.current) attachmentRef.current.value = "";
       }
-      await handleImageUpload(newMsg.data);
+
+      toast.success("Message Sent successfully");
+      throttledFetchChats();
+    } catch (err) {
+      console.error("Send error:", err);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1763,30 +1794,29 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   };
 
   const handleFileUpload = (e) => {
-    if (!e.target.files) return;
+    let file = null;
 
-    const selectedFile = e.target?.files[0];
-
-    if (selectedFile) {
-      if (
-        selectedFile.type.startsWith("image/") ||
-        selectedFile.type === "application/pdf"
-      ) {
-        setNewMsg({
-          type: "attachment",
-          data: selectedFile,
-        });
-
-        
-
-        // handleImageUpload(selectedFile);
-      } else {
-        if (attachmentRef.current) {
-          attachmentRef.current.value = ""; // Reset the input value
-        }
-        toast.error("Invalid file type. Please upload an image or PDF.");
-      }
+    // Handle drag and drop vs file input
+    if (e.dataTransfer) {
+      file = e.dataTransfer.files?.[0];
+    } else if (e.target) {
+      file = e.target.files?.[0];
     }
+
+    if (!file) {
+      return;
+    }
+
+    const isValidType =
+      file.type.startsWith("image/") || file.type === "application/pdf";
+
+    if (!isValidType) {
+      toast.error("Invalid file type. Please upload an image or PDF.");
+      if (attachmentRef.current) attachmentRef.current.value = "";
+      return;
+    }
+
+    setSelectedAttachment(file);
   };
 
   const handleDrop = (e) => {
@@ -1816,7 +1846,6 @@ export const ChatAndComment = ({ JobId, usersList }) => {
   };
 
   const handleImageUpload = async (file) => {
-    
     const reader = new FileReader();
     reader.onload = async () => {
       const formData = new FormData();
@@ -1854,7 +1883,6 @@ export const ChatAndComment = ({ JobId, usersList }) => {
 
   const handleDownloadFile = async (fileUrl, docName) => {
     try {
-      
       const filePath = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
 
       const response = await fetch(filePath, {
@@ -2396,7 +2424,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                   </>
                 );
               })}
-            {loading && newMsg.type === "msg" && (
+            {loading && body && (
               <div className="chats-content-sender-new " ref={chatScroll}>
                 <div
                   className={`InitialsBoxUser`}
@@ -2426,7 +2454,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                 </div>
               </div>
             )}
-            {loading && newMsg.type === "attachment" && (
+            {loading && selectedAttachment && (
               <div className="chats-content-sender-new ">
                 <div
                   className={`InitialsBoxUser`}
@@ -2490,13 +2518,9 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               placeholder="Type a message in the chat..."
               onChange={(e) => {
                 const { value } = e.target;
-
                 setBody(value);
-                setNewMsg({
-                  type: "msg",
-                  data: value,
-                });
 
+                // Mention logic (unchanged)
                 if (value.endsWith("@")) {
                   setFilteredUsers(usersList);
                   setShowUserList(true);
@@ -2510,11 +2534,7 @@ export const ChatAndComment = ({ JobId, usersList }) => {
                   setShowUserList(false);
                 }
               }}
-              value={
-                newMsg.type === "attachment" && newMsg.data?.name
-                  ? `📎 ${newMsg.data.name}`
-                  : body
-              }
+              value={body}
             />
 
             {showUserList && (
@@ -2577,6 +2597,24 @@ export const ChatAndComment = ({ JobId, usersList }) => {
               onClick={handleSendMessage}
             />
           </div>
+
+          {selectedAttachment && (
+            <div className="attachment-preview">
+              <span className="file-name">📎 {selectedAttachment.name}</span>
+              <button
+                className="remove-attachment-btn"
+                type="button"
+                onClick={() => {
+                  setSelectedAttachment(null);
+                  if (attachmentRef.current) {
+                    attachmentRef.current.value = "";
+                  }
+                }}
+              >
+                 <CrossIcon />
+              </button>
+            </div>
+          )}
         </div>
       </>
     </>
@@ -2781,8 +2819,6 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
           data: selectedFile,
         });
 
-       
-
         handleImageUpload(selectedFile);
       } else {
         if (attachmentRef.current) {
@@ -2821,7 +2857,6 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
   };
 
   const handleImageUpload = async (file) => {
-   
     const reader = new FileReader();
     reader.onload = async () => {
       const formData = new FormData();
@@ -2895,7 +2930,6 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
 
   const handleDownloadFile = async (fileUrl, docName) => {
     try {
-     
       const filePath = `${process.env.REACT_APP_USER_API_CLOUD_ATTACHMENT_PATH}/${fileUrl}`;
 
       const response = await fetch(filePath, {

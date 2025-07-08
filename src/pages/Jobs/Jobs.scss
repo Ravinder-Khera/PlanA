@@ -1327,7 +1327,7 @@
               display: flex;
               align-items: center;
               gap: 8px;
-              input {
+              input, .state-span {
                 border-radius: 2px;
                 padding: 7px 14px;
                 background: #353535;
@@ -1340,7 +1340,7 @@
                 line-height: normal;
                 letter-spacing: -0.48px;
                 border: none;
-                &::placeholder {
+                &::placeholder, &.placeholder {
                   color: #e2e31f;
                 }
                 &:focus,

@@ -617,17 +617,19 @@ export function addNotification(type, message) {
 
 export function sortTasksByDueDateProximity(tasks) {
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize today's date
 
   return tasks.slice().sort((a, b) => {
     const aDue = new Date(a.due_date);
     const bDue = new Date(b.due_date);
 
-    const aDiff = Math.abs(aDue - today);
-    const bDiff = Math.abs(bDue - today);
+    const aDiff = aDue - today;
+    const bDiff = bDue - today;
 
-    return aDiff - bDiff;
+    return aDiff - bDiff; // past < today < future
   });
 }
+
 
 export const locationOptions = [
   { location: "Balonne (S)", state: "QLD" },
