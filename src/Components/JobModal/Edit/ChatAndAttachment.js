@@ -1411,7 +1411,7 @@ export const AddNewJobChatAndAttachment = ({ JobId, usersList }) => {
 };
 
 // New component
-export const ChatAndComment = ({ JobId, usersList }) => {
+export const ChatAndComment = ({ JobId, usersList, onNewComment }) => {
   const maxLength = 10;
   const [loading, setLoading] = useState(false);
   const [chats, setChats] = useState(null);
@@ -1446,6 +1446,14 @@ export const ChatAndComment = ({ JobId, usersList }) => {
 
   const userRef = useRef(null);
   const userRef2 = useRef(null);
+
+
+  useEffect(() => {
+  if (comments && comments.length > 0 && typeof onNewComment === "function") {
+    const latestChat = comments[comments.length - 1];
+    onNewComment(latestChat); 
+  }
+}, [comments]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -2640,6 +2648,14 @@ export const CommentBox = ({ taskId, JobId, usersList }) => {
   const [userIds, setUserIds] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState(usersList);
   const userRef = useRef(null);
+
+//   useEffect(() => {
+//   if (chats && chats.length > 0 && typeof onNewMessage === "function") {
+//     const latestChat = chats[chats.length - 1];
+//     onNewMessage(latestChat); 
+//   }
+// }, [chats]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {

@@ -356,7 +356,7 @@ function DashboardMenuList() {
                     </li>
                     <li
                       className={
-                        location.pathname.includes("/dashboard") ? "active" : ""
+                        location.pathname?.toLowerCase()?.includes("/dashboard") ? "active" : ""
                       }
                     >
                       <Link to="/dashboard" onClick={handleMenuClose}>
@@ -386,7 +386,7 @@ function DashboardMenuList() {
                     )} */}
                     <li
                       className={
-                        location.pathname.includes("/jobs") ? "active" : ""
+                        location.pathname?.toLowerCase()?.includes("/jobs") ? "active" : ""
                       }
                     >
                       <Link to="/jobs" onClick={handleMenuClose}>
@@ -394,11 +394,11 @@ function DashboardMenuList() {
                         <p>Jobs</p>
                       </Link>
                     </li>
-                    {location.pathname.includes("/jobs") && (
+                    {location.pathname?.toLowerCase()?.includes("/jobs") && (
                       <div className="dropDownMenu">
                         <li
                           className={
-                            location.pathname.includes("/tasks") ? "active" : ""
+                            location.pathname?.toLowerCase()?.includes("/tasks") ? "active" : ""
                           }
                         >
                           <Link to="/jobs/tasks" onClick={handleMenuClose}>
@@ -410,7 +410,7 @@ function DashboardMenuList() {
                     )}
                     <li
                       className={
-                        location.pathname.includes("/invoice") ? "active" : ""
+                        location.pathname?.toLowerCase()?.includes("/invoice") ? "active" : ""
                       }
                     >
                       <Link to="/invoice" onClick={handleMenuClose}>
@@ -419,7 +419,7 @@ function DashboardMenuList() {
                     </li>
                     <li
                       className={
-                        location.pathname.includes("/settings") ? "active" : ""
+                        location.pathname?.toLowerCase()?.includes("/settings") ? "active" : ""
                       }
                     >
                       <Link to="/settings" onClick={handleMenuClose}>

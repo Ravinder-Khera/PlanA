@@ -669,7 +669,7 @@ export function SortIcon() {
         height="36"
         rx="1"
         stroke="#E2E31F"
-        stroke-width="3"
+        strokeWidth="3"
         mask="url(#path-1-inside-1_1_108)"
       />
       <mask
@@ -882,7 +882,7 @@ export function AddTaskGreyButton() {
         height="36"
         rx="1"
         stroke="#616161"
-        stroke-width="3"
+        strokeWidth="3"
         mask="url(#path-1-inside-1_4617_3752)"
       />
       <path
@@ -911,7 +911,7 @@ export function ToastErrorIcon() {
         height="36"
         rx="1"
         stroke="#FF0000"
-        stroke-width="3"
+        strokeWidth="3"
         mask="url(#path-1-inside-1_4439_1918)"
       />
       <path
@@ -936,14 +936,14 @@ export function ToastCloseIcon({ className, ...props } = {}) {
       <path
         d="M1 15L15 1"
         stroke="#6F6F6F"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M15 15L1 1"
         stroke="#6F6F6F"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />

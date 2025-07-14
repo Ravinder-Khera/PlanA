@@ -199,7 +199,10 @@ const Jobs = () => {
   const [activeTaskJob, setActiveTaskJob] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [updateJobId, setUpdateJobId] = useState(null);
-  const [activeTab, setActiveTab] = useState("Jobs");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (location?.state?.selectedJob?.type === "prospect") return "Prospects";
+    return "Jobs";
+  });
   const [selectedNewJobDueDate, setSelectedNewJobDueDate] = useState(null);
   const [collabChanged, setCollabChanged] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
@@ -1239,6 +1242,16 @@ const Jobs = () => {
         addNotification("error", "Job Update Failed");
         toast.error(`${response.error.message}`);
       } else {
+        setFilteredJobs((prevJobs) =>
+          prevJobs.map((job) =>
+            job.id === jobId
+              ? {
+                  ...job,
+                  description: updatedFields,
+                }
+              : job
+          )
+        );
         // addNotification("success", "Job Updated");
       }
     } catch (error) {
@@ -1254,6 +1267,11 @@ const Jobs = () => {
   ) => {
     setFilteredJobs((prevJobs) =>
       prevJobs.map((job) => {
+        // Skip jobs that don't have this task
+        const taskExists = job.tasks.some((task) => task.id === taskId);
+        if (!taskExists) return job;
+
+        // Update and sort tasks in the correct job
         const updatedTasks = job.tasks.map((task) =>
           task.id === taskId
             ? {
@@ -1801,22 +1819,24 @@ const Jobs = () => {
           job={activeJob}
           usersList={fullUsersList}
           jobType={activeTab}
-          handleClose={async (isUpdateRequired) => {
-             console.log("activeJob", activeJob, filteredJobs)
-            if(filteredJobs?.length > 0){
-            const sortedJobs = filteredJobs.map((job) => {
-              if (job.id !== activeJob.id) return job;
-              const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
-              // const nearestDueDate = sortedTasks[0]?.due_date || null;
+          handleClose={async (isUpdateRequired, newComment) => {
+            if (filteredJobs?.length > 0) {
+              const sortedJobs = filteredJobs.map((job) => {
+                if (job.id !== activeJob.id) return job;
+                const sortedTasks = sortTasksByDueDateProximity(
+                  job.tasks || []
+                );
+                // const nearestDueDate = sortedTasks[0]?.due_date || null;
 
-              return {
-                ...job,
-                tasks: sortedTasks,
-                days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
-              };
-            });
-            setFilteredJobs(sortedJobs)
-          }
+                return {
+                  ...job,
+                  tasks: sortedTasks,
+                  comments: [newComment],
+                  days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+                };
+              });
+              setFilteredJobs(sortedJobs);
+            }
             setGetJob();
             setActiveJob(null);
             setShowNewJobModal(false);
@@ -1848,25 +1868,25 @@ const Jobs = () => {
           usersList={fullUsersList}
           job={activeJob}
           newJob={newJob}
-          handleClose={async (isUpdateRequired = false) => {
-            console.log("activeJob", activeJob, filteredJobs)
-            if(filteredJobs?.length > 0){
-            const sortedJobs = filteredJobs.map((job) => {
-              if (job.id !== activeJob.id) return job;
-              const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
-              // const nearestDueDate = sortedTasks[0]?.due_date || null;
+          handleClose={async (isUpdateRequired = false, newComment) => {
+            if (filteredJobs?.length > 0) {
+              const sortedJobs = filteredJobs.map((job) => {
+                if (job.id !== activeJob.id) return job;
+                const sortedTasks = sortTasksByDueDateProximity(
+                  job.tasks || []
+                );
+                // const nearestDueDate = sortedTasks[0]?.due_date || null;
 
-              return {
-                ...job,
-                tasks: sortedTasks,
-                days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
-              };
-            });
-            setFilteredJobs(sortedJobs)
-          }
-            setGetJob();
-            setActiveJob(null);
-            setShowNewJobModalWithTasks(false);
+                return {
+                  ...job,
+                  tasks: sortedTasks,
+                  comments: [newComment],
+                  days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+                };
+              });
+              setFilteredJobs(sortedJobs);
+            }
+            console.log("active job in NewJobModalWithTasks", activeJob);
             if (isUpdateRequired && activeJob) {
               await handleUpdateJobDesc(
                 activeJob.id,
@@ -1874,6 +1894,9 @@ const Jobs = () => {
                 activeJob.tasks
               );
             }
+            setGetJob();
+            setActiveJob(null);
+            setShowNewJobModalWithTasks(false);
 
             setNewJob(false);
           }}
@@ -1939,9 +1962,25 @@ const Jobs = () => {
         <UpdateTaskModal
           usersList={fullUsersList}
           task={activeTask}
-          handleClose={async () => {
+          handleClose={async (newComment) => {
+            console.log("newComment", newComment);
             setGetJob();
             setShowUpdateTaskModal(false);
+
+            if (newComment && activeTask?.job_id) {
+              setFilteredJobs((prevJobs) =>
+                prevJobs.map((job) =>
+                  job.id === activeTask.job_id
+                    ? {
+                        ...job,
+                        comments: job.comments
+                          ? [...job.comments, newComment]
+                          : [newComment],
+                      }
+                    : job
+                )
+              );
+            }
           }}
           jobType={activeTab}
           fetchJobs={fetchJobs}
@@ -1950,11 +1989,19 @@ const Jobs = () => {
           onUpdateTask={handleUpdateTask}
           handleDelete={() => {
             setFilteredJobs((prevJobs) =>
-              prevJobs.map((job) => ({
-                ...job,
-                tasks: job.tasks.filter((task) => task?.id !== activeTask?.id),
-              }))
+              prevJobs.map((job) => {
+                if (job.id === activeTask?.job_id) {
+                  return {
+                    ...job,
+                    tasks: job.tasks.filter(
+                      (task) => task?.id !== activeTask?.id
+                    ),
+                  };
+                }
+                return job; // Leave other jobs unchanged
+              })
             );
+
             handleTaskDelete(activeTask);
             setShowUpdateTaskModal(false);
           }}
@@ -1965,18 +2012,37 @@ const Jobs = () => {
         <NewJobModal
           job={getJob?.data}
           usersList={fullUsersList}
-          handleClose={async (isDeleting = false, description) => {
-            setGetJob();
-            setActiveJob(null);
-            setShowJobModal(false);
+          handleClose={async (isDeleting = false, newComment) => {
+            console.log("getJob.data", getJob.data);
+            
             if (!isDeleting && getJob?.data) {
-              await handleUpdateJobDesc(getJob.data?.id, description);
+                 if (filteredJobs?.length > 0) {
+                const sortedJobs = filteredJobs.map((job) => {
+                  if (job.id !== getJob?.data?.id) return job;
+                  const sortedTasks = sortTasksByDueDateProximity(
+                    job.tasks || []
+                  );
+                  // const nearestDueDate = sortedTasks[0]?.due_date || null;
+
+                  return {
+                    ...job,
+                    tasks: sortedTasks,
+                    comments: [newComment],
+                    days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+                  };
+                });
+                setFilteredJobs(sortedJobs);
+              }
+              await handleUpdateJobDesc(getJob.data?.id, getJob?.data?.description, getJob?.data?.tasks);
             }
             if (isDeleting) {
               setFilteredJobs((prevJobs) =>
                 prevJobs.filter((job) => job?.id !== getJob?.data?.id)
               );
             }
+            setGetJob();
+            setActiveJob(null);
+            setShowJobModal(false);
           }}
           jobType={activeTab}
           fetchJobs={fetchJobs}
@@ -3405,6 +3471,7 @@ const Jobs = () => {
                                                   );
                                                   setActiveJobField("");
                                                 } else {
+                                                  console.log("task", task);
                                                   setActiveTask(task);
                                                   setActiveJobField("");
                                                   setShowUpdateTaskModal(true);

@@ -2697,6 +2697,7 @@ export const NewJobModal = ({
   handleDelete: handleDeleteProp,
   jobType,
 }) => {
+  console.log("NewJobModal");
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -2712,12 +2713,16 @@ export const NewJobModal = ({
   const emailPopupRef = useRef(null);
   const updateTaskModalRef = useRef(null);
   const nestedChildRef = useRef(null);
-
+ const newCommentRef = useRef(null);
+  const [newComment, setNewComment] = useState(null);
   const descRef = useRef(null);
   const jobTaskRef = useRef(null);
   useEffect(() => {
     descRef.current = description;
   }, [description]);
+   useEffect(() => {
+    newCommentRef.current = newComment;
+  }, [newComment]);
 
   useEffect(() => {
     jobTaskRef.current = jobTasks;
@@ -2791,7 +2796,7 @@ export const NewJobModal = ({
       job.tasks = jobTaskRef.current;
       isUpdateRequired = true;
     }
-    await handleClose(isUpdateRequired);
+    await handleClose(isUpdateRequired,  newCommentRef.current);
   };
 
   const handleDelete = async () => {
@@ -3046,7 +3051,7 @@ export const NewJobModal = ({
                               height="36"
                               rx="1"
                               stroke="#E2E31F"
-                              stroke-width="3"
+                              strokeWidth="3"
                               mask="url(#path-1-inside-1_4895_1898)"
                             />
                             <path
@@ -3223,7 +3228,10 @@ export const NewJobModal = ({
                       </div>
                     </div>
 
-                    <ChatAndComment JobId={job?.id} usersList={usersList} />
+                    <ChatAndComment JobId={job?.id} usersList={usersList} onNewComment={(data) => {
+                        console.log("new comment added & passed to parent component", data)
+                        setNewComment(data);
+                      }}/>
                   </div>
                 </div>
               </div>
@@ -3245,6 +3253,7 @@ export const NewJobModalWithTasks = ({
   handleDelete: handleDeleteProp,
   jobType,
 }) => {
+  console.log("NewJobModalWithTasks");
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(() => {
     if (!job?.description || job.description === "No description provided") {
@@ -3266,13 +3275,18 @@ export const NewJobModalWithTasks = ({
   const emailPopupRef = useRef(null);
   const updateTaskModalRef = useRef(null);
   const nestedChildRef = useRef(null);
-
+  const newCommentRef = useRef(null);
+  const [newComment, setNewComment] = useState(null);
   const descRef = useRef(null);
   const jobTaskRef = useRef(null);
 
   useEffect(() => {
     descRef.current = description;
   }, [description]);
+
+  useEffect(() => {
+    newCommentRef.current = newComment;
+  }, [newComment]);
 
   useEffect(() => {
     jobTaskRef.current = jobTasks;
@@ -3352,7 +3366,7 @@ export const NewJobModalWithTasks = ({
       job.tasks = jobTaskRef.current;
       isUpdateRequired = true;
     }
-    await handleClose(isUpdateRequired);
+    await handleClose(isUpdateRequired, newCommentRef.current);
   };
 
   const handleDelete = async () => {
@@ -3609,7 +3623,7 @@ export const NewJobModalWithTasks = ({
                               height="36"
                               rx="1"
                               stroke="#E2E31F"
-                              stroke-width="3"
+                              strokeWidth="3"
                               mask="url(#path-1-inside-1_4895_1898)"
                             />
                             <path
@@ -3786,7 +3800,14 @@ export const NewJobModalWithTasks = ({
                       </div>
                     </div>
 
-                    <ChatAndComment JobId={job?.id} usersList={usersList} />
+                    <ChatAndComment
+                      JobId={job?.id}
+                      usersList={usersList}
+                      onNewComment={(data) => {
+                        console.log("new comment added & passed to parent component", data)
+                        setNewComment(data);
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -3845,7 +3866,7 @@ export const NewTaskModal = ({
   const taskStatusRef = useRef(taskStatus);
 
   const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
-
+  console.log("jobType", jobType);
   useEffect(() => {
     if (jobType === "Prospects") {
       handleCreateCustomTask();
@@ -4076,18 +4097,16 @@ export const NewTaskModal = ({
     setFirstClick(false);
     setIsPopupOpen(false);
     setInputPlaceholder("Write Task Name...");
-    // Reset input and related states
     setTitle("");
-    setStage(null);
     setTatskStatus("not-started");
 
-    // Wait for state update, then focus
+    // Don't reset stage here if it's already set in useEffect
+    if (jobType !== "Prospects") {
+      setStage(null);
+    }
+
     setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      } else {
-        console.log("inputRef is null"); // Debugging
-      }
+      if (inputRef.current) inputRef.current.focus();
     }, 50);
   };
 
@@ -4704,6 +4723,8 @@ export const UpdateTaskModal = React.forwardRef(
     const taskStatusRef = useRef(taskStatus);
     const newJobCollaboratorsListIdRef = useRef(newJobCollaboratorsListId);
     const taskCompletionPopupRef = useRef(null);
+    // const newCommentRef = useRef(null)
+    // const [newComment, setNewComment] = useState(null)
 
     const fetchUsers = async () => {
       try {
@@ -4818,6 +4839,10 @@ export const UpdateTaskModal = React.forwardRef(
       titleRef.current = title;
     }, [title]);
 
+    // useEffect(() => {
+    //   newCommentRef.current = newComment;
+    // }, [newComment]);
+
     useEffect(() => {
       const ids = task.users?.map((user) => user.id);
       asigneeRef.current = ids;
@@ -4881,6 +4906,7 @@ export const UpdateTaskModal = React.forwardRef(
           task.id,
           newJobCollaboratorsList,
           stageRef.current
+          // newCommentRef.current
         );
       } else {
         handleClose();
@@ -4988,18 +5014,16 @@ export const UpdateTaskModal = React.forwardRef(
       setFirstClick(false);
       setIsPopupOpen(false);
       setInputPlaceholder("Write Task Name...");
-      // Reset input and related states
       setTitle("");
-      setStage(null);
       setTatskStatus("not-started");
 
-      // Wait for state update, then focus
+      // Don't reset stage here if it's already set in useEffect
+      if (jobType !== "Prospects") {
+        setStage(null);
+      }
+
       setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        } else {
-          console.log("inputRef is null"); // Debugging
-        }
+        if (inputRef.current) inputRef.current.focus();
       }, 50);
     };
 
@@ -5075,7 +5099,7 @@ export const UpdateTaskModal = React.forwardRef(
                               height="36"
                               rx="1"
                               stroke="#E2E31F"
-                              stroke-width="3"
+                              strokeWidth="3"
                               mask="url(#path-1-inside-1_4895_1898)"
                             />
                             <path
@@ -5620,6 +5644,9 @@ export const UpdateTaskModal = React.forwardRef(
                         taskId={task?.id}
                         JobId={task?.job_id}
                         usersList={suggestedUser}
+                        // onNewMessage={(data) =>{
+                        //   console.log("data", data)
+                        //   setNewComment(data)}}
                       />
                     </div>
                   </div>
@@ -5988,18 +6015,16 @@ export const CreateTaskModal = memo(
         setFirstClick(false);
         setIsPopupOpen(false);
         setInputPlaceholder("Write Task Name...");
-        // Reset input and related states
         setTitle("");
-        setStage(null);
         setTatskStatus("not-started");
 
-        // Wait for state update, then focus
+        // Don't reset stage here if it's already set in useEffect
+        if (jobType !== "Prospects" || type !== "prospect") {
+          setStage(null);
+        }
+
         setTimeout(() => {
-          if (inputRef.current) {
-            inputRef.current.focus();
-          } else {
-            console.log("inputRef is null"); // Debugging
-          }
+          if (inputRef.current) inputRef.current.focus();
         }, 50);
       };
 
