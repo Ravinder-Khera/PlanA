@@ -1218,7 +1218,7 @@ const Jobs = () => {
               : job
           )
         );
-        
+
         // addNotification("success", "Job Updated");
       }
     } catch (error) {
@@ -1255,11 +1255,15 @@ const Jobs = () => {
         );
 
         const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
-
+        const days_left = sortedTasks?.some(
+          (task) => task.status !== "completed"
+        )
+          ? getDaysLeft(sortedTasks?.[0]?.due_date || null)
+          : 0;
         return {
           ...job,
           tasks: sortedTasks,
-          days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+          days_left,
         };
       })
     );
@@ -1270,6 +1274,7 @@ const Jobs = () => {
       const response = await updateTask(newData, taskId);
 
       if (response.res) {
+        console.log("response of handleUpdateTask", response.res)
         // fetchJobs();
         setCurrentPage(1);
         if (newData?.updatedTask?.status === "completed") {
@@ -1303,11 +1308,15 @@ const Jobs = () => {
           },
           ...(job.tasks || []),
         ]);
-
+        const days_left = updatedTasks?.some(
+          (task) => task.status !== "completed"
+        )
+          ? getDaysLeft(updatedTasks?.[0]?.due_date || null)
+          : 0;
         return {
           ...job,
           tasks: updatedTasks,
-          days_left: getDaysLeft(updatedTasks?.[0]?.due_date || null),
+          days_left,
         };
       })
     );
@@ -1477,10 +1486,15 @@ const Jobs = () => {
         if (job?.job_num === task?.job_num) {
           const updatedTasks = [...(job.tasks || []), { ...task, id: "temp" }];
           const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
+          const days_left = sortedTasks?.some(
+            (task) => task.status !== "completed"
+          )
+            ? getDaysLeft(sortedTasks?.[0]?.due_date || null)
+            : 0;
           return {
             ...job,
             tasks: sortedTasks,
-              days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+            days_left,
             // due_date: sortedTasks?.[0]?.due_date || null,
           };
         }
@@ -1502,10 +1516,15 @@ const Jobs = () => {
               t.id === "temp" ? createdTask : t
             );
             const sortedTasks = sortTasksByDueDateProximity(updatedTasks);
+            const days_left = sortedTasks?.some(
+              (task) => task.status !== "completed"
+            )
+              ? getDaysLeft(sortedTasks?.[0]?.due_date || null)
+              : 0;
             return {
               ...job,
               tasks: sortedTasks,
-              days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+              days_left,
             };
           }
           return job;
@@ -1795,12 +1814,16 @@ const Jobs = () => {
                   job.tasks || []
                 );
                 // const nearestDueDate = sortedTasks[0]?.due_date || null;
-
+                const days_left = sortedTasks?.some(
+                  (task) => task.status !== "completed"
+                )
+                  ? getDaysLeft(sortedTasks?.[0]?.due_date || null)
+                  : 0;
                 return {
                   ...job,
                   tasks: sortedTasks,
                   comments: [newComment],
-                  days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+                  days_left,
                 };
               });
               setFilteredJobs(sortedJobs);
@@ -1837,24 +1860,27 @@ const Jobs = () => {
           job={activeJob}
           newJob={newJob}
           handleClose={async (isUpdateRequired = false, newComment) => {
-    
-
             if (isUpdateRequired && activeJob) {
-               setFilteredJobs((prevJobs) =>
+              setFilteredJobs((prevJobs) =>
                 prevJobs.map((job) => {
                   if (job.id !== activeJob.id) return job;
 
                   const sortedTasks = sortTasksByDueDateProximity(
                     job.tasks || []
                   );
-                  console.log("sortedTask", sortedTasks)
+                  const days_left = sortedTasks?.some(
+                    (task) => task.status !== "completed"
+                  )
+                    ? getDaysLeft(sortedTasks?.[0]?.due_date || null)
+                    : 0;
+                  console.log("sortedTask", sortedTasks);
                   return {
                     ...job,
                     tasks: sortedTasks,
                     comments: job.comments?.length
                       ? [...job.comments, newComment]
                       : [newComment],
-                    days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+                    days_left,
                   };
                 })
               );
@@ -1990,12 +2016,16 @@ const Jobs = () => {
                     job.tasks || []
                   );
                   // const nearestDueDate = sortedTasks[0]?.due_date || null;
-
+                  const days_left = sortedTasks?.some(
+                    (task) => task.status !== "completed"
+                  )
+                    ? getDaysLeft(sortedTasks?.[0]?.due_date || null)
+                    : 0;
                   return {
                     ...job,
                     tasks: sortedTasks,
                     comments: [newComment],
-                    days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
+                    days_left,
                   };
                 });
                 setFilteredJobs(sortedJobs);

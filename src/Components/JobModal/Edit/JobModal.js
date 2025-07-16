@@ -4758,6 +4758,7 @@ export const UpdateTaskModal = React.forwardRef(
     const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState(
       task?.users || []
     );
+    const newJobCollaboratorsListRef = useRef(null)
     const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState(
       []
     );
@@ -4902,6 +4903,10 @@ export const UpdateTaskModal = React.forwardRef(
       titleRef.current = title;
     }, [title]);
 
+     useEffect(() => {
+      newJobCollaboratorsListRef.current = newJobCollaboratorsList;
+    }, [newJobCollaboratorsList]);
+
     // useEffect(() => {
     //   newCommentRef.current = newComment;
     // }, [newComment]);
@@ -4964,10 +4969,11 @@ export const UpdateTaskModal = React.forwardRef(
         stageRef.current?.id !== task.stage_id ||
         descriptionRef.current !== task.description
       ) {
+        console.log("newJobCollaboratorsList", newJobCollaboratorsListRef.current, newJobCollaboratorsListIdRef.current)
         onUpdateTask(
           { updatedTask },
           task.id,
-          newJobCollaboratorsList,
+          newJobCollaboratorsListRef.current,
           stageRef.current
           // newCommentRef.current
         );
