@@ -47,6 +47,7 @@ import ChatAndAttachment, {
   CommentBox,
 } from "./ChatAndAttachment";
 import "./style.scss";
+import ToggleButton from "../../ToggleButton";
 
 const JobModal = ({
   job,
@@ -2702,6 +2703,7 @@ export const NewJobModal = ({
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
   const [jobTasks, setJobTasks] = useState(job?.tasks || []);
+  const [isOn, setIsOn] = useState(false)
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
   const [activeTaskJob, setActiveTaskJob] = useState(null);
@@ -2713,14 +2715,20 @@ export const NewJobModal = ({
   const emailPopupRef = useRef(null);
   const updateTaskModalRef = useRef(null);
   const nestedChildRef = useRef(null);
- const newCommentRef = useRef(null);
+  const newCommentRef = useRef(null);
   const [newComment, setNewComment] = useState(null);
   const descRef = useRef(null);
   const jobTaskRef = useRef(null);
+   const filteredTasks = jobTasks?.filter((task) => {
+    if (isOn) {
+      return task.status === "completed";
+    }
+    return task.status === "in-progress" || task.status === "not-started";
+  });
   useEffect(() => {
     descRef.current = description;
   }, [description]);
-   useEffect(() => {
+  useEffect(() => {
     newCommentRef.current = newComment;
   }, [newComment]);
 
@@ -2796,7 +2804,7 @@ export const NewJobModal = ({
       job.tasks = jobTaskRef.current;
       isUpdateRequired = true;
     }
-    await handleClose(isUpdateRequired,  newCommentRef.current);
+    await handleClose(isUpdateRequired, newCommentRef.current);
   };
 
   const handleDelete = async () => {
@@ -3105,17 +3113,37 @@ export const NewJobModal = ({
                     </div>
 
                     <div className="discriptionBox">
+                       <div style={{
+                        "display": "flex",
+                        "justifyContent": "space-between",
+                        "alignItems": "center",
+                        "gap": '10px'
+                      }}>
+
                       <h3>Tasks</h3>
+                      <div style={{
+                        "display": "flex",
+                        "justifyContent": "center",
+                        "alignItems": "center",
+                        "gap": '10px',
+                        "marginRight": "10px"
+                      }}>
+                      <span style={{
+                        fontSize: '14px'
+                      }}>Completed Task</span>
+                      <ToggleButton isOn={isOn} setIsOn={setIsOn} />
+                      </div>
+                      </div>
 
                       <div
                         className={`task-table-container job-task-table-container ${
-                          jobTasks?.length <= 6 ? "less-task" : ""
+                          filteredTasks?.length <= 6 ? "less-task" : ""
                         } ${showAllTasks ? "show-more" : ""}`}
                       >
                         <table className="task-table">
                           <tbody>
-                            {jobTasks?.length > 0 &&
-                              jobTasks?.map((task, index) => (
+                            {filteredTasks?.length > 0 &&
+                              filteredTasks?.map((task, index) => (
                                 <tr key={index} className="task-row">
                                   <td
                                     className={`task-title text-left   ${
@@ -3179,7 +3207,7 @@ export const NewJobModal = ({
                                   </td>
                                 </tr>
                               ))}
-                            {jobTasks.length === 0 && (
+                            {filteredTasks.length === 0 && (
                               <p
                                 style={{
                                   color: "#616161",
@@ -3192,13 +3220,13 @@ export const NewJobModal = ({
                                   marginBottom: "10px",
                                 }}
                               >
-                                No task added yet
+                                No tasks available
                               </p>
                             )}
                           </tbody>
                         </table>
                       </div>
-                      {jobTasks?.length > 6 && (
+                      {filteredTasks?.length > 6 && (
                         <div
                           className={`show-all-tasks ${
                             showAllTasks ? "show-more" : ""
@@ -3228,10 +3256,17 @@ export const NewJobModal = ({
                       </div>
                     </div>
 
-                    <ChatAndComment JobId={job?.id} usersList={usersList} onNewComment={(data) => {
-                        console.log("new comment added & passed to parent component", data)
+                    <ChatAndComment
+                      JobId={job?.id}
+                      usersList={usersList}
+                      onNewComment={(data) => {
+                        console.log(
+                          "new comment added & passed to parent component",
+                          data
+                        );
                         setNewComment(data);
-                      }}/>
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -3253,7 +3288,6 @@ export const NewJobModalWithTasks = ({
   handleDelete: handleDeleteProp,
   jobType,
 }) => {
-  console.log("NewJobModalWithTasks");
   const [loader, setLoader] = useState(false);
   const [description, setDescription] = useState(() => {
     if (!job?.description || job.description === "No description provided") {
@@ -3264,6 +3298,7 @@ export const NewJobModalWithTasks = ({
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [jobTasks, setJobTasks] = useState(job?.tasks || []);
+  const [isOn, setIsOn] = useState(false)
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
   const [activeTaskJob, setActiveTaskJob] = useState(null);
@@ -3279,6 +3314,12 @@ export const NewJobModalWithTasks = ({
   const [newComment, setNewComment] = useState(null);
   const descRef = useRef(null);
   const jobTaskRef = useRef(null);
+  const filteredTasks = jobTasks?.filter((task) => {
+    if (isOn) {
+      return task.status === "completed";
+    }
+    return task.status === "in-progress" || task.status === "not-started";
+  });
 
   useEffect(() => {
     descRef.current = description;
@@ -3677,17 +3718,36 @@ export const NewJobModalWithTasks = ({
                     </div>
 
                     <div className="discriptionBox">
-                      <h3>Tasks</h3>
+                      <div style={{
+                        "display": "flex",
+                        "justifyContent": "space-between",
+                        "alignItems": "center",
+                        "gap": '10px'
+                      }}>
 
+                      <h3>Tasks</h3>
+                      <div style={{
+                        "display": "flex",
+                        "justifyContent": "center",
+                        "alignItems": "center",
+                        "gap": '10px',
+                        "marginRight": "10px"
+                      }}>
+                      <span style={{
+                        fontSize: '14px'
+                      }}>Completed Task</span>
+                      <ToggleButton isOn={isOn} setIsOn={setIsOn} />
+                      </div>
+                      </div>
                       <div
                         className={`task-table-container job-task-table-container ${
-                          jobTasks?.length <= 6 ? "less-task" : ""
+                          filteredTasks?.length <= 6 ? "less-task" : ""
                         } ${showAllTasks ? "show-more" : ""}`}
                       >
                         <table className="task-table">
                           <tbody>
-                            {jobTasks?.length > 0 &&
-                              jobTasks?.map((task, index) => (
+                            {filteredTasks?.length > 0 &&
+                              filteredTasks?.map((task, index) => (
                                 <tr key={index} className="task-row">
                                   <td
                                     className={`task-title text-left   ${
@@ -3751,7 +3811,7 @@ export const NewJobModalWithTasks = ({
                                   </td>
                                 </tr>
                               ))}
-                            {jobTasks.length === 0 && (
+                            {filteredTasks.length === 0 && (
                               <p
                                 style={{
                                   color: "#616161",
@@ -3764,13 +3824,13 @@ export const NewJobModalWithTasks = ({
                                   marginBottom: "10px",
                                 }}
                               >
-                                No task added yet
+                                No tasks available
                               </p>
                             )}
                           </tbody>
                         </table>
                       </div>
-                      {jobTasks?.length > 6 && (
+                      {filteredTasks?.length > 6 && (
                         <div
                           className={`show-all-tasks ${
                             showAllTasks ? "show-more" : ""
@@ -3804,7 +3864,10 @@ export const NewJobModalWithTasks = ({
                       JobId={job?.id}
                       usersList={usersList}
                       onNewComment={(data) => {
-                        console.log("new comment added & passed to parent component", data)
+                        console.log(
+                          "new comment added & passed to parent component",
+                          data
+                        );
                         setNewComment(data);
                       }}
                     />

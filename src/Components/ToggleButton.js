@@ -1,5 +1,5 @@
 
-const ToggleButton = ({ isOn, setIsOn, clearFilter }) => {
+const ToggleButton = ({ isOn, setIsOn, clearFilter = () => {} }) => {
  
 
   return (

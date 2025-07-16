@@ -1218,6 +1218,7 @@ const Jobs = () => {
               : job
           )
         );
+        
         // addNotification("success", "Job Updated");
       }
     } catch (error) {
@@ -1479,6 +1480,7 @@ const Jobs = () => {
           return {
             ...job,
             tasks: sortedTasks,
+              days_left: getDaysLeft(sortedTasks?.[0]?.due_date || null),
             // due_date: sortedTasks?.[0]?.due_date || null,
           };
         }
@@ -1835,14 +1837,17 @@ const Jobs = () => {
           job={activeJob}
           newJob={newJob}
           handleClose={async (isUpdateRequired = false, newComment) => {
-            if (activeJob && newComment) {
-              setFilteredJobs((prevJobs) =>
+    
+
+            if (isUpdateRequired && activeJob) {
+               setFilteredJobs((prevJobs) =>
                 prevJobs.map((job) => {
                   if (job.id !== activeJob.id) return job;
 
                   const sortedTasks = sortTasksByDueDateProximity(
                     job.tasks || []
                   );
+                  console.log("sortedTask", sortedTasks)
                   return {
                     ...job,
                     tasks: sortedTasks,
@@ -1853,9 +1858,6 @@ const Jobs = () => {
                   };
                 })
               );
-            }
-
-            if (isUpdateRequired && activeJob) {
               await handleUpdateJobDesc(
                 activeJob.id,
                 activeJob.description,

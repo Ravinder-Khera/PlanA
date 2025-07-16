@@ -1,6 +1,6 @@
 import moment from "moment";
 import _ from "lodash";
-import { v4 as uuidv4 } from "uuid"
+import { v4 as uuidv4 } from "uuid";
 export const arraysEqualById = (arr1, arr2) => {
   const ids1 = _.sortBy(arr1.map((obj) => obj.id));
   const ids2 = _.sortBy(arr2.map((obj) => obj.id));
@@ -203,8 +203,8 @@ export const StageListMapFromDB = {
   Referral: "Referral",
   "Inform Public": "Public Notification",
   Decision: "Decision",
-  "Prelodgement":"Prelodgement",
-  "General": "General"
+  Prelodgement: "Prelodgement",
+  General: "General",
 };
 
 export const MIN_CALENDAR_YEAR = 5;
@@ -499,7 +499,7 @@ export const adHoc = [
 
 export function getEmailsByStageAndTitle(stage, title) {
   const stageEmails = emailConfig[stage];
-  
+
   if (!stageEmails) return []; // Return an empty array if stage is not found
 
   if (title && stageEmails[title]) {
@@ -560,50 +560,50 @@ export const CollaboratorNameBorders = {
 };
 
 export const CollaboratorNameBG = {
-  "Adam Nagel": "#C21807",                  // Chili Red (actual: #C21807)
-  "Peter Catchlove": "#73182C",         // QLD Maroon
-  "Garrett McVilly": "#90D5FF",         // Light Blue
-  "Holly Ilka": "#26FF00",                 // Lime Green (actual: #26FF00)
-  "Eddie Gaydon": "#46198E",            // Dark Purple
-  "Oscar Delaney": "#E3881F",           // Orange
-  "Matt Geyle": "#FFF200",              // Full Yellow
-  "Harrison Southwell": "#D5B895",      // Beige
-  "Scarlett": "#1D5600",                // Dark Green
-  "Joshua Dixon": "#FFFFFF",            // White
-  "Luke Jones": "#1100FF",              // Dark Blue
-  "Georgina McNee": "#FFB6C1",          // Light pink
-  "Emily Hutchinson": "#F068FF",        // Hot pink / fuchsia
-  "Kym Allison": "#68FFF0",             // Turquoise
+  "Adam Nagel": "#C21807", // Chili Red (actual: #C21807)
+  "Peter Catchlove": "#73182C", // QLD Maroon
+  "Garrett McVilly": "#90D5FF", // Light Blue
+  "Holly Ilka": "#26FF00", // Lime Green (actual: #26FF00)
+  "Eddie Gaydon": "#46198E", // Dark Purple
+  "Oscar Delaney": "#E3881F", // Orange
+  "Matt Geyle": "#FFF200", // Full Yellow
+  "Harrison Southwell": "#D5B895", // Beige
+  Scarlett: "#1D5600", // Dark Green
+  "Joshua Dixon": "#FFFFFF", // White
+  "Luke Jones": "#1100FF", // Dark Blue
+  "Georgina McNee": "#FFB6C1", // Light pink
+  "Emily Hutchinson": "#F068FF", // Hot pink / fuchsia
+  "Kym Allison": "#68FFF0", // Turquoise
   "Web User": "#84AC9A",
   "Julian Hayes": "#864EE0",
-  "Josh Dixon": "#FFFFFF",              // Alias of Joshua Dixon
+  "Josh Dixon": "#FFFFFF", // Alias of Joshua Dixon
 };
 
 export const CollaboratorNameColor = {
-  "Adam Nagel": "#fff",                  // Chili Red (actual: #C21807)
-  "Peter Catchlove": "#fff",         // QLD Maroon
-  "Garrett McVilly": "#353535",         // Light Blue
-  "Holly Ilka": "#353535",                 // Lime Green (actual: #26FF00)
-  "Eddie Gaydon": "#fff",            // Dark Purple
-  "Oscar Delaney": "#fff",           // Orange
-  "Matt Geyle": "#353535",              // Full Yellow
-  "Harrison Southwell": "#353535",      // Beige
-  "Scarlett": "#fff",                // Dark Green
-  "Joshua Dixon": "#353535",            // White
-  "Luke Jones": "#fff",              // Dark Blue
-  "Georgina McNee": "#353535",          // Light pink
-  "Emily Hutchinson": "#353535",        // Hot pink / fuchsia
-  "Kym Allison": "#353535",             // Turquoise
+  "Adam Nagel": "#fff", // Chili Red (actual: #C21807)
+  "Peter Catchlove": "#fff", // QLD Maroon
+  "Garrett McVilly": "#353535", // Light Blue
+  "Holly Ilka": "#353535", // Lime Green (actual: #26FF00)
+  "Eddie Gaydon": "#fff", // Dark Purple
+  "Oscar Delaney": "#fff", // Orange
+  "Matt Geyle": "#353535", // Full Yellow
+  "Harrison Southwell": "#353535", // Beige
+  Scarlett: "#fff", // Dark Green
+  "Joshua Dixon": "#353535", // White
+  "Luke Jones": "#fff", // Dark Blue
+  "Georgina McNee": "#353535", // Light pink
+  "Emily Hutchinson": "#353535", // Hot pink / fuchsia
+  "Kym Allison": "#353535", // Turquoise
   "Web User": "#fff",
   "Julian Hayes": "#fff",
-  "Josh Dixon": "#353535",              // Alias of Joshua Dixon
+  "Josh Dixon": "#353535", // Alias of Joshua Dixon
 };
 
 export function addNotification(type, message) {
   const notificationData = {
     class: type,
     message,
-    id: uuidv4()
+    id: uuidv4(),
   };
   const existingNotificationsJSON = localStorage.getItem("notifications");
   let existingNotifications = [];
@@ -617,19 +617,23 @@ export function addNotification(type, message) {
 
 export function sortTasksByDueDateProximity(tasks) {
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Normalize today's date
+  today.setHours(0, 0, 0, 0); // Normalize
 
-  return tasks.slice().sort((a, b) => {
+  const sortByProximity = (a, b) => {
     const aDue = new Date(a.due_date);
     const bDue = new Date(b.due_date);
+    return aDue - bDue; // earlier due dates come first
+  };
 
-    const aDiff = aDue - today;
-    const bDiff = bDue - today;
+  const incomplete = tasks
+    .filter((task) => task.status !== "completed")
+    .sort(sortByProximity);
+  const completed = tasks
+    .filter((task) => task.status === "completed")
+    .sort(sortByProximity);
 
-    return aDiff - bDiff; // past < today < future
-  });
+  return [...incomplete, ...completed];
 }
-
 
 export const locationOptions = [
   { location: "Balonne (S)", state: "QLD" },
@@ -643,9 +647,7 @@ export const locationOptions = [
   { location: "Bundaberg (R)", state: "QLD" },
   { location: "Burdekin (S)", state: "QLD" },
   { location: "Burke (S)", state: "QLD" },
-  
 ];
-
 
 export function getDaysLeft(dueDate) {
   const targetDate = moment(dueDate || new Date()).startOf("day");
