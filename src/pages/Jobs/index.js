@@ -799,7 +799,9 @@ const Jobs = () => {
         let tempJobs = filteredJobs.filter((job) => job !== newJobIdNumber);
         tempJobs = [job, ...tempJobs];
         addNotification("success", "Job Created");
+        setUpdateJobId(job.id);
         setFilteredJobs(tempJobs);
+        setOriginalJobs(tempJobs);
       } else {
         toast.error(`${response?.error?.message || "Error occurred"}`);
       }
@@ -1014,7 +1016,6 @@ const Jobs = () => {
   // Helper: Check if a job has changed
   const isJobChanged = (updatedJob, originalJob) => {
     if (!updatedJob || !originalJob) return false;
-
     setCollabChanged(
       !arraysEqualById(
         updatedJob?.collaborators || [],
@@ -1069,55 +1070,18 @@ const Jobs = () => {
         toast.error(
           `Job Update Failed: ${response.error?.message || "Unknown error"}`
         );
+        return;
       }
+      setOriginalJobs((prevJobs) =>
+        prevJobs.map((job) =>
+          job.id === updatedJob.id ? response.res.job : job
+        )
+      );
     } catch (error) {
       console.error("Error in updating jobs", error);
     }
   };
 
-  // useEffect(() => {
-  //   const handleClickOutside = async (event) => {
-  //     if (
-  //       tableActiveRowLeftRef.current &&
-  //       !tableActiveRowLeftRef.current.contains(event.target) &&
-  //       tableActiveRowRightRef.current &&
-  //       !tableActiveRowRightRef.current.contains(event.target)
-  //     ) {
-  //       if (!filteredJobs?.length || !originalJobs?.length || !updateJobId)
-  //         return;
-
-  //       const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
-  //       const originalJob = originalJobs.find((job) => job.id === updateJobId);
-
-  //       if (!updatedJob || !originalJob) return;
-
-  //       setUsersList(fullUsersList);
-
-  //       if (isJobChanged(updatedJob, originalJob)) {
-  //         await handleUpdateJob(updatedJob);
-  //         synchronizeRowHeights();
-  //         handleCancelAddJob();
-  //       }
-
-  //       if (!showNewJobModal && !showNewJobModalWithTasks) {
-  //         setActiveJob(null);
-  //         setNewJobCollaboratorsList([]);
-  //         setNewJobCollaboratorsListId([]);
-  //         handleCancelAddJob();
-  //       }
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, [
-  //   updateJobId,
-  //   filteredJobs,
-  //   originalJobs,
-  //   newJobCollaboratorsListId,
-  //   showNewJobModal,
-  //   showNewJobModalWithTasks,
-  // ]);
   useEffect(() => {
     const handleClickOutside = async (event) => {
       const left = tableActiveRowLeftRef.current;
@@ -1134,7 +1098,9 @@ const Jobs = () => {
         return;
 
       const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
+
       const originalJob = originalJobs.find((job) => job.id === updateJobId);
+
       if (!updatedJob || !originalJob) return;
 
       setUsersList(fullUsersList);
@@ -1674,7 +1640,6 @@ const Jobs = () => {
           sortValue,
           activeTab === "Jobs" ? "job" : "prospect"
         );
-        console.log("response ", response);
         if (!response.error) {
           setFilteredJobs(response?.res?.data);
           setLoadMorePage(response?.res.current_page + 1);
@@ -1737,6 +1702,7 @@ const Jobs = () => {
         };
 
         setFilteredJobs((prevJobs) => [sortedJobs, ...prevJobs]);
+        setOriginalJobs((prevJobs) => [sortedJobs, ...prevJobs]);
         addNotification("success", "Job Created");
       } else {
         toast.error(`${response?.error?.message || "Error occurred"}`);
@@ -1869,7 +1835,6 @@ const Jobs = () => {
           job={activeJob}
           newJob={newJob}
           handleClose={async (isUpdateRequired = false, newComment) => {
-            console.log("filteredJob", filteredJobs);
             if (activeJob && newComment) {
               setFilteredJobs((prevJobs) =>
                 prevJobs.map((job) => {
@@ -1889,12 +1854,7 @@ const Jobs = () => {
                 })
               );
             }
-            console.log(
-              "active job in NewJobModalWithTasks",
-              filteredJobs,
-              activeJob,
-              newComment
-            );
+
             if (isUpdateRequired && activeJob) {
               await handleUpdateJobDesc(
                 activeJob.id,
@@ -1971,7 +1931,6 @@ const Jobs = () => {
           usersList={fullUsersList}
           task={activeTask}
           handleClose={async (newComment) => {
-            console.log("newComment", newComment);
             setGetJob();
             setShowUpdateTaskModal(false);
 
@@ -2021,8 +1980,6 @@ const Jobs = () => {
           job={getJob?.data}
           usersList={fullUsersList}
           handleClose={async (isDeleting = false, newComment) => {
-            console.log("getJob.data", getJob.data);
-
             if (!isDeleting && getJob?.data) {
               if (filteredJobs?.length > 0) {
                 const sortedJobs = filteredJobs.map((job) => {
@@ -3483,7 +3440,6 @@ const Jobs = () => {
                                                   );
                                                   setActiveJobField("");
                                                 } else {
-                                                  console.log("task", task);
                                                   setActiveTask(task);
                                                   setActiveJobField("");
                                                   setShowUpdateTaskModal(true);
