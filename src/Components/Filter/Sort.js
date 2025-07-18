@@ -3,6 +3,7 @@ import { FilterJobs } from "../../services/api";
 
 const Sort = ({
   setFilteredJobs,
+  setOriginalJobs,
   setFilteredString,
   setFilteredQuery,
   filteredQuery,
@@ -47,6 +48,7 @@ const Sort = ({
       );
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
+        setOriginalJobs(response?.res?.data);
         setLoadMorePage(response?.res?.current_page + 1);
         setLoadTotalPage(response?.res?.last_page);
       }

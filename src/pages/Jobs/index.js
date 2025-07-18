@@ -1094,12 +1094,15 @@ const Jobs = () => {
       if (document.querySelector(".Toastify__toast")?.contains(event.target))
         return;
 
+      console.log("handleClickOutside", filteredJobs?.length ,originalJobs?.length ,updateJobId)
       if (!filteredJobs?.length || !originalJobs?.length || !updateJobId)
         return;
 
       const updatedJob = filteredJobs.find((job) => job.id === updateJobId);
 
       const originalJob = originalJobs.find((job) => job.id === updateJobId);
+      console.log("originalJob",originalJob)
+      console.log("updatedJob",updatedJob)
 
       if (!updatedJob || !originalJob) return;
 
@@ -1663,6 +1666,7 @@ const Jobs = () => {
         );
         if (!response.error) {
           setFilteredJobs(response?.res?.data);
+          setOriginalJobs(response?.res?.data)
           setLoadMorePage(response?.res.current_page + 1);
           setLoadTotalPage(response?.res?.last_page);
         }
@@ -2208,6 +2212,7 @@ const Jobs = () => {
                 <Filter
                   setFilteredString={setFilteredString}
                   setFilteredQuery={setFilteredQuery}
+                  setOriginalJobs={setOriginalJobs}
                   setFilteredJobs={setFilteredJobs}
                   setLoading={setLoading}
                   closeFilter={() => setShowFilter(false)}
@@ -2232,6 +2237,7 @@ const Jobs = () => {
               {showSort && (
                 <Sort
                   setFilteredString={setFilteredString}
+                  setOriginalJobs={setOriginalJobs}
                   setFilteredQuery={setFilteredQuery}
                   filteredQuery={filteredQuery}
                   setFilteredJobs={setFilteredJobs}

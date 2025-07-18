@@ -405,6 +405,7 @@ const FilterOld = ({ setFilteredJobs, setLoading, closeFilter }) => {
 
 const Filter = ({
   setFilteredJobs,
+  setOriginalJobs,
   setFilteredString,
   setFilteredQuery,
   setLoading,
@@ -593,7 +594,7 @@ const Filter = ({
         return uniqueByFilter;
       });
 
-      // ✅ Merge filterQuery into filteredQuery without replacing arrays
+      //  Merge filterQuery into filteredQuery without replacing arrays
       setFilteredQuery((prevQuery) => {
         const mergedQuery = { ...prevQuery };
 
@@ -642,6 +643,7 @@ const Filter = ({
       const response = await FilterJobs(updatedQuery, sortValue, activeTab === "Jobs" ? 'job' : 'prospect');
       if (!response.error) {
         setFilteredJobs(response?.res?.data);
+        setOriginalJobs(response?.res?.data)
         setLoadMorePage(response?.res?.current_page + 1);
         setLoadTotalPage(response?.res?.last_page);
         closeFilter();
