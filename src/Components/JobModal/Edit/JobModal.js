@@ -48,6 +48,8 @@ import ChatAndAttachment, {
 } from "./ChatAndAttachment";
 import "./style.scss";
 import ToggleButton from "../../ToggleButton";
+import { isWeekend } from "date-fns";
+import { enGB } from "date-fns/locale";
 
 const JobModal = ({
   job,
@@ -2703,7 +2705,7 @@ export const NewJobModal = ({
   const [description, setDescription] = useState(job?.description || "");
   const [isDeleting, setIsDeleting] = useState(false);
   const [jobTasks, setJobTasks] = useState(job?.tasks || []);
-  const [isOn, setIsOn] = useState(false)
+  const [isOn, setIsOn] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
   const [activeTaskJob, setActiveTaskJob] = useState(null);
@@ -2719,7 +2721,7 @@ export const NewJobModal = ({
   const [newComment, setNewComment] = useState(null);
   const descRef = useRef(null);
   const jobTaskRef = useRef(null);
-   const filteredTasks = jobTasks?.filter((task) => {
+  const filteredTasks = jobTasks?.filter((task) => {
     if (isOn) {
       return task.status === "completed";
     }
@@ -3113,26 +3115,33 @@ export const NewJobModal = ({
                     </div>
 
                     <div className="discriptionBox">
-                       <div style={{
-                        "display": "flex",
-                        "justifyContent": "space-between",
-                        "alignItems": "center",
-                        "gap": '10px'
-                      }}>
-
-                      <h3>Tasks</h3>
-                      <div style={{
-                        "display": "flex",
-                        "justifyContent": "center",
-                        "alignItems": "center",
-                        "gap": '10px',
-                        "marginRight": "10px"
-                      }}>
-                      <span style={{
-                        fontSize: '14px'
-                      }}>Completed Task</span>
-                      <ToggleButton isOn={isOn} setIsOn={setIsOn} />
-                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
+                        <h3>Tasks</h3>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: "10px",
+                            marginRight: "10px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "14px",
+                            }}
+                          >
+                            Completed Task
+                          </span>
+                          <ToggleButton isOn={isOn} setIsOn={setIsOn} />
+                        </div>
                       </div>
 
                       <div
@@ -3298,7 +3307,7 @@ export const NewJobModalWithTasks = ({
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [jobTasks, setJobTasks] = useState(job?.tasks || []);
-  const [isOn, setIsOn] = useState(false)
+  const [isOn, setIsOn] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showUpdateTaskModal, setShowUpdateTaskModal] = useState(false);
   const [activeTaskJob, setActiveTaskJob] = useState(null);
@@ -3718,26 +3727,33 @@ export const NewJobModalWithTasks = ({
                     </div>
 
                     <div className="discriptionBox">
-                      <div style={{
-                        "display": "flex",
-                        "justifyContent": "space-between",
-                        "alignItems": "center",
-                        "gap": '10px'
-                      }}>
-
-                      <h3>Tasks</h3>
-                      <div style={{
-                        "display": "flex",
-                        "justifyContent": "center",
-                        "alignItems": "center",
-                        "gap": '10px',
-                        "marginRight": "10px"
-                      }}>
-                      <span style={{
-                        fontSize: '14px'
-                      }}>Completed Task</span>
-                      <ToggleButton isOn={isOn} setIsOn={setIsOn} />
-                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
+                        <h3>Tasks</h3>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: "10px",
+                            marginRight: "10px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "14px",
+                            }}
+                          >
+                            Completed Task
+                          </span>
+                          <ToggleButton isOn={isOn} setIsOn={setIsOn} />
+                        </div>
                       </div>
                       <div
                         className={`task-table-container job-task-table-container ${
@@ -4078,6 +4094,7 @@ export const NewTaskModal = ({
   };
 
   const handleDueDateChange = (date) => {
+    if (isWeekend(date)) return;
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
@@ -4637,6 +4654,38 @@ export const NewTaskModal = ({
                                       )
                                     )
                                   }
+                                  locale={enGB}
+                                   disabledDay={(date) => isWeekend(date)}
+                                  dayContentRenderer={(date) => {
+                                    const isWeekendDay = isWeekend(date);
+                                    const isSelected =
+                                      date.getFullYear() ===
+                                        new Date(dueDate).getFullYear() &&
+                                      date.getMonth() ===
+                                        new Date(dueDate).getMonth() &&
+                                      date.getDate() ===
+                                        new Date(dueDate).getDate();
+                                    return (
+                                      <div
+                                        style={{
+                                          color: isSelected ? "#000" : "#fff",
+                                          pointerEvents: isWeekendDay
+                                            ? "none"
+                                            : "auto",
+                                          opacity: isWeekendDay ? 0.5 : 1,
+                                          cursor: isWeekendDay
+                                            ? "default"
+                                            : "pointer",
+                                          userSelect: "none",
+                                        }}
+                                        className={
+                                          isWeekendDay ? "disable-weekend" : ""
+                                        }
+                                      >
+                                        {date.getDate()}
+                                      </div>
+                                    );
+                                  }}
                                 />
                               </div>
                             )}
@@ -4758,7 +4807,7 @@ export const UpdateTaskModal = React.forwardRef(
     const [newJobCollaboratorsList, setNewJobCollaboratorsList] = useState(
       task?.users || []
     );
-    const newJobCollaboratorsListRef = useRef(null)
+    const newJobCollaboratorsListRef = useRef(null);
     const [newJobCollaboratorsListId, setNewJobCollaboratorsListId] = useState(
       []
     );
@@ -4903,7 +4952,7 @@ export const UpdateTaskModal = React.forwardRef(
       titleRef.current = title;
     }, [title]);
 
-     useEffect(() => {
+    useEffect(() => {
       newJobCollaboratorsListRef.current = newJobCollaboratorsList;
     }, [newJobCollaboratorsList]);
 
@@ -4969,7 +5018,11 @@ export const UpdateTaskModal = React.forwardRef(
         stageRef.current?.id !== task.stage_id ||
         descriptionRef.current !== task.description
       ) {
-        console.log("newJobCollaboratorsList", newJobCollaboratorsListRef.current, newJobCollaboratorsListIdRef.current)
+        console.log(
+          "newJobCollaboratorsList",
+          newJobCollaboratorsListRef.current,
+          newJobCollaboratorsListIdRef.current
+        );
         onUpdateTask(
           { updatedTask },
           task.id,
@@ -4983,6 +5036,7 @@ export const UpdateTaskModal = React.forwardRef(
     };
 
     const handleDueDateChange = (date) => {
+      if (isWeekend(date)) return;
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const day = String(date.getDate()).padStart(2, "0");
@@ -5631,6 +5685,40 @@ export const UpdateTaskModal = React.forwardRef(
                                         )
                                       )
                                     }
+                                    locale={enGB}
+                                     disabledDay={(date) => isWeekend(date)}
+                                    dayContentRenderer={(date) => {
+                                      const isWeekendDay = isWeekend(date);
+                                      const isSelected =
+                                        date.getFullYear() ===
+                                          new Date(dueDate).getFullYear() &&
+                                        date.getMonth() ===
+                                          new Date(dueDate).getMonth() &&
+                                        date.getDate() ===
+                                          new Date(dueDate).getDate();
+                                      return (
+                                        <div
+                                          style={{
+                                            color: isSelected ? "#000" : "#fff",
+                                            pointerEvents: isWeekendDay
+                                              ? "none"
+                                              : "auto",
+                                            opacity: isWeekendDay ? 0.5 : 1,
+                                            cursor: isWeekendDay
+                                              ? "default"
+                                              : "pointer",
+                                            userSelect: "none",
+                                          }}
+                                          className={
+                                            isWeekendDay
+                                              ? "disable-weekend"
+                                              : ""
+                                          }
+                                        >
+                                          {date.getDate()}
+                                        </div>
+                                      );
+                                    }}
                                   />
                                 </div>
                               )}
@@ -6012,6 +6100,7 @@ export const CreateTaskModal = memo(
       };
 
       const handleDueDateChange = (date) => {
+        if (isWeekend(date)) return;
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
@@ -6678,6 +6767,42 @@ export const CreateTaskModal = memo(
                                           )
                                         )
                                       }
+                                      locale={enGB}
+                                      disabledDay={(date) => isWeekend(date)}
+                                      dayContentRenderer={(date) => {
+                                        const isWeekendDay = isWeekend(date);
+                                        const isSelected =
+                                          date.getFullYear() ===
+                                            new Date(dueDate).getFullYear() &&
+                                          date.getMonth() ===
+                                            new Date(dueDate).getMonth() &&
+                                          date.getDate() ===
+                                            new Date(dueDate).getDate();
+                                        return (
+                                          <div
+                                            style={{
+                                              color: isSelected
+                                                ? "#000"
+                                                : "#fff",
+                                              pointerEvents: isWeekendDay
+                                                ? "none"
+                                                : "auto",
+                                              opacity: isWeekendDay ? 0.5 : 1,
+                                              cursor: isWeekendDay
+                                                ? "default"
+                                                : "pointer",
+                                              userSelect: "none",
+                                            }}
+                                            className={
+                                              isWeekendDay
+                                                ? "disable-weekend"
+                                                : ""
+                                            }
+                                          >
+                                            {date.getDate()}
+                                          </div>
+                                        );
+                                      }}
                                     />
                                   </div>
                                 )}

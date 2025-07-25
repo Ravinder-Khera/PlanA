@@ -14,6 +14,7 @@ import {
 import {
   CollaboratorNameBG,
   CollaboratorNameColor,
+  sortTasksByDueDateProximity,
   StatusList
 } from "../../helper";
 import {
@@ -642,8 +643,19 @@ const Filter = ({
       delete updatedQuery.sort;
       const response = await FilterJobs(updatedQuery, sortValue, activeTab === "Jobs" ? 'job' : 'prospect');
       if (!response.error) {
-        setFilteredJobs(response?.res?.data);
-        setOriginalJobs(response?.res?.data)
+           const data = response?.res?.data || [];
+              const sortedJobs = data.map((job) => {
+                const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
+                // const nearestDueDate = sortedTasks[0]?.due_date || null;
+        
+                return {
+                  ...job,
+                  tasks: sortedTasks,
+                  // due_date: nearestDueDate,
+                };
+              });
+                setFilteredJobs(sortedJobs);
+                setOriginalJobs(sortedJobs);
         setLoadMorePage(response?.res?.current_page + 1);
         setLoadTotalPage(response?.res?.last_page);
         closeFilter();

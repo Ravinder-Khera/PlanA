@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
 import ChatAndAttachment from "../JobModal/Edit/ChatAndAttachment";
 
+
 const DashboardTask = ({
   data,
   handleClose,
@@ -73,18 +74,17 @@ const DashboardTask = ({
 
   const handleResetClick = () => {
     // Get the index of the active card
-    const activeIndex = Array.from(activeCardRef.current.parentElement.parentElement.children).indexOf(activeCardRef.current.parentElement);
+    const activeIndex = Array.from(
+      activeCardRef.current.parentElement.parentElement.children
+    ).indexOf(activeCardRef.current.parentElement);
     // Go to the slide corresponding to the active card
     sliderRef.current.slickGoTo(activeIndex);
   };
 
   useEffect(() => {
     let handler = (e) => {
-      if (
-        popUpRef.current &&
-        !popUpRef.current.contains(e.target)
-      ) {
-        handleClose()
+      if (popUpRef.current && !popUpRef.current.contains(e.target)) {
+        handleClose();
       }
     };
 
@@ -207,7 +207,6 @@ const DashboardTask = ({
   }
 
   useEffect(() => {
-    
     let _tempTasks = tasks;
     if (!tasks?.length) return;
     if (selectedTab === "to-do") {
@@ -379,7 +378,6 @@ const DashboardTask = ({
         // addNotification("success", "Job Updated")
         toast.success(`${response.res.message}`);
       } else {
-
         console.error("jobs update failed:", response.error);
         toast.error(`${response.error.message}`);
       }
@@ -415,11 +413,11 @@ const DashboardTask = ({
       toast.error("Please select assignee");
       return;
     }
-    if(!newTask.title || newTask.title?.trim() === ""){
+    if (!newTask.title || newTask.title?.trim() === "") {
       toast.error("Please Enter Task Title.");
       return;
     }
-    if(newTask.stageTitle === ""){
+    if (newTask.stageTitle === "") {
       toast.error("Please Select Task Stage.");
       return;
     }
@@ -434,7 +432,7 @@ const DashboardTask = ({
       stage_id: stageIds[newTask.stageTitle],
       title: newTask.title,
       due_date: formattedDueDate,
-      assignee_ids: selectedAssignee
+      assignee_ids: selectedAssignee,
     };
     try {
       const response = await createTask(reqBody);
@@ -444,7 +442,7 @@ const DashboardTask = ({
           users: selectedAssignee,
         });
         fetchJobs();
-        addNotification("success", "Task Created")
+        addNotification("success", "Task Created");
         toast.success("Task Created Successfully.");
       } else {
         toast.error("Failed to Create Task.");
@@ -727,7 +725,12 @@ const DashboardTask = ({
                                 )}
                               </label> */}
                               <div
-                                className={`card-slider card_${stageMap.title} `} ref={stageMap.title === stage ? activeCardRef : cardRef}
+                                className={`card-slider card_${stageMap.title} `}
+                                ref={
+                                  stageMap.title === stage
+                                    ? activeCardRef
+                                    : cardRef
+                                }
                               >
                                 <div
                                   className={`card-image listContent d-flex align-items-center gap-2 ${
@@ -900,7 +903,9 @@ const DashboardTask = ({
                                       style={{ width: "18px", height: "18px" }}
                                     />
                                     <p className={`text_${task.stageTitle}`}>
-                                    {task?.title?.replace(/\b\w/g, (char) => char.toUpperCase())}
+                                      {task?.title?.replace(/\b\w/g, (char) =>
+                                        char.toUpperCase()
+                                      )}
                                     </p>
                                   </div>
 
@@ -938,7 +943,9 @@ const DashboardTask = ({
                                                   toggleUserDropdown(index);
                                                 }}
                                               >
-                                                {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                {user.profile_pic !== "" &&
+                                                user.profile_pic !==
+                                                  "default-profile-pic.jpg" ? (
                                                   <img
                                                     alt={user.name}
                                                     src={
@@ -1271,7 +1278,9 @@ const DashboardTask = ({
                                               setShowAssignee(!showAssignee)
                                             }
                                           >
-                                            {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                            {user.profile_pic !== "" &&
+                                            user.profile_pic !==
+                                              "default-profile-pic.jpg" ? (
                                               <img
                                                 alt={user.name}
                                                 src={
@@ -1438,7 +1447,9 @@ const DashboardTask = ({
                                                   className={` UserImg addedUserImages `}
                                                   style={{ minWidth: "40px" }}
                                                 >
-                                                  {user.profile_pic !== "" && user.profile_pic !== 'default-profile-pic.jpg' ? (
+                                                  {user.profile_pic !== "" &&
+                                                  user.profile_pic !==
+                                                    "default-profile-pic.jpg" ? (
                                                     <img
                                                       alt={user.name}
                                                       src={
@@ -1525,6 +1536,7 @@ const DashboardTask = ({
                               calendarType="ISO 8601"
                               minDate={new Date()}
                               rangeColors={["#E2E31F"]}
+                             
                             />
                           </div>
                         )}

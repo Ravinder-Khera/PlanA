@@ -631,6 +631,7 @@ export function sortTasksByDueDateProximity(tasks) {
   const completed = tasks
     .filter((task) => task.status === "completed")
     .sort(sortByProximity);
+    console.log(completed)
 
   return [...incomplete, ...completed];
 }

@@ -1666,11 +1666,11 @@ body {
           }
         }
         &.TastTitleCol1 {
-          width: 562px;
+          width: 380px;
         }
         &.TastTitleCol2 {
-          width: 455px;
-          gap: 58px;
+          width: 625px;
+          gap: 60px;
           justify-content: normal;
           .Task-title-stage {
             width: 81px;
@@ -1686,7 +1686,7 @@ body {
           .InnerTaskTitleCol3 {
             // width: 503px;
             // justify-content: space-between;
-            gap: 61px;
+            gap: 65px;
             .Task-title-status {
               width: 81px;
             }
@@ -1704,14 +1704,15 @@ body {
           }
         }
         &.TaskCol1 {
-          width: 552px;
+          width: 330px;
         }
         &.TaskCol2 {
-          width: 439px;
+          width: 600px;
+          justify-content: normal;
           gap: 50px;
           .TaskCol2_btn {
-            width: 94px;
-            min-width: auto;
+            width: 128px;
+            min-width: max-content;
             padding: 7px 11px;
           }
         }
@@ -2708,20 +2709,23 @@ body {
 
     .rdrMonthsVertical {
       .rdrWeekDay {
-        color: #fff;
+        color: #fff !important;
+         cursor: default !important;
       }
 
       .rdrDays {
         .rdrDay {
           &.rdrDayDisabled {
             background: #353535;
+            cursor: default !important;
           }
 
           &.rdrDayPassive {
             opacity: 0.5;
           }
 
-          color: #fff;
+          color: #fff !important;
+          cursor: pointer !important;
 
           &.rdrDayHovered {
             .rdrDayStartPreview {
@@ -6947,3 +6951,5 @@ button.rdrDay.rdrDayPassive .rdrDayNumber span {
     }
   }
 }
+
+

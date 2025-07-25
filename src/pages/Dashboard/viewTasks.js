@@ -175,7 +175,6 @@ function ViewTaskPage() {
         notificationRef.current &&
         !notificationRef.current.contains(e.target)
       ) {
- 
         setNotificationDropDown(false);
       }
     };
@@ -372,33 +371,34 @@ function ViewTaskPage() {
     currentFilteredPage,
   ]);
 
-  useEffect(() => {
-    const handleClickOutside = async (event) => {
-      if (
-        searchBarRef.current &&
-        !searchBarRef.current.contains(event.target) &&
-        !selectSearchOptions
-      ) {
-        setShowSearchOptions(false);
-        setSelectSearchOptions("");
-        setSearchedInput("");
-        setLoadMorePage(() => 1);
-        setLoadTotalPage(null);
-        // setFilteredTasks([])
-        handleJobFilter(1)
-      }
-    };
+  // useEffect(() => {
+  //   const handleClickOutside = async (event) => {
+  //     if (
+  //       searchBarRef.current &&
+  //       !searchBarRef.current.contains(event.target) &&
+  //       !selectSearchOptions && searchedInput
+  //     ) {
+  //       setShowSearchOptions(false);
+  //       setSelectSearchOptions("");
+  //       setSearchedInput("");
+  //       setLoadMorePage(() => 1);
+  //       setLoadTotalPage(null);
+  //       // setFilteredTasks([])
+  //       handleJobFilter(1);
+  //     }
+  //   };
 
-    document.addEventListener("mousedown", handleClickOutside);
+  //   document.addEventListener("mousedown", handleClickOutside);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [selectSearchOptions]);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [selectSearchOptions]);
 
   const handleJobFilter = async (page = loadMorePage) => {
     try {
-
+      console.log("jobfiler");
+    
       const response = await getTasksByUser(
         {},
         isOn ? "completed=true" : "non_completed=true",
@@ -435,6 +435,7 @@ function ViewTaskPage() {
     ) {
       setLoading(true);
       try {
+        console.log("scroll");
         const response = await getTasksByUser(
           {},
           isOn ? "completed=true" : "non_completed=true",
@@ -509,7 +510,7 @@ function ViewTaskPage() {
   const handleCheckTask = async (jobId, index) => {
     try {
       setLoading(true);
-
+      console.log("got single task");
       const response = await getSingleJob(jobId);
       if (response.res) {
         setActiveTask(response.res.tasks[index]);
@@ -559,7 +560,6 @@ function ViewTaskPage() {
     newJobCollaboratorsList,
     stage
   ) => {
-
     setFilteredTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId
@@ -611,6 +611,7 @@ function ViewTaskPage() {
       var reqData = {
         [selectSearchOptions]: searchedInput,
       };
+      console.log("search apply");
       setShowingSearchOptions(searchedInput);
       const response = await getTasksByUser(
         reqData,
@@ -651,7 +652,7 @@ function ViewTaskPage() {
       delete updatedQuery.status;
     if (!updatedQuery.due_this_week) delete updatedQuery.due_this_week;
     if (!updatedQuery.due_in_14_days) delete updatedQuery.due_in_14_days;
-    
+
     setFilteredQuery(updatedQuery);
     setFilteredString((prevFiltered) =>
       prevFiltered.filter((item) => item !== value)
@@ -817,7 +818,7 @@ function ViewTaskPage() {
                       setShowSearchOptions(false);
                       setShowingSearchOptions("");
                       setLoadMorePage(1);
-                      setLoadTotalPage(null)
+                      setLoadTotalPage(null);
                       handleJobFilter(1);
                     }}
                   >
@@ -1046,7 +1047,7 @@ function ViewTaskPage() {
                 }}
                 className="heading tastTitle"
               >
-                <div className="listContent TastTitleCol1">Title</div>
+                <div className="listContent TastTitleCol1">Task Name</div>
                 <div className="listContent centerContent TastTitleCol2">
                   <div className="centerText text-center Task-title-stage">
                     Stage
@@ -1101,7 +1102,6 @@ function ViewTaskPage() {
                     className={`  stage_` + task?.stage?.title}
                     onClick={() => {
                       if (!task.id) {
-                       
                         handleCheckTask(task.job_id, i);
                       } else {
                         handleActiveTask(task);
@@ -1148,7 +1148,7 @@ function ViewTaskPage() {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
-                          width: "295px",
+                          width: "100%",
                         }}
                       >
                         {task?.job_title?.replace(/\b\w/g, (char) =>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FilterJobs } from "../../services/api";
+import { sortTasksByDueDateProximity } from "../../helper";
 
 const Sort = ({
   setFilteredJobs,
@@ -11,7 +12,7 @@ const Sort = ({
   closeFilter,
   setLoadTotalPage,
   setLoadMorePage,
-  activeTab
+  activeTab,
 }) => {
   const [filterString, setfilterString] = useState({
     label: "Sort By",
@@ -44,11 +45,22 @@ const Sort = ({
       const response = await FilterJobs(
         { ...updatedQuery },
         filterString.value,
-         activeTab === "Jobs" ? 'job' : 'prospect'
+        activeTab === "Jobs" ? "job" : "prospect"
       );
       if (!response.error) {
-        setFilteredJobs(response?.res?.data);
-        setOriginalJobs(response?.res?.data);
+        const data = response?.res?.data || [];
+        const sortedJobs = data.map((job) => {
+          const sortedTasks = sortTasksByDueDateProximity(job.tasks || []);
+          // const nearestDueDate = sortedTasks[0]?.due_date || null;
+
+          return {
+            ...job,
+            tasks: sortedTasks,
+            // due_date: nearestDueDate,
+          };
+        });
+        setFilteredJobs(sortedJobs);
+        setOriginalJobs(sortedJobs);
         setLoadMorePage(response?.res?.current_page + 1);
         setLoadTotalPage(response?.res?.last_page);
       }
@@ -79,8 +91,6 @@ const Sort = ({
       closeFilter();
     }
   };
-
-
 
   const handleCancelFilter = async () => {
     // setSelectedFilters([]);
